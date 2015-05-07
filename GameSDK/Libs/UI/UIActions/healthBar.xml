@@ -1,0 +1,76 @@
+<Graph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
+<<<<<<< HEAD
+ <Nodes />
+ <Edges />
+=======
+ <Nodes>
+  <Node Id="6" Class="Actor:LocalPlayer" pos="-570,80,0" flags="0">
+   <Inputs />
+  </Node>
+  <Node Id="10" Class="Actor:Sensor" pos="-330,80,0" flags="0" InHideMask="15">
+   <Inputs entityId="0"/>
+  </Node>
+  <Node Id="279" Class="UI:Action:Start" pos="-310,-110,0" flags="1">
+   <Inputs UseAsState="0"/>
+  </Node>
+  <Node Id="280" Class="UI:Display:Display" pos="270,-140,0" flags="0">
+   <Inputs uiElements_Element="HealthBar" instanceID="-1"/>
+  </Node>
+  <Node Id="281" Class="Game:Start" pos="-410,-20,0" flags="0">
+   <Inputs InGame="1" InEditor="1"/>
+  </Node>
+  <Node Id="282" Class="Logic:Any" pos="90,-70,0" flags="0" InHideMask="1023" OutHideMask="1">
+   <Inputs />
+  </Node>
+  <Node Id="283" Class="UI:Functions:HealthBar:SetHealth" pos="220,90,0" flags="0">
+   <Inputs instanceID="-1" maxHealth="0" health="0"/>
+  </Node>
+  <Node Id="295" Class="UI:Functions:HealthBar:SetStrength" pos="285.77634,303.71744,0" flags="0">
+   <Inputs instanceID="-1" maxStr="100" str="0"/>
+  </Node>
+  <Node Id="296" Class="UI:Functions:HealthBar:SetCompasRotation" pos="261.42767,495.94366,0" flags="0">
+   <Inputs instanceID="-1" angle="0"/>
+  </Node>
+  <Node Id="297" Class="Minimap:PlayerPos" pos="-20,550,0" flags="0">
+   <Inputs />
+  </Node>
+  <Node Id="299" Class="Math:Mul" pos="120,390,0" flags="0">
+   <Inputs A="0" B="100"/>
+  </Node>
+  <Node Id="300" Class="Logic:Any" pos="90,-240,0" flags="0" InHideMask="1023" OutHideMask="1">
+   <Inputs />
+  </Node>
+  <Node Id="302" Class="Debug:Log" pos="626.65753,334.47363,0" flags="0">
+   <Inputs message=""/>
+  </Node>
+  <Node Id="303" Class="Logic:Any" pos="100,140,0" flags="0">
+   <Inputs />
+  </Node>
+ </Nodes>
+ <Edges>
+  <Edge nodeIn="10" nodeOut="6" portIn="entityId" portOut="entityId" enabled="1"/>
+  <Edge nodeIn="283" nodeOut="10" portIn="maxHealth" portOut="MaxHealth" enabled="1"/>
+  <Edge nodeIn="283" nodeOut="10" portIn="health" portOut="OnHealthChange" enabled="1"/>
+  <Edge nodeIn="299" nodeOut="10" portIn="A" portOut="OnSprintStaminaChange" enabled="1"/>
+  <Edge nodeIn="300" nodeOut="10" portIn="in2" portOut="OnHealthChange" enabled="1"/>
+  <Edge nodeIn="303" nodeOut="10" portIn="in1" portOut="OnSprintStaminaChange" enabled="1"/>
+  <Edge nodeIn="282" nodeOut="279" portIn="in1" portOut="StartAction" enabled="1"/>
+  <Edge nodeIn="303" nodeOut="279" portIn="in3" portOut="StartAction" enabled="1"/>
+  <Edge nodeIn="282" nodeOut="281" portIn="in2" portOut="output" enabled="1"/>
+  <Edge nodeIn="300" nodeOut="281" portIn="in1" portOut="output" enabled="1"/>
+  <Edge nodeIn="303" nodeOut="281" portIn="in2" portOut="output" enabled="1"/>
+  <Edge nodeIn="10" nodeOut="282" portIn="Enable" portOut="out" enabled="1"/>
+  <Edge nodeIn="10" nodeOut="282" portIn="Get" portOut="out" enabled="1"/>
+  <Edge nodeIn="280" nodeOut="282" portIn="show" portOut="out" enabled="1"/>
+  <Edge nodeIn="297" nodeOut="282" portIn="Enable" portOut="out" enabled="1"/>
+  <Edge nodeIn="302" nodeOut="295" portIn="input" portOut="OnCall" enabled="1"/>
+  <Edge nodeIn="296" nodeOut="297" portIn="Call" portOut="OnPosChange" enabled="1"/>
+  <Edge nodeIn="296" nodeOut="297" portIn="angle" portOut="Rotation" enabled="1"/>
+  <Edge nodeIn="295" nodeOut="299" portIn="str" portOut="out" enabled="1"/>
+  <Edge nodeIn="302" nodeOut="299" portIn="message" portOut="out" enabled="1"/>
+  <Edge nodeIn="283" nodeOut="300" portIn="Call" portOut="out" enabled="1"/>
+  <Edge nodeIn="295" nodeOut="303" portIn="Call" portOut="out" enabled="1"/>
+ </Edges>
+>>>>>>> origin/master
+ <GraphTokens />
+</Graph>

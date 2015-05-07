@@ -1,0 +1,6 @@
+<BodyDamage>
+	<Multipliers>
+		<Multiplier part="legRight" value="0" />
+		<Multiplier part="legLeft" value="50" />
+	</Multipliers>
+</BodyDamage>

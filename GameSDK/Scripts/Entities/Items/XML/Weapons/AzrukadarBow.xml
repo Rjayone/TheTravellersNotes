@@ -1,0 +1,269 @@
+<item name="Azrukadar_Bow" class="Bow" category="primary" priority="12" weaponParams="1">
+	<params>
+		<param name="display_name" value="@mp_eRifle" />
+		<param name="giveable" value="1" /> <!-- Indicates whether the item can be bought/picked up, "given" to the player -->
+		<param name="selectable" value="1" /> <!-- Indicates whether the item can be selected in the player's inventory -->
+		<param name="pose" value="bow" /> <!-- Sets the pose the player model will use when holding the item -->
+		<param name="itemClass" value="bow" />
+		<param name="suffix" value="shoulder" />
+		<param name="mass" value="3" /> <!-- The weight of the item, in kg, and how much it will slow the player down when held -->
+		<param name="melee_attack_firemode" value="melee" /> <!-- The name of the firemode that is used for melee combat while holding the weapon -->
+		<param name="select_delayed_grab_3P" value="1" />
+		<param name="attach_to_back" value="1" /> <!-- Visually attaches the weapon to the players back in 3rd person view, when unselected -->
+		<param name="bone_attachment_01" value="stow_primary1" />
+		<param name="bone_attachment_02" value="stow_primary2" />
+		<!-- Action Delays -->
+		<param name="sprintToFireDelay" value="0.1" GAME="SP" /> <!-- Time delay to prevent player from firing after sprinting stopped -->
+		<param name="sprintToFireDelay" value="0.05" GAME="MP" />
+		<param name="sprintToZoomDelay" value="0.3" GAME="SP" /> <!-- Time delay to prevent player from zoom after sprinting stopped -->
+		<param name="sprintToZoomDelay" value="0.2" GAME="MP" />
+		<param name="autoReloadDelay" value="0.5" GAME="SP" /> <!-- Time delay to automatically reload weapon on empty magazine -->
+		<param name="autoReloadDelay" value="0.5" GAME="MP" />
+		<param name="runToSprintBlendTime" value="0.3" />
+		<param name="sprintToRunBlendTime" value="0.4" GAME="SP" />
+		<param name="sprintToRunBlendTime" value="0.2" GAME="MP" />
+		<!-- WEAPON STATS (for UI display) -->
+		<param name="stat_accuracy" value="6" GAME="SP" />
+		<param name="stat_accuracy" value="7" GAME="MP" />
+		<param name="stat_rate_of_fire" value="7" GAME="SP" />
+		<param name="stat_rate_of_fire" value="7" GAME="MP" />
+		<param name="stat_mobility" value="5" GAME="SP" />
+		<param name="stat_mobility" value="5" GAME="MP" />
+		<param name="stat_damage" value="4" GAME="SP" />
+		<param name="stat_damage" value="5" GAME="MP" />
+		<param name="stat_range" value="5" GAME="SP" />
+		<param name="stat_range" value="5" GAME="MP" />
+		<param name="stat_recoil" value="5" GAME="MP" />
+		<param name="proceduralSway" value="1"/>
+		<param name="tag" value="bow" />		
+		<param name="attachment_right" value="left_weapon"/>
+		<param name="attachment_left" value="weapon"/>
+		<param name="adb" value="bowWeaponAnims.adb"/>
+		
+		<!--<animPrecache name="Rifle" >
+			<precache DBAFile="animations/human/male/weapons/Sword/Bow_1P.dba" thirdperson="0"/>
+			<precache DBAFile="animations/human/male/weapons/rifle/rifle_1p.dba" thirdperson="0"/>
+			<precache DBAFile="animations/human/male/weapons/rifle/rifle_3p.dba" thirdperson="1"/>
+		</animPrecache>-->
+		<aimAnims>
+			<param name="base" value="stand_tac_idlePose_rifle_shoulder_1p_01" />
+			<param name="idle" value="stand_tac_idle_proc_rifle_shoulder_add_1p_01" />
+			<param name="run" value="stand_tac_run_proc_rifle_shoulder_add_1p_01" />
+			<param name="sprint" value="stand_tac_sprint_rifle_fwd_add_1p_01" />
+		</aimAnims>
+		<aimLookParams>
+			<param name="fp_offset" value="0.015,-0.0,-0.03" />
+			<param name="fp_rot_offset" value="0.0,-0.2,-0.5" />
+			<param name="look_offset" value="1.5,1.5" />
+			<param name="horiz_look_rot" value="0.0,-10.0,0.0" />
+			<param name="vert_look_rot" value="5.0,0.0,0.0" />
+			<param name="strafe_offset" value="1.0, 1.0, 0.5" />
+			<param name="side_strafe_rot" value="0.0, 6.0, 0.0" />
+			<param name="front_strafe_rot" value="1.75, 0.0, 0.0" />
+			<param name="bump_time" value="0.7" />
+			<param name="bump_shift" value="0.03" />
+			<param name="bump_rotation" value="3.0" />
+			<param name="idle_speed" value="1.0" />
+			<param name="idle_magnitude" value="1.0" />
+			<param name="run_speed" value="1.0" />
+			<param name="run_magnitude" value="1.0" />
+			<param name="sprint_speed" value="1.0" />
+			<param name="sprint_magnitude" value="1.0" />
+		</aimLookParams>
+		<procedualActions>
+			<param name="lower_offset" value="0, 0, 0" />
+			<param name="lower_rot_offset" value="-5.729577951, 2.864788976, 2.864788976" />
+			<param name="lower_transition" value="0.3" />
+			<param name="cine_offset" value="0.121500, 0.048518, 0.046515" />
+			<param name="cine_rot_offset" value="-24.394308381, -9.239402813, 54.954788554" />?
+			<param name="cine_transition" value="0.65" />
+			<param name="left_hand_modifier_offset" value="0.027467, 0.016173, -0.106616" />
+			<param name="left_hand_modifier_rot_offset" value="2.191063, -2.484817, 8.351659" />
+			<param name="modifiy_menu_offset" value="0.034076, 0.181064, -0.007974" />
+			<param name="modifiy_menu_rot_offset" value="35.124547377, 29.92042902, 55.013975094" />
+			<param name="modifiy_menu_left_offset" value="-0.05, -0.2, -0.5" />
+		</procedualActions>
+	</params>
+
+	<MovementModifiers speedScale="1.0" rotationScale="1.0" GAME="SP"> <!-- Base movement scale SP -->
+		<Ironsight speedScale="0.6" rotationScale="0.33" mouseRotationScale="0.9" /> <!-- Altered movement scale when ironsight -->
+	</MovementModifiers>
+	<MovementModifiers speedScale="1.0" rotationScale="1.0" firingSpeedScale="1.0" GAME="MP">
+		<Ironsight speedScale="0.6" rotationScale="0.33" mouseRotationScale="0.9" />
+	</MovementModifiers>
+
+	<ai_descriptor handler="instant" draw_time="2" burstBulletCountMin="5" burstBulletCountMax="9" burstPauseTimeMin="0.4" burstPauseTimeMax="0.9" singleFireTriggerTime="-1" pressureMultiplier="1" coverFireTime="3.0" />
+
+	<geometry>
+		<firstperson name="Objects/weapons/Bow/Azrukadar bow/AzrukadarBow_fp.cdf" angles="0,0,0" position="0,0,0" />
+		<thirdperson name="Objects/weapons/Bow/Azrukadar bow/AzrukadarBow_tp.cgf" angles="0,180,0" useStreaming="0"/>
+	</geometry>
+	
+	<ammos>
+		<ammo name="Arrow" extra="40" amount="40" minAmmo="25" capacity="160" GAME="SP"/>
+	</ammos>
+
+	<firemodes>
+		<firemode type="default">
+			<fire>
+				<param name="hit_type" value="RifleBullet" /> <!-- Name of the hit type. This is used to set damage done to vehicles in vehicle XMLs -->
+				<param name="ammo_type" value="Arrow" /> <!-- Type of bullet the weapon will fire -->
+				<param name="rate" value="700" /> <!-- Rate of fire for the weapon (bullets fired per minute) -->
+				<param name="damage" value="500" GAME="SP"/> <!-- Damage this weapon will do by default -->
+				<param name="secondary_damage" value="15" /> <!-- Allow additional damage from AI to player -->
+				<param name="ai_vs_player_damage" value="180"/> <!-- How much additional damage to apply from secondary_damage function -->
+				<param name="bullet_chamber" value="1" /> <!-- Indicates whether the weapon has a bullet in the bullet chamber after reload (basically an extra bullet) -->
+				<param name="clip_size" value="40" /> <!-- Maximum amount of bullets a magazine for this weapon can carry -->
+				<param name="lowAmmoWarningFraction" value="0.26"/>
+				<param name="fillAmmoReloadFraction" value="0.60" />
+				<param name="endReloadFraction" value="0.90" />
+				<param name="helper_tp" value="MASTER_CON" />
+				<param name="damage_drop_per_meter" value="4.0" GAME="SP"/> <!-- Amount of damage decrease per meter of projectile travel -->
+				<param name="damage_drop_min_distance" value="50" GAME="SP"/> <!-- Minimum distance the projectile has to travel before initiating damage drop calculations -->
+				<param name="damage_drop_min_damage" value="70" GAME="SP"/>
+				<param name="point_blank_amount" value="3" GAME="SP"/>
+				<param name="point_blank_distance" value="1" GAME="SP"/>
+				<param name="point_blank_falloff_distance" value="2" GAME="SP"/>
+				<param name="knocks_target" value="0"/>
+				<param name="min_damage_for_knockDown" value="0"/>
+				<param name="min_damage_for_knockDown_leg" value="10"/>
+				<param name="holdbreath_ffeedback_damp" value="0.75" GAME="SP"/>
+				<param name="holdbreath_ffeedback_damp" value="1.0" GAME="MP"/>
+				<param name="holdbreath_fire_anim_damp" value="0.75" GAME="SP"/>
+				<param name="holdbreath_fire_anim_damp" value="1.0" GAME="MP"/>
+				<param name="ironsight_fire_anim_damp" value="0.75" GAME="SP"/>
+				<param name="ironsight_fire_anim_damp" value="0.1" GAME="MP"/>
+			</fire>
+			<proceduralrecoil>
+				<param name="duration" value="0.4" />
+				<param name="strength" value="0.06" />
+				<param name="kickIn" value="0.3" />
+				<param name="dampStrength" value="7.5f" />
+				<param name="fireRecoilTime" value="0.05f" />
+				<param name="fireRecoilStrengthFirst" value="3.0f" />
+				<param name="fireRecoilStrength" value="0.5f" />
+				<param name="angleRecoilStrength" value="0.4f" />
+				<param name="randomness" value="0.1f" />
+			</proceduralrecoil>
+		</firemode>
+
+		<firemode name="Single" type="Single">
+			<tracer>
+				<!--<param name="geometryFP" value="Objects/effects/tracer_standard_new.cgf" />
+				<param name="geometry" value="Objects/effects/tracer_standard_new.cgf" />
+				<param name="effectFP" value="" />
+				<param name="effect" value="" />-->
+				<param name="speedFP" value="400" />
+				<param name="speed" value="400" />
+				<param name="frequency" value="1" />
+				<param name="helper_fp" value="weapon_term" />
+				<param name="helper_tp" value="weapon_term" />
+				<param name="thicknessFP" value="5" />
+				<param name="thickness" value="5" />
+			</tracer>
+			<fire>
+				<param name="damage" value="500" GAME="SP"/>
+				<param name="rate" value="400" GAME="SP"/>
+				<param name="damage_drop_min_distance" value="100" GAME="SP"/>
+				<param name="damage_drop_min_damage" value="24" GAME="MP"/>
+			</fire>
+			<stats_changes stat_accuracy="1" stat_mobility="0" stat_damage="1" stat_rate_of_fire="-2" GAME="SP"/>  <!-- Alter stats defined at the beginning of the script, based on firemode -->
+			<stats_changes stat_accuracy="1" stat_mobility="0" stat_damage="1" stat_rate_of_fire="-2" GAME="MP"/>
+		</firemode>
+
+		<firemode name="melee" type="Melee">
+			<melee>
+				<param name="helper" value="collision" />
+				<param name="offset" value="0.35" />
+				<param name="damage" value="300" GAME="SP"/>
+				<param name="slide_damage" value="300" GAME="SP"/>
+				<param name="damage_AI" value="250" />
+				<param name="impulse" value="100"/>
+				<param name="impulse_actor" value="300" />
+				<param name="impulse_AI_to_Player" value="600"/>
+				<param name="impulse_vehicle" value="400"/>
+				<param name="impulse_up_percentage" value="0.4" GAME="SP"/>
+				<param name="range" value="1.8" />
+				<param name="delay" value="0.1" GAME="SP"/>
+				<param name="aiDelay" value="0.45" />
+				<param name="duration" value="0.3" GAME="SP"/>
+				<param name="knockdown_chance" value="20" />
+				<param name="use_melee_weapon_delay" value="0.0" />
+				<PowerAttack>
+					<param name="duration" value="0.6" GAME="SP"/>
+				</PowerAttack>
+				<CloseAttack>
+					<param name="delay" value="0.25" />
+					<param name="duration" value="0.87" />
+					<param name="range" value="1.5" />
+					<param name="impulse_AI_to_Player" value="300"/>
+				</CloseAttack>
+			</melee>
+		</firemode>
+	</firemodes>
+
+	<!-- Zoom modes: -->
+	<!-- As you can see, the structure is pretty similar to the fire mode ones. If you don't need zoom modes, skip this section -->
+	<zoommodes>
+		<zoommode name="ironsight" type="IronSight">
+			<stereo>
+				<param name="eyeDistance" value="0.002" />
+				<param name="convergenceDistance" value="0.01" />
+			</stereo>
+			<aimLookParams>
+				<param name="fp_offset" value="-0.0535, -0.08, -0.012" />
+				<param name="fp_rot_offset" value="0.0, 0.0, 0.0" />
+				<param name="zoom_transition_angle" value="28.647889757" />
+				<param name="look_offset" value="0.5,0.25" />
+				<param name="horiz_look_rot" value="0.0,-1.0,-1.5" />
+				<param name="vert_look_rot" value="0.1,0.0,0.0" />
+				<param name="strafe_offset" value="0.2, 0.2, 0.1" />
+				<param name="side_strafe_rot" value="0.0, 0.5, 0.0" />
+				<param name="front_strafe_rot" value="0.5, 0.0, 0.0" />
+				<param name="idle_speed" value="0.5" />
+				<param name="idle_magnitude" value="0.2" />
+				<param name="run_speed" value="0.75" />
+				<param name="run_magnitude" value="0.2" />
+			</aimLookParams>
+			<zoom>
+				<param name="suffix" value="iron" />
+				<param name="suffixAG" value="_iron" />
+				<param name="dof" value="1" />
+				<param name="dof_mask" value="textures/weapons/ironzoom_blurmask.dds" />
+				<param name="dof_focusMin" value="1.0" />
+				<param name="dof_focusMax" value="100.0" />
+				<param name="dof_focusLimit" value="300.0" />
+				<param name="dof_shoulderMinZ" value="0.15" />
+				<param name="dof_shoulderMinZScale" value="4.0" />
+				<param name="dof_minZ" value="0.25" />
+				<param name="dof_minZScale" value="0.6" />
+				<param name="zoom_in_time" value="0.25" GAME="SP"/>
+				<param name="zoom_in_time" value="0.15" GAME="MP"/>
+				<param name="zoom_out_time" value="0.25" GAME="SP"/>
+				<param name="zoom_out_time" value="0.15" GAME="MP"/>
+				<param name="zoom_out_delay" value="0.15" GAME="SP"/>
+				<param name="scope_mode" value="1" GAME="MP"/>
+				<param name="scope_nearFov" value="38" GAME="MP"/>
+				<param name="armor_bonus_zoom" value="1" GAME="SP"/>
+				<param name="muzzle_flash_scale" value="0.55"/>
+				<param name="shoulderMovementAnimFactor" value="0.8" GAME="SP"/>
+				<param name="ironsightMovementAnimFactor" value="0.7" GAME="SP"/>
+				<stages>
+					<stage value="1.4" /> <!-- When using this zoom mode, the camera will zoom 1.4x the standard amount -->
+				</stages>
+			</zoom>
+			<!-- Adding some zoom sway to the zoom mode. -->
+			<zoomSway>
+				<param name="maxX" value="0.006" GAME="SP"/>
+				<param name="maxX" value="0.001" GAME="MP"/>
+				<param name="maxY" value="0.008" GAME="SP"/>
+				<param name="maxY" value="0.002" GAME="MP"/>
+				<param name="stabilizeTime" value="3.0"/>
+				<param name="minScale" value="0.5"/>
+				<param name="crouchScale" value="0.25"/> <!-- We can scale it for different stances, reducing it while crouched  -->
+				<param name="holdBreathScale" value="0.1" GAME="SP"/>
+				<param name="holdBreathTime" value="0.5" GAME="SP"/>
+			</zoomSway>
+		</zoommode>
+	</zoommodes>
+</item>

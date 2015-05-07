@@ -1,0 +1,514 @@
+<profile version="75">
+	<!-- platforms - Used to define which keys to map for each action based on the platform that is in use -->
+	<platforms>
+		<PC keyboard="1" xboxpad="1" ps3pad="1" wiipad="0"/>
+		<Xbox keyboard="1" xboxpad="1" ps3pad="0" wiipad="0"/>
+		<PS3 keyboard="1" xboxpad="0" ps3pad="1" wiipad="0"/>
+		<WiiU keyboard="1" xboxpad="0" ps3pad="0" wiipad="1" />
+	</platforms>
+
+	<actionmap name="multiplayer">
+		<action name="menu_open_customizeweapon" >
+			<keyboard input="x" onPress="1" />
+			<xboxpad input="xi_back" onRelease="1" />
+			<ps3pad input="pad_touch" onRelease="1" />
+			<wiipad input="wii_pad_select" onRelease="1" />
+		</action>
+		<action name="menu_close_customizeweapon" >
+			<keyboard input="x" onPress="1" />
+			<xboxpad input="xi_back" onPress="1" onRelease="1" />
+			<ps3pad input="pad_touch" onPress="1" onRelease="1" />
+			<wiipad input="wii_pad_select" onPress="1" onRelease="1" />
+		</action>
+	</actionmap>
+
+	<actionmap name="singleplayer">
+		<action name="menu_open_customizeweapon" >
+			<keyboard input="x" onPress="1" />
+			<xboxpad input="xi_back" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="-1" />
+			<ps3pad input="pad_touch" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="-1" />
+			<wiipad input="wii_pad_select" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="-1" />
+		</action>
+		<action name="menu_close_customizeweapon" >
+			<keyboard input="x" onPress="1" />
+			<xboxpad input="xi_back" onRelease="1" />
+			<ps3pad input="pad_touch" onRelease="1" />
+			<wiipad input="wii_pad_select" onRelease="1" />
+		</action>
+	</actionmap>
+
+	<actionmap name="debug">
+		<action consoleCmd="1" keyboard="f5" name="save" onPress="1" />
+		<action consoleCmd="1" keyboard="f8" name="loadLastSave" onPress="1" />
+		<action name="flymode" onPress="1" noModifiers="1" keyboard="f3" />
+		<action name="godmode" onPress="1" noModifiers="1" keyboard="f4" />
+		<action name="toggleaidebugdraw" onPress="1" noModifiers="1" keyboard="f11" />
+		<action name="ai_DebugCenterViewAgent" onPress="1" noModifiers="1" keyboard="np_divide" />
+		<action name="togglepdrawhelpers" onPress="1" noModifiers="1" keyboard="f10" />
+		<action name="toggledmode" onPress="1" noModifiers="1" keyboard="backspace" />
+		<action name="debug" onPress="1" keyboard="7" />
+		<action name="thirdperson" onPress="1" noModifiers="1" keyboard="f1" />
+		<action name="debug_ag_step" onPress="1" keyboard="backslash" />
+		<action name="tweakup" onPress="1" onRelease="1" keyboard="up" xboxpad="xi_dpad_up" ps3pad="pad_up" wiipad="wii_pad_up"/>
+		<action name="tweakdown" onPress="1" onRelease="1" keyboard="down" xboxpad="xi_dpad_down" ps3pad="pad_down" wiipad="wii_pad_down"/>
+		<action name="tweakleft" onPress="1" onRelease="1" keyboard="left" xboxpad="xi_dpad_left" ps3pad="pad_left" wiipad="wii_pad_left"/>
+		<action name="tweakright" onPress="1" onRelease="1" keyboard="right" xboxpad="xi_dpad_right" ps3pad="pad_right" wiipad="wii_pad_right"/>
+		<action name="tweakincrement" onPress="1" onRelease="1" keyboard="np_add" xboxpad="xi_shoulderr" ps3pad="pad_circle" wiipad="wii_pad_r1"/>
+		<action name="tweakdecrement" onPress="1" onRelease="1" keyboard="np_subtract" xboxpad="xi_shoulderl" ps3pad="pad_cross" wiipad="wii_pad_l1"/>
+		<action name="record_bookmark" onPress="1" notFilterable="1" keyboard="np_5" />
+		<action name="mannequin_debugai" onPress="1" noModifiers="1" keyboard="np_multiply" />
+	</actionmap>
+
+	<actionmap name="flycam">
+		<action name="flycam_movey" xboxpad="xi_thumbly" ps3pad="pad_stickly" wiipad="wii_pad_stickly"/>
+		<action name="flycam_movex" xboxpad="xi_thumblx" ps3pad="pad_sticklx" wiipad="wii_pad_sticklx"/>
+		<action name="flycam_rotateyaw" xboxpad="xi_thumbrx" ps3pad="pad_stickrx" wiipad="wii_pad_stickrx"/>
+		<action name="flycam_rotatepitch" xboxpad="xi_thumbry" ps3pad="pad_stickry" wiipad="wii_pad_stickry"/>
+		<action name="flycam_moveup" onPress="1" onRelease="1" xboxpad="xi_triggerr" ps3pad="pad_r2" wiipad="wii_pad_r2"/>
+		<action name="flycam_movedown" onPress="1" onRelease="1" xboxpad="xi_triggerl" ps3pad="pad_l2" wiipad="wii_pad_l2"/>
+		<action name="flycam_speedup" onPress="1" xboxpad="xi_dpad_up" ps3pad="pad_up" wiipad="wii_pad_up"/>
+		<action name="flycam_speeddown" onPress="1" xboxpad="xi_dpad_down" ps3pad="pad_down" wiipad="wii_pad_down"/>
+		<action name="flycam_turbo" onPress="1" onRelease="1" keyboard="space" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+		<action name="flycam_setpoint" onPress="1" xboxpad="xi_shoulderl" ps3pad="pad_l1" wiipad="wii_pad_l1"/>
+		<action name="flycam_play" onPress="1" xboxpad="xi_b" ps3pad="pad_circle" wiipad="wii_pad_a"/>
+		<action name="flycam_clear" onPress="1" xboxpad="xi_y" ps3pad="pad_triangle" wiipad="wii_pad_x"/>
+	</actionmap>
+
+	<!-- default - Default action key mappings -->
+	<actionmap name="default">
+		<action name="skip_cutscene" onPress="1" noModifiers="1" keyboard="enter" xboxpad="xi_y" ps3pad="pad_triangle" wiipad="wii_pad_x"/>
+		<action name="skip_loadingscreen" onPress="1" noModifiers="1" keyboard="enter" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+		<action name="skip_loadingscreen_switched" onPress="1" noModifiers="1" keyboard="enter" xboxpad="xi_b" ps3pad="pad_circle" wiipad="wii_pad_a"/>
+		<action name="xi_disconnect" onPress="1" onRelease="1" keyboard="disconnect" />
+		<action name="objectives" onPress="1" onRelease="1" noModifiers="0" keyboard="tab" />
+
+		<action name="hud_mousex" keyboard="maxis_x" xboxpad="xi_thumbrx" ps3pad="pad_stickrx" wiipad="wii_stickrx"/>
+		<action name="hud_mousey" keyboard="maxis_y" xboxpad="xi_thumbry" ps3pad="pad_stickry" wiipad="wii_stickry"/>
+		<action name="hud_mouseclick" onPress="1" onRelease="1" keyboard="mouse1" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+
+		<action name="voice_chat_talk" onPress="1" onRelease="1" keyboard="lalt" />
+		<action name="hud_openchat" onPress="1" keyboard="y" />
+		<action name="hud_openteamchat" onPress="1" keyboard="u" />
+
+		<action name="spectate_gen_spawn" onPress="1" keyboard="space" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+		<action name="spectate_gen_nextmode" onPress="1" keyboard="space" xboxpad="xi_shoulderr" ps3pad="pad_r1" wiipad="wii_pad_r1"/>
+		<action name="spectate_gen_prevmode" onPress="1" xboxpad="xi_shoulderl" ps3pad="pad_l1" wiipad="wii_pad_l1"/>
+		<!--<action name="spectate_gen_skipdeathcam" onPress="1" keyboard="space" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/> -->
+		<action name="spectate_gen_nextcamera" onPress="1" keyboard="f" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+		<action name="spectate_3rdperson_nextteammate" onPress="1" keyboard="d" xboxpad="xi_dpad_right" ps3pad="pad_right" wiipad="wii_pad_right"/>
+		<action name="spectate_3rdperson_prevteammate" onPress="1" keyboard="a" xboxpad="xi_dpad_left" ps3pad="pad_left" wiipad="wii_pad_left"/>
+		<action name="spectate_3rdperson_changeteammate_xi" xboxpad="xi_thumblx" ps3pad="pad_sticklx" wiipad="wii_pad_sticklx"/>
+		<action name="spectate_cctv_nextcam" onPress="1" keyboard="d" xboxpad="xi_dpad_right" ps3pad="pad_right" wiipad="wii_pad_right"/>
+		<action name="spectate_cctv_prevcam" onPress="1" keyboard="a" xboxpad="xi_dpad_left" ps3pad="pad_left" wiipad="wii_pad_left"/>
+		<action name="spectate_cctv_changecam_xi" xboxpad="xi_thumblx" ps3pad="pad_sticklx" wiipad="wii_pad_sticklx"/>
+
+		<!-- UI keys -->
+		<action name="ui_toggle_pause" onPress="1" xboxpad="xi_start" ps3pad="pad_start" wiipad="wii_pad_start"/>
+		<action name="ui_start_pause" onPress="1" keyboard="escape"/>
+		<action name="ui_click" onPress="1" onRelease="1" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b">
+			<keyboard>
+				<inputdata input="enter"/>
+				<inputdata input="np_enter"/>
+			</keyboard>
+		</action>
+		<action name="ui_up" onPress="1" onHold="1" holdTriggerDelay="0.15" holdRepeatDelay="0.15" >
+			<keyboard>
+				<inputdata input="up" />
+			</keyboard>
+			<xboxpad>
+				<inputdata input="xi_dpad_up" />
+				<inputdata input="xi_thumbly" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="xi_thumbry" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</xboxpad>
+			<ps3pad>
+				<inputdata input="pad_up"/>
+				<inputdata input="pad_stickly" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="pad_stickry" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</ps3pad>
+			<wiipad>
+				<inputdata input="wii_pad_up"/>
+				<inputdata input="wii_pad_stickly" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="wii_pad_stickry" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</wiipad>
+		</action>
+		<action name="ui_down" onPress="1" onHold="1" holdTriggerDelay="0.15" holdRepeatDelay="0.15" >
+			<keyboard>
+				<inputdata input="down" />
+				<inputdata input="tab" />
+			</keyboard>
+			<xboxpad>
+				<inputdata input="xi_dpad_down" />
+				<inputdata input="xi_thumbly" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="xi_thumbry" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</xboxpad>
+			<ps3pad>
+				<inputdata input="pad_down"/>
+				<inputdata input="pad_stickly" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="pad_stickry" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</ps3pad>
+			<wiipad>
+				<inputdata input="wii_pad_down"/>
+				<inputdata input="wii_pad_stickly" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="wii_pad_stickry" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</wiipad>
+		</action>
+		<action name="ui_left" onPress="1" onHold="1" holdTriggerDelay="0.15" holdRepeatDelay="0.15" >
+			<keyboard>
+				<inputdata input="left" />
+			</keyboard>
+			<xboxpad>
+				<inputdata input="xi_dpad_left" />
+				<inputdata input="xi_thumblx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="xi_thumbrx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</xboxpad>
+			<ps3pad>
+				<inputdata input="pad_left"/>
+				<inputdata input="pad_sticklx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="pad_stickrx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</ps3pad>
+			<wiipad>
+				<inputdata input="wii_pad_left"/>
+				<inputdata input="wii_pad_sticklx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="wii_pad_stickrx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</wiipad>
+		</action>
+		<action name="ui_right" onPress="1" onHold="1" holdTriggerDelay="0.15" holdRepeatDelay="0.15" >
+			<keyboard>
+				<inputdata input="right" />
+			</keyboard>
+			<xboxpad>
+				<inputdata input="xi_dpad_right" />
+				<inputdata input="xi_thumblx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="xi_thumbrx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</xboxpad>
+			<ps3pad>
+				<inputdata input="pad_right"/>
+				<inputdata input="pad_sticklx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="pad_stickrx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</ps3pad>
+			<wiipad>
+				<inputdata input="wii_pad_right"/>
+				<inputdata input="wii_pad_sticklx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="wii_pad_stickrx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</wiipad>
+		</action>
+		<action name="ui_back" keyboard="escape" onPress="1" onRelease="1" xboxpad="xi_b" ps3pad="pad_circle" wiipad="wii_pad_a"/>
+		<action name="ui_confirm" onPress="1" onRelease="1" xboxpad="xi_y" ps3pad="pad_triangle" wiipad="wii_pad_x"/>
+		<action name="ui_reset" onPress="1" onRelease="1" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+		<action name="ui_skip_video" onPress="1" onRelease="1" keyboard="space" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+	</actionmap>
+
+	<actionmap name="player">
+		<action name="use" onRelease="1" >
+			<keyboard input="f" onPress="1" />
+			<xboxpad input="xi_x" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="-1" />
+			<ps3pad input="pad_square" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="-1" />
+		</action>
+		<!--Sovereign actions-->
+		<action name="craft"  onRelease="1"  keyboard="c"/>
+		<action name="inventory"  onRelease="1"  keyboard="i"/>
+		<action name="tringle"  onRelease="1"  keyboard="tab"/>
+		<action name="MoveTo" onRelease="1" keyboard="p"/>
+		<action name="GetNPC" onRelease="1" keyboard="o"/>
+		<action name="start_dialog" onRelease="1" keyboard="f"/>
+		<action name="init_fire" onPress="1" keyboard="mouse3"/>
+		<action name="cancel_init_fire" onHold="1" keyboard="mouse3"/>
+		<action name="BuildMode" onRelease="1" keyboard="b"/>
+		<action name="SelectBuildHelper" onRelease="1" keyboard="mouse1"/>
+		<action name="CameraRollIn" onPress="1" keyboard="mwheel_up"/>
+		<action name="CameraRollOut" onPress="1" keyboard="mwheel_down"/>
+
+		<action name="hold" onHold="1" keyboard="mouse1"/>
+		<action name="skip_dialog" onPress="1" keyboard="space"/>
+				
+		<action name="stance_verical" onPress="1" keyboard="q"/>
+		<action name="stance_horizontal" onPress="1" keyboard="e"/>
+		<!--<action name="lookAt" onPress="1" onHold="1" keyboard="lalt"/>-->
+
+		<action name="attack1" onPress="1" onRelease="1" onHold="1" keyboard="mouse1" xboxpad="xi_triggerr_btn" ps3pad="pad_r2" wiipad="wii_pad_r2"/>
+		<action name="attack2" onPress="1" onRelease="1" onHold="1" keyboard="mouse2" />		
+		<action name="attack3" onPress="1" onRelease="1" onHold="1" keyboard="mouse3" />
+		<action name="defensive_stance" onPress="1" onRelease="1" onHold="1" keyboard="lalt"/>
+		<action name="deselect" onPress="1" keyboard="x"/>
+
+
+		<action name="zoom" onPress="1" onRelease="1" keyboard="mouse2"/>
+		<action name="xi_zoom" onPress="1" onRelease="1" onHold="1" xboxpad="xi_triggerl_btn" ps3pad="pad_l2" wiipad="wii_pad_l2"/>
+		<action name="moveleft" onPress="1" onRelease="1" retriggerable="1" keyboard="a"/>
+		<action name="moveright" onPress="1" onRelease="1" retriggerable="1" keyboard="d"/>
+		<action name="moveforward" onPress="1" onRelease="1" retriggerable="1" keyboard="w"/>
+		<action name="moveback" onPress="1" onRelease="1" retriggerable="1" keyboard="s"/>
+		<action name="prone" onPress="1" onHold="1" keyboard="z"/>
+		<action name="jump" onPress="1" onRelease="1" keyboard="space" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+		<action name="crouch" onPress="1" onRelease="1" retriggerable="1" keyboard="lctrl" xboxpad="xi_b" ps3pad="pad_circle" wiipad="wii_pad_a"/>
+		<action name="sprint" onPress="1" onRelease="1" retriggerable="1" keyboard="lshift" xboxpad="xi_thumbl" ps3pad="pad_l3" wiipad="wii_pad_l3"/>
+		<action name="respawn" onPress="1" onRelease="1" keyboard="mouse1" xboxpad="xi_triggerr_btn" ps3pad="pad_r2" wiipad="wii_pad_r2"/>
+		<action name="special" onPress="1" onRelease="1" keyboard="v" xboxpad="xi_thumbr" ps3pad="pad_r3" wiipad="wii_pad_r3"/>
+		<action name="leanleft" onPress="1" onRelease="1" onHold="1" keyboard="q"/>
+		<action name="leanright" onPress="1" onRelease="1" onHold="1" keyboard="e"/>
+		<action name="reload" onPress="1" onRelease="1" keyboard="r" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+		<action name="drop" onPress="1" onRelease="1" keyboard="j"/>
+		<action name="toggle_weapon" onPress="1" onRelease="1" keyboard="1" xboxpad="xi_y" ps3pad="pad_triangle" wiipad="wii_pad_x"/>
+		<action name="nextitem" onPress="1" keyboard="mwheel_up"/>
+		<action name="previtem" onPress="1" keyboard="mwheel_down"/>
+
+		<action name="weapon_change_firemode" onPress="1">
+			<keyboard input="2" />
+			<xboxpad input="xi_dpad_left" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="xi_dpad_up|xi_dpad_down" inputBlockTime="0.12" />
+			<ps3pad input="pad_left" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="pad_up|pad_down" inputBlockTime="0.12" />
+			<wiipad input="wii_pad_left" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="wii_pad_up|wii_pad_down" inputBlockTime="0.12" />
+		</action>
+		<action name="toggle_flashlight" onPress="1">
+			<keyboard input="l" />
+			<xboxpad input="xi_dpad_down" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="xi_dpad_left|xi_dpad_right" inputBlockTime="0.12" />
+			<ps3pad input="pad_down" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="pad_left|pad_right" inputBlockTime="0.12" />
+			<wiipad input="wii_pad_down" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="wii_pad_left|wii_pad_right" inputBlockTime="0.12" />
+		</action>
+		<action name="toggle_explosive" onPress="1">
+			<keyboard input="4" />
+			<xboxpad input="xi_dpad_right" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="xi_dpad_up|xi_dpad_down" inputBlockTime="0.12" />
+			<ps3pad input="pad_right" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="pad_up|pad_down" inputBlockTime="0.12" />
+		</action>
+		<action name="toggle_special" onPress="1">
+			<keyboard input="3" />
+			<xboxpad input="xi_dpad_up" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="xi_dpad_right|xi_dpad_left" inputBlockTime="0.12" />
+			<ps3pad input="pad_up" pressDelayPriority="1" pressTriggerDelay="0.15" pressTriggerDelayRepeatOverride="0.0" inputsToBlock="pad_right|pad_left" inputBlockTime="0.12" />
+		</action>
+
+		<action name="handgrenade" onPress="1" keyboard="g" /> <!-- equip grenade -->
+		<action name="xi_grenade" onPress="1" onRelease="1" xboxpad="xi_shoulderr" ps3pad="pad_r2" wiipad="wii_pad_r1"/>
+
+		<action name="rotateyaw" keyboard="maxis_x" />
+		<action name="rotatepitch" keyboard="maxis_y" />
+
+		<action name="hmd_rotateyaw" keyboard="HMD_Yaw" />
+		<action name="hmd_rotatepitch" keyboard="HMD_Pitch" />
+		<action name="hmd_rotateroll" keyboard="HMD_Roll" />
+
+		<action name="zoom_toggle" onPress="1" keyboard="v" xboxpad="xi_thumbr" ps3pad="pad_r3" wiipad="wii_pad_r3"/>
+		<action name="zoom_in" onPress="1" keyboard="mwheel_up" />
+		<action name="zoom_out" onPress="1" keyboard="mwheel_down" />
+
+		<action name="heavyweaponremove" onPress="1" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+
+		<!-- Actor 2 basic movement -->
+		<action name="xi_movey" xboxpad="xi_thumbly" ps3pad="pad_stickly" wiipad="wii_pad_stickly"/>
+		<action name="xi_movex" xboxpad="xi_thumblx" ps3pad="pad_sticklx" wiipad="wii_pad_sticklx"/>
+		<action name="xi_rotateyaw" xboxpad="xi_thumbrx" ps3pad="pad_stickrx" wiipad="wii_pad_stickrx"/>
+		<action name="xi_rotatepitch" xboxpad="xi_thumbry" ps3pad="pad_stickry" wiipad="wii_pad_stickry"/>
+		<!-- ~Actor 2 basic movement -->
+	</actionmap>
+
+	<actionmap name="player_mp">
+		<action name="grenade" onPress="1" onRelease="1" keyboard="h" /> <!-- quick throw only in MP -->
+	</actionmap>
+
+	<actionmap name="player_sp">
+	</actionmap>
+
+	<actionmap name="vehicle_general">
+		<action name="v_exit" onPress="1" onRelease="1" onHold="1" keyboard="f" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+		<action name="v_horn" onPress="1" onRelease="1" keyboard="h" xboxpad="xi_thumbr" ps3pad="pad_r3" wiipad="wii_pad_r3"/>
+		<action name="v_lights" onPress="1" onRelease="1" keyboard="l" xboxpad="xi_dpad_down" ps3pad="pad_down" wiipad="wii_pad_down"/>
+		<action name="v_changeseat" onPress="1" keyboard="c" xboxpad="xi_dpad_up" ps3pad="pad_up" wiipad="wii_pad_up"/>
+		<action name="v_changeview" onPress="1" keyboard="f1" xboxpad="xi_back" ps3pad="pad_touch" wiipad="wii_pad_select"/>
+		<action name="v_zoom_in" onPress="1" keyboard="mwheel_up" />
+		<action name="v_zoom_out" onPress="1" keyboard="mwheel_down" />
+		<action name="v_rotateyaw" keyboard="maxis_x" />
+		<action name="v_rotatepitch" keyboard="maxis_y" />
+	</actionmap>
+
+	<actionmap name="vehicle_driver">
+		<action name="v_turnleft" onPress="1" onRelease="1" retriggerable="1" keyboard="a" />
+		<action name="v_turnright" onPress="1" onRelease="1" retriggerable="1" keyboard="d" />
+		<action name="v_moveforward" onPress="1" onRelease="1" retriggerable="1" keyboard="w" />
+		<action name="v_moveback" onPress="1" onRelease="1" retriggerable="1" keyboard="s" />
+		<action name="v_brake" onPress="1" onRelease="1" keyboard="space" xboxpad="xi_b" ps3pad="pad_circle" wiipad="wii_pad_a"/>
+		<action name="v_boost" onPress="1" onRelease="1" keyboard="lshift" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+		<action name="v_rollleft" onPress="1" onRelease="1" keyboard="q" />
+		<action name="v_rollright" onPress="1" onRelease="1" keyboard="t" />
+		<action name="xi_v_accelerate" onPress="1" onRelease="1" xboxpad="xi_triggerr_btn" ps3pad="pad_r2" wiipad="wii_pad_r2"/>
+		<action name="xi_v_deccelerate" onPress="1" onRelease="1" xboxpad="xi_triggerl_btn" ps3pad="pad_l2" wiipad="wii_pad_l2"/>
+		<action name="xi_v_attack1" onPress="1" onRelease="1" keyboard="mouse1" xboxpad="xi_shoulderr" ps3pad="pad_r1" wiipad="wii_pad_r1"/>
+		<action name="xi_v_attack2" onPress="1" onRelease="1" keyboard="mouse2" xboxpad="xi_shoulderl" ps3pad="pad_l1" wiipad="wii_pad_l1"/>
+		<action name="xi_v_movex" xboxpad="xi_thumblx" ps3pad="pad_sticklx" wiipad="wii_pad_sticklx"/>
+		<action name="xi_rotateyaw" xboxpad="xi_thumbrx" ps3pad="pad_stickrx" wiipad="wii_pad_stickrx"/> <!-- Controls to aim tank turret as driver -->
+		<action name="xi_rotatepitch" xboxpad="xi_thumbry" ps3pad="pad_stickry" wiipad="wii_pad_stickry"/> <!-- Controls to aim tank turret as driver -->
+		<action name="xi_v_rotateyaw" xboxpad="xi_thumbrx" ps3pad="pad_stickrx" wiipad="wii_pad_stickrx"/> <!-- Controls to rotate camera in HMMWV -->
+		<action name="xi_v_rotatepitch" xboxpad="xi_thumbry" ps3pad="pad_stickry" wiipad="wii_pad_stickry"/> <!-- Controls to rotate camera in HMMWV -->
+	</actionmap>
+
+	<actionmap name="vehicle_gunner">
+		<action name="xi_v_attack1" onPress="1" onRelease="1" keyboard="mouse1" xboxpad="xi_triggerr_btn" ps3pad="pad_r1" wiipad="wii_pad_r1"/>
+		<action name="xi_v_attack2" onPress="1" onRelease="1" keyboard="mouse2" xboxpad="xi_triggerl_btn" ps3pad="pad_l1" wiipad="wii_pad_l1"/>
+		<action name="v_ripoff_weapon" onPress="1" onRelease="1" keyboard="v" xboxpad="xi_thumbr" ps3pad="pad_r3" wiipad="wii_pad_r3"/>
+	</actionmap>
+
+	<actionmap name="helicopter" version="22">
+		<action name="v_moveup" onPress="1" onRelease="1" retriggerable="1" keyboard="w" xboxpad="xi_triggerr" ps3pad="pad_r2" wiipad="wii_pad_r2"/>
+		<action name="v_movedown" onPress="1" onRelease="1" retriggerable="1" keyboard="s" xboxpad="xi_triggerl" ps3pad="pad_l2" wiipad="wii_pad_l2"/>
+		<action name="v_strafeleft" onPress="1" onRelease="1" keyboard="a" />
+		<action name="v_straferight" onPress="1" onRelease="1" keyboard="d" />
+		<action name="xi_v_movey" xboxpad="xi_thumbly" ps3pad="pad_stickly" wiipad="wii_pad_stickly"/>
+		<action name="xi_v_movex" xboxpad="xi_thumblx" ps3pad="pad_sticklx" wiipad="wii_pad_sticklx"/>
+		<action name="xi_v_rotateyaw" xboxpad="xi_thumbrx" ps3pad="pad_stickrx" wiipad="wii_pad_stickrx"/>
+	</actionmap>
+
+	<actionmap name="menu">
+		<!-- weapon customization -->
+		<action name="menu_toggle_barrel" onPress="1" keyboard="1" xboxpad="xi_y" ps3pad="pad_triangle" wiipad="wii_pad_x"/>
+		<action name="menu_toggle_bottom" onPress="1" keyboard="2" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+		<action name="menu_toggle_ammo" onPress="1" keyboard="3" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+		<action name="menu_toggle_scope" onPress="1" keyboard="4" xboxpad="xi_b" ps3pad="pad_circle" wiipad="wii_pad_a"/>
+
+		<!-- suit customization -->
+		<action name="menu_toggle_index_finger" onPress="1" onRelease="1" onHold="1" holdTriggerDelay="2.0" holdRepeatDelay="-1.0" keyboard="1" xboxpad="xi_y" ps3pad="pad_triangle" wiipad="wii_pad_x"/>
+		<action name="menu_toggle_middle_finger" onPress="1" onRelease="1" onHold="1" holdTriggerDelay="2.0" holdRepeatDelay="-1.0" keyboard="2" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+		<action name="menu_toggle_ring_finger" onPress="1" onRelease="1" onHold="1" holdTriggerDelay="2.0" holdRepeatDelay="-1.0" keyboard="3" xboxpad="xi_b" ps3pad="pad_circle" wiipad="wii_pad_a"/>
+
+		<action name="menu_assetpause" onPress="1" keyboard="p" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+		<action name="menu_assetzoom" onPress="1" keyboard="z" xboxpad="xi_triggerl_btn" ps3pad="pad_l2" wiipad="wii_pad_l2"/>
+
+		<action name="menu_delete" onPress="1" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y">
+			<keyboard>
+				<inputdata input="delete" />
+				<inputdata input="backspace" />
+			</keyboard>
+		</action>
+
+		<action name="menu_apply" onPress="1" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+		<action name="menu_default" onPress="1" xboxpad="xi_y" ps3pad="pad_triangle" wiipad="wii_pad_x"/>
+		<action name="menu_tab" onPress="1" keyboard="tab" />
+
+		<action name="menu_map_zoomout">
+			<keyboard onPress="1" input="mwheel_down" />
+			<xboxpad onPress="1" input="xi_triggerl_btn" />
+			<ps3pad onPress="1" input="pad_l1" />
+			<wiipad onPress="1" input="wii_pad_l1" />
+		</action>
+
+		<action name="menu_map_zoomin">
+			<keyboard onPress="1" input="mwheel_up" />
+			<xboxpad onRelease="1" input="xi_triggerl_btn" />
+			<ps3pad onRelease="1" input="pad_l1" />
+			<wiipad onRelease="1" input="wii_pad_l1" />
+		</action>
+
+		<!-- Note: If need to use partial same inputs as below while in menu, must be declared above to handle first -->
+		<!-- below gets sent to flash navigate function -->
+		<action name="menu_scrollup" onPress="1" keyboard="mwheel_up" />
+		<action name="menu_scrolldown" onPress="1" keyboard="mwheel_down" />
+		<action name="menu_fcommand1" onPress="1" keyboard="f1" />
+		<action name="menu_fcommand2" onPress="1" keyboard="f2" />
+		<action name="menu_switchtab_left" onPress="1" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="0.15" keyboard="pgup" xboxpad="xi_shoulderl" ps3pad="pad_l2" wiipad="wii_pad_l2"/>
+		<action name="menu_switchtab_right" onPress="1" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="0.15" keyboard="pgdn" xboxpad="xi_shoulderr" ps3pad="pad_r2" wiipad="wii_pad_r2"/>
+
+		<action name="menu_up" onPress="1" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="0.15" >
+			<keyboard>
+				<inputdata input="up" />
+			</keyboard>
+			<xboxpad>
+				<inputdata input="xi_dpad_up" />
+				<inputdata input="xi_thumbly" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</xboxpad>
+			<ps3pad>
+				<inputdata input="pad_up"/>
+				<inputdata input="pad_stickly" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</ps3pad>
+			<wiipad>
+				<inputdata input="wii_pad_up" />
+				<inputdata input="wii_pad_stickly" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</wiipad>
+		</action>
+
+		<action name="menu_down" onPress="1" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="0.15" >
+			<keyboard>
+				<inputdata input="down" />
+			</keyboard>
+			<xboxpad>
+				<inputdata input="xi_dpad_down" />
+				<inputdata input="xi_thumbly" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="xi_thumbry" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</xboxpad>
+			<ps3pad>
+				<inputdata input="pad_down"/>
+				<inputdata input="pad_stickly" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="pad_stickry" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</ps3pad>
+			<wiipad>
+				<inputdata input="wii_pad_down" />
+				<inputdata input="wii_pad_stickly" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="wii_pad_stickry" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</wiipad>
+		</action>
+
+		<action name="menu_left" onPress="1" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="0.15" >
+			<keyboard>
+				<inputdata input="left" />
+			</keyboard>
+			<xboxpad>
+				<inputdata input="xi_dpad_left" />
+				<inputdata input="xi_thumblx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="xi_thumbrx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</xboxpad>
+			<ps3pad>
+				<inputdata input="pad_left"/>
+				<inputdata input="pad_sticklx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="pad_stickrx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</ps3pad>
+			<wiipad>
+				<inputdata input="wii_pad_left"/>
+				<inputdata input="wii_pad_sticklx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+				<inputdata input="wii_pad_stickrx" useAnalogCompare="1" analogCompareVal="-0.5" analogCompareOp="LESSTHAN" />
+			</wiipad>
+		</action>
+
+		<action name="menu_right" onPress="1" onHold="1" holdTriggerDelay="0.3" holdRepeatDelay="0.15" >
+			<keyboard>
+				<inputdata input="right" />
+			</keyboard>
+			<xboxpad>
+				<inputdata input="xi_dpad_right" />
+				<inputdata input="xi_thumblx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="xi_thumbrx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</xboxpad>
+			<ps3pad>
+				<inputdata input="pad_right"/>
+				<inputdata input="pad_sticklx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="pad_stickrx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</ps3pad>
+			<wiipad>
+				<inputdata input="wii_pad_right"/>
+				<inputdata input="wii_pad_sticklx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+				<inputdata input="wii_pad_stickrx" useAnalogCompare="1" analogCompareVal="0.5" analogCompareOp="GREATERTHAN" />
+			</wiipad>
+		</action>
+
+		<action name="menu_confirm" onPress="1" keyboard="enter" xboxpad="xi_a" ps3pad="pad_cross" wiipad="wii_pad_b"/>
+		<!-- Need confirm 2 until new input changes are in -->
+		<action name="menu_confirm2" onPress="1" keyboard="np_enter" />
+		<action name="menu_back" onPress="1" xboxpad="xi_b" ps3pad="pad_circle" wiipad="wii_pad_a"/>
+		<action name="menu_exit" onPress="1" keyboard="escape" />
+		<action name="menu_back_select" onPress="1" xboxpad="xi_back" ps3pad="pad_touch" wiipad="wii_pad_select"/>
+		<action name="menu_friends_open" onPress="1" xboxpad="xi_back" ps3pad="pad_touch" wiipad="wii_pad_select"/>
+
+		<action name="menu_scoreboard_open">
+			<keyboard input="tab" onPress="1"/>
+			<xboxpad input="xi_back" onHold="1" holdTriggerDelay="0.5" holdRepeatDelay="-1.0"  />
+			<ps3pad input="pad_touch" onHold="1" holdTriggerDelay="0.5"  holdRepeatDelay="-1.0" />
+			<wiipad input="wii_pad_select" onHold="1" holdTriggerDelay="0.5"  holdRepeatDelay="-1.0" />
+		</action>
+
+		<action name="menu_scoreboard_close">
+			<keyboard input="tab" onRelease ="1" />
+			<xboxpad input="xi_back" onPress="1" onRelease="1" />
+			<ps3pad input="pad_touch" onPress="1" onRelease="1" />
+			<wiipad input="wii_pad_select" onPress="1" onRelease="1" />
+		</action>
+
+		<action name="menu_input_1" onPress="1" xboxpad="xi_y" ps3pad="pad_triangle" wiipad="wii_pad_x"/>
+		<action name="menu_input_2" onPress="1" xboxpad="xi_x" ps3pad="pad_square" wiipad="wii_pad_y"/>
+		<action name="mouse_wheel_infiction_close" onRelease="1" keyboard="mouse3" />
+	</actionmap>
+
+</profile>

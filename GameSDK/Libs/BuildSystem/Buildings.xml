@@ -1,0 +1,23 @@
+<buildings>
+	<building id="Book_house" 
+	name="Book House"
+	descr="The Book house is a basic culture building in each city. Owner provide books to people in city and make some money."
+	add="Simple make money and develop economy."
+	type="0" cost="300" wood="100" stone="35" iron="3"/>
+	
+	<building id="Trade_house"
+	name="Trade House"
+	descr="Trade House gives much money to our economy. People may buy some food, domestic and tools. One of important building in city."
+	add="Provide much money to capital. Everyday this value may from 100 to 500 coins."
+	type="0" cost="700" wood="200" stone="20" iron="2"/>
+
+	<building id="New_test_building" 
+	name="Test"
+	descr="Test"
+	add="Simple make money and develop economy."
+	type="0" cost="300" wood="100" stone="35" iron="3">
+		<providingResource type="0" count="10"/>
+		<providingResource type="1" count="15"/>
+	</building>
+	
+</buildings>

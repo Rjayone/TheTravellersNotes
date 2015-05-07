@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Durango">
+      <Configuration>Debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ORBIS">
+      <Configuration>Debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Performance|Durango">
+      <Configuration>Performance</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Performance|ORBIS">
+      <Configuration>Performance</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Performance|Win32">
+      <Configuration>Performance</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Performance|x64">
+      <Configuration>Performance</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|ORBIS">
+      <Configuration>Profile</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|Durango">
+      <Configuration>Profile</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|Win32">
+      <Configuration>Profile</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Durango">
+      <Configuration>Release</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ORBIS">
+      <Configuration>Release</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FD988D8E-914A-4463-A458-4568120E258C}</ProjectGuid>
+    <RootNamespace>CrySoundSystem</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(ProjectDir)..\..\Solutions\Common.Base.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(PropsFolder)Common.props" />
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Durango'">
+    <Link>
+      <AdditionalDependencies Condition="'$(BasePlatform)'=='Durango'">acphal.lib;uuid.lib;combase.lib;kernelx.lib;ws2_32.lib;SmartGlassInterop.lib;d3dcompiler.lib;dxguid.lib;xg_x.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)/Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ATLComponents.cpp" />
+    <ClCompile Include="ATLEntities.cpp" />
+    <ClCompile Include="AudioProxy.cpp" />
+    <ClCompile Include="AudioRequests.cpp" />
+    <ClCompile Include="AudioSystem.cpp" />
+    <ClCompile Include="AudioSystemImpl_NULL.cpp" />
+    <ClCompile Include="CrySoundSystem.cpp" />
+    <ClCompile Include="FileCacheManager.cpp" />
+    <ClCompile Include="SoundCVars.cpp" />
+    <ClCompile Include="ATL.cpp" />
+    <ClCompile Include="ATLAudioObject.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(BasePlatform)'!='ORBIS'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(BasePlatform)'=='ORBIS'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="stdafx.h">
+      <PrecompiledHeader Condition="'$(BasePlatform)'=='ORBIS'">Create</PrecompiledHeader>
+      <ExcludedFromBuild Condition="'$(BasePlatform)'!='ORBIS'">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ATL.h" />
+    <ClInclude Include="ATLAudioObject.h" />
+    <ClInclude Include="ATLComponents.h" />
+    <ClInclude Include="ATLEntities.h" />
+    <ClInclude Include="ATLUtils.h" />
+    <ClInclude Include="AudioInternalInterfaces.h" />
+    <ClInclude Include="AudioProxy.h" />
+    <ClInclude Include="AudioSystem.h" />
+    <ClInclude Include="AudioSystemImpl_NULL.h" />
+    <ClInclude Include="FileCacheManager.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SoundCVars.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CrySoundSystem.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

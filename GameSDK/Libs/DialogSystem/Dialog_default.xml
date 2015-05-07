@@ -1,0 +1,30 @@
+<Dialog><!--Тег диалога в котором само тело диалога-->
+	<Phrase id="1" message="Hello, Traveller!" sec="500" audio="Play_scar_fire_loop_fp"/> 		
+	<Phrase id="2" message="You look tired" sec="500" audio="Play_scar_fire_loop_fp"/>
+	<Phrase id="3" message="Can i help you?" sec="500" audio="Play_scar_fire_loop_fp">			
+		<PlayerAnswer answer ="I need some information" next="4" sec="1000" audio="Play_scar_fire_loop_fp"/>
+		<PlayerAnswer answer ="What do you know about this mountain?" next="6" sec="1000"/>
+		<PlayerAnswer answer ="I completed yours quest! Take this.." next="7" sec="1000"/>			
+	</Phrase>
+ 
+	<Phrase id="4" message="What do you need, Traveller?" sec="500" audio="Play_scar_fire_loop_fp"/>
+	<Phrase id="5" message="Be bebeb?" sec="500" audio="Play_scar_fire_loop_fp">
+		<PlayerAnswer answer="Whatever, see you later!" next="0" sec="1000"/>
+	</Phrase>
+	
+	<Phrase id="6"  message="Do you really want to know about this?" questcam="questcam1" sec="1000" audio="Play_scar_fire_loop_fp">
+		<PlayerAnswer answer="Yes!" next="8" qcamback="true" sec="1000" audio="Play_scar_fire_loop_fp"/>
+		<PlayerAnswer answer="I think no.." next="3" sec="1000" audio="Play_scar_fire_loop_fp"/>
+	</Phrase>
+	
+	<Phrase id="7" message="Take your 500 Gold!" take="1" type="Pistol" name="Cobble" sec="1000" audio="Play_scar_fire_loop_fp">
+		<PlayerAnswer answer="Ty for gold" next="3" sec="1000" audio="Play_scar_fire_loop_fp"/>
+	</Phrase>
+	
+	<Phrase id="8" message="I know on the top of mountain situated the Fallen Church of King. It's very dangerous place" sec="1000" audio="Play_scar_fire_loop_fp">
+		<PlayerAnswer answer="Thank you!" next="3" sec="1000" audio="Play_scar_fire_loop_fp"/>
+	</Phrase>
+
+	<Phrase id="0"   special="Exit"/>
+	<Phrase id="-1" special="Trade"/>
+</Dialog><!--Закрытие тега диалога в котором само тело диалога-->

@@ -1,0 +1,32 @@
+<UIElements name="UI">
+  <UIElement name="CraftMenu_old" mouseevents="1" cursor="1" >  
+    <GFx file="CraftMenu_ui.swf" layer="0">
+      <Constraints>
+         <Align mode="dynamic" valign="center" halign="center" scale="2" max="0.01" />
+      </Constraints>
+    </GFx>
+	<functions>
+	</functions>
+	<events>
+		<event name="InitList" fscommand="InitList"/>
+		<event name="OnShow" fscommand="OnShow"/>
+		<event name="OnUse" fscommand="OnUse">
+			<param name="selected"/>
+		</event>
+		<event name="OnItemDelete" fscommand="onItemDelete"/>
+		<event name="DeleteItem" fscommand="DeleteItem"/>
+		<event name="AddRecipe" fscommand="AddRecipe"/>
+		<event name="Close" fscommand="close"/>
+		<event name="CraftItem" fscommand="CraftItem">
+			<param name="name"/>
+			<param name="descr"/>
+			<param name="reg1"/>
+			<param name="reg2"/>
+			<param name="reg3"/>
+			<param name="reg4"/>
+			<param name="reg5"/>
+			<param name="reg6"/>
+		</event>	
+	</events>
+  </UIElement>
+</UIElements>

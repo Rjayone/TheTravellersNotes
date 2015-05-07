@@ -1,0 +1,17 @@
+<Graph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="1" Class="UI:Display:Display" pos="-129.55357,-250.06853,0" flags="0">
+   <Inputs uiElements_Element="Location" instanceID="-1"/>
+  </Node>
+  <Node Id="2" Class="Game:Start" pos="-365.08041,-242.58632,0" flags="0">
+   <Inputs InGame="1" InEditor="1"/>
+  </Node>
+  <Node Id="3" Class="UI:Functions:Location:Locate" pos="-130,-40,0" flags="1">
+   <Inputs instanceID="-1" LocationName="" RegionName=""/>
+  </Node>
+ </Nodes>
+ <Edges>
+  <Edge nodeIn="1" nodeOut="2" portIn="show" portOut="output" enabled="1"/>
+ </Edges>
+ <GraphTokens />
+</Graph>

@@ -1,0 +1,22 @@
+<Graph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="279" Class="UI:Action:Start" pos="-480,-20,0" flags="1">
+   <Inputs UseAsState="0"/>
+  </Node>
+  <Node Id="280" Class="UI:Display:Display" pos="50,-30,0" flags="0">
+   <Inputs uiElements_Element="Dot" instanceID="-1"/>
+  </Node>
+  <Node Id="281" Class="Game:Start" pos="-420,60,0" flags="0">
+   <Inputs InGame="1" InEditor="1"/>
+  </Node>
+  <Node Id="282" Class="Logic:Any" pos="-150,-30,0" flags="0">
+   <Inputs />
+  </Node>
+ </Nodes>
+ <Edges>
+  <Edge nodeIn="282" nodeOut="279" portIn="in1" portOut="StartAction" enabled="1"/>
+  <Edge nodeIn="282" nodeOut="281" portIn="in2" portOut="output" enabled="1"/>
+  <Edge nodeIn="280" nodeOut="282" portIn="show" portOut="out" enabled="1"/>
+ </Edges>
+ <GraphTokens />
+</Graph>

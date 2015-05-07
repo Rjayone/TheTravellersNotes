@@ -1,0 +1,15 @@
+<item name="ArrowPickup" class="Accessory" priority="103" >
+	<geometry>
+		<firstperson name="Objects/weapons/Bow/Bow/Arrows/Arrow.cgf" />
+		<thirdperson name="Objects/weapons/Bow/Bow/Arrows/Arrow.cgf" />
+	</geometry>
+
+	<params>
+		<param name="giveable" value="1" />
+		<param name="selectable" value="0" />
+		<param name="droppable" value="0" />
+		<param name="display_name" value="Arrow" />
+		<param name="selectTimeMultiplier" value="1.05" GAME="MP" />
+	</params>
+
+</item>

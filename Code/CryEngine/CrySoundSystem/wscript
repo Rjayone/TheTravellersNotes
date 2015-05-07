@@ -1,0 +1,24 @@
+#############################################################################
+## Crytek Source File
+## Copyright (C) 2013, Crytek Studios
+##
+## Creator: Christopher Bolte
+## Date: Oct 31, 2013
+## Description: WAF  based build system
+#############################################################################
+
+def build(bld):
+
+	bld.CryEngineModule(
+		target		= 'CrySoundSystem',
+		vs_filter	= 'CryEngine/Audio',
+
+		file_list   = 'crysoundsystem.waf_files',
+		pch			= 'stdafx.cpp',
+
+		includes = ['Common'],
+
+	)
+	
+	bld.recurse('implementations', name='build')
+	bld.recurse('Common', name='build')

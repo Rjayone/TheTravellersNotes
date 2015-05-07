@@ -1,0 +1,59 @@
+<BehaviorTree>
+ <Variables>
+  <Variable name="HasTarget"/>
+  <Variable name="ExecuteSequence"/>
+  <Variable name="ExecuteInterruptibleSequence"/>
+ </Variables>
+ <SignalVariables>
+  <Signal name="OnNewAttentionTarget" variable="HasTarget" value="true"/>
+  <Signal name="OnNoTarget" variable="HasTarget" value="false"/>
+  <Signal name="OnLostSightOfTarget" variable="HasTarget" value="false"/>
+ </SignalVariables>
+ <Timestamps />
+ <Root>
+  <StateMachine>
+   <State name="Idle">
+    <Transitions>
+     <Transition to="Combat" onEvent="OnNewAttentionTarget"/>
+    </Transitions>
+    <BehaviorTree>
+     <Sequence>
+      <SetAlertness value="0"/>
+      <ExecuteLua code="entity.actor:HolsterItem(true)"/>
+      <Stance name="Relaxed"/>
+      <Animate name="ZZ_AI_idleBreak"/>
+      <Halt />
+     </Sequence>
+    </BehaviorTree>
+   </State>
+   <State name="Combat">
+    <Transitions>
+     <Transition to="Idle" onEvent="GoTo_Idle"/>
+    </Transitions>
+    <BehaviorTree>
+     <Sequence>
+      <Log message="Now I should fight you!"/>
+      <SetAlertness value="2"/>
+      <ExecuteLua code="entity:SelectPrimaryWeapon()"/>
+      <Communicate name="TargetSpottedWhileSearching" channel="Reaction" expirity="1.0" waitUntilFinished="0"/>
+      <Stance name="Alerted"/>
+      <Loop _startLog="main combat loop">
+       <Sequence>
+        <SuppressFailure>
+         <Move to="Target" speed="Run" stance="Stand" avoidDangers="0" stopWithinDistance="2"/>
+        </SuppressFailure>
+        <Melee class="TreeNode" target="AttentionTarget" cylinderRadius="10" _startlog="Melee begin" _failurelog="Melee error" failIfTargetNotInNavigationMesh="0" hitType="" _endlog="Melee end">
+         <Move class="TreeNode"/>
+        </Melee>
+        <Selector>
+         <AssertCondition condition="HasTarget"/>
+         <SendTransitionSignal name="GoTo_Idle"/>
+        </Selector>
+       </Sequence>
+      </Loop>
+     </Sequence>
+    </BehaviorTree>
+   </State>
+  </StateMachine>
+ </Root>
+</BehaviorTree>

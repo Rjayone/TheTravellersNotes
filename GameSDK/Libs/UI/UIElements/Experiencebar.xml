@@ -1,0 +1,18 @@
+<UIElements name="HUD">
+<UIElement name="ExperienceBar" render_lockless="1" is_Hud="1">  
+    <GFx file="Experience Bar.swf" layer="1">
+      <Constraints>
+         <Align mode="dynamic" valign="bottom" halign="center"/>
+      </Constraints>
+    </GFx>	
+	<functions>
+		<function name="SetExperienceValue" funcname="SetExperienceValue">
+			<param name="current" desc="" type="int"/>
+			<param name="need" desc="" type="int"/>
+		</function>
+		<function name="AddExperienceMovieClip" funcname="AddExperienceMovieClip">
+			<param name="exp" desc="" type="int"/>
+		</function>
+	</functions>	
+</UIElement>
+</UIElements>

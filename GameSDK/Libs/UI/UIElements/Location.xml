@@ -1,0 +1,17 @@
+<UIElements name="HUD">
+  <UIElement name="Location" render_lockless="1" is_Hud="1">  
+    <GFx file="loc.swf" layer="1" alpha="0">
+      <Constraints>
+         <Align mode="dynamic" valign="bottom" halign="right" scale="0" max="0" />
+      </Constraints>
+    </GFx>	
+	<functions>
+		<function name="Locate" funcname="Locate">
+			<param name="LocationName" desc="First string (big)" type="string"/>
+			<param name="RegionName" desc="Second string (small)" type="string"/>
+		</function>
+	</functions>
+	<variables>
+	</variables>	
+  </UIElement>
+</UIElements>

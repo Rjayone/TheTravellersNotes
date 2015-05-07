@@ -1,0 +1,20 @@
+<EquipPack name="Grunt" primary="Rifle">
+ <Items>
+  <Rifle type="ItemGivable" setup=""/>
+  <Shotgun type="ItemGivable" setup=""/>
+  <Sword type="ItemGivable" setup=""/>
+ </Items>
+ <Ammos>
+  <Ammo name="MGbullet" amount="0"/>
+  <Ammo name="PistolBullet" amount="0"/>
+  <Ammo name="PistolBulletIncendiary" amount="0"/>
+  <Ammo name="RifleBullet" amount="0"/>
+  <Ammo name="Rocket" amount="0"/>
+  <Ammo name="ShotgunShell" amount="0"/>
+  <Ammo name="ShotgunShellSolid" amount="0"/>
+  <Ammo name="Tank125" amount="0"/>
+  <Ammo name="explosivegrenade" amount="0"/>
+  <Ammo name="smokegrenade" amount="0"/>
+  <Ammo name="Arrow" amount="0"/>
+ </Ammos>
+</EquipPack>

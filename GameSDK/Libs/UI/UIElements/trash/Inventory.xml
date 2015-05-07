@@ -1,0 +1,27 @@
+<UIElements name="Menus">
+  <UIElement name="Inventory0" mouseevents="1" cursor="1" >  
+    <GFx file="Inventory.swf" layer="1" alpha="0">
+      <Constraints>
+         <Align mode="dynamic" valign="bottom" halign="center" scale="2" max="0.01" />
+      </Constraints>
+    </GFx>	
+	<functions>
+		<function name="CreateItem" funcname="CreateItem">
+			<param name="Name" desc="Item name" type="String"/>
+			<param name="Description" desc="Item description" type="String"/>
+			<param name="Cost" type="int"/>
+			<param name="Type" desc="Item's type(weapon,quest item..)" type="int"/>
+			<param name="itemId" type="int"/>
+		</function>
+	</functions>
+	<events>
+	  <event name="MouseOver" fscommand="onRollOver" desc="" />
+	  <event name="MouseOut" fscommand="onRollOut" desc="" />
+	  <event name="onShow" fscommand="onShow"/>
+	  
+	  <event name="OnItemDelete" fscommand="onItemDelete">
+		<param name="EntityId"/>
+	  </event>
+    </events> 
+  </UIElement>
+</UIElements>

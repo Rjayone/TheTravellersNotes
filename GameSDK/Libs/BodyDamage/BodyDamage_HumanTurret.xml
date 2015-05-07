@@ -1,0 +1,15 @@
+<BodyDamage>
+	<Multipliers collisionDefaultMultiplier="3.0">
+		<Multiplier part="body" valueMelee="1.0" value="0.25" valueCollision="3.0">
+		<!-- List projectile classes here -->
+			<PistolBullet value="1.0" />
+			<PistolBulletIncendiary value="1.0" />
+			<RifleBullet value="1.0" />
+		</Multiplier>
+	</Multipliers>
+	<ExplosionMultipliers>
+		<explosivegrenade value="2.0" />
+		<Rocket value="0.5" />
+	</ExplosionMultipliers>
+</BodyDamage>
+

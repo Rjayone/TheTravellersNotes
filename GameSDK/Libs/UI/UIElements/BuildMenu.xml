@@ -1,0 +1,56 @@
+<UIElements name="BuildMenu">
+  <UIElement name="BuildMenu" mouseevents="1" cursor="1" >  
+    <GFx file="BuildMenu.swf" layer="0">
+      <Constraints>
+        <Align mode="dynamic" halign="centre" valign="centre" scale="1" max="0" />
+      </Constraints>
+    </GFx>
+ 
+
+    <functions>
+		<function name="CreateBuildingList" funcname="CreateBuildingList">
+			<param name="Name" desc="Name of building"/>
+			<param name="Descr" desc="Description of building"/>
+			<param name="Add" desc="additional information about building"/>
+			<param name="Type" desc="display message from Player and Create text of it"/>
+			<param name="Cost" desc=""/>
+			<param name="Wood" desc=""/>
+			<param name="Stone" desc=""/>
+			<param name="Iron" desc=""/>
+		</function>
+		<function name="OpenMenu" funcname="OpenMenu"/>
+		<function name="CloseMenu" funcname="CloseMenu"/>
+		<function name="CreateList" funcname="CreateList"/>
+		<function name="SetMessages" funcname="SetMessages">
+			<param name="_Message" desc="display message from npc and last answer of player"/>
+		</function>
+		<function name="Clear" funcname="Clear"></function>		
+		<function name="SetVisible" funcname="SetVisible">
+			<param name="bVis" desc="display message from Player and Create text of it"/>
+		</function>
+		<function name="SetGold" funcname="SetGold">
+			<param name="_Gold" desc="display message from Player and Create text of it"/>
+		</function>	
+    </functions>
+
+	<events>
+		<event name="ButtonPress" fscommand="ButtonPress" desc="Start event"/>
+		<event name="Exit" fscommand="Exit" desc="Exit building mode"/>
+		<event name="Yes" fscommand="Yes" desc="Answer Yes"/>
+		<event name="No" fscommand="No" desc="Answer No"/>
+		<event name="Buy" fscommand="Buy">
+			<param name="Index" />
+		</event>
+		
+		<event name="ChangeViewNext" fscommand="ChangeViewNext" desc="Change View Next"/>
+		<event name="ChangeViewPrev" fscommand="ChangeViewPrev" desc="Answer ChangeViewPrev"/>
+		
+	</events>
+ 
+  
+  </UIElement>
+
+ 
+</UIElements>
+
+

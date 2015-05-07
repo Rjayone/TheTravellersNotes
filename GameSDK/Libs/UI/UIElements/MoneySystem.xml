@@ -1,0 +1,14 @@
+<UIElements name="UI">
+  <UIElement name="Money">  
+    <GFx file="Money.swf" layer="1">
+      <Constraints>
+         <Align mode="dynamic" valign="bottom" halign="left"/>
+      </Constraints>
+    </GFx>
+	<functions>
+		<function name="SetMoney" funcname="SetMoney">
+			<param name="count" type="int"/>
+		</function>
+	</functions>
+  </UIElement>
+</UIElements>

@@ -1,0 +1,16 @@
+<Graph Description="" Group="InGame" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="63" Name="Show_mission_status_in_center_screen" Class="_commentbox" pos="-210,1422.5511,0" flags="0">
+   <Inputs TextSize="1" Color="0.38891,0.65237,0.147998" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="1340" Height="260"/>
+   <NodeSize Width="2981.0178" Height="499.62119"/>
+  </Node>
+  <Node Id="365" Name="Display_Mission_Details_on_button_press" Class="_commentbox" pos="710,364.29031,0" flags="0">
+   <Inputs TextSize="1" Color="0.729919,0.487765,0.25084" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="1070" Height="410"/>
+   <NodeSize Width="3140.4709" Height="649.62122"/>
+  </Node>
+ </Nodes>
+ <Edges />
+ <GraphTokens />
+</Graph>

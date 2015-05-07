@@ -1,0 +1,37 @@
+<BodyDestructibility>
+
+	<DestructibleParts />
+
+	<Events>
+		<Event name="healthRatio50">
+			<Effect name="Vehicles.MH60_BlackHawk.Damage.Hull_75"/>
+			<StopEvents>
+				<Event name="healthRatio25"/>
+				<Event name="death"/>
+			</StopEvents>
+		</Event>
+		<Event name="healthRatio25">
+			<Effect name="Vehicles.MH60_BlackHawk.Damage.Hull_25"/>
+			<StopEvents>
+				<Event name="healthRatio50"/>
+				<Event name="death"/>
+			</StopEvents>
+		</Event>
+		<Event name="death">
+			<Effect name="Vehicles.MH60_BlackHawk.Damage.Destroyed"/>
+			<StopEvents>
+				<Event name="healthRatio50"/>
+				<Event name="healthRatio25"/>
+			</StopEvents>
+		</Event>
+	</Events>
+
+	<HealthRatioEvents>
+		<HealthRatio ratio="0.50" bone="arcjoint" event="healthRatio50"/>
+		<HealthRatio ratio="0.25" bone="arcjoint" event="healthRatio25"/>
+		<HealthRatio ratio="0.00" bone="arcjoint" event="death"/>
+	</HealthRatioEvents>
+
+	<ExplosionDeath />
+
+</BodyDestructibility>

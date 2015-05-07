@@ -1,0 +1,21 @@
+<Graph Description="" Group="HUD" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="5" Name="Display_the_2d_hud_and_unload_the_hud_on_level_end" Class="_commentbox" pos="-1360,-156.64769,0" flags="0">
+   <Inputs TextSize="1" Color="0.665387,0.371238,0.287441" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="920" Height="280"/>
+   <NodeSize Width="1278.5093" Height="354.03912"/>
+  </Node>
+  <Node Id="267" Name="Raycast_when_using_binoculars" Class="_commentbox" pos="-120,601.61194,0" flags="0">
+   <Inputs TextSize="1" Color="0.386429,0.527115,0.396755" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="1100" Height="340"/>
+   <NodeSize Width="1100" Height="414.03912"/>
+  </Node>
+  <Node Id="277" Name="Setup_Weapon_info_for_crosshair" Class="_commentbox" pos="-120,201.61151,0" flags="0">
+   <Inputs TextSize="1" Color="0.527115,0.351533,0.571125" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="480" Height="330"/>
+   <NodeSize Width="799.7334" Height="404.03912"/>
+  </Node>
+ </Nodes>
+ <Edges />
+ <GraphTokens />
+</Graph>

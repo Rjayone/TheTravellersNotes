@@ -1,0 +1,36 @@
+<item name="Torch" class="Torch" category="primary" priority="12" weaponParams="1">
+	<params>
+		<param name="display_name" value="Torch"/>
+		<param name="giveable" value="1"/>
+		<param name="selectable" value="1"/>
+		<param name="select_override" value="0.8"/>
+		<param name="pose" value="torch"/>
+		<param name="slidePose" value="rifle"/>
+		<param name="itemClass" value="torch"/>
+		<param name="suffix" value="shoulder"/>
+		<param name="mass" value="1"/>
+		<param name="select_delayed_grab_3P" value="1"/>
+		<param name="attach_to_back" value="0"/>
+		<param name="bone_attachment_01" value="stow_primary1"/>
+		<param name="bone_attachment_02" value="stow_primary2"/>
+		<param name="stat_accuracy" value="10"/>
+		<param name="stat_rate_of_fire" value="4"/>
+		<param name="stat_mobility" value="9"/>
+		<param name="stat_damage" value="8"/>
+		<param name="stat_range" value="2"/>
+		<param name="tag" value="torch"/>
+		<param name="proceduralSway" value="1"/>
+		<param name="adb" value="torchAnims1P.adb"/>
+		<aimAnims>
+			<param name="base" value="stand_idlePose_torch_1p_01"/>
+			<param name="idle" value="stand_tac_idle_proc_rifle_shoulder_add_1p_01"/>
+			<param name="run" value="stand_tac_run_proc_rifle_shoulder_add_1p_01"/>
+			<param name="sprint" value="stand_tac_sprint_rifle_fwd_add_1p_01"/>
+		</aimAnims>
+	</params>
+
+	<geometry>
+		<firstperson name="objects/props/svet/torch/torch_b.chr" angles="0,0,0" position="0,0,0" />
+		<thirdperson name="objects/props/svet/torch/torch_b.cgf" angles="0,0,0" useStreaming="0"/>
+	</geometry>
+</item>

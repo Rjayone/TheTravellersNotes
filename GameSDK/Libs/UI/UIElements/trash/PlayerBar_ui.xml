@@ -1,0 +1,17 @@
+<UIElements name="UI">
+  <UIElement name="PlayerBar_ui" mouseevents="1" cursor="1" is_Hud="1">  
+    <GFx file="PlayerBar_ui.gfx" layer="1" alpha="0">
+      <Constraints>
+         <Align mode="dynamic" valign="Bottom" halign="Center"/>
+      </Constraints>
+    </GFx>	
+	<functions>
+	</functions>
+	<events>
+		<event name="onShow" fscommand="onShow"/>	
+		<event name="onPressInv" fscommand="onPressInv"/>	
+		<event name="onPressSkill" fscommand="onPressSkill"/>	
+		<event name="onPressMagic" fscommand="onPressMagic"/>	
+	</events>
+  </UIElement>
+</UIElements>

@@ -1,0 +1,23 @@
+<BodyDamage>
+	<!-- PART DEFINITIONS IN "BodyParts_HumanMaleShared.xml" -->
+	<Multipliers>
+		<Multiplier part="armRight" 	value="1.0"/>
+		<Multiplier part="armLeft" 		value="1.0"/>
+		<Multiplier part="head" 		value="1.4">
+			<PistolBullet 	value="1.0" />
+			<RifleBullet 	value="1.5" />
+		</Multiplier>
+		<Multiplier part="footLeft" 	value="1.0"/>
+		<Multiplier part="footRight" 	value="1.0"/>
+		<Multiplier part="legLeft" 		value="1.0"/>
+		<Multiplier part="legRight" 	value="1.0"/>
+		<Multiplier part="torso" 		value="1.0"/>
+	</Multipliers>
+
+	<ImpulseFilters>
+		<ImpulseFilter part="armRight" 	scale="0.0" passTo="Bip01 Spine1" passOnScale="0.5"/>
+		<ImpulseFilter part="armLeft" 	scale="0.0" passTo="Bip01 Spine1" passOnScale="0.5"/>
+		<ImpulseFilter part="legLeft" 	scale="0.0" passTo="Bip01 Spine1" passOnScale="-0.5"/>
+		<ImpulseFilter part="legRight" 	scale="0.0" passTo="Bip01 Spine1" passOnScale="-0.5"/>
+	</ImpulseFilters>
+</BodyDamage>

@@ -1,0 +1,20 @@
+<EntityPrototypeLibrary Name="Pickup Items" SandboxVersion="3.5.8.2310">
+ <EntityPrototype Name="Other(loot).Cobble" Id="{2A2C1653-2FF0-439C-968B-0C5D2A9F954E}" Library="Pickup Items" Class="BasicObject" Description="">
+  <Properties sItemName="Cobble" nItemType="8" bItemUsable="1" fMass="3" objModel="objects/misc/camp/cobble/cobble_single.cgf">
+   <AdditionalArchetypeProperties PrototypeMaterial=""/>
+  </Properties>
+  <ObjectVars OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" GlobalInSegmentedWorld="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" CreatedThroughPool="0"/>
+ </EntityPrototype>
+ <EntityPrototype Name="Other(loot).Wood" Id="{53C19219-B366-4B64-A71F-2DAD54706C12}" Library="Pickup Items" Class="BasicObject" Description="">
+  <Properties sItemName="Wood" nItemType="8" bItemUsable="1" fMass="2" objModel="objects/misc/camp/wood/wood_single.cgf">
+   <AdditionalArchetypeProperties PrototypeMaterial=""/>
+  </Properties>
+  <ObjectVars OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" GlobalInSegmentedWorld="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" CreatedThroughPool="0"/>
+ </EntityPrototype>
+ <EntityPrototype Name="Food.Chicken" Id="{74E9DBAA-9591-45B1-BF53-50AB942F79CE}" Library="Pickup Items" Class="BasicFood" Description="">
+  <Properties nFoodType="2" sItemName="Chicken" nItemType="3" bItemUsable="1" objModel="Objects/Weapons/equipment/medical_Kit/medical_kit_bag_tp.cgf">
+   <AdditionalArchetypeProperties PrototypeMaterial=""/>
+  </Properties>
+  <ObjectVars OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" GlobalInSegmentedWorld="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" CreatedThroughPool="0"/>
+ </EntityPrototype>
+</EntityPrototypeLibrary>

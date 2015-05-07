@@ -1,0 +1,11 @@
+<UIElements name="Dot">
+  <UIElement name="Dot">  
+    <GFx file="dot.swf" layer="10">
+      <Constraints>
+        <Align mode="dynamic" halign="centre" valign="centre"/>
+      </Constraints>
+    </GFx>  
+  </UIElement>
+</UIElements>
+
+

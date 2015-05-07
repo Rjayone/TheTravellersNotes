@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- IMPORTANT: Hand edit this file only, the UI will break the file. Note that you need to restart VS for changes to take effect -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Due to the size of the combined project, LTCG must be disabled if the linker is hosted in 32-bit binaries -->
+    <!-- The reason is that the linker attempts to use more than 3GB of memory in this case -->
+    <!-- This only applies to monolithic linkage -->
+    <_CryLTCG>true</_CryLTCG>
+    <_CryLTCG Condition="'$(_CryLinker64)'=='false' And '$(StaticLink)'=='true' And '$(ConfigurationType)'=='StaticLibrary' And '$(_CryAlwaysLTCG)'!='true' And '$(EaaS)'!='true'">false</_CryLTCG>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LinkIncremental>false</LinkIncremental>
+    <WholeProgramOptimization Condition="'$(_CryLTCG)'=='true'">true</WholeProgramOptimization>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions Condition="'$(IsEditorPlugin)'!='true'">RELEASE;_RELEASE;NDEBUG;GFC_BUILD_SHIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="!$(IsDedicatedServer) And '$(EaaS)'!='true'">PURE_CLIENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeLibrary Condition="'$(StaticCRT)'!='true'">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(StaticCRT)'=='true'">MultiThreaded</RuntimeLibrary>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization Condition="'$(_CryLTCG)'=='true'">true</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration Condition="'$(_CryLTCG)'=='true'">UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration Condition="'$(_CryLTCG)'=='true'">true</LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
+</Project>

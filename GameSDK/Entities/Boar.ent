@@ -1,0 +1,4 @@
+<Entity
+	Name="Boar"
+	Script="Scripts/Entities/AI/Boar.lua"
+/>

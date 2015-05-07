@@ -1,0 +1,21 @@
+<Graph Description="" Group="InGame" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="7" Name="Add_a_3D_dynamic_texture_flash_tag_on_player_join_/_display_join,_left_messages" Class="_commentbox" pos="-480,228.1828,0" flags="0">
+   <Inputs TextSize="1" Color="0.68002,0.554227,0.280124" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="760" Height="600"/>
+   <NodeSize Width="3358.1697" Height="729.20789"/>
+  </Node>
+  <Node Id="12" Name="On_enter_game_request_other_players" Class="_commentbox" pos="400,268.18271,0" flags="0">
+   <Inputs TextSize="1" Color="0.358654,0.56681,0.399293" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="640" Height="100"/>
+   <NodeSize Width="1606.5752" Height="229.20792"/>
+  </Node>
+  <Node Id="15" Name="Update_player_tag_name_on_rename" Class="_commentbox" pos="400,448.18274,0" flags="0">
+   <Inputs TextSize="1" Color="0.280124,0.645555,0.68002" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="740" Height="150"/>
+   <NodeSize Width="1544.8695" Height="279.20792"/>
+  </Node>
+ </Nodes>
+ <Edges />
+ <GraphTokens />
+</Graph>

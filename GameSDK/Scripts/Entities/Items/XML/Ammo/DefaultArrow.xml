@@ -1,0 +1,57 @@
+<ammo name="Arrow" class="Arrow">
+	<geometry>
+		<firstperson name="Objects/weapons/Bow/Ammo/Arrow_01_default.cgf" /><!--Objects/weapons/Bow/Bow/Arrows/Arrow.cgf-->
+		<thirdperson name="Objects/weapons/Bow/Ammo/Arrow_01_default.cgf" />
+	</geometry>
+	<flags>
+		<param name="serverspawn" value="1" />
+		<param name="predictspawn" value="1" />
+	</flags>
+	<whiz>
+		<param name="sound" value="sounds/physics_bullets:whizzes:bullet_whiz_velocity" />
+		<param name="distance" value="5.0" />
+	</whiz>
+	<ricochet>
+		<param name="sound" value="sounds/physics_bullets:ricochets:bullet_ricochet" />
+	</ricochet>
+	<trail>
+		<param name="effect" value="" />
+		<param name="scale" value="0.6" />
+		<param name="sound" value="Sounds/physics:bullet_whiz:missile_whiz_loop" />
+	</trail>
+	<physics type="particle">
+		<param name="mass" value="1"/>
+		<param name="speed" value="25" />
+		<param name="air_resistance" value="0.5" />
+		<param name="water_resistance" value="0" />
+		<param name="gravity" value="0, 0, -9" />
+		<param name="water_gravity" value="0, 0, -1" />
+		<param name="material" value="mat_metal_thin" />
+		<param name="thrust" value="0" />
+		<param name="lift" value="0" />
+		<param name="min_bounce_speed" value="8" />
+		<param name="material" value="mat_metal" />
+		<param name="pierceability" value="8" />
+		<param name="single_contact" vadlue="1" />
+		<pierceabilityLevels>
+			<param name="level3" value="0" />
+			<param name="level2" value="45" />
+			<param name="level1" value="60" />
+			<param name="maxPenetrationThickness" value="0.75" />
+			<param name="pierceability" value="1" />
+		</pierceabilityLevels>
+	</physics>
+	<params>
+		<param name="display_name" value="Arrow" />
+		<param name="lifetime" value="10"/>
+		<param name="showtime" value="10" />
+		<param name="bulletType" value="2" /> <!-- Bullet Type 2 - Assault rifle bullet -->
+        <param name="hitRecoil" value="Level5"/>
+        <param name="hitRecoilArmorMode" value="Level3"/>
+		<param name="cruise" value="0" />
+		<param name="controlled" value="0" />		
+	</params>
+	<BulletTimeParams GAME="MP" >
+		<param name="geometry" value="Objects/weapons/Bow/Bow/Arrows/Arrow.cgf"/>
+	</BulletTimeParams>
+</ammo>

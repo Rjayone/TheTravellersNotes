@@ -1,0 +1,72 @@
+<Graph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="1" Class="Game:Start" pos="-1150,0,0" flags="0">
+   <Inputs InGame="1" InEditor="1"/>
+  </Node>
+  <Node Id="2" Class="UI:Display:Display" pos="-610,-210,0" flags="0">
+   <Inputs uiElements_Element="HealthBar" instanceID="-1"/>
+  </Node>
+  <Node Id="3" Class="UI:Functions:HealthBar:SetCompasRotation" pos="-330,100,0" flags="0">
+   <Inputs instanceID="-1" angle="0"/>
+  </Node>
+  <Node Id="4" Class="UI:Functions:HealthBar:SetHealth" pos="-620,180,0" flags="0">
+   <Inputs instanceID="-1" maxHealth="0" health="0"/>
+  </Node>
+  <Node Id="5" Class="UI:Functions:HealthBar:SetStrength" pos="-330,-10,0" flags="0">
+   <Inputs instanceID="-1" maxStr="100" str="100"/>
+  </Node>
+  <Node Id="6" Class="UI:Functions:HealthBar:SetTimeOfDay" pos="-620,310,0" flags="0">
+   <Inputs instanceID="-1" time="0"/>
+  </Node>
+  <Node Id="7" Class="Actor:Sensor" pos="-950,80,0" flags="0" InHideMask="15" OutHideMask="4194303">
+   <Inputs entityId="0"/>
+  </Node>
+  <Node Id="8" Class="Actor:LocalPlayer" pos="-1150,180,0" flags="0">
+   <Inputs />
+  </Node>
+  <Node Id="9" Class="Minimap:PlayerPos" pos="-610,80,0" flags="0">
+   <Inputs />
+  </Node>
+  <Node Id="10" Class="Time:TimeOfDay" pos="-980,310,0" flags="0">
+   <Inputs Time="0" ForceUpdate="0" Speed="1"/>
+  </Node>
+  <Node Id="13" Class="Time:Timer" pos="-1150,360,0" flags="1">
+   <Inputs period="5" min="0" max="0" paused="0"/>
+  </Node>
+  <Node Id="14" Class="Math:Mul" pos="-760,310,0" flags="0">
+   <Inputs A="0" B="16.6667"/>
+  </Node>
+  <Node Id="15" Class="Player:StatsSensor" pos="-610,-10,0" flags="0">
+   <Inputs />
+  </Node>
+  <Node Id="16" Class="UI:Action:Start" pos="-1070,-150,0" flags="0">
+   <Inputs UseAsState="0"/>
+  </Node>
+  <Node Id="17" Class="Logic:Any" pos="-810,-310,0" flags="0">
+   <Inputs />
+  </Node>
+ </Nodes>
+ <Edges>
+  <Edge nodeIn="2" nodeOut="1" portIn="show" portOut="output" enabled="1"/>
+  <Edge nodeIn="17" nodeOut="1" portIn="in1" portOut="output" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="7" portIn="maxHealth" portOut="MaxHealth" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="7" portIn="Call" portOut="OnHealthChange" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="7" portIn="health" portOut="OnHealthChange" enabled="1"/>
+  <Edge nodeIn="7" nodeOut="8" portIn="entityId" portOut="entityId" enabled="1"/>
+  <Edge nodeIn="3" nodeOut="9" portIn="Call" portOut="OnPosChange" enabled="1"/>
+  <Edge nodeIn="3" nodeOut="9" portIn="angle" portOut="Rotation" enabled="1"/>
+  <Edge nodeIn="14" nodeOut="10" portIn="A" portOut="CurTime" enabled="1"/>
+  <Edge nodeIn="10" nodeOut="13" portIn="Get" portOut="out" enabled="1"/>
+  <Edge nodeIn="6" nodeOut="14" portIn="Call" portOut="out" enabled="1"/>
+  <Edge nodeIn="6" nodeOut="14" portIn="time" portOut="out" enabled="1"/>
+  <Edge nodeIn="5" nodeOut="15" portIn="Call" portOut="OnStrengthChanged" enabled="1"/>
+  <Edge nodeIn="5" nodeOut="15" portIn="str" portOut="OnStrengthChanged" enabled="1"/>
+  <Edge nodeIn="17" nodeOut="16" portIn="in2" portOut="StartAction" enabled="1"/>
+  <Edge nodeIn="7" nodeOut="17" portIn="Enable" portOut="out" enabled="1"/>
+  <Edge nodeIn="7" nodeOut="17" portIn="Get" portOut="out" enabled="1"/>
+  <Edge nodeIn="9" nodeOut="17" portIn="Enable" portOut="out" enabled="1"/>
+  <Edge nodeIn="9" nodeOut="17" portIn="Get" portOut="out" enabled="1"/>
+  <Edge nodeIn="15" nodeOut="17" portIn="Enable" portOut="out" enabled="1"/>
+ </Edges>
+ <GraphTokens />
+</Graph>

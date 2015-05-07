@@ -1,0 +1,16 @@
+<BehaviorTree>
+ <Variables>
+  <Variable name="ExecuteSequence"/>
+  <Variable name="ExecuteInterruptibleSequence"/>
+  <Variable name="HasTarget"/>
+ </Variables>
+ <SignalVariables />
+ <Timestamps />
+ <Root>
+  <Parallel class="TreeNode">
+   <ExecuteLua code="entity:SelectPrimaryWeapon()"/>
+   <Shoot class="TreeNode" at="Target" stance="Stand" duration="1" fireMode="Melee"/>
+   <Move class="TreeNode" to="Taarget" speed="Run" stance="Stand" stopWithinDistance="2" stopDistanceVariation="0"/>
+  </Parallel>
+ </Root>
+</BehaviorTree>

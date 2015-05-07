@@ -1,0 +1,11 @@
+<Graph Description="" Group="HUD" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="329" Name="send_audio_related_character_vaules_to_Wwise" Class="_commentbox" pos="440,690,0" flags="0">
+   <Inputs TextSize="1" Color="0.27451,0.352941,0.705882" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="460" Height="470"/>
+   <NodeSize Width="460" Height="497.64063"/>
+  </Node>
+ </Nodes>
+ <Edges />
+ <GraphTokens />
+</Graph>

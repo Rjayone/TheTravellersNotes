@@ -1,0 +1,64 @@
+<!-- ##### Item enums ####			### Food Enum ###							### Recipes type ###
+	xml tag - type=""				xml tag - foodtype=""						xml tag - recipetype=""
+	EIT_NULL = 0,					EFTLight = 0,								1 - Оружие
+	EIT_Weapon = 1,					EFTNormal = 1,								2 - Одежда
+	EIT_Armor = 2,					EFTSatiety = 2,								3 - аксы(цепочка, сережки, кольца)
+	EIT_Food = 3,					EFTHPFlask = 3,								4 - прочее(костер например)
+	EIT_QuestItem = 4,				EFTStrenghtFlask = 4,
+	EIT_Flask = 5,
+	EIT_Ammo = 6,
+	EIT_Recipe = 7,
+	EIT_Special = 8,
+	EIT_Artifact = 9
+-->
+
+<items>
+	<!--У стандартных итемов имя(name) должно совпадать с именем класса 
+	    Если стандартный итем крафтится то имя рецепта должно быть таким же как и имя класса
+		или нет, хм.. В принципе не обязательно. Тогда имя рецепта должно быть = имени итема-->
+
+	<!--Итемы, класс = имени -->
+	<item class="Sword"  name="Sword" 	descr="Sword of 1000 words!" cost="100" type="1" size="3"/>
+	<item class="Rifle"  name="Rifle"	descr="Basic rifle" cost="100"  type="1"	size="3"/>	
+	<item class="Pistol" name="Pistol"	descr="Basic pistol" cost="100" type="1" size="1"/>
+	<item class="Binoculars" name="Binoculars" descr="Use to look so far" cost="50" type="1" size="1"/>	
+	<item class="RocketLauncher" name="Rocket Launcher" descr="Heave weapon for damage large area" cost="50" type="1" size="3"/>
+	<item class="FirePlace" name="FirePlace" descr="Heave weapon for damage large area" cost="50" type="1" size="1" hiden="1"/>
+	
+	<!-- Все типы еды перечисляются ниже. Типы смотреть в шапке -->
+	<item class="BasicFood" type="3"> 
+		<param name="Chicken" cost="10" foodtype="2" size="1"/>
+		<param name="Bread" cost="5" foodtype="0" size="1"/>
+		<param name="smth." cost="0" foodtype="1" size="1"/>
+	</item>
+	
+	<!-- Все типы рецептов для крафта/инва перечисляются ниже. Типы смотреть в шапке -->
+	<item class="BasicRecipe" type="7"> <!--Все рецепты перечисляются ниже. Типы рецептов смотреть в шапке -->
+		<param	name="Recipe"
+		descr="Recipe include instruction how to create the Chest of Fallen Kings" size="1"
+		recipetype="1" reg1="Steal(6)" reg2="Skin(10)" reg3="Silver(2)" reg4="" reg5="" reg6="" condition=""/>
+		
+		<param name="FirePlace"
+		descr="Take the some stones, some branches and dead grass. Rotate wood by wood and support a fire." size="1"
+		recipetype="3" reg1="Cobble(1)"/> <!-- reg2="Branch(4)" reg3="Dead Grass(1)" reg4="" reg5="" reg6="" condition=""/> -->
+
+		<param name="Neck from silver"
+		descr="Same neck had Queen of Strastol.." size="1"
+		recipetype="2" reg1="Steal(6)" reg2="Skin(10)" reg3="Silver(2)" reg4="" reg5="" reg6="" condition=""/>
+				
+		<param name="Dwarf Sword"
+		descr="Typical sword of dwarf warrior" size="1"
+		recipetype="0" reg1="Steal(6)" reg2="Skin(10)" reg3="Wood(2)" reg4="Coble(2)" reg5="" reg6="" condition=""/>
+	</item>
+	
+	<item class="Other" type="8">
+		<param name="Cobble" descr="Typical cobble, nothing special" size="1" cost="3" />
+		<param name="Wood" descr="Wood for camp" size="1" cost="10"/>
+		<param name="Coin" descr="1 gold coin" size="1" cost="1"/>
+	</item>
+	
+	<item class="BasicShield" type="4">
+		<param name="Aurkrist" descr="Legendary shield of dwarf's king which save his powerfull and strength" cost="10000" size="2"/>
+	</item>
+
+</items>

@@ -1,0 +1,27 @@
+<UIElements name="HUD">
+  <UIElement name="HealthBar" render_lockless="1" is_Hud="1">  
+    <GFx file="HPBar.swf" layer="1" alpha="0">
+      <Constraints>
+         <Align mode="dynamic" valign="top" halign="left" scale="0" max="0" />
+      </Constraints>
+    </GFx>	
+	<functions>
+		<function name="SetHealth" funcname="SetHp">
+			<param name="maxHealth" desc="Maximum health" type="int"/>
+			<param name="health" desc="Current health" type="int"/>
+		</function>
+		<function name="SetStrength" funcname="SetStr">
+			<param name="maxStr" desc="Maximum stamina" type="int"/>
+			<param name="str" desc="Current stamina" type="int"/>
+		</function>
+		<function name="SetTimeOfDay" funcname="SetTime">
+			<param name="time" desc="Time of the day (0-400). 0 is midnight" type="int"/>
+		</function>
+		<function name="SetCompasRotation" funcname="Rot">
+			<param name="angle" desc="Compass rotation in degrees" type="int"/>
+		</function>
+	</functions>
+	<variables>
+	</variables>	
+  </UIElement>
+</UIElements>

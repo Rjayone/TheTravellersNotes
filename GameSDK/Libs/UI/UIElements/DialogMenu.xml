@@ -1,0 +1,29 @@
+<UIElements name="DialogMenus">
+  <UIElement name="DialogMenu" mouseevents="1" cursor="1" >
+    <GFx file="DialogMenu.swf" layer="1">
+      <Constraints>
+        <Align mode="dynamic" halign="center" valign="bottom" scale="0" max="0" />
+      </Constraints>
+    </GFx>
+    <functions>
+		<function name="CreateAnswerItem" funcname="CreateAnswerItem" >
+			<param name="Answer" desc="display message from Player and Create text of it"/>
+			<param name="Next" desc="Next dialogs depends on answer"/>
+			<param name="Count" desc="Counter of dialogs"/>
+			<param name="AiName" desc="Name of AI with you act"/>
+		</function>
+	
+		<function name="SetMessages" funcname="SetMessages" >
+			<param name="_Message" desc="display message from npc and last answer of player"/>
+		</function>
+		
+		<function name="Clear" funcname="Clear">
+		</function>
+    </functions>
+    <events>
+		<event name="ButtonPress" fscommand="ButtonPress" desc="Start_event"/>		
+    </events> 
+ </UIElement>
+</UIElements>
+
+

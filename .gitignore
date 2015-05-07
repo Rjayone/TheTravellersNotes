@@ -1,0 +1,114 @@
+# Solutions
+*.suo
+*.sln
+
+#3ds MAX
+*.max
+*.FBX
+
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+*.pdb
+*.ipch
+*.sdf
+*.user
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+!CryGameSDK.dll
+*.opensdf
+*.pdb
+*.ilk
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+
+# Logs
+*.tlog
+*.1.tlog
+*.dmp
+*.log
+
+# Game pak file
+*.pak
+*.pack
+
+# Data files
+*.dat
+
+
+# Images
+*.TIF
+*.psd
+*.bat
+*.bmp
+
+
+# Animations
+*.$animsettings
+*.i_caf
+
+# Archives
+*.zip
+
+# Game Catalogues
+Bin32/Microsoft.VC90.CRT/
+Bin32/platforms/
+Bin32_Dedicated/
+Bin64/EditorPlugins/
+Bin64/Microsoft.VC90.CRT/
+Bin64/platforms/
+Bin64_Dedicated/
+BinTemp/
+BinTemp/x64/Debug/
+/Editor/
+/Engine/
+Bin32/
+GameSDK/_FastLoad
+GameSDK/Animations
+GameSDK/Levels
+GameSDK/Objects
+GameSDK/Textures
+/Localization/
+LogBackups/
+TestResults/
+/Tools/
+/USER/
+_CommonRedist/
+GameSDK/materials/
+
+# Misc files
+Bin64/Editor.exe.back
+Bin64/Editor.tmp
+Bin64/rc/RC_pak_setting.xml
+Bin64/rc/rc_outputfiles.txt
+Bin64/rc/rc_createdfiles.txt
+Bin64/rc/RCJob_Build_SDK.xml
+Bin64/rc/rc_createdfiles.txt
+Bin64/lib/
+Bin64/Microsoft.VC90*
+bin64/rc/
+*.bnk
+

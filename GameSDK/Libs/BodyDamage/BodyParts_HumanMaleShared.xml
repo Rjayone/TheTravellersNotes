@@ -1,0 +1,42 @@
+<BodyDamage>
+	<Parts>
+		<Part name="armLeft">
+			<Bone name="Bip01 L Forearm"/>
+			<Bone name="Bip01 L UpperArm"/>
+		</Part>
+		<Part name="armRight">
+			<Bone name="Bip01 R Forearm"/>
+			<Bone name="Bip01 R UpperArm"/>
+		</Part>
+		<!-- HAND BONES ARE CURRENTLY NOT PHYSICALIZED
+		<Part name="handLeft">
+		</Part>
+		<Part name="handRight">
+		</Part>
+		-->
+		<Part name="head" flags="headshot">
+			<Bone name="Bip01 Head"/>
+		</Part>
+		<Part name="footLeft" flags="foot">
+			<Bone name="Bip01 L Foot"/>
+		</Part>
+		<Part name="footRight" flags="foot">
+			<Bone name="Bip01 R Foot"/>
+		</Part>
+		<Part name="legLeft" flags="knee">
+			<Bone name="Bip01 L Calf"/>
+			<Bone name="Bip01 L Thigh"/>
+		</Part>
+		<Part name="legRight" flags="knee">
+			<Bone name="Bip01 R Calf"/>
+			<Bone name="Bip01 R Thigh"/>
+		</Part>
+		<Part name="torso">
+			<Bone name="Bip01 Spine"/>
+			<Bone name="Bip01 Spine1"/>
+		</Part>
+		<Part name="pelvis" flags="pelvis">
+			<Bone name="Bip01 Pelvis"/>
+		</Part>
+	</Parts>
+</BodyDamage>

@@ -1,0 +1,74 @@
+<item name="Sword" class="Sword" category="primary" priority="12" weaponParams="1">
+	<params>
+		<param name="display_name" value="Sword"/>
+		<param name="giveable" value="1"/>
+		<param name="selectable" value="1"/>
+		<param name="select_override" value="0.8"/>
+		<param name="pose" value="sword"/>
+		<param name="slidePose" value="rifle"/>
+		<param name="itemClass" value="sword"/>
+		<param name="suffix" value="shoulder"/>
+		<param name="mass" value="1"/>
+		<param name="melee_attack_firemode" value="melee"/>
+		<param name="select_delayed_grab_3P" value="1"/>
+		<param name="attach_to_back" value="0"/>
+		<param name="bone_attachment_01" value="stow_primary1"/>
+		<param name="bone_attachment_02" value="stow_primary2"/>
+		<param name="stat_accuracy" value="10"/>
+		<param name="stat_rate_of_fire" value="4"/>
+		<param name="stat_mobility" value="9"/>
+		<param name="stat_damage" value="8"/>
+		<param name="stat_range" value="2"/>
+		<param name="tag" value="sword"/>
+		<param name="proceduralSway" value="1"/>
+		<param name="adb" value="swordAnims1P.adb"/>
+		<aimAnims>
+			<param name="base" value="stand_idlePose_1Hsword_1p_01"/>
+			<param name="idle" value="stand_tac_idle_proc_rifle_shoulder_add_1p_01"/>
+			<param name="run" value="stand_tac_run_proc_rifle_shoulder_add_1p_01"/>
+			<param name="sprint" value="stand_tac_sprint_rifle_fwd_add_1p_01"/>
+		</aimAnims>
+	</params>
+
+	<MovementModifiers speedScale="1.2" rotationScale="1.1">
+	</MovementModifiers>
+
+	<ai_descriptor handler="instant" draw_time="2" burstBulletCountMin="5" burstBulletCountMax="9" burstPauseTimeMin="0.4" burstPauseTimeMax="0.9" singleFireTriggerTime="-1" pressureMultiplier="1" coverFireTime="3.0"/>
+
+	<geometry>
+		<firstperson name="Objects/Weapons/sword/sword_fp.chr" angles="0,0,0" position="0,0,0" />
+		<thirdperson name="Objects/Weapons/sword/sword_tp.cgf" angles="0,0,0" useStreaming="0"/>
+	</geometry>
+
+
+	<firemodes>
+		<firemode name="Melee" type="Melee">
+			<melee>
+				<param name="helper" value="collision" />
+				<param name="offset" value="0.35" />
+				<param name="damage" value="300" GAME="SP" />
+				<param name="damage" value="135" GAME="MP" />
+				<param name="slide_damage" value="300" GAME="SP"/>
+				<param name="slide_damage" value="135" GAME="MP"/>
+				<param name="damage_AI" value="250" />
+				<param name="impulse" value="100" />
+				<param name="impulse_AI_to_Player" value="300"/>
+				<param name="impulse_vehicle" value="400" />
+				<param name="impulse_up_percentage" value="0.4" GAME="SP"/>
+				<param name="range" value="1.8" />
+				<param name="delay" value="0.1" GAME="SP"/>
+				<param name="delay" value="0.05" GAME="MP"/>
+				<param name="aiDelay" value="0.8" />
+				<param name="duration" value="0.3" GAME="SP"/>
+				<param name="duration" value="0.7" GAME="MP"/>
+				<param name="use_melee_weapon_delay" value="0.0" />
+				<CloseAttack>
+					<param name="delay" value="0.54" />
+					<param name="duration" value="0.87" />
+					<param name="range" value="1.5" />
+					<param name="impulse_AI_to_Player" value="200"/>
+				</CloseAttack>
+			</melee>
+		</firemode>
+	</firemodes>
+</item>

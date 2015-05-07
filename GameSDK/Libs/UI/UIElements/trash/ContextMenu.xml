@@ -1,0 +1,9 @@
+<UIElements name="UI">
+  <UIElement name="ContextMenu" mouseevents="1" cursor="1" >  
+    <GFx file="ContextMenu.swf" layer="1" alpha="0">
+      <Constraints>
+         <Align mode="dynamic" valign="bottom" halign="left"/>
+      </Constraints>
+    </GFx>
+  </UIElement>
+</UIElements>

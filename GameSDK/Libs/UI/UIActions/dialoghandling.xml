@@ -1,0 +1,16 @@
+<Graph Description="" Group="Dialogs" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="61" Name="Display_/_hide_the_asset_if_needed" Class="_commentbox" pos="180,49.478477,0" flags="0">
+   <Inputs TextSize="1" Color="0.27451,0.352941,0.705882" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="980" Height="240"/>
+   <NodeSize Width="980" Height="267.9122"/>
+  </Node>
+  <Node Id="65" Name="Remove_dialogs_/_handle_dialog_events" Class="_commentbox" pos="180,339.47842,0" flags="0">
+   <Inputs TextSize="1" Color="0.27451,0.352941,0.705882" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
+   <ResizeBorder X="0" Y="0" Width="740" Height="270"/>
+   <NodeSize Width="740" Height="297.9122"/>
+  </Node>
+ </Nodes>
+ <Edges />
+ <GraphTokens />
+</Graph>

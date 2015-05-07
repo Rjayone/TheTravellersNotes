@@ -1,0 +1,10 @@
+<BodyDamage>
+	<Parts>
+	<!--TODO: Remove bones that should not be here. -->
+	<!--TODO: Add different parts as needed -->
+		<Part name="body">
+			<Bone name="root" />
+			<Bone name="weaponjoint_ref" />
+		</Part>
+	</Parts>
+</BodyDamage>
