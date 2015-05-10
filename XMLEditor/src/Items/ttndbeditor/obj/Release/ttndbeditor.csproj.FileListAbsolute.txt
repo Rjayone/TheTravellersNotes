@@ -1,0 +1,9 @@
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\bin\Release\ttndbeditor.exe.config
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\bin\Release\ttndbeditor.exe
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\bin\Release\ttndbeditor.pdb
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\obj\Release\ttndbeditor.Properties.Resources.resources
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\obj\Release\ttndbeditor.csproj.GenerateResource.Cache
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\obj\Release\ttndbeditor.exe
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\obj\Release\ttndbeditor.pdb
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\obj\Release\ttndbeditor.csprojResolveAssemblyReference.cache
+C:\Users\zoi\Documents\Visual Studio 2013\Projects\ttndbeditor\ttndbeditor\obj\Release\ttnItemsEditor.Form1.resources

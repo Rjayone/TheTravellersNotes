@@ -1,0 +1,18 @@
+<HitTypes>
+  <!-- Also add these to hitDeathTags.xml -->
+  <hit_type name="repair" flags="SinglePlayerOnly"/>
+  <hit_type name="event" flags="SinglePlayerOnly"/>
+  <hit_type name="impulse_hit" flags="SinglePlayerOnly"/>
+  <hit_type name="disableCollisions" flags="Server"/>
+  <hit_type name="heavyBullet" flags="ValidationRequired"/>
+  <hit_type name="PistolBullet" flags="ValidationRequired"/>
+  <hit_type name="RifleBullet" flags="ValidationRequired"/>
+  <hit_type name="Tank125" flags="ValidationRequired"/>
+  <hit_type name="MGBullet" flags="ValidationRequired"/>
+  <hit_type name="PistolBulletIncendiary" flags="SinglePlayerOnly"/>
+  <hit_type name="ShotgunShell" flags="SinglePlayerOnly"/>
+  <hit_type name="ShotgunShellSolid" flags="SinglePlayerOnly"/>
+  <hit_type name="ExplosiveGrenade" flags="SinglePlayerOnly"/>
+  <hit_type name="Rocket" flags="SinglePlayerOnly"/>
+
+</HitTypes>

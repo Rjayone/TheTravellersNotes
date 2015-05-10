@@ -58,6 +58,8 @@ History:
 
 #include "FireModePlugin.h"
 
+#include "Arrow.h"
+
 #define LINKED_PROJ_MAP_RESERVE 24 //3 shots of 8 pellets should be plenty
 
 //////////////////////////////////////////////////////////////////////////
@@ -189,6 +191,7 @@ CWeaponSystem::CWeaponSystem(CGame *pGame, ISystem *pSystem)
 	REGISTER_PROJECTILE(HommingSwarmProjectile, CHommingSwarmProjectile);
 	REGISTER_PROJECTILE(LTagGrenade, CLTAGGrenade);
 	REGISTER_PROJECTILE(EMPGrenade, CEMPGrenade);
+	REGISTER_PROJECTILE(Arrow, CArrow);
 
 	m_pPrecache = gEnv->pConsole->GetCVar("i_precache");
 

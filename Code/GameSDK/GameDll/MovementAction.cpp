@@ -339,6 +339,7 @@ CPlayerMovementAction::EMoveState CPlayerMovementAction::CalculateState(float *p
 	float retTravelAngle	= 0.0f;
 	float retMoveSpeed		= 0.0f;
 
+	//Костыли крайтека
 	if (&player == NULL)
 		return ret;
 
