@@ -82,18 +82,25 @@ private:
 	IEntity* m_pParticalEntity;
 	State state;
 
-	// The color of a light coming from the flame
-	ColorF flameLightColor;
-	// Peak (target) brightness
-	float peakLightAlpha;
-	// Time of fading in / out in seconds
-	float fadeLightTime;
+	// Color mutiplier (implementation of brightness)
+	float m_fColorMultipier;
+
+	// The color of a light coming from the flame in it`s peak brightness
+	ColorF m_fullColor;
+
+	// Default start color
+	ColorF m_noColor;
+
 	// Light properties
-	CDLight lightProperties;
+	//CDLight lightProperties;
 
+	ILightSource* m_pLightSource;
 
-	float bonusRadius;
-	float noAnimalsRadius;
+	// Time of fading in / out in seconds
+	float m_fFadeTimeLimit;
+
+	// Accumulates time, that passed since fade in or fade out event started
+	float m_fFadeTimeAcc;
 };
 
 #endif

@@ -6,8 +6,9 @@ FirePlace =
 		objModel = "GameSDK/Objects/misc/Fireplace/fireplace.cgf",
 		sUseText = "Start fire",
 		bUsable = true,
-		clrLightColor = { r = 255, g = 187, b = 50, a = 255 },
-		fadeLightTime = 5
+		clrLightColor = { r = 255, g = 196, b = 3, a = 255 },
+		fLightColorMultiplier = 10.0,		
+		fFadeLightTime = 3.0
 	},
 
 	Editor = 
@@ -16,6 +17,11 @@ FirePlace =
 		IconOnTop = 1
 	}
 }
+
+function FirePlace:OnInit(idx)
+	Log("====Fireplace initialized====");
+	Log("====Fireplace is named as : " .. self:GetName() .. "====");
+end
 
 function FirePlace:GetUsableMessage(idx)
 	return self.Properties.sUseText;
