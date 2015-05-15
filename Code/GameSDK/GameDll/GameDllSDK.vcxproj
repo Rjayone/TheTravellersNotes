@@ -59,6 +59,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="$(PropsFolder)Common.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\Bin64</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories Condition="'$(BasePlatform)'=='Durango'">..\ESraLibCore\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

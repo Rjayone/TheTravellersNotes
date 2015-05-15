@@ -30,7 +30,7 @@
 	</params>
 
 	<geometry>
-		<firstperson name="objects/props/svet/torch/torch_b.chr" angles="0,0,0" position="0,0,0" />
-		<thirdperson name="objects/props/svet/torch/torch_b.cgf" angles="0,0,0" useStreaming="0"/>
+		<firstperson name="objects/props/torch/torch_b.chr" angles="0,0,0" position="0,0,0" />
+		<thirdperson name="objects/props/torch/torch_b.cgf" angles="0,0,0" useStreaming="0"/>
 	</geometry>
 </item>

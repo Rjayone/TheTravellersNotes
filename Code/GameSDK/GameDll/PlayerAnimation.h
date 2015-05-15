@@ -61,6 +61,8 @@ enum EPlayerActionPriority
 	f( hitDeath ) \
 	f( animationControlled ) \
 	f( weaponPose ) \
+	f( swing )\
+	f( release)\
 
 #define MAN_PLAYER_CONTEXTS( f ) \
 	f( Char1P ) \

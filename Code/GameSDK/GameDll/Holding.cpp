@@ -103,17 +103,15 @@ void CHolding::ProcessEvent(SEntityEvent& event)
 	{
 	case ENTITY_EVENT_TIMER:
 		if(GetEntity()) GetEntity()->KillTimer(event.nParam[0]);
-		if (event.nParam[0] == _RELEASE_STATUS)
+		if (event.nParam[0] == _RELEASE_STATUS && m_pItem)
 		{
 			m_pItem->SetBusy(false);
 		}
-		if (event.nParam[0] == _HOLDING_RESET_STATUS)
+		if (event.nParam[0] == _HOLDING_RESET_STATUS && m_pItem)
 		{
-			SetTag(PlayerMannequin.tagIDs.release, false);
 			SetStatus(e_HoldingTypeIdle);
 			ClearAllHoldingTags();
 			m_pItem->SetBusy(false);
-			//CryLog("Busy = false");
 		}
 		if (event.nParam[0] == _START_HOLDING_FRAGMENT)
 		{
@@ -143,11 +141,15 @@ void CHolding::PerfomSwing(CItem *pItem, int stance)
 		SetTag(table.GetRandomTagDirection(pItem), true);
 	}
 
-	SMannequinItemParams::FragmentIDs fragments = pItem->GetFragmentIds();
-	pItem->PlayAction(fragments.swing, 0);
-	int playTime = pItem->GetCurrentAnimationTime(2);
-	CryLog("Swing Play time: %d", playTime);
-	pItem->GetEntity()->SetTimer(_START_HOLDING_FRAGMENT, playTime-30);
+	IActionPtr pAction = new TAction<SAnimationContext>(PP_PlayerAction, m_pItem->GetFragmentIds().swing);
+	CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
+	m_pItem->PlayAction(m_pItem->GetFragmentIds().swing);
+
+	float fragmentDuration, transitionDuration;
+	pPlayer->GetAnimatedCharacter()->GetActionController()->QueryDuration(*pAction, fragmentDuration, transitionDuration);
+	if (fragmentDuration * 100 + transitionDuration <= 0)
+		fragmentDuration = 6.0f;
+	pItem->GetEntity()->SetTimer(_START_HOLDING_FRAGMENT, fragmentDuration*100 + transitionDuration);
 	//OnHold(0);
 
 }
@@ -160,7 +162,9 @@ void CHolding::OnHold(int stance)
 
 	m_nStatus = e_HoldingStatusHold;
 	SetTag(PlayerMannequin.tagIDs.swing, false);//отключаем тег свинг
-	m_pItem->PlayAction(m_pItem->GetFragmentIds().holding, 0, true);
+	SetTag(PlayerMannequin.tagIDs.hold, true);
+	CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
+	m_pItem->PlayAction(m_pItem->GetFragmentIds().holding);
 }
 
 
@@ -181,13 +185,16 @@ void CHolding::PerfomRelease()
 
 	SetStatus(e_HoldingStatusRelease);
 	SetTag(PlayerMannequin.tagIDs.release, true);
+	SetTag(PlayerMannequin.tagIDs.hold, false);
 
-	IActionPtr pAction = new TAction< SAnimationContext >(PP_PlayerActionUrgent, m_pItem->GetFragmentIds().release);
+	IActionPtr pAction = new TAction< SAnimationContext >(PP_PlayerAction, m_pItem->GetFragmentIds().release);
 	CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
-	pPlayer->GetAnimatedCharacter()->GetActionController()->Queue(*pAction);
+	m_pItem->PlayAction(m_pItem->GetFragmentIds().release);
 
 	float fragmentDuration, transitionDuration;
 	pPlayer->GetAnimatedCharacter()->GetActionController()->QueryDuration(*pAction, fragmentDuration, transitionDuration);
+	if (fragmentDuration * 100 + transitionDuration <= 0)
+		fragmentDuration = 6.0f;
 	GetEntity()->SetTimer(_HOLDING_RESET_STATUS, fragmentDuration * 100 + transitionDuration);/*300 это время в милисек в течении которого идет урон*/
 }
 

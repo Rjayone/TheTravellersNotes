@@ -261,7 +261,7 @@ void CSword::StopFire()
 			float currentValue = pStrength->GetStatBonus() + pStrength->GetStatValue();
 			if (currentValue < 5)
 				return;
-			pStrength->SetValue(pStrength->GetStatValue() - 5);
+			pStrength->SetValue(pStrength->GetStatValue() - 0);
 		}
 	}
 }

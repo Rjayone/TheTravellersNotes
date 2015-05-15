@@ -37,7 +37,7 @@
 
 	<geometry>
 		<firstperson name="Objects/Weapons/sword/sword_fp.chr" angles="0,0,0" position="0,0,0" />
-		<thirdperson name="Objects/Weapons/sword/sword_tp.cgf" angles="0,0,0" useStreaming="0"/>
+		<thirdperson name="objects/weapons/sword/sword_tp.cgf" angles="0,0,0" useStreaming="0"/>
 	</geometry>
 
 
