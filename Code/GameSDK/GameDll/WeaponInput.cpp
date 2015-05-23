@@ -323,8 +323,16 @@ bool CWeapon::OnActionDeselect(EntityId actorId, const ActionId& actionId, int a
 		if (!IsDeselecting())
 		{
 			//DeselectItem(GetEntity()->GetId());
-			GetOwnerActor()->SelectItemByName("NoWeapon", true);
-			//m_isDeselecting = true;
+			//GetOwnerActor()->SelectItemByName("NoWeapon", true);
+			PlayAction(GetFragmentIds().deselect, 4);
+			m_isDeselecting = true;
+
+			IActionController *pActionController = GetActionController();
+			if (!pActionController)
+				return false;
+
+			SAnimationContext &animContext = pActionController->GetContext();
+			animContext.state.Set(PlayerMannequin.tagIDs.nw, true);
 			//Здесь нужно выбрать руки и записать предыдущее оружие при атаке
 		}
 		else

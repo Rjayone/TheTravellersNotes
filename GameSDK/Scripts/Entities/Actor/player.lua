@@ -46,9 +46,9 @@ Player =
 			sightrange = 50,
 		},
 
-		fileModel = "Objects/Characters/Human/GG_player/GG_player.cdf",
-		shadowFileModel = "Objects/Characters/Human/GG_player/GG_player.cdf",
-		clientFileModel = "Objects/Characters/Human/GG_player/GG_player.cdf",
+		fileModel = "objects/characters/human/grunts/robber/robber_f.cdf",
+		shadowFileModel = "objects/characters/human/grunts/robber/robber_f.cdf",
+		clientFileModel = "objects/characters/human/grunts/robber/robber_f.cdf",
 
 		fileHitDeathReactionsParamsDataFile = "Libs/HitDeathReactionsData/HitDeathReactions_PlayerSP.xml",
 	},

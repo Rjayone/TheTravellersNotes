@@ -1,0 +1,19 @@
+<UIElements name="HUD">
+  <UIElement name="ScreenSlots" render_lockless="1" is_Hud="1">  
+    <GFx file="screenSlots.swf" layer="1" alpha="0">
+      <Constraints>
+         <Align mode="dynamic" valign="bottom" halign="left" scale="0" max="0" />
+      </Constraints>
+    </GFx>	
+	<functions>
+		<function name="SetHotKey" funcname="setHotkey">
+			<param name="first" desc="Basicly is  F1" type="int"/>
+			<param name="second" desc="Basicly is F2" type="int"/>
+			<param name="third" desc="Basicly is F3" type="int"/>
+			<param name="fourth" desc="Basicly is F4" type="int"/>
+		</function>
+	</functions>
+	<variables>
+	</variables>	
+  </UIElement>
+</UIElements>

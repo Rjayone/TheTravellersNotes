@@ -1,9 +1,9 @@
 <Graph Description="" Group="HUD" enabled="1" MultiPlayer="ClientServer">
  <Nodes>
-  <Node Id="5" Name="Hide_all_HUD_elements" Class="_commentbox" pos="-560,-350.32153,0" flags="0">
+  <Node Id="5" Name="Hide_all_HUD_elements" Class="_commentbox" pos="-560,-350.38629,0" flags="0">
    <Inputs TextSize="1" Color="0.27451,0.352941,0.705882" DisplayFilled="1" DisplayBox="1" SortPriority="16"/>
    <ResizeBorder X="0" Y="0" Width="720" Height="550"/>
-   <NodeSize Width="720" Height="577.71216"/>
+   <NodeSize Width="720" Height="577.77692"/>
   </Node>
  </Nodes>
  <Edges />
