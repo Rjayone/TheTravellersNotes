@@ -16,16 +16,18 @@ CCombatStance::CCombatStance()
 	m_Stance = e_CombatStanceVertical;
 	m_pItem = NULL;
 
-	IActionMapManager* pAmMgr = g_pGame->GetIGameFramework()->GetIActionMapManager();
-	if (pAmMgr) pAmMgr->AddExtraActionListener(this);
+	IActionMapManager* pActionmManager = g_pGame->GetIGameFramework()->GetIActionMapManager();
+	if (pActionmManager != NULL)
+		pActionmManager->AddExtraActionListener(this);
 
 	m_pCombatTarget = new CCombatTarget();
 }
 
 CCombatStance::~CCombatStance()
 {
-	IActionMapManager* pAmMgr = g_pGame->GetIGameFramework()->GetIActionMapManager();
-	if (pAmMgr)	pAmMgr->RemoveExtraActionListener(this);
+	IActionMapManager* pActionmManager = g_pGame->GetIGameFramework()->GetIActionMapManager();
+	if (pActionmManager != NULL)
+		pActionmManager->RemoveExtraActionListener(this);
 }
 
 //----------------------------------------------------------------
@@ -33,6 +35,7 @@ void CCombatStance::Init(CItem* pItem)
 {
 	if (pItem != NULL)
 		m_pItem = pItem;
+
 	ClearAllStanceTags();
 }
 
@@ -106,7 +109,7 @@ void CCombatStance::ApplyStance(int stance)
 
 	if (pItem->GetOwnerId() == LOCAL_PLAYER_ENTITY_ID)
 	{
-		//Здесь нужно дописать проверки на то, может ли игрок защищаться прямо сейчас
+		//TODO: Дописать проверки на то, может ли игрок защищаться прямо сейчас
 		//Защиты нет, если игрок безоружен, потерял равновесие от полученного удара или игрок производит атаку
 
 		SetStance(stance);
