@@ -15,16 +15,14 @@
 
 #define DEFAULT_PARTICLE "smoke_and_fire.VS2_Fire.smallfire_nobase_noglow"
 #define FIRE_PARTICLE_SLOT 0
-#define FIRE_LIGHT_SLOT 1
-
-
 
 //--------------------------------------
-CFirePlace::CFirePlace():
+CFirePlace::CFirePlace() :
 	m_pParticalEntity(nullptr),
 	state(IDLE),
-	bonusRadius(2.0),
-	noAnimalsRadius(5.0)
+	m_noColor(0.0, 0.0, 0.0),
+	m_fullColor(0.0, 0.0, 0.0),
+	m_fColorMultipier(1.0)
 {
 	IActionMapManager* pAmMgr = g_pGame->GetIGameFramework()->GetIActionMapManager();
 	if (pAmMgr != nullptr)
@@ -34,6 +32,11 @@ CFirePlace::CFirePlace():
 //--------------------------------------
 CFirePlace::~CFirePlace()
 {
+	if (m_pLightSource != nullptr)
+	{
+		gEnv->p3DEngine->UnRegisterEntityDirect(m_pLightSource);
+		gEnv->p3DEngine->DeleteLightSource(m_pLightSource);
+	}
 }
 
 //--------------------------------------
@@ -54,7 +57,7 @@ void CFirePlace::PostInit(IGameObject* pGameObject)
 		float red, green, blue, alpha;
 		SmartScriptTable props, lightc;
 		m_pScriptTable->GetValue("Properties", props);
-		if (!props->GetValue("clrLightColor", lightc)) //Безопасность превыше всего! :)
+		if (!props->GetValue("clrLightColor", lightc))
 			return;
 
 		if (
@@ -66,11 +69,28 @@ void CFirePlace::PostInit(IGameObject* pGameObject)
 			return;
 		}
 
-		flameLightColor.set(red / 255.0, green / 255.0, blue / 255.0, alpha / 255.0);
-		peakLightAlpha = alpha / 255.0;
-		
-		if (!props->GetValue("fadeLightTime", fadeLightTime))
+		if (!props->GetValue("fLightColorMultiplier", m_fColorMultipier))
 			return;
+
+		m_fullColor.set(red / 255.0 * m_fColorMultipier, green / 255.0 * m_fColorMultipier, 
+			blue / 255.0 * m_fColorMultipier, alpha / 255.0 * m_fColorMultipier);
+		
+		if (!props->GetValue("fFadeLightTime", m_fFadeTimeLimit))
+			return;
+
+		// Creating light source
+		m_pLightSource = gEnv->p3DEngine->CreateLightSource();
+
+		// Initializing it's transform matrix with frieplace matrix
+		// Note: Seems to be that lightSource must be initialized through SetMatrix in order for later light.SetPosition to work
+		// Note: Identity matrix do not work for this!
+		m_pLightSource->SetMatrix(GetEntity()->GetWorldTM());
+
+		// Initializing light properties
+		m_pLightSource->GetLightProperties().SetLightColor(m_noColor);
+
+		// Registering light source for render
+		gEnv->p3DEngine->RegisterEntity(m_pLightSource);
 	}
 	else
 		CryLog("Can not find script table for Fireplace");
@@ -102,7 +122,7 @@ void CFirePlace::ProcessEvent(SEntityEvent& event)
 			}
 			break;
 		}
-	};
+	}
 }
 
 //--------------------------------------
@@ -132,6 +152,7 @@ void CFirePlace::StartPlacing()
 {
 	if (gEnv->pSystem != nullptr && GetEntity() != nullptr)
 	{
+
 		// Switching to placing state
 		SetState(PLACING);
 		GetEntity()->Activate(true);
@@ -170,7 +191,8 @@ void CFirePlace::StopPlacing()
 {
 	SetState(PLACED);
 
-//	GetEntity()->Activate(false);
+	// Update light position
+	m_pLightSource->GetLightProperties().SetPosition(GetEntity()->GetPos());
 
 	// Physicalize the object as static entity
 	SEntityPhysicalizeParams pp;
@@ -178,8 +200,7 @@ void CFirePlace::StopPlacing()
 	GetEntity()->Physicalize(pp);
 
 	SmartScriptTable propertiesTable;
-	if (m_pScriptTable.GetPtr() != nullptr && 
-		m_pScriptTable->GetValue("Properties", propertiesTable))
+	if (m_pScriptTable && m_pScriptTable->GetValue("Properties", propertiesTable))
 	{
 		propertiesTable->SetValue("bUsable", true);
 	}
@@ -201,34 +222,70 @@ void CFirePlace::Update(SEntityUpdateContext& updateContext, int updateSlot)
 			UpdatePlacing();
 		else if (GetState() == FLAME_FADE_IN)
 		{
-			// Increasing light brightness
-			flameLightColor.a += (updateContext.fFrameTime / fadeLightTime) * peakLightAlpha;
+			// Registering time change
+			m_fFadeTimeAcc += updateContext.fFrameTime;
 
-			// Check if fade phase is over
-			if (flameLightColor.a >= peakLightAlpha) {
-				flameLightColor.a = peakLightAlpha;
+			// Calculating proportion of increment
+			float increment = m_fFadeTimeAcc / m_fFadeTimeLimit;
+
+			// Getting light properties
+			CDLight& light = m_pLightSource->GetLightProperties();
+
+			// Detecting if fade time is over
+			if (m_fFadeTimeAcc >= m_fFadeTimeLimit) {
+
+				// Full color and switch state
+				light.SetLightColor(m_fullColor);
 				SetState(BURNING);
 			}
+			else {
 
-			lightProperties.SetLightColor(flameLightColor);
-			m_pParticalEntity->FreeSlot(FIRE_LIGHT_SLOT);
-			m_pParticalEntity->LoadLight(FIRE_LIGHT_SLOT, &lightProperties);
+				// Calculating new interpolated color
+				ColorF newColor(light.GetFinalColor(m_noColor));
+				newColor.lerpFloat(m_noColor, m_fullColor, increment);
+
+				light.SetLightColor(newColor);
+			}
 		}
-
 		else if (GetState() == FLAME_FADE_OUT)
 		{
-			// Decreasing light brightness
-			flameLightColor.a -= (updateContext.fFrameTime / fadeLightTime) * peakLightAlpha;
+			// Registering time change
+			m_fFadeTimeAcc += updateContext.fFrameTime;
 
-			// Check if fade phase is over
-			if (flameLightColor.a <= 0.0) {
-				flameLightColor.a = 0.0;
+			// Calculating proportion of increment
+			float increment = m_fFadeTimeAcc / m_fFadeTimeLimit;
+
+			// Getting light properties
+			CDLight& light = m_pLightSource->GetLightProperties();
+
+			// Detecting if fade time is over
+			if (m_fFadeTimeAcc >= m_fFadeTimeLimit) {
+
+				// Put off the lights and switch state
 				SetState(BURNED);
+				light.SetLightColor(m_noColor);
+			}
+			else {
+
+				// Calculating new interpolated color
+				ColorF newColor(light.GetFinalColor(m_noColor));
+				newColor.lerpFloat(m_fullColor, m_noColor, increment);
+
+				light.SetLightColor(newColor);
+			}
+		}
+		else if (GetState() == BURNED)
+		{
+			// Make the fireplace unusable
+			SmartScriptTable propertiesTable;
+			if (m_pScriptTable.GetPtr() != nullptr &&
+				m_pScriptTable->GetValue("Properties", propertiesTable))
+			{
+				propertiesTable->SetValue("bUsable", false);
 			}
 
-			lightProperties.SetLightColor(flameLightColor);
-			m_pParticalEntity->FreeSlot(FIRE_LIGHT_SLOT);
-			m_pParticalEntity->LoadLight(FIRE_LIGHT_SLOT, &lightProperties);
+			// Deactivate
+			GetEntity()->Activate(false);
 		}
 	}
 }
@@ -236,11 +293,23 @@ void CFirePlace::Update(SEntityUpdateContext& updateContext, int updateSlot)
 //--------------------------------------
 void CFirePlace::StartFire()
 {
+	assert(m_pLightSource != nullptr);
+
 	SetState(FLAME_FADE_IN);
 
+	// Reseting time accumulator
+	m_fFadeTimeAcc = 0.0;
+
+	// Starting from zero brightness
+	m_pLightSource->GetLightProperties().SetLightColor(m_noColor);
+
+	// Update light position
+	// Note: Since it is non-directional we do not need to use transform matrix, just position
+	m_pLightSource->GetLightProperties().SetPosition(GetEntity()->GetPos());
+
+	// Read particle name from lua
 	SmartScriptTable propertiesTable;
 	const char* particleName = nullptr;
-	flameLightColor.a = 0;
 
 	if (m_pScriptTable.GetPtr() == nullptr ||
 		!m_pScriptTable->GetValue("Properties", propertiesTable) ||
@@ -250,12 +319,7 @@ void CFirePlace::StartFire()
 		particleName = DEFAULT_PARTICLE;
 	}
 
-	lightProperties.SetPosition(GetEntity()->GetPos());
-	lightProperties.SetLightColor(flameLightColor); //Здесь стоит добавить множитель дифуза. Вектор умножить на 0.01, что соответствует 1
-											   //При этом цвет не будет таким ярким, вырвиглаз
-	lightProperties.m_fRadius = 10;
-	lightProperties.m_Flags |= DLF_CASTSHADOW_MAPS; //С тенью что-то и у меня не выходит задать :(
-
+	// Spawn particle
 	SEntitySpawnParams spawn;
 	IParticleEffect *pFireParticle = gEnv->pParticleManager->FindEffect(particleName);
 
@@ -265,45 +329,53 @@ void CFirePlace::StartFire()
 		if (m_pParticalEntity == nullptr)
 			m_pParticalEntity = gEnv->pEntitySystem->SpawnEntity(spawn);
 
-		m_pParticalEntity->SetPos(GetEntity()->GetPos());
-		m_pParticalEntity->SetRotation(Quat(0.7071, 0.7071, 0, 0));
+		m_pParticalEntity->SetPosRotScale(GetEntity()->GetPos(), Quat(0.7071, 0.7071, 0, 0), Vec3(0.5, 0.5, 0.5));
 		if (pFireParticle && m_pParticalEntity)
 		{
 			m_pParticalEntity->LoadParticleEmitter(FIRE_PARTICLE_SLOT, pFireParticle);
-			m_pParticalEntity->LoadLight(FIRE_LIGHT_SLOT, &lightProperties);
 		}
 	}
-
 }
 
 //--------------------------------------
 void CFirePlace::StopFire()
 {
+	assert(m_pLightSource != nullptr);
+
 	SetState(FLAME_FADE_OUT);
+
+	// Reseting time accumulator
+	m_fFadeTimeAcc = 0.0;
+
+	// Delete particles
 	m_pParticalEntity->FreeSlot(FIRE_PARTICLE_SLOT);
-	m_pParticalEntity->FreeSlot(FIRE_LIGHT_SLOT);
 }
 
 //--------------------------------------
 void CFirePlace::Reset()
 {
 	SetState(IDLE);
-	const char* modelPath = nullptr;
 	m_pParticalEntity = nullptr;
-	SmartScriptTable propertiesTable;
+	m_fColorMultipier = 1.0;
 
+	// Reseting time accumulator
+	m_fFadeTimeAcc = 0.0;
+
+	const char* modelPath = nullptr;
+	SmartScriptTable propertiesTable;
 	m_pScriptTable = GetEntity()->GetScriptTable();
 
 	if (m_pScriptTable && 
 		m_pScriptTable->GetValue("Properties", propertiesTable) && 
-		propertiesTable->GetValue("objModel", modelPath))
+		propertiesTable->GetValue("objModel", modelPath)) 
 	{
 		GetEntity()->LoadGeometry(0, modelPath);
 	}
-	else
-	{
+	else {
 		CryLog("Failed to load fireplace model");
 	}
+
+	propertiesTable->SetValue("bUsable", true);
 }
 
 
