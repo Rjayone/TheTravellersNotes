@@ -238,7 +238,7 @@ void CSword::StartFire(int position)
 //-------------------------------------------------------------------
 void CSword::StopFire()
 {
-	if (!IsOwnerClient() || !m_Holding || !m_bBusy || m_bNowAttack)// || m_Holding->GetStatus() == e_HoldingStatusCancel)
+	if (!IsOwnerClient() || !m_Holding || !m_bBusy || m_bNowAttack)
 		return;
 
 	CWeapon::StopFire();

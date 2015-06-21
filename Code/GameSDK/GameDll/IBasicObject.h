@@ -17,51 +17,53 @@
 #define _IBASIC_OBJECT_
 
 #include "IGameObject.h"
-#include "InventoryItems.h"
 
-class IBasicObject : public CGameObjectExtensionHelper< IBasicObject, IGameObjectExtension >
+//Pick-Drop-Use protocols
+#include "Pickable.h"
+#include "Dropable.h"
+#include "Usable.h"
+
+//SInventoryItem declaration
+struct SInventoryItem;
+
+class IBasicObject : public CGameObjectExtensionHelper< IBasicObject, IGameObjectExtension >,
+	public IDropable,
+	public IPickable,
+	public IUsable
 {
 public:
-	// IGameObjectExtension
-	virtual bool Init(IGameObject * pGameObject) = 0;
-	virtual void PostInit(IGameObject * pGameObject) = 0;
-	virtual void InitClient(int channelId) = 0;
-	virtual void PostInitClient(int channelId) = 0;
-
-	virtual bool ReloadExtension(IGameObject * pGameObject, const SEntitySpawnParams &params) = 0;
-	virtual void PostReloadExtension(IGameObject * pGameObject, const SEntitySpawnParams &params) = 0;
-	virtual bool GetEntityPoolSignature(TSerialize signature) = 0;
-	virtual void Release() = 0;
-
-	virtual void FullSerialize(TSerialize ser) = 0;
-	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags) = 0;
-	virtual void PostSerialize() = 0;
-	virtual void SerializeSpawnInfo(TSerialize ser) = 0;
-	virtual ISerializableInfoPtr GetSpawnInfo() = 0;
-	virtual void Update(SEntityUpdateContext& ctx, int updateSlot) = 0;
-	virtual void HandleEvent(const SGameObjectEvent& event) = 0;
-	virtual void ProcessEvent(SEntityEvent& event) = 0;
-	virtual void SetChannelId(uint16 id) = 0;
-	virtual void SetAuthority(bool auth) = 0;
-	virtual void PostUpdate(float frameTime) = 0;
-	virtual void PostRemoteSpawn() = 0;
-	virtual void GetMemoryUsage(ICrySizer* s) const = 0;
-	//~ IGameObjectExtension
-
-	virtual void OnUse() = 0;
+	//Описание:
+	//Метод испоьзуется для сброса и перезагрузки параметров сущности
 	virtual void Reset() = 0;
-	//~ IGameObjectExtension
 
-	virtual void OnPickUp(EntityId id) = 0;
-	virtual void OnDrop(SInventoryItem* pItem, EntityId id) = 0;
+	//Описание:
+	//Метод возвращает объект SmartScriptTable, который в дальнейшем испоьзуется для получения параметров из скрипта сущности,
+	//Или задание этих параметров.
 	virtual SmartScriptTable GetSmartScriptTable() = 0;
 
+	//Опиание:
+	//Метод возвращает имя сущности. Имя является уникальным.
+	//Оно же отображается в инвнетаре
 	virtual string GetObjectName() = 0;
+
+	//Описание:
+	//Метод возвращает описание предмета, которое используется в инвнетаре
 	virtual string GetObjetDescription() = 0;
+
+	//Описание:
+	//Метод возвращает путь к моделе(объекту) сущности
 	virtual string GetModelPath() = 0;
+
+	//Описание:
+	//Метод возвращает тип сущности.
+	//В частности это имя определяет некоторые параметры обработки сущности
 	virtual string GetEntityType() = 0;
 
+	//Описание:
+	//Метод возвращает указатель на структуру SInventoryItem после прочтения XML-файла данной сущности.
+	//В XML-файле храняться базовые параметры сущности, которые её характерезуют как таковую.
 	virtual SInventoryItem* GetItemParamsXML() = 0;
+
 protected:
 	string m_ObjectName;
 	string m_ObjectDescr;

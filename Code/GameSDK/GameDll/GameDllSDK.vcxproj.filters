@@ -4280,6 +4280,15 @@
     <ClInclude Include="SimpleSearchStruct.h">
       <Filter>TravellerNotes\Utils\Search</Filter>
     </ClInclude>
+    <ClInclude Include="Pickable.h">
+      <Filter>TravellerNotes\Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Dropable.h">
+      <Filter>TravellerNotes\Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Usable.h">
+      <Filter>TravellerNotes\Game Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameActions.actions">
