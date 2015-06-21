@@ -11,6 +11,7 @@
 
 #include "IGameObject.h"
 #include "PlaceableEntity.h"
+#include "SearchDataStruct.h"
 
 class CFirePlace : public IPlaceableEntity, public IActionListener
 {
@@ -62,25 +63,21 @@ public:
 	virtual void OnUse();
 	virtual void Reset();
 
-	//todo: реализовать инициализацию партикла и света
 	void StartFire();
 	void StopFire();
 
+	const ISearchDataStruct& getSearchStruct() { return *searchStruct;  }
+	State GetState() {	return state;	}
+	void SetState(State newState) {	 state = newState;  }
+
+private:
 
 	void UpdatePlacing();
 
-	State GetState() {
-		return state;
-	}
-
-	void SetState(State newState) {
-		state = newState;
-	}
-
-private:
 	SmartScriptTable m_pScriptTable;
 	IEntity* m_pParticalEntity;
 	State state;
+	static ISearchDataStruct* searchStruct;
 
 	// Color mutiplier (implementation of brightness)
 	float m_fColorMultipier;

@@ -273,6 +273,7 @@
     <ClCompile Include="RuntimePrefab.cpp" />
     <ClCompile Include="ScriptBind_ProtectedBinds.cpp" />
     <ClCompile Include="ShotDebug.cpp" />
+    <ClCompile Include="SimpleSearchStruct.cpp" />
     <ClCompile Include="SpecialFunctions.cpp" />
     <ClCompile Include="SprintStamina.cpp" />
     <ClCompile Include="StatHealth.cpp" />
@@ -891,7 +892,10 @@
     <ClInclude Include="RPGInventoryManager.h" />
     <ClInclude Include="RuntimePrefab.h" />
     <ClInclude Include="ScriptBind_ProtectedBinds.h" />
+    <ClInclude Include="SearchDataStruct.h" />
+    <ClInclude Include="SearchItem.h" />
     <ClInclude Include="ShotDebug.h" />
+    <ClInclude Include="SimpleSearchStruct.h" />
     <ClInclude Include="SpecialFunctions.h" />
     <ClInclude Include="SprintStamina.h" />
     <ClInclude Include="StatHealth.h" />

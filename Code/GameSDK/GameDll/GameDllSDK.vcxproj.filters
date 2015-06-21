@@ -430,6 +430,9 @@
     <Filter Include="TravellerNotes\RPG System\Dialog System">
       <UniqueIdentifier>{042e9986-6c5d-48a9-8e25-9278bda8e5db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TravellerNotes\Utils\Search">
+      <UniqueIdentifier>{0767f770-2e1a-4a40-8886-e639ff56f4ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicEventListener.cpp">
@@ -2291,6 +2294,9 @@
     </ClCompile>
     <ClCompile Include="Bow.cpp">
       <Filter>TravellerNotes\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleSearchStruct.cpp">
+      <Filter>TravellerNotes\Utils\Search</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4264,6 +4270,15 @@
     </ClInclude>
     <ClInclude Include="Bow.h">
       <Filter>TravellerNotes\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchDataStruct.h">
+      <Filter>TravellerNotes\Utils\Search</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchItem.h">
+      <Filter>TravellerNotes\Utils\Search</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleSearchStruct.h">
+      <Filter>TravellerNotes\Utils\Search</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
