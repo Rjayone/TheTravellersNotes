@@ -154,7 +154,7 @@ void CSword::ProcessEvent(SEntityEvent& event)
 		   StopFire();
 		   //gEnv->pInput->EnableDevice(eDI_Mouse, true);
 		}
-		if (event.nParam[0] == 1010)//≈вент на окончание проигрывани€ анимок
+		if (event.nParam[0] == _HOLDING_RESET_STATUS)//≈вент на окончание проигрывани€ анимок
 		{
 		   m_bNowAttack = false;
 		   m_bHitSoundPlayed = false;
@@ -169,7 +169,7 @@ void CSword::ProcessEvent(SEntityEvent& event)
 //-------------------------------------------------------------------
 void CSword::StartFire()
 {
-	if (!IsOwnerClient() && m_bBusy)
+	if (!IsOwnerClient() && IsBusy())
 		return;
 
 	CPlayerStatsManager* pStatsManager = g_pGame->GetPlayerStatsManager();
@@ -238,18 +238,19 @@ void CSword::StartFire(int position)
 //-------------------------------------------------------------------
 void CSword::StopFire()
 {
-	if (!IsOwnerClient() || !m_Holding || !m_bBusy || m_bNowAttack)// || m_Holding->GetStatus() == e_HoldingStatusCancel || m_Holding->GetStatus() == e_HoldingStatusShortClick)
+	if (!IsOwnerClient() || !m_Holding || !m_bBusy || m_bNowAttack)// || m_Holding->GetStatus() == e_HoldingStatusCancel)
 		return;
 
+	CWeapon::StopFire();
+	m_Holding->StopFire(this);
+	float duration = m_Holding->GetFragmentPlayDuration(new TAction<SAnimationContext>(PP_PlayerAction, GetFragmentIds().release));
+	GetEntity()->SetTimer(_HOLDING_RESET_STATUS, duration * 10);
 	m_bNowAttack = true;
-	GetEntity()->SetTimer(1010, 600);
+
 	// од ниже нужен дл€ определени€ направлени€ удара при помощи мышки
 	CMeleeAttackTable attackTable;
 	float ang = m_MouseDir.GetAngle();
 	int type = attackTable.GetAttackType(1, ang);// 1 - sword
-
-	CWeapon::StopFire();
-	m_Holding->StopFire(this);
 
 	//≈сли силы не достаточно дл€ удара
 	CPlayerStatsManager* pStatsManager = g_pGame->GetPlayerStatsManager();
@@ -613,4 +614,14 @@ void CSword::ClearAllTags()
 	ClearTag(PlayerMannequin.tagIDs.front);
 	ClearTag(PlayerMannequin.tagIDs.hit);
 	ClearTag(PlayerMannequin.tagIDs.miss);
+}
+
+
+void CSword::SetBusy(bool busy)
+{
+	m_bBusy = busy;
+	CWeapon::SetBusy(busy);
+	if (busy == true)
+		CryLog("Set Weapon Busy True");
+	else CryLog("Set Weapon Busy False");
 }

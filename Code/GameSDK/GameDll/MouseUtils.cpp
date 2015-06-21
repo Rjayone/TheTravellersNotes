@@ -83,7 +83,7 @@ void CMouseUtils::OnClickUp()
 {
 	m_fClickUpTime = gEnv->pTimer->GetCurrTime();
 #ifdef __TDEBUG__
-	//CryLog("Click time: %.2f", CalculateClickTime());
+	CryLog("Click time: %.2f", CalculateClickTime());
 #endif
 }
 
@@ -92,7 +92,7 @@ float CMouseUtils::OnClickUp(bool force)
 {
 	m_fClickUpTime = gEnv->pTimer->GetCurrTime();
 #ifdef __TDEBUG__
-	//CryLog("Click time: %.2f", CalculateClickTime());
+	CryLog("Click time: %.2f", CalculateClickTime());
 #endif
 
 	return CalculateClickTime();
