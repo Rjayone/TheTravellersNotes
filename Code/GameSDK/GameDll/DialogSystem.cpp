@@ -13,331 +13,276 @@
 #define BONE_NAME "Bip01 Head"
 #define CAMERA_NAME "Questcamera"
 #define AUDIO_TRIGGER "AudioQuestTrigger"
-#define TEXTURE "GameSDK/Textures/generic/brick/brick_rounded_diff.dds"
+
+//TODO: Добавить функцию отключения возможности сохранить игру во время диалога
 
 
 //-------------------------------------------------
 CUIDialogMenu::CUIDialogMenu()
 {
-	StartCount = false;
+	//Получаем фреймворк и регистрируем наш класс для обработки базовых событий.
+	//По большей части здесь нам понадобиться функция Update()/PostUpdate()
 	IGameFramework *pGameFramework = g_pGame->GetIGameFramework();
 	if (pGameFramework != NULL)
-		pGameFramework->RegisterListener(this, "CDialogMenu", FRAMEWORKLISTENERPRIORITY_DEFAULT);
+		pGameFramework->RegisterListener(this, "DialogMenu", FRAMEWORKLISTENERPRIORITY_DEFAULT);
 
-	IActionMapManager* pAmMgr = g_pGame->GetIGameFramework()->GetIActionMapManager();
-	if (pAmMgr != NULL)
-		pAmMgr->AddExtraActionListener(this);
-
-	//texture = gEnv->pRenderer->EF_LoadTexture(TEXTURE);
+	m_pDialogDispathcer = new CDialogDispatcher();
 }
 
 //-------------------------------------------------
 CUIDialogMenu::~CUIDialogMenu()
 {
+	//Удаляем калсс из слушателей, дабы не вылетело, если класс удален
 	IGameFramework *pGameFramework = g_pGame->GetIGameFramework();
 	if (pGameFramework != NULL)
 		pGameFramework->UnregisterListener(this);
 }
 
-void CUIDialogMenuEventListener::OnUIEvent(IUIElement* pSender, const SUIEventDesc& event, const SUIArguments& args)
+//-------------------------------------------------
+IUIElement* CUIDialogMenu::GetUIElement()
 {
-	if (!strcmp(event.sDisplayName, "ButtonPress"))
-	{
-		CUIDialogMenu *pDialogMenu = g_pGame->GetDialogMenu();
-		
-		IUIElement *m_pUIDialogMenu = gEnv->pFlashUI->GetUIElement("DialogMenu");
-		
-		args.GetArg(0, nextDialogId);
-
-		string CamBack;
-		args.GetArg(1, CamBack);
-			
-		string sPlayerAnswer;
-		args.GetArg(2, sPlayerAnswer);
-		
-		string fFlashSec;
-		args.GetArg(3, fFlashSec);
-
-		string sAudioName;
-		args.GetArg(4, sAudioName);
-
-		if (pDialogMenu != NULL)
-		{
-			
-			pDialogMenu->SetAnswer(sPlayerAnswer);
-			pDialogMenu->SetAudio(sAudioName, true);
-			m_pUIDialogMenu->CallFunction("Clear");
-			fSec = atoi(fFlashSec);
-			bStartPlayerCount = true;
-			pDialogMenu->SetDialogCam(g_pGame->GetIGameFramework()->GetClientActor()->GetEntity(), CAMERA_NAME);
-			pDialogMenu->RotateCamFocus(g_pGame->GetIGameFramework()->GetClientActor()->GetEntity(), BONE_NAME, CAMERA_NAME);
-
-
-			if (!strcmp(CamBack, "true"))
-			{
-				IView* view = g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView();
-				view->LinkTo(gEnv->pEntitySystem->FindEntityByName(CAMERA_NAME));
-				bQCam = false;
-			}
-		}
-
-	}
-}
-
-void CUIDialogMenu::StartDialog(IEntity *pAIEntity, bool Show)
-{
-	
 	if (gEnv->pFlashUI != NULL)
 		m_pUIDialogMenu = gEnv->pFlashUI->GetUIElement("DialogMenu");
+	return m_pUIDialogMenu;
+}
 
-	if (Show)
+//-------------------------------------------------
+void CUIDialogMenu::OnUIEvent(IUIElement* pSender, const SUIEventDesc& event, const SUIArguments& args)
+{
+	if (!strcmp(event.sDisplayName, "OnSkip"))
 	{
-		if (m_pUIDialogMenu != NULL)
-		{
-
-			SmartScriptTable propertiesTable, dialogPropertiesTable;
-			IScriptTable *pAIStript = pAIEntity->GetScriptTable();
-			bool hasProperties = pAIStript->GetValue("Properties", propertiesTable);
-			if (hasProperties)
-			{
-
-				const bool hasPropertiesTable = propertiesTable->GetValue("DialogProperties", dialogPropertiesTable);
-				if (hasPropertiesTable)
-				{
-					dialogPropertiesTable->GetValue("fileDialog", FilePath);
-					if (strcmp(FilePath, ""))
-					{
-						m_pUIDialogMenu->AddEventListener(&m_UIDialogMenutEventListener, "UIDialogMenu");
-						m_pUIDialogMenu->Init();
-						m_pUIDialogMenu->SetVisible(true);
-						IActionMapManager *pActionMapManager = gEnv->pGame->GetIGameFramework()->GetIActionMapManager();
-						if (pActionMapManager != NULL)
-							pActionMapManager->EnableFilter("only_ui", false);
-						g_pGameActions->FilterNoMove()->Enable(true);
-						g_pGameActions->FilterNoMouse()->Enable(true);
-						pEntityAI = pAIEntity;
-						SetDialogCam(pEntityAI, CAMERA_NAME);
-						//g_pGame->GetIGameFramework()->GetClientActor()->GetEntity()->SetRotation(Quat::CreateRotationVDir(pAIEntity->GetPos()));
-
-						/*IRenderer* pRenderer = gEnv->pRenderer;
-						CRY_ASSERT(pRenderer);
-						pRenderer->EF_SetPostEffectParam("Dof_User_Active", 1.f, true);
-						pRenderer->EF_SetPostEffectParam("Dof_User_FocusDistance", 8000, true);
-						pRenderer->EF_SetPostEffectParam("Dof_User_FocusRange", 0, true);
-						pRenderer->EF_SetPostEffectParam("Dof_User_BlurAmount", 1, true);
-						pRenderer->EF_SetPostEffectParam("Dof_User_ScaleCoc", 12, true);*/
-
-						SetDialogFromXML(1);						
-						
-					}
-				}
-			}
-
-		}
+		Skip();
 	}
-		else
-		{
-			if (m_pUIDialogMenu != NULL)
-			{
-				m_pUIDialogMenu->SetVisible(false);
-				m_pUIDialogMenu->RemoveEventListener(&m_UIDialogMenutEventListener);
-				IActionMapManager *pActionMapManager = gEnv->pGame->GetIGameFramework()->GetIActionMapManager();
-				if (pActionMapManager != NULL)
-					pActionMapManager->EnableFilter("only_ui", false);
-				g_pGameActions->FilterNoMove()->Enable(false);
-				g_pGameActions->FilterNoMouse()->Enable(false);
-				StartCount = false;
-				fSec = 0;
-			}
-		}
 
-	
-}
+	//if (pDialogMenu != NULL)
+	//{
+
+	//	pDialogMenu->SetAnswer(sPlayerAnswer);
+	//	pDialogMenu->SetAudio(sAudioName, true);
+	//	m_pUIDialogMenu->CallFunction("Clear");
+	//	fSec = atoi(fFlashSec);
+	//	bStartPlayerCount = true;
+	//	pDialogMenu->SetDialogCam(g_pGame->GetIGameFramework()->GetClientActor()->GetEntity(), CAMERA_NAME);
+	//	pDialogMenu->RotateCamFocus(g_pGame->GetIGameFramework()->GetClientActor()->GetEntity(), BONE_NAME, CAMERA_NAME);
 
 
-
-void CUIDialogMenu::SetAnswer(const char *text)// первый ответ NPC
-{
-	m_pUIDialogMenu = gEnv->pFlashUI->GetUIElement("DialogMenu");
-	SUIArguments args;
-	args.AddArgument(string(text));
-
-	
-
-	if (m_pUIDialogMenu != NULL)
-		m_pUIDialogMenu->CallFunction("SetMessages", args);
+	//	if (!strcmp(CamBack, "true"))
+	//	{
+	//		IView* view = g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView();
+	//		view->LinkTo(gEnv->pEntitySystem->FindEntityByName(CAMERA_NAME));
+	//		bQCam = false;
+	//	}
+	//}
 
 }
 
-void CUIDialogMenu::SetPlayerAnswer(string Answer, string Next, int count, string camback, string sec, string sAudioName)
-{
-	SUIArguments args;
-
-	args.AddArgument(Answer);
-	args.AddArgument(Next);
-	args.AddArgument(count);
-	args.AddArgument(camback);
-	args.AddArgument(sec);
-	args.AddArgument(sAudioName);
-
-	if (m_pUIDialogMenu != NULL)
-		m_pUIDialogMenu->CallFunction("CreateAnswerItem", args);
-
-
-}
-
-	
+//-------------------------------------------------
 void CUIDialogMenu::OnAction(const ActionId& action, int activationMode, float value)
 {
 	const CGameActions &actions = g_pGame->Actions();
 	if (actions.skip_dialog == action)
 	{
-
-		fSec = 0;
+		Skip();
 	}
 }
 
-
+//-------------------------------------------------
 void CUIDialogMenu::OnPostUpdate(float fDeltaTime)
 {
-
-	//gEnv->pRenderer->Draw2dImage(gEnv->pRenderer->GetWidth() / 2.0f, gEnv->pRenderer->GetHeight() / 2.0f, 100.0f, 100.0f, texture->GetTextureID());
-	//if (pEntityAI)
-	//gEnv->pRenderer->DrawLabel(pEntityAI->GetWorldPos() + Vec3(0, 0, 2.5f), 3.0f, "start dialog");
-
-	if (bStartPlayerCount)
-	{
-		fSec--;
-		if (fSec <= 0)
-		{
-			CUIDialogMenu *pDialogMenu = g_pGame->GetDialogMenu();
-			pDialogMenu->SetDialogFromXML(nextDialogId); //вызов следующего диалога xml
-			bStartPlayerCount = false;
-			SetAudio("",false);
-		}
-	}
-
-	if (StartCount)
-	{
-		fSec--;
-		if (fSec <= 0)
-		{
-
-			if (bNextPhrase)
-			{
-				StartCount = false;
-				SetDialogFromXML(nextDialogId);
-				//bNextPhrase = false;
-			}
-			else
-			{
-				for (int k = 0; k < playerAnswerCount; k++)
-				{
-					SetAudio("", false);
-					SetPlayerAnswer(PlayersAnswers[k].answer, PlayersAnswers[k].idNextDialog, k, PlayersAnswers[k].qcamback, PlayersAnswers[k].sec, PlayersAnswers[k].AudioName);
-					StartCount = false;
-				}
-			}
-		}
-	}
+	if (m_pDialogDispathcer != NULL)
+		m_pDialogDispathcer->Update();
 }
 
-void CUIDialogMenu::OnTimer(float sec)
+//-------------------------------------------------------------------
+void CUIDialogMenu::CanDialog(IEntity* pTarget)
 {
-	
-	while (sec>0)
-	{
-		sec--; 
-	}
-	
-
+	m_pTarget = pTarget;
 }
 
-void CUIDialogMenu::SetDialogFromXML(int NextDialogId)
+void CUIDialogMenu::OnTimerFinished(int id)
 {
- 	XmlNodeRef DialogDescriptionFile = gEnv->pSystem->LoadXmlFromFile(FilePath);
-	if (DialogDescriptionFile)
-	{
-		int c = DialogDescriptionFile->getChildCount();
-		for (int i = 0; i < c; i++)
-		{
-			XmlNodeRef Answer = DialogDescriptionFile->getChild(i);
-			const char *cNextDialogId = Answer->getAttr("id");
-			const char* special = Answer->getAttr("special");
-			
-			
-			if (atoi(cNextDialogId) == NextDialogId && !strcmp(special, ""))
-			{
-				fSec = atof(Answer->getAttr("sec"));
-				StartCount = true;
-
-				const char *AIMessage = Answer->getAttr("message");
-				SetAnswer(AIMessage);	// первый ответ NPC
-				RotateCamFocus(pEntityAI, BONE_NAME, CAMERA_NAME);
-				
-				const char *QuestCam = Answer->getAttr("questcam");// взятие камеры	
-				SetQuestCam(QuestCam);
-				
-				const char *Audio = Answer->getAttr("audio");// взятие озвукчки диалоги
-				SetAudio(Audio,true);
-
-				playerAnswerCount = Answer->getChildCount();
-				if (playerAnswerCount == 0)
-				{
-					nextDialogId = NextDialogId + 1;
-					bNextPhrase = true;
-					//OnPostUpdate(0);
-					//break;
-				}
-				else
-				{
-					PlayersAnswers = new  SAnswer[playerAnswerCount]; // Массив ответов игрока
-					bNextPhrase = false;
-					if (m_pUIDialogMenu)
-						m_pUIDialogMenu->CallFunction("Clear");		//Вызов функции очищения кнопок из флеша
-
-					for (int k = 0; k < playerAnswerCount; k++)
-					{
-						XmlNodeRef cPlayerAnswer = Answer->getChild(k);
-						PlayersAnswers[k].answer = cPlayerAnswer->getAttr("answer");
-						PlayersAnswers[k].idNextDialog = cPlayerAnswer->getAttr("next");
-						PlayersAnswers[k].qcamback = cPlayerAnswer->getAttr("qcamback");
-						PlayersAnswers[k].sec = cPlayerAnswer->getAttr("sec");
-						PlayersAnswers[k].AudioName = cPlayerAnswer->getAttr("audio");
-						//SetPlayerAnswer(PlayersAnswers[k].answer, PlayersAnswers[k].idNextDialog, k, PlayersAnswers[k].qcamback);
-					}
-				}
-				return;
-			}
-
-			if (!strcmp(special, "Exit"))
-			{
-				//Delay();
-				IView* view = g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView();
-				view->LinkTo(g_pGame->GetIGameFramework()->GetClientActor()->GetEntity());
-				fSec = 0;
-				StartCount = false;
-				//bStartFocus = false;
-				StartDialog(NULL,false);
-				((CPlayer *)g_pGame->GetIGameFramework()->GetClientActor())->SetThirdPerson(false);
-				break;
-			}
-		}		
-	}
+	Skip();
 }
 
-
-
-
-void CUIDialogMenu::SetDialogCam(IEntity *pEntity, const char *CameraName)
+//-------------------------------------------------------------------
+void CUIDialogMenu::StartDialog(IEntity *pAIEntity)
 {
-
+	GetUIElement();
 	SmartScriptTable propertiesTable, dialogPropertiesTable;
-	IScriptTable *pAIStript = pEntity->GetScriptTable();
+	IScriptTable *pAIStript = pAIEntity->GetScriptTable();
 	bool hasProperties = pAIStript->GetValue("Properties", propertiesTable);
 	if (hasProperties)
 	{
+		const bool hasPropertiesTable = propertiesTable->GetValue("DialogProperties", dialogPropertiesTable);
+		if (hasPropertiesTable)
+		{
+			dialogPropertiesTable->GetValue("fileDialog", m_pFilePath);
+			if (strcmp(m_pFilePath, ""))
+			{
+				m_pUIDialogMenu->AddEventListener(this, "UIDialogMenu");
+				m_pUIDialogMenu->Init();
+				m_pUIDialogMenu->SetVisible(true);
+				IActionMapManager *pActionMapManager = gEnv->pGame->GetIGameFramework()->GetIActionMapManager();
+				if (pActionMapManager != NULL)
+					pActionMapManager->EnableFilter("only_ui", true);
+				g_pGameActions->FilterNoMove()->Enable(true);
+				g_pGameActions->FilterNoMouse()->Enable(true);
+				m_pTarget = pAIEntity;
+				SetDialogCam(m_pTarget, CAMERA_NAME);
+				//g_pGame->GetIGameFramework()->GetClientActor()->GetEntity()->SetRotation(Quat::CreateRotationVDir(pAIEntity->GetPos()));
+				//
+				//IRenderer* pRenderer = gEnv->pRenderer;
+				//CRY_ASSERT(pRenderer);
+				//pRenderer->EF_SetPostEffectParam("Dof_User_Active", 1.f, true);
+				//pRenderer->EF_SetPostEffectParam("Dof_User_FocusDistance", 8000, true);
+				//pRenderer->EF_SetPostEffectParam("Dof_User_FocusRange", 0, true);
+				//pRenderer->EF_SetPostEffectParam("Dof_User_BlurAmount", 1, true);
+				//pRenderer->EF_SetPostEffectParam("Dof_User_ScaleCoc", 12, true);
 
+				SDialogNPCAnswer* pNPCAnswer = new SDialogNPCAnswer();
+				SDialogPlayerAnswer* pPlayerAnswer = new SDialogPlayerAnswer();
+
+				SetDialogFromXML(1, m_pFilePath);
+			}
+		}
+	}
+}
+
+void CUIDialogMenu::StopDialog()
+{
+	GetUIElement();
+	m_pUIDialogMenu->SetVisible(false);
+	m_pUIDialogMenu->RemoveEventListener(this);
+
+	IActionMapManager *pActionMapManager = gEnv->pGame->GetIGameFramework()->GetIActionMapManager();
+	if (pActionMapManager != NULL)
+		pActionMapManager->EnableFilter("only_ui", false);
+	g_pGameActions->FilterNoMove()->Enable(false);
+	g_pGameActions->FilterNoMouse()->Enable(false);
+
+	SAFE_DELETE(m_pDialogTimer);
+}
+
+//-------------------------------------------------------------------
+void CUIDialogMenu::SetAnswer(const char *text)
+{
+	GetUIElement();
+
+	SUIArguments args;
+	args.AddArgument(string(text));
+
+	if (m_pUIDialogMenu != NULL)
+		m_pUIDialogMenu->CallFunction("SetMessages", args);
+}
+
+//-------------------------------------------------------------------
+void CUIDialogMenu::SetPlayerAnswer(SDialogPlayerAnswer* pPlayerAnswer)
+{
+	GetUIElement();
+
+	SUIArguments args;
+	args.AddArgument(pPlayerAnswer->answer);
+	args.AddArgument(pPlayerAnswer->nextDialogId);
+
+	if (m_pUIDialogMenu != NULL)
+		m_pUIDialogMenu->CallFunction("CreateAnswerItem", args);
+}
+
+//-------------------------------------------------------------------
+void CUIDialogMenu::Skip()
+{
+	if (m_pNPCAnswer == NULL)
+		return;
+
+	SetDialogFromXML(m_pNPCAnswer->nextPhraseId, m_pFilePath);
+}
+
+//-------------------------------------------------------------------
+void CUIDialogMenu::SetDialogFromXML(int NextDialogId, const char* filePath)
+{
+	XmlNodeRef DialogDescriptionFile = gEnv->pSystem->LoadXmlFromFile(filePath);
+	if (DialogDescriptionFile == NULL)
+		return;
+
+	int count = DialogDescriptionFile->getChildCount();
+	for (int i = 0; i < count; i++)
+	{
+		XmlNodeRef pAnswer = DialogDescriptionFile->getChild(i);
+		if (!pAnswer)
+			return;
+
+		//Получаем параметры первого диалога(фразы)
+		m_pNPCAnswer->currentPhraseId = atoi(pAnswer->getAttr("id"));
+		const char* special = pAnswer->getAttr("special");	//Нужен для перехода к меню торговли или ещё чему
+		const char *QuestCam = pAnswer->getAttr("questcam");// взятие камеры
+		int initWithoutMessage = atoi(pAnswer->getAttr("initWithoutMessage"));
+
+		if (m_pNPCAnswer->currentPhraseId == NextDialogId && !strcmp(special, ""))
+		{
+			int fCurrentPhraseDuration = atof(pAnswer->getAttr("duration"));	//получаем длинну аудиофайла в милисеках
+			if (initWithoutMessage == 0)	//Если данная фраза отображает текста
+			{
+				if (m_pDialogTimer == NULL)
+					m_pDialogTimer = new CTimer();
+				m_pDialogTimer->StartTimer(fCurrentPhraseDuration, NextDialogId);
+				m_pDialogTimer->AttachEventListener(this);
+
+				const char *AIMessage = pAnswer->getAttr("message");
+				SetAnswer(AIMessage);	// первый ответ NPC
+				RotateCamFocus(m_pTarget, BONE_NAME, CAMERA_NAME);
+				SetQuestCam(QuestCam); //Устанавливаем камеру, если она указана. Иначе функция ничего не выполнит
+			}
+			const char *pAudio = pAnswer->getAttr("audio");// взятие озвукчки диалоги
+			SetAudio(pAudio, true);
+
+			//Варианты ответа у игрока
+			int playerAnswerCount = pAnswer->getChildCount();
+
+			if (playerAnswerCount == 0)  //Если игроку нечего овтетить
+			{
+				m_pNPCAnswer->nextPhraseId = NextDialogId + 1;
+			}
+			else
+			{
+				m_pPlayerAnswer = new  SDialogPlayerAnswer[playerAnswerCount]; // Массив ответов игрока
+				m_pUIDialogMenu->CallFunction("Clear");		//Вызов функции очищения вариантов ответов
+
+				for (int k = 0; k < playerAnswerCount; k++)
+				{
+					XmlNodeRef cPlayerAnswer = pAnswer->getChild(k);
+					m_pPlayerAnswer[k].answer = cPlayerAnswer->getAttr("answer");
+					m_pPlayerAnswer[k].nextDialogId = atoi(cPlayerAnswer->getAttr("next"));
+					m_pPlayerAnswer[k].audioDialogDuration = atoi(cPlayerAnswer->getAttr("duration"));
+					m_pPlayerAnswer[k].audioName = cPlayerAnswer->getAttr("audio");
+					SetPlayerAnswer(m_pPlayerAnswer);
+				}
+			}
+			return;
+		}
+
+		if (!strcmp(special, "Exit"))
+		{
+			//Delay();
+			IView* view = g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView();
+			view->LinkTo(g_pGame->GetIGameFramework()->GetClientActor()->GetEntity());
+			SAFE_DELETE(m_pDialogTimer);
+			StopDialog();
+			((CPlayer *)g_pGame->GetIGameFramework()->GetClientActor())->SetThirdPerson(false);
+			break;
+		}
+	}
+}
+
+
+
+//-------------------------------------------------------------------
+void CUIDialogMenu::SetDialogCam(IEntity *pEntity, const char *CameraName)
+{
+	SmartScriptTable propertiesTable, dialogPropertiesTable;
+	IScriptTable *pAIStript = m_pTarget->GetScriptTable();
+	bool hasProperties = pAIStript->GetValue("Properties", propertiesTable);
+	if (hasProperties)
+	{
 		const bool hasPropertiesTable = propertiesTable->GetValue("DialogProperties", dialogPropertiesTable);
 		if (hasPropertiesTable)
 		{
@@ -352,7 +297,6 @@ void CUIDialogMenu::SetDialogCam(IEntity *pEntity, const char *CameraName)
 			{
 				if (camDistance)
 				{
-
 					Vec3  vDir, vNPC, vP, vMid, vCamNPC, HitPos;
 					float length = 0, Ang;
 					vNPC = pEntity->GetWorldPos();
@@ -414,76 +358,63 @@ void CUIDialogMenu::SetDialogCam(IEntity *pEntity, const char *CameraName)
 	}
 }
 
+//-------------------------------------------------------------------
 void CUIDialogMenu::RotateCamFocus(IEntity *pEntity, const char *BoneName, const char *CameraName)
 {
-	Vec3 vCam;
-	IEntity *Qcam = gEnv->pEntitySystem->FindEntityByName(CameraName);
-	if (Qcam)
-	{
-		Vec3 bonepos = CSpecialFunctions::GetBonePos(BoneName, false, pEntity);
-		vCam = (bonepos - Qcam->GetPos()).normalize();
-		Qcam->SetRotation(Quat::CreateRotationVDir(vCam));
-		IView* view = g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView();
-		view->LinkTo(Qcam);
-	}
+	Vec3 cameraPosition;
+	if (!m_pCurrentQuestCamera)
+		m_pCurrentQuestCamera = gEnv->pEntitySystem->FindEntityByName(CameraName);
+
+	Vec3 bonepos = CSpecialFunctions::GetBonePos(BoneName, false, pEntity);
+	cameraPosition = (bonepos - cameraPosition.normalize());
+	m_pCurrentQuestCamera->SetRotation(Quat::CreateRotationVDir(cameraPosition));
+	IView* view = g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView();
 }
 
-
+//-------------------------------------------------------------------
 void CUIDialogMenu::SetQuestCam(string camname)
 {
-
-	/* Блок показа камерой квеста */
-	if (strcmp(camname, ""))
-	{		
-		IEntity *Qcam = gEnv->pEntitySystem->FindEntityByName(camname);
-		if (!Qcam)
+	if (strcmp(camname, ""))//Если имя камеры не равно пустой строке
+	{
+		m_pCurrentQuestCamera = gEnv->pEntitySystem->FindEntityByName(camname);
+		if (!m_pCurrentQuestCamera)
 			return;
 
-		IView* view = g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView();
-		view->LinkTo(Qcam);
-		bQCam = true;
+		IView* pView = g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView();
+		pView->LinkTo(m_pCurrentQuestCamera);
+		m_bQuestCameraIsEnabled = true;
 	}
-	/*Конец блока*/
 }
 
+//-------------------------------------------------------------------
 void CUIDialogMenu::SetAudio(const char * AudioName, bool bEnabled)
 {
 	IEntity *pAudioTrigger = gEnv->pEntitySystem->FindEntityByName(AUDIO_TRIGGER);
-
-    if (strcmp(AudioName, ""))
+	SmartScriptTable propertiesTable;
+	if (strcmp(AudioName, "") && pAudioTrigger)
 	{
-		
-		if (pAudioTrigger)	
-		{
-			pAudioTrigger->SetPos(pEntityAI->GetPos() + Vec3(0, 0, 3));
-			SmartScriptTable propertiesTable;
-			IScriptTable *pStriptTable = pAudioTrigger->GetScriptTable();					
-			
-			bool hasProperties = pStriptTable->GetValue("Properties", propertiesTable);
-			if (hasProperties)
-			{
-				propertiesTable->SetValue("audioTriggerPlayTriggerName", AudioName);
-				propertiesTable->SetValue("bEnabled", bEnabled);
+		pAudioTrigger->SetPos(m_pTarget->GetPos() + Vec3(0, 0, 3));
+		IScriptTable *pStriptTable = pAudioTrigger->GetScriptTable();
 
-				Script::CallMethod(pStriptTable, "OnPropertyChange");
-				//Script::Call();
-			}
+		bool hasProperties = pStriptTable->GetValue("Properties", propertiesTable);
+		if (hasProperties)
+		{
+			propertiesTable->SetValue("audioTriggerPlayTriggerName", AudioName);
+			propertiesTable->SetValue("bEnabled", bEnabled);
+
+			Script::CallMethod(pStriptTable, "OnPropertyChange");
 		}
 	}
 	else
 	{
-		if (pAudioTrigger)
+		IScriptTable *pStriptTable = pAudioTrigger->GetScriptTable();
+		bool hasProperties = pStriptTable->GetValue("Properties", propertiesTable);
+		if (hasProperties)
 		{
-			SmartScriptTable propertiesTable;
-			IScriptTable *pStriptTable = pAudioTrigger->GetScriptTable();
-			bool hasProperties = pStriptTable->GetValue("Properties", propertiesTable);
-			if (hasProperties)
-			{			
-				propertiesTable->SetValue("audioTriggerPlayTriggerName", "");
-				propertiesTable->SetValue("bEnabled", bEnabled);
-				Script::CallMethod(pStriptTable, "OnPropertyChange");				
-			}
+			propertiesTable->SetValue("audioTriggerPlayTriggerName", "");
+			propertiesTable->SetValue("bEnabled", bEnabled);
+			Script::CallMethod(pStriptTable, "OnPropertyChange");
 		}
 	}
-
 }
+

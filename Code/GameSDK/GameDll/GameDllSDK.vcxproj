@@ -121,7 +121,7 @@
     <ClCompile Include="CraftSystem.cpp" />
     <ClCompile Include="DataPatchDownloader.cpp" />
     <ClCompile Include="AI\AloneDetectorModule.cpp" />
-    <ClCompile Include="DialogSource.cpp" />
+    <ClCompile Include="DialogDispatcher.cpp" />
     <ClCompile Include="DialogSystem.cpp" />
     <ClCompile Include="DoubleMagazine.cpp" />
     <ClCompile Include="EconomicResources.cpp" />
@@ -285,6 +285,7 @@
     <ClCompile Include="TeamVisualizationManager.cpp" />
     <ClCompile Include="Tent.cpp" />
     <ClCompile Include="ThrowIndicator.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Torch.cpp" />
     <ClCompile Include="Turret\Turret\FlowNodesTurret.cpp" />
     <ClCompile Include="Turret\Turret\ProceduralClipTurretAimPose.cpp" />
@@ -772,7 +773,7 @@
     <ClInclude Include="CornerSmoother.h" />
     <ClInclude Include="CraftSystem.h" />
     <ClInclude Include="DataPatchDownloader.h" />
-    <ClInclude Include="DialogSource.h" />
+    <ClInclude Include="DialogDispatcher.h" />
     <ClInclude Include="DialogSystem.h" />
     <ClInclude Include="DoubleMagazine.h" />
     <ClInclude Include="Dropable.h" />
@@ -910,6 +911,7 @@
     <ClInclude Include="TeamVisualizationManager.h" />
     <ClInclude Include="Tent.h" />
     <ClInclude Include="ThrowIndicator.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Torch.h" />
     <ClInclude Include="Turret\Turret\AnimationActionTurret.h" />
     <ClInclude Include="Turret\Turret\ProceduralClipTurretAimPose.h" />

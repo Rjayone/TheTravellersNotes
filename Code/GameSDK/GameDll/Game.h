@@ -1109,7 +1109,7 @@ public:
 	CCraftSystem* GetCraftSystem(){ return pCraftSystem; }
 	CRPGInventory* GetRPGInventory(){ return pRPGInventory; }
 	CCharacterDevelopmentSystem* GetCharDevSys(){ return pCharDevSys; }
-	CUIDialogMenu* GetDialogMenu(){ return pDialogMenu; }
+	CUIDialogMenu* GetDialogSystem(){ return pDialogMenu; }
 	CRPGInventoryManager* GetRPGInventoryManager() { return pRPGInventoryManager; }
 	CPlayerStatsManager* GetPlayerStatsManager(){ return pPlayerStatsManager; }
 	CUIBuildMenu* GetBuildMenu(){ return pBuildMenu; }

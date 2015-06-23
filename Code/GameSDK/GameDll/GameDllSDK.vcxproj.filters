@@ -433,6 +433,9 @@
     <Filter Include="TravellerNotes\Utils\Search">
       <UniqueIdentifier>{0767f770-2e1a-4a40-8886-e639ff56f4ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TravellerNotes\Utils\Math\Timer">
+      <UniqueIdentifier>{1f6b9600-0118-4bf2-b5fc-67703758e223}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicEventListener.cpp">
@@ -2253,9 +2256,6 @@
     <ClCompile Include="Economics.cpp">
       <Filter>TravellerNotes\RPG System\Economic System</Filter>
     </ClCompile>
-    <ClCompile Include="DialogSource.cpp">
-      <Filter>TravellerNotes\RPG System\Dialog System</Filter>
-    </ClCompile>
     <ClCompile Include="DialogSystem.cpp">
       <Filter>TravellerNotes\RPG System\Dialog System</Filter>
     </ClCompile>
@@ -2297,6 +2297,12 @@
     </ClCompile>
     <ClCompile Include="SimpleSearchStruct.cpp">
       <Filter>TravellerNotes\Utils\Search</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogDispatcher.cpp">
+      <Filter>TravellerNotes\RPG System\Dialog System</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>TravellerNotes\Utils\Math\Timer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4237,9 +4243,6 @@
     <ClInclude Include="Economics.h">
       <Filter>TravellerNotes\RPG System\Economic System</Filter>
     </ClInclude>
-    <ClInclude Include="DialogSource.h">
-      <Filter>TravellerNotes\RPG System\Dialog System</Filter>
-    </ClInclude>
     <ClInclude Include="DialogSystem.h">
       <Filter>TravellerNotes\RPG System\Dialog System</Filter>
     </ClInclude>
@@ -4288,6 +4291,12 @@
     </ClInclude>
     <ClInclude Include="Usable.h">
       <Filter>TravellerNotes\Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogDispatcher.h">
+      <Filter>TravellerNotes\RPG System\Dialog System</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>TravellerNotes\Utils\Math\Timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
