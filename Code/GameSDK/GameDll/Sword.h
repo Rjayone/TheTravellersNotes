@@ -92,7 +92,7 @@ public:
 	void PlayHitMaterialEffect(const Vec3 &position, const Vec3 &normal, int surfaceIdx);
 
 	bool IsBusy() const { return m_bBusy; }
-	void SetBusy(bool busy){ m_bBusy = busy; }
+	void SetBusy(bool busy);
 
 	//Вырезано
 	DEPRICATED int GetComboMoveCount(int combo);

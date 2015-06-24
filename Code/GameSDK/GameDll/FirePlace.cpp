@@ -12,6 +12,7 @@
 #include "GameActions.h"
 #include "IParticles.h"
 #include "RPGInventory.h"
+#include "SimpleSearchStruct.h"
 
 #define DEFAULT_PARTICLE "smoke_and_fire.VS2_Fire.smallfire_nobase_noglow"
 #define FIRE_PARTICLE_SLOT 0
@@ -37,6 +38,10 @@ CFirePlace::~CFirePlace()
 		gEnv->p3DEngine->UnRegisterEntityDirect(m_pLightSource);
 		gEnv->p3DEngine->DeleteLightSource(m_pLightSource);
 	}
+
+	// Removing fireplace the search pool in case it wasn`t removed before
+	SearchItem searchableItem(GetEntityId(), GetEntity()->GetPos());
+	searchStruct->RemoveItem(searchableItem);
 }
 
 //--------------------------------------
@@ -297,6 +302,10 @@ void CFirePlace::StartFire()
 
 	SetState(FLAME_FADE_IN);
 
+	// Adding our fireplace to the search pool
+	SearchItem searchable(GetEntityId(), GetEntity()->GetPos());
+	searchStruct->AddItem(searchable);
+
 	// Reseting time accumulator
 	m_fFadeTimeAcc = 0.0;
 
@@ -343,6 +352,10 @@ void CFirePlace::StopFire()
 	assert(m_pLightSource != nullptr);
 
 	SetState(FLAME_FADE_OUT);
+
+	// Removing fireplace the search pool
+	SearchItem searchableItem(GetEntityId(), GetEntity()->GetPos());
+	searchStruct->RemoveItem(searchableItem);
 
 	// Reseting time accumulator
 	m_fFadeTimeAcc = 0.0;
@@ -394,3 +407,7 @@ void CFirePlace::OnAction(const ActionId& action, int activationMode, float valu
 	//	GetEntity()->Hide(true);
 	//}
 }
+
+// Search struct initialization
+// This variable exist until the programm exits, thus resource release can be omitted
+ISearchDataStruct* CFirePlace::searchStruct = new SimpleSearchStruct();

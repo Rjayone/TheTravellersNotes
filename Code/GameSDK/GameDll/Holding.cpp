@@ -115,6 +115,10 @@ void CHolding::ProcessEvent(SEntityEvent& event)
 		}
 		if (event.nParam[0] == _START_HOLDING_FRAGMENT)
 		{
+			//Если длительность клика < чем таймер на включение холда.
+			//В этом случаи релиз пройдет раньше холдинга, поэтому ретурн
+			if (m_nStatus == e_HoldingStatusRelease) 
+				return;
 			OnHold(0);
 		}
 		break;
@@ -124,14 +128,15 @@ void CHolding::ProcessEvent(SEntityEvent& event)
 //-------------------------------------------------------------------
 void CHolding::PerfomSwing(CItem *pItem, int stance)
 {
-	//Так же стоит проверить был ли это шорт клик
-	if (!pItem || pItem->IsBusy())
+	//Занято ли оружие
+	if (!pItem || pItem->IsBusy()) {
+		CryLog("Weapon busy or NaN");
 		return;
+	}
 
 	int weaponType = pItem->GetWeaponType();
-
-	pItem->SetBusy(true);
 	m_pItem = pItem;
+	m_pItem->SetBusy(true);
 	SetStatus(e_HoldingStatusSwing);
 	SetTag(PlayerMannequin.tagIDs.swing, true);
 
@@ -142,60 +147,40 @@ void CHolding::PerfomSwing(CItem *pItem, int stance)
 	}
 
 	IActionPtr pAction = new TAction<SAnimationContext>(PP_PlayerAction, m_pItem->GetFragmentIds().swing);
-	CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
 	m_pItem->PlayAction(m_pItem->GetFragmentIds().swing);
-
-	float fragmentDuration, transitionDuration;
-	pPlayer->GetAnimatedCharacter()->GetActionController()->QueryDuration(*pAction, fragmentDuration, transitionDuration);
-	if (fragmentDuration * 100 + transitionDuration <= 0)
-		fragmentDuration = 6.0f;
-	pItem->GetEntity()->SetTimer(_START_HOLDING_FRAGMENT, fragmentDuration*100 + transitionDuration);
-	//OnHold(0);
-
+	pItem->GetEntity()->SetTimer(_START_HOLDING_FRAGMENT, GetFragmentPlayDuration(pAction));
+	CryLog("Swing");
 }
 
 //-------------------------------------------------------------------
 void CHolding::OnHold(int stance)
 {
-	if (m_nStatus == e_HoldingStatusShortClick)// || !m_pItem->IsBusy())
-		return;
-
-	m_nStatus = e_HoldingStatusHold;
-	SetTag(PlayerMannequin.tagIDs.swing, false);//отключаем тег свинг
-	SetTag(PlayerMannequin.tagIDs.hold, true);
-	CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
-	m_pItem->PlayAction(m_pItem->GetFragmentIds().holding);
+	SetStatus(e_HoldingStatusHold);
 }
 
 
 //-------------------------------------------------------------------
 void CHolding::PerfomRelease()
 {
-	float clickTime = m_pMouseUtils->OnClickUp(true);
-	if (clickTime <= 0.1f)
-		SetStatus(e_HoldingStatusShortClick);
-
-	if (m_nStatus == e_HoldingStatusCancel /*|| m_nStatus == e_HoldingStatusShortClick*/ || !GetEntity())
+	if (m_nStatus == e_HoldingStatusCancel || !GetEntity())
 	{
 		SetStatus(e_HoldingTypeIdle);
 		return;
 	}
+
 	if (!m_pItem->IsBusy() || m_nStatus == e_HoldingStatusRelease)
 		return;
 
+	CryLog("Release");
 	SetStatus(e_HoldingStatusRelease);
 	SetTag(PlayerMannequin.tagIDs.release, true);
+	SetTag(PlayerMannequin.tagIDs.swing, false);
 	SetTag(PlayerMannequin.tagIDs.hold, false);
 
 	IActionPtr pAction = new TAction< SAnimationContext >(PP_PlayerAction, m_pItem->GetFragmentIds().release);
-	CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
 	m_pItem->PlayAction(m_pItem->GetFragmentIds().release);
 
-	float fragmentDuration, transitionDuration;
-	pPlayer->GetAnimatedCharacter()->GetActionController()->QueryDuration(*pAction, fragmentDuration, transitionDuration);
-	if (fragmentDuration * 100 + transitionDuration <= 0)
-		fragmentDuration = 6.0f;
-	GetEntity()->SetTimer(_HOLDING_RESET_STATUS, fragmentDuration * 100 + transitionDuration);/*300 это время в милисек в течении которого идет урон*/
+	GetEntity()->SetTimer(_HOLDING_RESET_STATUS, GetFragmentPlayDuration(pAction));
 }
 
 
@@ -215,22 +200,28 @@ void CHolding::CancelHolding()
 //-------------------------------------------------------------------
 void CHolding::DefaultAttack(int stance)
 {
-	if (m_pItem->IsBusy())
-		return;
-
-	CryLog("[CHolding]: Short Click");
-	m_pItem->SetBusy(true);
-	m_bHolding = false;
-	SetStatus(e_HoldingStatusShortClick);
-
-	int weaponType = m_pItem->GetWeaponType();
-	if (weaponType == e_WeaponTypeSword || weaponType == e_WeaponTypeAxe)
-	{
-		CMeleeAttackTable table;
-		SetTag(table.GetRandomTagDirection(m_pItem), true);
-	}
-	m_pItem->PlayAction(m_pItem->GetFragmentIds().hit, 0, false, 0, -1, 1);
-	m_pItem->GetEntity()->SetTimer(_HOLDING_RESET_STATUS, 700);
+	//if (m_pItem->IsBusy())
+	//	return;
+	//
+	//m_pItem->SetBusy(true);
+	//m_bHolding = false;
+	//SetStatus(e_HoldingStatusShortClick);
+	//
+	//int weaponType = m_pItem->GetWeaponType();
+	//if (weaponType == e_WeaponTypeSword || weaponType == e_WeaponTypeAxe)
+	//{
+	//	CMeleeAttackTable table;
+	//	SetTag(table.GetRandomTagDirection(m_pItem), true);
+	//}
+	//m_pItem->PlayAction(m_pItem->GetFragmentIds().hit, 0, false, 0, -1, 1);
+	//IActionPtr pAction = new TAction< SAnimationContext >(PP_PlayerAction, m_pItem->GetFragmentIds().hit);
+	//CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
+	//
+	//float fragmentDuration, transitionDuration;
+	//pPlayer->GetAnimatedCharacter()->GetActionController()->QueryDuration(*pAction, fragmentDuration, transitionDuration);
+	//if (fragmentDuration * 100 + transitionDuration <= 0)
+	//	fragmentDuration = 6.0f;
+	//GetEntity()->SetTimer(_HOLDING_RESET_STATUS, fragmentDuration * 100 + transitionDuration);/*300 это время в милисек в течении которого идет урон*/
 }
 
 //-------------------------------------------------------------------
@@ -286,4 +277,16 @@ void CHolding::ClearAllHoldingTags()
 	CLEAR_TAG(PlayerMannequin.tagIDs.front);
 	CLEAR_TAG(PlayerMannequin.tagIDs.hit);
 	CLEAR_TAG(PlayerMannequin.tagIDs.miss);
+}
+
+float CHolding::GetFragmentPlayDuration(IActionPtr pAction)
+{
+	float fragmentDuration, transitionDuration;
+	CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
+
+	pPlayer->GetAnimatedCharacter()->GetActionController()->QueryDuration(*pAction, fragmentDuration, transitionDuration);
+	if (fragmentDuration * 100 + transitionDuration <= 0)
+		fragmentDuration = 6.0f;
+
+	return fragmentDuration * 100 + transitionDuration;
 }

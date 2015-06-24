@@ -122,7 +122,7 @@
     <ClCompile Include="CraftSystem.cpp" />
     <ClCompile Include="DataPatchDownloader.cpp" />
     <ClCompile Include="AI\AloneDetectorModule.cpp" />
-    <ClCompile Include="DialogSource.cpp" />
+    <ClCompile Include="DialogDispatcher.cpp" />
     <ClCompile Include="DialogSystem.cpp" />
     <ClCompile Include="DoubleMagazine.cpp" />
     <ClCompile Include="EconomicResources.cpp" />
@@ -275,6 +275,7 @@
     <ClCompile Include="RuntimePrefab.cpp" />
     <ClCompile Include="ScriptBind_ProtectedBinds.cpp" />
     <ClCompile Include="ShotDebug.cpp" />
+    <ClCompile Include="SimpleSearchStruct.cpp" />
     <ClCompile Include="SpecialFunctions.cpp" />
     <ClCompile Include="SprintStamina.cpp" />
     <ClCompile Include="StatHealth.cpp" />
@@ -286,6 +287,7 @@
     <ClCompile Include="TeamVisualizationManager.cpp" />
     <ClCompile Include="Tent.cpp" />
     <ClCompile Include="ThrowIndicator.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Torch.cpp" />
     <ClCompile Include="Turret\Turret\FlowNodesTurret.cpp" />
     <ClCompile Include="Turret\Turret\ProceduralClipTurretAimPose.cpp" />
@@ -774,9 +776,10 @@
     <ClInclude Include="CornerSmoother.h" />
     <ClInclude Include="CraftSystem.h" />
     <ClInclude Include="DataPatchDownloader.h" />
-    <ClInclude Include="DialogSource.h" />
+    <ClInclude Include="DialogDispatcher.h" />
     <ClInclude Include="DialogSystem.h" />
     <ClInclude Include="DoubleMagazine.h" />
+    <ClInclude Include="Dropable.h" />
     <ClInclude Include="EconomicResources.h" />
     <ClInclude Include="Economics.h" />
     <ClInclude Include="Effects\GameEffectsSystemDefines.h" />
@@ -857,6 +860,7 @@
     <ClInclude Include="Nodes\AIAssignmentNodes.h" />
     <ClInclude Include="Nodes\ModelToHudFlowNodes.h" />
     <ClInclude Include="NPCControl.h" />
+    <ClInclude Include="Pickable.h" />
     <ClInclude Include="PickAndThrowUtilities.h" />
     <ClInclude Include="PlaceableEntity.h" />
     <ClInclude Include="PlayerAI.h" />
@@ -895,7 +899,10 @@
     <ClInclude Include="RPGInventoryManager.h" />
     <ClInclude Include="RuntimePrefab.h" />
     <ClInclude Include="ScriptBind_ProtectedBinds.h" />
+    <ClInclude Include="SearchDataStruct.h" />
+    <ClInclude Include="SearchItem.h" />
     <ClInclude Include="ShotDebug.h" />
+    <ClInclude Include="SimpleSearchStruct.h" />
     <ClInclude Include="SpecialFunctions.h" />
     <ClInclude Include="SprintStamina.h" />
     <ClInclude Include="StatHealth.h" />
@@ -908,6 +915,7 @@
     <ClInclude Include="TeamVisualizationManager.h" />
     <ClInclude Include="Tent.h" />
     <ClInclude Include="ThrowIndicator.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Torch.h" />
     <ClInclude Include="Turret\Turret\AnimationActionTurret.h" />
     <ClInclude Include="Turret\Turret\ProceduralClipTurretAimPose.h" />
@@ -920,6 +928,7 @@
     <ClInclude Include="Turret\Turret\TurretSoundManager.h" />
     <ClInclude Include="UIVisibleManager.h" />
     <ClInclude Include="UI\HUD\ErrorHandling.h" />
+    <ClInclude Include="Usable.h" />
     <ClInclude Include="UseableTurret.h" />
     <ClInclude Include="Utility\AttachmentUtils.h" />
     <ClInclude Include="UI\HUD\HUDControllerInputIcons.h" />

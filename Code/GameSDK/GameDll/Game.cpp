@@ -192,7 +192,6 @@ Crytek Source File.
 #include "RPGInventory.h"
 #include "CraftSystem.h"
 #include "PlayerStatsManager.h"
-#include "DialogSource.h"
 #include "RPGInventoryManager.h"
 #include "BuildMenu.h"
 #include "DialogSystem.h"

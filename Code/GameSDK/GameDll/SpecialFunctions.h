@@ -3,7 +3,7 @@
 - Description: —пицеальные функции
 - Created by: √омза яков
 - Date: 18.08.2014
-- Diko Source File
+- Edda Source File
 ********************************************************************************************************/
 
 #include "IGameFramework.h"

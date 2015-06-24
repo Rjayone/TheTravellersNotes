@@ -1,0 +1,18 @@
+<BehaviorTree>
+ <Variables>
+  <Variable name="ExecuteSequence"/>
+  <Variable name="ExecuteInterruptibleSequence"/>
+ </Variables>
+ <SignalVariables />
+ <Timestamps />
+ <Root>
+  <Sequence>
+   <SetAlertness value="0"/>
+   <ExecuteLua code="entity.actor:HolsterItem(true)">
+    <Stance name="Relaxed"/>
+   </ExecuteLua>
+   <Animate name="ZZ_AI_idleBreak"/>
+   <Halt />
+  </Sequence>
+ </Root>
+</BehaviorTree>

@@ -229,7 +229,7 @@
 		<action name="attack1" onPress="1" onRelease="1" onHold="1" keyboard="mouse1" xboxpad="xi_triggerr_btn" ps3pad="pad_r2" wiipad="wii_pad_r2"/>
 		<action name="attack2" onPress="1" onRelease="1" onHold="1" keyboard="mouse2" />		
 		<action name="attack3" onPress="1" onRelease="1" onHold="1" keyboard="mouse3" />
-		<action name="defensive_stance" onPress="1" onRelease="1" onHold="1" keyboard="lalt"/>
+		<action name="defensive_stance" onPress="1" onRelease="1" onHold="1" keyboard="r"/>
 		<action name="deselect" onPress="1" keyboard="x"/>
 
 

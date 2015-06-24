@@ -4,7 +4,13 @@
       <Constraints>
         <Align mode="dynamic" halign="centre" valign="centre"/>
       </Constraints>
-    </GFx>  
+    </GFx> 
+    <functions>
+		<function name="PlayMessage" funcname="playMessage">
+			<param name="message" desc="Message which will be showed" type="string"/>
+		</function>
+		<function name="MouseOut" funcname="onMouseOut"/>
+	</functions>
   </UIElement>
 </UIElements>
 

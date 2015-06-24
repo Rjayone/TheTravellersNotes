@@ -6,11 +6,11 @@
       </Constraints>
     </GFx>
     <functions>
-		<function name="CreateAnswerItem" funcname="CreateAnswerItem" >
+		<function name="CreateAnswerItem" funcname="createAnswerItem" >
 			<param name="Answer" desc="display message from Player and Create text of it"/>
-			<param name="Next" desc="Next dialogs depends on answer"/>
-			<param name="Count" desc="Counter of dialogs"/>
-			<param name="AiName" desc="Name of AI with you act"/>
+		</function>
+		<function name="SetTargetName" funcname="setTargetName">
+			<param name="Name" desc="Name of Target"/>
 		</function>
 	
 		<function name="SetMessages" funcname="SetMessages" >
@@ -21,7 +21,8 @@
 		</function>
     </functions>
     <events>
-		<event name="ButtonPress" fscommand="ButtonPress" desc="Start_event"/>		
+		<event name="OnSkip" fscommand="Skip" desc="Skip event on player click on message"/>
+		<event name="OnSelectAnswer" fscommand="SelectAnswer" desc=""/>
     </events> 
  </UIElement>
 </UIElements>

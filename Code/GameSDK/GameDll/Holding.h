@@ -85,6 +85,10 @@ public:
 	//Описание:
 	//Возвращает время удержания оружия перед спуском
 	float GetHoldingTime(){ return m_pMouseUtils ? m_pMouseUtils->CalculateClickTime() : 0.f; }
+
+	//Описание:
+	//Возвращает длительность фрагмента в милисеках
+	float GetFragmentPlayDuration(IActionPtr pAction);
 	
 	//Описание:
 	//Функция устанавливает теги в маникене
