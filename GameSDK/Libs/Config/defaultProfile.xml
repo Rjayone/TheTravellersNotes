@@ -217,6 +217,7 @@
 		<action name="SelectBuildHelper" onRelease="1" keyboard="mouse1"/>
 		<action name="CameraRollIn" onPress="1" keyboard="mwheel_up"/>
 		<action name="CameraRollOut" onPress="1" keyboard="mwheel_down"/>
+		<action name="Loot"  onRelease="1"  keyboard="q"/>
 
 		<action name="hold" onHold="1" keyboard="mouse1"/>
 		<action name="skip_dialog" onPress="1" keyboard="space"/>

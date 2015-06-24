@@ -430,6 +430,9 @@
     <Filter Include="TravellerNotes\RPG System\Dialog System">
       <UniqueIdentifier>{042e9986-6c5d-48a9-8e25-9278bda8e5db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TravellerNotes\RPG System\LootSystem">
+      <UniqueIdentifier>{ad9357a0-6eb6-4bbd-8f37-cf3f74450372}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicEventListener.cpp">
@@ -2291,6 +2294,12 @@
     </ClCompile>
     <ClCompile Include="Bow.cpp">
       <Filter>TravellerNotes\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="LootSystem.cpp">
+      <Filter>TravellerNotes\RPG System\LootSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Backpack.cpp">
+      <Filter>TravellerNotes\RPG System\Inventory System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4264,6 +4273,12 @@
     </ClInclude>
     <ClInclude Include="Bow.h">
       <Filter>TravellerNotes\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="LootSystem.h">
+      <Filter>TravellerNotes\RPG System\LootSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Backpack.h">
+      <Filter>TravellerNotes\RPG System\Inventory System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

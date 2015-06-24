@@ -1,0 +1,19 @@
+<!-- ##### Item enums ####			### Food Enum ###							### Recipes type ###
+	xml tag - type=""				xml tag - foodtype=""						xml tag - recipetype=""
+	EIT_NULL = 0,					EFTLight = 0,								1 - Оружие
+	EIT_Weapon = 1,					EFTNormal = 1,								2 - Одежда
+	EIT_Armor = 2,					EFTSatiety = 2,								3 - аксы(цепочка, сережки, кольца)
+	EIT_Food = 3,					EFTHPFlask = 3,								4 - прочее(костер например)
+	EIT_QuestItem = 4,				EFTStrenghtFlask = 4,
+	EIT_Flask = 5,
+	EIT_Ammo = 6,
+	EIT_Recipe = 7,
+	EIT_Special = 8,
+	EIT_Artifact = 9
+-->
+<LootBase>
+	<loot id="5">
+		<item id="1"  count="1"/>
+		<item id="2"  count="2"/>		
+	</loot>
+</LootBase>

@@ -6,7 +6,9 @@ BasicFood =
 		bItemUsable = 1,
 		--nItemType = 3, --[0,9,1," Weapon-1, Armor-2, Food-3, QuestItem-4, Flask-5, Ammo-6, Recipe-7, Special-8, Artifact-9"]
 		nFoodType = 2, --[0,4,1, "Light - 0, Normal - 1,  Satiety - 2,  HPFlask - 3, StrenghtFlask - 4"]
-		sItemName = "Chicken",    			
+		sItemName = "Chicken",
+		spoilParticle = "environment_fx.environment.flies.insects_flies_highQ",
+		fEndSpoilTime = 30,
 	},                            			
 	Editor=                      			
 	{                             

@@ -312,7 +312,7 @@ bool CRPGInventory::DeleteItem(EntityId itemId)
 	return true;
 }
 
-void CRPGInventory::AddItem(SInventoryItem *pItem)
+void CRPGInventory::AddItem(SInventoryItem *pItem,int count)
 {
 	//Если количество итемов меньше чем начальное значение сумки
 	if (m_pItemsArray.size() < m_SlotsCount || gEnv->pFlashUI)
@@ -332,22 +332,26 @@ void CRPGInventory::AddItem(SInventoryItem *pItem)
 		m_pItemsArray[size] = *pItem;
 		m_pItemsArray->globalCount++;*/
 
-		m_pItemsArray.push_back(pItem);
-		CryLogAlways("[RPGInventory]: Item %s was added", pItem->name);
+		for (int i = 0; i < count; i++)
+		{
 
-		if (pItem->hiden == true)
-			return;
+			m_pItemsArray.push_back(pItem);
+			CryLogAlways("[RPGInventory]: Item %s was added", pItem->name);
 
-		SUIArguments args;
-		args.AddArgument(string(pItem->name));
-		args.AddArgument(string(pItem->description));
-		args.AddArgument(pItem->size);
-		args.AddArgument(pItem->cost);
-		args.AddArgument(pItem->type);
-		args.AddArgument((int)pItem->itemId);
+			if (pItem->hiden == true)
+				return;
 
-		m_pUIInventory = GetInventoryUIInterface();
-		m_pUIInventory->CallFunction("CreateItem", args);
+			SUIArguments args;
+			args.AddArgument(string(pItem->name));
+			args.AddArgument(string(pItem->description));
+			args.AddArgument(pItem->size);
+			args.AddArgument(pItem->cost);
+			args.AddArgument(pItem->type);
+			args.AddArgument((int)pItem->itemId);
+
+			m_pUIInventory = GetInventoryUIInterface();
+			m_pUIInventory->CallFunction("CreateItem", args);
+		}
 	}
 }
 

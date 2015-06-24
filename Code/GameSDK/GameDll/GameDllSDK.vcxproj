@@ -98,6 +98,7 @@
     <ClCompile Include="AnimActionBlendFromRagdoll.cpp" />
     <ClCompile Include="AntiCheat\ServerPlayerTracker.cpp" />
     <ClCompile Include="Arrow.cpp" />
+    <ClCompile Include="Backpack.cpp" />
     <ClCompile Include="BasicFood.cpp" />
     <ClCompile Include="BasicMoney.cpp" />
     <ClCompile Include="BasicObject.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="IntersectionAssistanceUnit.cpp" />
     <ClCompile Include="InventoryFlowNodes.cpp" />
     <ClCompile Include="LagOMeter.cpp" />
+    <ClCompile Include="LootSystem.cpp" />
     <ClCompile Include="MouseDirection.cpp" />
     <ClCompile Include="MouseUtils.cpp" />
     <ClCompile Include="MPPath.cpp" />
@@ -744,6 +746,7 @@
     <ClInclude Include="AnimActionAIAimPose.h" />
     <ClInclude Include="AnimActionAIMovement.h" />
     <ClInclude Include="AntiCheat\ShotCounter.h" />
+    <ClInclude Include="Backpack.h" />
     <ClInclude Include="BasicAmmo.h" />
     <ClInclude Include="BasicArmor.h" />
     <ClInclude Include="BasicCloth.h" />
@@ -834,6 +837,7 @@
     <ClInclude Include="InventoryItems.h" />
     <ClInclude Include="ItemAnimation.h" />
     <ClInclude Include="LagOMeter.h" />
+    <ClInclude Include="LootSystem.h" />
     <ClInclude Include="ManualDirection.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="MouseDirection.h" />

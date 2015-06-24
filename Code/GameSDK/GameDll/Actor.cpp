@@ -84,6 +84,8 @@
 #include "ProceduralContextRagdoll.h"
 #include "AnimActionBlendFromRagdoll.h"
 
+#include "LootSystem.h"
+
 IItemSystem *CActor::m_pItemSystem=0;
 IGameFramework	*CActor::m_pGameFramework=0;
 IGameplayRecorder	*CActor::m_pGameplayRecorder=0;
@@ -529,6 +531,10 @@ void CActor::PostInit( IGameObject * pGameObject )
 		CGameRules *pGameRules = g_pGame->GetGameRules();
 		pGameRules->ClDoSetTeam(m_teamId, GetEntityId());
 	}
+
+	pLootSystem = new CLootSystem();
+
+	pLootSystem->InitLootSystem(this);
 }
 
 //------------------------------------------------------------------------

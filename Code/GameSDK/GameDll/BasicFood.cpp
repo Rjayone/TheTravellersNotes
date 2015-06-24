@@ -13,9 +13,12 @@
 #include "RPGInventory.h"
 #include "CharDevSys.h"
 #include "Game.h"
+#include "ParticleParams.h"
 
 #define FILE_PATH "Game/Objects/misc/food/apple.cgf"
 #define ITEMS_FOLDER "/Libs/Items/Library/ItemsDescription.xml"
+
+//#define SPOILED_FOOD_PARTICLE "environment_fx.environment.flies.insects_flies_highQ"
 
 CBasicFood::CBasicFood()
 {
@@ -25,7 +28,7 @@ CBasicFood::CBasicFood()
 	m_nCost = 0;
 	m_nSize = EIIS_1x1;
 	m_ObjectDescr = "";
-	m_ObjectName = "";
+	m_ObjectName = "";	
 }
 
 //--------------------------------------
@@ -33,6 +36,7 @@ bool CBasicFood::Init(IGameObject *pGameObject)
 {
 	SetGameObject(pGameObject);
 	m_ItemId = GetEntityId();
+
 	return true;
 }
 
@@ -41,7 +45,7 @@ void CBasicFood::PostInit(IGameObject * pGameObject)
 {
 	GetEntity()->LoadGeometry(0, FILE_PATH);
 	pGameObject->EnableUpdateSlot(this, 0);
-
+	
 	Reset();
 }
 
@@ -68,6 +72,7 @@ void CBasicFood::ProcessEvent(SEntityEvent& event)
 			if (!pManager) return;
 			m_ItemId = GetEntityId();
 			pManager->AddObjects(this);
+			InitSpoilParams();
 		}break;
 	};
 }
@@ -75,6 +80,12 @@ void CBasicFood::ProcessEvent(SEntityEvent& event)
 //--------------------------------------
 void CBasicFood::Update(SEntityUpdateContext& ctx, int updateSlot)
 {
+	auto timer = gEnv->pTimer->GetCurrTime();
+	auto isIngame = gEnv->IsEditorGameMode();
+	if (isIngame && startSpoilsTimer + endSpoilTime <= timer)
+	{
+		SetSpoiledFood();
+	}
 }
 
 void CBasicFood::Reset()
@@ -87,6 +98,8 @@ void CBasicFood::Reset()
 
 	propertiesTable->GetValue("objModel", modelPath);
 	propertiesTable->GetValue("sItemName", itemName);
+	propertiesTable->GetValue("spoilParticle", spoiledParticle);
+	propertiesTable->GetValue("fEndSpoilTime", endSpoilTime);
 
 	m_ItemId = GetEntityId();
 	m_EntityType = GetEntity()->GetClass()->GetName();
@@ -262,6 +275,7 @@ void CBasicFood::OnDrop(SInventoryItem *pItem, EntityId id)
 	IPhysicalEntity *pPhysEntity = pEntity->GetPhysics();
 	action.angImpulse.Set(Random(0, 1), Random(0, 1), Random(0, 1));
 	if (pPhysEntity != NULL) pPhysEntity->Action(&action);
+	InitSpoilParams();
 }
 
 void CBasicFood::FullSerialize(TSerialize ser)
@@ -297,5 +311,24 @@ bool CBasicFood::ReloadExtension(IGameObject * pGameObject, const SEntitySpawnPa
 {
 	ResetGameObject();
 	return true;
+}
+
+void CBasicFood::SetSpoiledFood()
+{
+	if (isSpoiled) return;
+	
+
+	IParticleEffect* pEffect = gEnv->pParticleManager->FindEffect(spoiledParticle);
+	if (pEffect)
+	{
+		GetEntity()->LoadParticleEmitter(5, pEffect);
+		isSpoiled = true;
+	}
+}
+
+void CBasicFood::InitSpoilParams()
+{
+	isSpoiled = false;
+	startSpoilsTimer = gEnv->pTimer->GetCurrTime();
 }
 

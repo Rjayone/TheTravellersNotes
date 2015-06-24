@@ -51,7 +51,7 @@ public:
 
 	bool DeleteItem(const char* name);
 	bool DeleteItem(EntityId itemId);
-	void AddItem(SInventoryItem *pItem);
+	void AddItem(SInventoryItem *pItem, int count=1);
 
 	SInventoryItem* GetItemsArray();
 	void ProcessEvent(SEntityEvent &event);

@@ -59,6 +59,15 @@ public:
 	string GetObjetDescription(){ return m_ObjectDescr; }
 	string GetModelPath(){ return m_ModelPath; }
 	string GetEntityType(){ return m_EntityType; }
+
+	float startSpoilsTimer;
+	float endSpoilTime;
+	bool isSpoiled;
+
+	void SetSpoiledFood();
+	void InitSpoilParams();
+
+	string spoiledParticle;
 };
 
 #endif //_BASIC_FOOD_
