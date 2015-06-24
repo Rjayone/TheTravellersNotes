@@ -25,17 +25,26 @@ CDialogDispatcher::~CDialogDispatcher()
 bool CDialogDispatcher::IsAI() 
 {
 	IEntity *pEntity = CMouseUtils::GetMouseEntity(2.0f);
+	IUIElement* pDot = gEnv->pFlashUI->GetUIElement("Dot");
 	if (pEntity != NULL)
 	{
 		if (pEntity->GetAI())
 		{
 			m_bCanStartDialog = true;
+			if (pDot)
+			{
+				SUIArguments args;
+				args.SetArguments("Talk");
+				pDot->CallFunction("PlayMessage", args);
+			}
 			return true;
 		}
 	}
 	else
 	{
 		m_bCanStartDialog = false;
+		if (pDot)
+			pDot->CallFunction("MouseOut");
 		return false;
 	}
 }
@@ -90,8 +99,8 @@ void CDialogDispatcher::Update()
 void CDialogDispatcher::OnAction(const ActionId& action, int activationMode, float value)
 {
 	const CGameActions &actions = g_pGame->Actions();
-	if (actions.use == action && IsAI() == true)
+	if (actions.use == action && activationMode == eAAM_OnRelease && IsAI() == true)
 	{
-		g_pGame->GetDialogSystem()->StartDialog(GetTarget(), true);
+		g_pGame->GetDialogSystem()->StartDialog(GetTarget());
 	}
 }

@@ -100,7 +100,7 @@ public:
 	//Описание:
 	//Метод принимает стркутуру, из которой формируются варианты ответов игрока
 	//В большинстве случаев данный метод вызывается в цикле
-	void SetPlayerAnswer(SDialogPlayerAnswer* pPlayerAnswer);
+	void SetPlayerAnswer(SDialogPlayerAnswer* pPlayerAnswer, int index);
 
 	//Описание:
 	//Метод пропускает один абзац

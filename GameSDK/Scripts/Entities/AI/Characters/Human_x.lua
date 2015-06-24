@@ -312,7 +312,7 @@ Human_x =
 		DialogProperties = 
 		{
 			bDialogEnable = true,
-			--sAIName = "Defalut",
+			sAIName = "Defalut",
 			--eDialogType = "",
 			fileDialog = "",
 			camDistance = 2;

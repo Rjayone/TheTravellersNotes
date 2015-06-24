@@ -9,6 +9,7 @@ CTimer::CTimer()
 	m_timerId = 0;
 	m_fInitTime = 0;
 	m_fDuration = 0;
+	m_bPause = false;
 	m_pListener = NULL;
 
 	//Получаем фреймворк и регистрируем наш класс для обработки базовых событий.
@@ -56,7 +57,7 @@ void CTimer::RemoveEventListener()
 }
 
 //Timer 
-void CTimer::StartTimer(float duration, int id = 0)
+void CTimer::StartTimer(float duration, int id)
 {
 	m_fInitTime = gEnv->pTimer->GetCurrTime();
 	m_fDuration = duration;

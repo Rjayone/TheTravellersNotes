@@ -54,6 +54,11 @@ void CUIDialogMenu::OnUIEvent(IUIElement* pSender, const SUIEventDesc& event, co
 		Skip();
 	}
 
+	if (!strcmp(event.sDisplayName, "OnSelectAnswer"))
+	{
+
+	}
+
 	//if (pDialogMenu != NULL)
 	//{
 
@@ -139,10 +144,17 @@ void CUIDialogMenu::StartDialog(IEntity *pAIEntity)
 				//pRenderer->EF_SetPostEffectParam("Dof_User_BlurAmount", 1, true);
 				//pRenderer->EF_SetPostEffectParam("Dof_User_ScaleCoc", 12, true);
 
-				SDialogNPCAnswer* pNPCAnswer = new SDialogNPCAnswer();
-				SDialogPlayerAnswer* pPlayerAnswer = new SDialogPlayerAnswer();
+				m_pNPCAnswer = new SDialogNPCAnswer();
+				m_pPlayerAnswer = new SDialogPlayerAnswer();
 
 				SetDialogFromXML(1, m_pFilePath);
+
+				const char* targetName = new char();
+				dialogPropertiesTable->GetValue("sAIName", targetName);
+
+				SUIArguments arg;
+				arg.SetArguments(targetName);
+				m_pUIDialogMenu->CallFunction("SetTargetName", arg);
 			}
 		}
 	}
@@ -176,13 +188,13 @@ void CUIDialogMenu::SetAnswer(const char *text)
 }
 
 //-------------------------------------------------------------------
-void CUIDialogMenu::SetPlayerAnswer(SDialogPlayerAnswer* pPlayerAnswer)
+void CUIDialogMenu::SetPlayerAnswer(SDialogPlayerAnswer* pPlayerAnswer, int index)
 {
 	GetUIElement();
 
 	SUIArguments args;
-	args.AddArgument(pPlayerAnswer->answer);
-	args.AddArgument(pPlayerAnswer->nextDialogId);
+	args.AddArgument(pPlayerAnswer[index].answer);
+	args.AddArgument(pPlayerAnswer[index].nextDialogId);
 
 	if (m_pUIDialogMenu != NULL)
 		m_pUIDialogMenu->CallFunction("CreateAnswerItem", args);
@@ -233,7 +245,7 @@ void CUIDialogMenu::SetDialogFromXML(int NextDialogId, const char* filePath)
 				SetQuestCam(QuestCam); //Устанавливаем камеру, если она указана. Иначе функция ничего не выполнит
 			}
 			const char *pAudio = pAnswer->getAttr("audio");// взятие озвукчки диалоги
-			SetAudio(pAudio, true);
+			//TODO: SetAudio(pAudio, true);
 
 			//Варианты ответа у игрока
 			int playerAnswerCount = pAnswer->getChildCount();
@@ -254,7 +266,7 @@ void CUIDialogMenu::SetDialogFromXML(int NextDialogId, const char* filePath)
 					m_pPlayerAnswer[k].nextDialogId = atoi(cPlayerAnswer->getAttr("next"));
 					m_pPlayerAnswer[k].audioDialogDuration = atoi(cPlayerAnswer->getAttr("duration"));
 					m_pPlayerAnswer[k].audioName = cPlayerAnswer->getAttr("audio");
-					SetPlayerAnswer(m_pPlayerAnswer);
+					SetPlayerAnswer(m_pPlayerAnswer, k);
 				}
 			}
 			return;

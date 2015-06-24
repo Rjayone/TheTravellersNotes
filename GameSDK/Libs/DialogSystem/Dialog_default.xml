@@ -1,7 +1,5 @@
 <Dialog><!--Тег диалога в котором само тело диалога-->
-	<Phrase id="1" message="Hello, Traveller!" duration="500" audio="Play_scar_fire_loop_fp" initWithoutMessage="1"/> 		
-	<Phrase id="2" message="You look tired" duration="500" audio="Play_scar_fire_loop_fp"/>
-	<Phrase id="3" message="Can i help you?" duration="500" audio="Play_scar_fire_loop_fp">
+	<Phrase id="1" message="Hello, Traveller!" duration="900" audio="Play_scar_fire_loop_fp" initWithoutMessage="1"> 		
 		<PlayerAnswer answer ="I need some information" next="4" duration="1000" audio="Play_scar_fire_loop_fp"/>
 		<PlayerAnswer answer ="What do you know about this mountain?" next="6" duration="1000"/>
 		<PlayerAnswer answer ="I completed yours quest! Take this.." next="7" duration="1000"/>			

@@ -30,7 +30,6 @@
 #include "GameActions.h"
 
 #include "DialogSystem.h"
-#include "DialogSource.h"
 #include "NPCControl.h"
 #include "CameraMode.h"
 
