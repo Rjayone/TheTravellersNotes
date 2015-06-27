@@ -1,5 +1,9 @@
 #pragma once
 #include "SearchDataStruct.h"
+
+// Search algorithm simple implementation
+// Searches item within a vector, comparing distance to each element
+
 class SimpleSearchStruct :
 	public ISearchDataStruct
 {

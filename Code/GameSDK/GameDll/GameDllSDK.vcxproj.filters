@@ -4126,9 +4126,6 @@
     <ClInclude Include="MouseDirection.h">
       <Filter>TravellerNotes\Combat</Filter>
     </ClInclude>
-    <ClInclude Include="PlaceableEntity.h">
-      <Filter>TravellerNotes\Environment\Placeable Objects</Filter>
-    </ClInclude>
     <ClInclude Include="FirePlace.h">
       <Filter>TravellerNotes\Environment\Placeable Objects\Fireplace</Filter>
     </ClInclude>
@@ -4279,6 +4276,9 @@
     </ClInclude>
     <ClInclude Include="Backpack.h">
       <Filter>TravellerNotes\RPG System\Inventory System</Filter>
+    </ClInclude>
+    <ClInclude Include="Placeable.h">
+      <Filter>TravellerNotes\Game Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
