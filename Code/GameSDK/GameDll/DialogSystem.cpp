@@ -96,6 +96,9 @@ void CUIDialogMenu::OnPostUpdate(float fDeltaTime)
 {
 	if (m_pDialogDispathcer != NULL)
 		m_pDialogDispathcer->Update();
+
+	if (GetUIElement()->IsVisible() == true && gEnv->IsEditorGameMode() == false)
+		GetUIElement()->SetVisible(false);
 }
 
 //-------------------------------------------------------------------

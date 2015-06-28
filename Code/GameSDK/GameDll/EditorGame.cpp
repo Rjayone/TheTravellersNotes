@@ -38,6 +38,8 @@
 
 #include "Environment/LedgeManager.h"
 
+#include "Events.h"
+
 #define EDITOR_SERVER_PORT 0xed17
 
 ICVar * CEditorGame::s_pEditorGameMode;
@@ -223,6 +225,13 @@ void CEditorGame::EnablePlayer(bool bPlayer)
 //------------------------------------------------------------------------
 bool CEditorGame::SetGameMode(bool bGameMode)
 {
+	//TTN
+	//Используется для создания евента
+	if (bGameMode == true)
+		g_pGame->GetEventDispatcher()->OnPlayerEnterInEditoriGameMode();
+	else
+		g_pGame->GetEventDispatcher()->OnPlayerExitFromEditorGameMode();
+	//~
 	m_bGameMode = bGameMode;
 	bool on = bGameMode;
 	if (s_pEditorGameMode->GetIVal() == 0)

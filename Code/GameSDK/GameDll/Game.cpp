@@ -196,6 +196,7 @@ Crytek Source File.
 #include "BuildMenu.h"
 #include "DialogSystem.h"
 #include "Economics.h"
+#include "Events.h"
 //~
 
 
@@ -609,7 +610,8 @@ CGame::CGame()
 	pRPGInventoryManager(NULL),
 	pPlayerStatsManager(NULL),
 	pBuildMenu(NULL),
-	pEconomics(NULL)
+	pEconomics(NULL),
+	pEventsDispatcher(NULL)
 {
 	COMPILE_TIME_ASSERT( eCGE_Last <= 64 );
 
@@ -769,6 +771,7 @@ CGame::~CGame()
 	SAFE_DELETE(pPlayerStatsManager);
 	SAFE_DELETE(pBuildMenu);
 	SAFE_DELETE(pEconomics);
+	SAFE_DELETE(pEventsDispatcher);
 	//~
 
 	if (m_pLobbySessionHandler != NULL)
@@ -1260,6 +1263,10 @@ bool CGame::Init(IGameFramework *pFramework)
 	if (!pEconomics)
 	{
 		pEconomics = new CEconomics();
+	}
+	if (!pEventsDispatcher)
+	{
+		pEventsDispatcher = new CEventsDispatcher();
 	}
 	//~
 

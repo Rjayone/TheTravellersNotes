@@ -2,6 +2,7 @@
 #include "BasicObject.h"
 #include "RPGInventoryManager.h"
 #include "RPGInventory.h"
+#include "InventoryItems.h"
 
 #define DEFAULT_MODEL_PATH "GameSDK/Objects/box.cgf"
 

@@ -14,6 +14,7 @@
 #include "CharDevSys.h"
 #include "Game.h"
 #include "ParticleParams.h"
+#include "InventoryItems.h"
 
 #define FILE_PATH "Game/Objects/misc/food/apple.cgf"
 #define ITEMS_FOLDER "/Libs/Items/Library/ItemsDescription.xml"

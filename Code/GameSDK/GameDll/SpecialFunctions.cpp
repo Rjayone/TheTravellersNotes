@@ -3,7 +3,6 @@
 #include "Player.h"
 
 
-
 Vec3 CSpecialFunctions::GetBonePos(const char *bname, bool local, IEntity *pEntity)
 {
 	Vec3 BonePos = ZERO;

@@ -17,6 +17,7 @@
 #include "RPGInventoryManager.h"
 #include "RPGInventory.h"
 #include "PlayerStatsManager.h"
+#include "InventoryItems.h"
 
 #define DEFAULT_MODEL_PATH "GameSDK/Objects/misc/money/money_single_a.cgf"
 #define DEFAULT_PARTICLE "bullet.hit_metal.c"

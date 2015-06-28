@@ -18,23 +18,20 @@
 #ifndef __LootSystem__
 #define __LootSystem__
 
-#include <IFlashUI.h>
-#include "IActionMapManager.h"
 #include "IGameFramework.h"
-#include "RPGInventory.h"
 #include "GameActions.h"
 
+class CRPGInventory;
+enum EInventoryItemType;
 
-class CLootOptions
+struct CLootOptions
 {
-public:
 	int ItemId;
 	int ItemCount;
 };
 
-class CItemOptions
+struct CItemOptions
 {
-public:
 	char const* ItemClass;
 	char const* ItemName;
 	char const* ItemDescription;
@@ -77,7 +74,7 @@ private:
 	std::vector<CLootOptions> LootOptions;
 	std::vector<CItemOptions> ItemsList;
 
-	CRPGInventory RPGInventory;
+	CRPGInventory *m_pRPGInventory;
 };
 
 #endif

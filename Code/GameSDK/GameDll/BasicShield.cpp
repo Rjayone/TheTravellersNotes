@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "RPGInventoryManager.h"
 #include "RPGInventory.h"
+#include "InventoryItems.h"
 
 #define DEFAULT_SHIELD_PATH ""
 

@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "LootSystem.h"
 #include "Actor.h"
+#include "InventoryItems.h"
+#include "RPGInventory.h"
 
 #define LOOTLIST_FOLDER "/Libs/Items/Library/GeneralItemsLootList.xml"
 #define ITEMS_FOLDER "/Libs/Items/Library/ItemsDescription.xml"

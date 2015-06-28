@@ -178,6 +178,7 @@ class CRPGInventoryManager;
 class CPlayerStatsManager;
 class CUIBuildMenu;
 class CEconomics;
+class CEventsDispatcher;
 //~
 
 namespace Graphics
@@ -1101,6 +1102,7 @@ private:
 		CPlayerStatsManager *pPlayerStatsManager;
 		CUIBuildMenu *pBuildMenu;
 		CEconomics *pEconomics;
+		CEventsDispatcher *pEventsDispatcher;
 		// ~Traveller Objects Defenition
 
 public:
@@ -1114,6 +1116,7 @@ public:
 	CPlayerStatsManager* GetPlayerStatsManager(){ return pPlayerStatsManager; }
 	CUIBuildMenu* GetBuildMenu(){ return pBuildMenu; }
 	CEconomics* GetEconomics(){ return pEconomics; }
+	CEventsDispatcher* GetEventDispatcher(){ return pEventsDispatcher; }
 	//~Traveller Defenition
 
 }; // ~CGame

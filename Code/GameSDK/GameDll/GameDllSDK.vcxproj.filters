@@ -433,6 +433,9 @@
     <Filter Include="TravellerNotes\RPG System\LootSystem">
       <UniqueIdentifier>{ad9357a0-6eb6-4bbd-8f37-cf3f74450372}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TravellerNotes\Utils\Events">
+      <UniqueIdentifier>{f8e4bec6-6166-473f-9f46-c3c2163f1e57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicEventListener.cpp">
@@ -2253,9 +2256,6 @@
     <ClCompile Include="Economics.cpp">
       <Filter>TravellerNotes\RPG System\Economic System</Filter>
     </ClCompile>
-    <ClCompile Include="DialogSource.cpp">
-      <Filter>TravellerNotes\RPG System\Dialog System</Filter>
-    </ClCompile>
     <ClCompile Include="DialogSystem.cpp">
       <Filter>TravellerNotes\RPG System\Dialog System</Filter>
     </ClCompile>
@@ -2300,6 +2300,18 @@
     </ClCompile>
     <ClCompile Include="Backpack.cpp">
       <Filter>TravellerNotes\RPG System\Inventory System</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>TravellerNotes\Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogDispatcher.cpp">
+      <Filter>TravellerNotes\RPG System\Dialog System</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleSearchStruct.cpp">
+      <Filter>TravellerNotes\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Events.cpp">
+      <Filter>TravellerNotes\Utils\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4240,9 +4252,6 @@
     <ClInclude Include="Economics.h">
       <Filter>TravellerNotes\RPG System\Economic System</Filter>
     </ClInclude>
-    <ClInclude Include="DialogSource.h">
-      <Filter>TravellerNotes\RPG System\Dialog System</Filter>
-    </ClInclude>
     <ClInclude Include="DialogSystem.h">
       <Filter>TravellerNotes\RPG System\Dialog System</Filter>
     </ClInclude>
@@ -4279,6 +4288,33 @@
     </ClInclude>
     <ClInclude Include="Backpack.h">
       <Filter>TravellerNotes\RPG System\Inventory System</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>TravellerNotes\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogDispatcher.h">
+      <Filter>TravellerNotes\RPG System\Dialog System</Filter>
+    </ClInclude>
+    <ClInclude Include="Dropable.h">
+      <Filter>TravellerNotes\Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Pickable.h">
+      <Filter>TravellerNotes\Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchDataStruct.h">
+      <Filter>TravellerNotes\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleSearchStruct.h">
+      <Filter>TravellerNotes\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchItem.h">
+      <Filter>TravellerNotes\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Usable.h">
+      <Filter>TravellerNotes\Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Events.h">
+      <Filter>TravellerNotes\Utils\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

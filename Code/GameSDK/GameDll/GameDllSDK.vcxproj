@@ -145,6 +145,7 @@
     <ClCompile Include="Environment\VicinityDependentObjectMover.cpp" />
     <ClCompile Include="Environment\WaterPuddle.cpp" />
     <ClCompile Include="Environment\WaterRipplesGenerator.cpp" />
+    <ClCompile Include="Events.cpp" />
     <ClCompile Include="ExactPositioning.cpp" />
     <ClCompile Include="ExactPositioningTrigger.cpp" />
     <ClCompile Include="FirePlace.cpp" />
@@ -806,6 +807,7 @@
     <ClInclude Include="Environment\WaterPuddle.h" />
     <ClInclude Include="Environment\WaterRipplesGenerator.h" />
     <ClInclude Include="EventDistributor.h" />
+    <ClInclude Include="Events.h" />
     <ClInclude Include="ExactPositioning.h" />
     <ClInclude Include="ExactPositioningTrigger.h" />
     <ClInclude Include="FirePlace.h" />

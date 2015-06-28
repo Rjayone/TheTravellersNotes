@@ -37,6 +37,7 @@
 #include "BasicRecipe.h"
 #include "FirePlace.h"
 #include "UIVisibleManager.h"
+#include "InventoryItems.h"
 
 
 #define ITEMS_FOLDER "/Libs/Items/Library/ItemsDescription.xml"
@@ -57,16 +58,29 @@ CRPGInventory::CRPGInventory()
 	{
 		m_pUIInventory = GetInventoryUIInterface();
 		if (m_pUIInventory != NULL)
-			m_pUIInventory->AddEventListener(&m_eventListener, "UIInventoryListener");
+			m_pUIInventory->AddEventListener(this, "UIInventoryListener");
 	}
 
 	if (g_pGame->GetIGameFramework() != NULL)
 		g_pGame->GetIGameFramework()->RegisterListener(this, "UIInventory", FRAMEWORKLISTENERPRIORITY_GAME);
 }
 
+CRPGInventory::~CRPGInventory()
+{
+}
+
+IUIElement* CRPGInventory::GetUIElement()
+{
+	if (gEnv->pFlashUI)
+	{
+		m_pUIInventory = gEnv->pFlashUI->GetUIElement(UI_NAME);
+		return m_pUIInventory;
+	}
+	return NULL;
+}
+
 void CRPGInventory::OnLoadGame(ILoadGame* pLoadGame)  {}
 void CRPGInventory::OnLevelEnd(const char* nextLevel) {}
-void CRPGInventory::ProcessEvent(SEntityEvent &event)  {}
 
 void CRPGInventory::OnActionEvent(const SActionEvent& event)
 {
@@ -74,17 +88,13 @@ void CRPGInventory::OnActionEvent(const SActionEvent& event)
 	{
 		m_bGameStarted = true;
 		m_pUIInventory = GetInventoryUIInterface();
-		if (m_pUIInventory == NULL)
-			return;
-
-		//m_pUIInventory->AddEventListener(&m_eventListener, "UIInventoryListener");
 		ResetUIItemsArray();
 	}
 
 	//UnLoad level -------------------------------------------------------------
 	if (event.m_event == eAE_unloadLevel && m_pUIInventory != NULL)
 	{
-		m_pUIInventory->RemoveEventListener(&m_eventListener);
+		m_pUIInventory->RemoveEventListener(this);
 		m_pUIInventory->CallFunction("ResetItemsArray");
 		m_pUIInventory->SetVisible(false);
 		m_pUIInventory->Unload();
@@ -161,24 +171,22 @@ void CRPGInventory::OnDropItem(EntityId id, float impulseScale)
 		return;
 }
 
-void CInventoryEventListener::OnUIEvent(IUIElement* pSender, const SUIEventDesc& event, const SUIArguments& args)
+void CRPGInventory::OnUIEvent(IUIElement* pSender, const SUIEventDesc& event, const SUIArguments& args)
 {
-	pInventory = g_pGame->GetRPGInventory();
-
-	if (!strcmp(event.sDisplayName, "OnItemDelete") && pInventory)
+	if (!strcmp(event.sDisplayName, "OnItemDelete"))
 	{
 		EntityId id;
 		args.GetArg(0, id);
-		SInventoryItem *pItem = pInventory->GetInventoryItemById(id);
+		SInventoryItem *pItem = GetInventoryItemById(id);
 		if (pItem != NULL)
-			pInventory->OnDropItem(pItem->itemId, 4.0f);
+			OnDropItem(pItem->itemId, 4.0f);
 	}
 
-	if (!strcmp(event.sDisplayName, "OnUse") && pInventory)
+	if (!strcmp(event.sDisplayName, "OnUse"))
 	{
 		EntityId id;
 		args.GetArg(0, id);
-		pInventory->OnUse(id);
+		OnUse(id);
 	}
 }
 
@@ -226,38 +234,6 @@ void CRPGInventory::OnSaveGame(ISaveGame* pSaveGame)
 
 bool CRPGInventory::DeleteItem(const char* name)
 {
-	/*for (int i = 0; i < m_pItemsArray->globalCount; i++)
-	{
-		if (!strcmp(name, m_pItemsArray[i].name))
-		{
-			if (i != m_pItemsArray->globalCount - 1)
-			{
-				for (int j = i; j < m_pItemsArray->globalCount - 1; j++)
-					m_pItemsArray[j] = m_pItemsArray[j + 1];
-			}
-
-			m_pItemsArray->globalCount--;
-			SInventoryItem *temp = new SInventoryItem[m_pItemsArray->globalCount];
-
-			for (int j = 0; j < m_pItemsArray->globalCount; j++)
-				temp[j] = m_pItemsArray[j];
-
-			SAFE_DELETE_ARRAY(m_pItemsArray);
-			m_pItemsArray = new SInventoryItem[m_pItemsArray->globalCount];
-
-			for (int j = 0; j < SInventoryItem::globalCount; j++)
-				m_pItemsArray[j] = temp[j];
-
-			m_pUIInventory = GetInventoryUIInterface();
-			if (m_pUIInventory == NULL)
-				return false;
-
-			ResetUIItemsArray();
-			return true;
-		}
-	}
-	return false;*/
-
 	int index = GetItemIndex(name);
 	if (index == -1) return false;
 	m_pItemsArray.erase(m_pItemsArray.begin()+index);
@@ -268,41 +244,6 @@ bool CRPGInventory::DeleteItem(const char* name)
 
 bool CRPGInventory::DeleteItem(EntityId itemId)
 {
-	/*SInventoryItem *pItem = GetInventoryItemById(itemId);
-	if (pItem == NULL)
-		return false;
-
-	for (int i = 0; i < pItem->globalCount; i++)
-	{
-		if (itemId == m_pItemsArray[i].ItemID)
-		{
-			if (i != m_pItemsArray->globalCount - 1)
-			{
-				for (int j = i; j < m_pItemsArray->globalCount - 1; j++)
-					m_pItemsArray[j] = m_pItemsArray[j + 1];
-			}
-
-			m_pItemsArray->globalCount--;
-			SInventoryItem *temp = new SInventoryItem[pItem->globalCount + 1];
-
-			for (int j = 0; j < pItem->globalCount; j++)
-				temp[j] = m_pItemsArray[j];
-
-			SAFE_DELETE_ARRAY(m_pItemsArray);
-			m_pItemsArray = new SInventoryItem[pItem->globalCount + 1];
-
-			for (int j = 0; j < SInventoryItem::globalCount; j++)
-				m_pItemsArray[j] = temp[j];
-
-			m_pUIInventory = GetInventoryUIInterface();
-			if (m_pUIInventory == NULL)
-				return false;
-
-			ResetUIItemsArray();
-			return true;
-		}
-	}
-	return false;*/
 	int index = GetItemIndex(itemId);
 	if (index == -1) return false;
 	m_pItemsArray.erase(m_pItemsArray.begin() + index);
@@ -316,21 +257,6 @@ void CRPGInventory::AddItem(SInventoryItem *pItem,int count)
 	//Если количество итемов меньше чем начальное значение сумки
 	if (m_pItemsArray.size() < m_SlotsCount || gEnv->pFlashUI)
 	{
-		/*int size = m_pItemsArray->globalCount;
-		SInventoryItem *tempArray = new SInventoryItem[size];
-
-		for (int i = 0; i < size; i++)
-			tempArray[i] = m_pItemsArray[i];
-
-		SAFE_DELETE_ARRAY(m_pItemsArray);
-
-		m_pItemsArray = new SInventoryItem[size + 1];
-		for (int i = 0; i < size; i++)
-			m_pItemsArray[i] = tempArray[i];
-
-		m_pItemsArray[size] = *pItem;
-		m_pItemsArray->globalCount++;*/
-
 		for (int i = 0; i < count; i++)
 		{
 
@@ -414,7 +340,7 @@ void CRPGInventory::OnUse(EntityId id)
 	}
 }
 
-void CInventoryEventListener::OnAction(const ActionId& action, int activationMode, float value)
+void CRPGInventory::OnAction(const ActionId& action, int activationMode, float value)
 {
 	const CGameActions &actions = g_pGame->Actions();
 	if (actions.inventory == action)
@@ -431,8 +357,7 @@ void CInventoryEventListener::OnAction(const ActionId& action, int activationMod
 					g_UIVisibleManager.HideAllUIElements();
 
 					SActionEvent event(eAE_inGame);
-					pInventory = g_pGame->GetRPGInventory();
-					pInventory->OnActionEvent(event);
+					OnActionEvent(event);
 
 					IRenderer* pRenderer = gEnv->pRenderer;
 					CRY_ASSERT(pRenderer);
@@ -456,7 +381,7 @@ void CInventoryEventListener::OnAction(const ActionId& action, int activationMod
 					g_pGameActions->FilterNoMove()->Enable(false);
 					g_pGameActions->FilterNoMouse()->Enable(false);
 					pUIInventory->Unload();
-					pUIInventory->RemoveEventListener(&pInventory->GetInventoryEventListener());
+					pUIInventory->RemoveEventListener(this);
 
 					IRenderer* pRenderer = gEnv->pRenderer;
 					CRY_ASSERT(pRenderer);
@@ -482,9 +407,7 @@ void CInventoryEventListener::OnAction(const ActionId& action, int activationMod
 		IItem *pItem = pPlayer->GetCurrentItem();
 		if (pItem != NULL)
 		{
-			pInventory = g_pGame->GetRPGInventory();
-			if (pInventory != NULL)
-				pInventory->OnDropItem(pItem->GetEntityId(), 1.0);
+			OnDropItem(pItem->GetEntityId(), 1.0);
 		}
 	}
 
@@ -512,16 +435,7 @@ void CInventoryEventListener::OnAction(const ActionId& action, int activationMod
 	}
 }
 
-CInventoryEventListener::CInventoryEventListener() : pInventory(NULL)
-{
-	IActionMapManager* pAmMgr = g_pGame->GetIGameFramework()->GetIActionMapManager();
-	if (pAmMgr != NULL)
-		pAmMgr->AddExtraActionListener(this);
-
-	CNPCControl *npc = new CNPCControl();
-	CCameraMode *cam = new CCameraMode();
-}
-
+//-------------------------------------------------------------------
 IUIElement* CRPGInventory::GetInventoryUIInterface()
 {
 	if (gEnv->pFlashUI != NULL)
@@ -535,11 +449,7 @@ IUIElement* CRPGInventory::GetInventoryUIInterface()
 	return NULL;
 }
 
-SInventoryItem* CRPGInventory::GetItemsArray()
-{
-	return m_pItemsArray[0];
-}
-
+//-------------------------------------------------------------------
 void CRPGInventory::ResetUIItemsArray()
 {
 	//Функция делает отчистку и перезапись итемтов во флеше
@@ -558,6 +468,7 @@ void CRPGInventory::ResetUIItemsArray()
 			args.AddArgument(m_pItemsArray[i]->cost);
 			args.AddArgument(m_pItemsArray[i]->type);
 			args.AddArgument(m_pItemsArray[i]->itemId);
+			GetUIElement();
 			m_pUIInventory->CallFunction("CreateItem", args);
 		}
 	}
