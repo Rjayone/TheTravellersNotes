@@ -10,9 +10,9 @@
 #ifndef _TENT_
 #define _TENT_
 
-#include "PlaceableEntity.h"
+#include "Placeable.h"
 
-class CTent : public IPlaceableEntity
+class CTent : public IPlaceable, public CGameObjectExtensionHelper< CTent, IGameObjectExtension >
 {
 public:
 	CTent();
