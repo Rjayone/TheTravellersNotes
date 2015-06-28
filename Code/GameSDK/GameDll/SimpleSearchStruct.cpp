@@ -11,8 +11,10 @@ void SimpleSearchStruct::AddItem(SearchItem& searchItem) {
 
 void SimpleSearchStruct::RemoveItem(SearchItem& searchItem) {
 	for (auto i = data.begin(); i != data.end(); ++i) {
-		if (*i == searchItem)
-			data.erase(i);
+		if (*i == searchItem) {
+			i = data.erase(i);
+			return;
+		}
 	}
 }
 

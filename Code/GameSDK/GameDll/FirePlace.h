@@ -10,13 +10,15 @@
 #define _FIREPLACE_
 
 #include "IGameObject.h"
-#include "PlaceableEntity.h"
+#include "Placeable.h"
 #include "SearchDataStruct.h"
+#include "IBasicObject.h"
 
-class CFirePlace : public IPlaceableEntity, public IActionListener
+class CFirePlace : public IBasicObject, public IPlaceable, public IActionListener, public CGameObjectExtensionHelper< CFirePlace, IGameObjectExtension >
 {
 public:
 
+	// Fireplace stages
 	enum State {
 		IDLE,
 		PLACING,
@@ -27,11 +29,10 @@ public:
 		BURNED
 	};
 
-
 	CFirePlace();
 	virtual ~CFirePlace();
 
-	// IGameObjectExtension
+	// IGameObjectExtension implementation
 	virtual bool Init(IGameObject * pGameObject);
 	virtual void PostInit(IGameObject * pGameObject);
 	virtual void InitClient(int channelId){}
@@ -55,23 +56,34 @@ public:
 	virtual void GetMemoryUsage(ICrySizer* s) const { s->Add(*this); }
 	//~ IGameObjectExtension
 
+	// IActionListener implementation
 	void OnAction(const ActionId& action, int activationMode, float value);
 
+	// IPlaceableEntity impementation
 	virtual void StartPlacing();
 	virtual void StopPlacing();
 	virtual void CheckLocalBounds(){};
+
+	// IBasicObject implementation
 	virtual void OnUse();
+	virtual void OnPickUp(EntityId id);
+	virtual void OnDrop(SInventoryItem* pItem, EntityId id);
 	virtual void Reset();
 
-	void StartFire();
-	void StopFire();
-
+	// Method to get search struct of fireplaces, to conduct nearest fireplace searches
 	const ISearchDataStruct& getSearchStruct() { return *searchStruct;  }
+
+	// Function to get/set state of fireplace
 	State GetState() {	return state;	}
 	void SetState(State newState) {	 state = newState;  }
 
 private:
 
+	void StartFire();
+
+	void StopFire();
+
+	// Function handles object behavior during placement
 	void UpdatePlacing();
 
 	SmartScriptTable m_pScriptTable;
@@ -87,9 +99,6 @@ private:
 
 	// Default start color
 	ColorF m_noColor;
-
-	// Light properties
-	//CDLight lightProperties;
 
 	ILightSource* m_pLightSource;
 

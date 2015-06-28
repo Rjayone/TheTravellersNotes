@@ -864,7 +864,7 @@
     <ClInclude Include="NPCControl.h" />
     <ClInclude Include="Pickable.h" />
     <ClInclude Include="PickAndThrowUtilities.h" />
-    <ClInclude Include="PlaceableEntity.h" />
+    <ClInclude Include="Placeable.h" />
     <ClInclude Include="PlayerAI.h" />
     <ClInclude Include="PlayerControl\PlayerEnslavement.h" />
     <ClInclude Include="PlayerEntityInteraction.h" />
