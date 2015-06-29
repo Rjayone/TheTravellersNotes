@@ -166,6 +166,7 @@
     <ClCompile Include="InventoryFlowNodes.cpp" />
     <ClCompile Include="LagOMeter.cpp" />
     <ClCompile Include="LootSystem.cpp" />
+    <ClCompile Include="MD5.cpp" />
     <ClCompile Include="MouseDirection.cpp" />
     <ClCompile Include="MouseUtils.cpp" />
     <ClCompile Include="MPPath.cpp" />
@@ -274,6 +275,7 @@
     <ClCompile Include="RPGInventory.cpp" />
     <ClCompile Include="RPGInventoryManager.cpp" />
     <ClCompile Include="RuntimePrefab.cpp" />
+    <ClCompile Include="SaveLoad.cpp" />
     <ClCompile Include="ScriptBind_ProtectedBinds.cpp" />
     <ClCompile Include="ShotDebug.cpp" />
     <ClCompile Include="SimpleSearchStruct.cpp" />
@@ -845,6 +847,7 @@
     <ClInclude Include="LootSystem.h" />
     <ClInclude Include="ManualDirection.h" />
     <ClInclude Include="MathUtils.h" />
+    <ClInclude Include="MD5.h" />
     <ClInclude Include="MouseDirection.h" />
     <ClInclude Include="MouseUtils.h" />
     <ClInclude Include="MovementAction.h" />
@@ -900,6 +903,7 @@
     <ClInclude Include="RPGInventory.h" />
     <ClInclude Include="RPGInventoryManager.h" />
     <ClInclude Include="RuntimePrefab.h" />
+    <ClInclude Include="SaveLoad.h" />
     <ClInclude Include="ScriptBind_ProtectedBinds.h" />
     <ClInclude Include="SearchDataStruct.h" />
     <ClInclude Include="SearchItem.h" />

@@ -436,6 +436,12 @@
     <Filter Include="TravellerNotes\Utils\Events">
       <UniqueIdentifier>{f8e4bec6-6166-473f-9f46-c3c2163f1e57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TravellerNotes\Utils\Game">
+      <UniqueIdentifier>{52c6a75e-ef3d-4fe5-8243-cebc715e46f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TravellerNotes\Utils\Hash">
+      <UniqueIdentifier>{398e5e93-3b6e-409d-a81c-2917feb5d7b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicEventListener.cpp">
@@ -2312,6 +2318,10 @@
     </ClCompile>
     <ClCompile Include="Events.cpp">
       <Filter>TravellerNotes\Utils\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveLoad.cpp" />
+    <ClCompile Include="MD5.cpp">
+      <Filter>TravellerNotes\Utils\Hash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4315,6 +4325,10 @@
     </ClInclude>
     <ClInclude Include="Placeable.h">
       <Filter>TravellerNotes\Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveLoad.h" />
+    <ClInclude Include="MD5.h">
+      <Filter>TravellerNotes\Utils\Hash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
