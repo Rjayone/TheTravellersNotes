@@ -12,6 +12,7 @@
 *.lo
 *.o
 *.obj
+*.swd
 
 # Precompiled Headers
 *.gch
@@ -30,8 +31,6 @@
 *.pdb
 *.ilk
 
-# Fortran module files
-*.mod
 
 # Compiled Static libraries
 *.lai
