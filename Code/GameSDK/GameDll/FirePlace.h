@@ -1,4 +1,4 @@
-/****************************************
+﻿/****************************************
 * File: FirePlace.h
 * Description: Игровой объект - костер
 * Created by: Andrew Medvedev
@@ -66,7 +66,6 @@ public:
 
 	// IUsable Implementation
 	virtual void OnUse();
-	virtual void Reset();
 
 	// Method to get search struct of fireplaces, to conduct nearest fireplace searches
 	const ISearchDataStruct& getSearchStruct() { return *searchStruct;  }
