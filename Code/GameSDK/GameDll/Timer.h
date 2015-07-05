@@ -22,6 +22,7 @@ class CTimer : public IGameFrameworkListener
 {
 public:
 	CTimer();
+	~CTimer();
 
 	//IGameFrameworkListener
 	void OnPostUpdate(float fDeltaTime);
@@ -38,6 +39,7 @@ public:
 
 	//Timer 
 	void StartTimer(float duration, int id = 0);
+	void StopTimer();
 	void Pause();
 	void Continue();
 	void Restart();
@@ -46,5 +48,6 @@ private:
 	float m_fInitTime;
 	float m_fDuration;
 	bool m_bPause;
+	bool m_bStoped;
 	ITimerEvents* m_pListener;
 };

@@ -1,6 +1,6 @@
 /****************************************
 * File: FirePlace.h
-* Description: Игровой объект - костер
+* Description: РРіСЂРѕРІРѕР№ РѕР±СЉРµРєС‚ - РєРѕСЃС‚РµСЂ
 * Created by: Andrew Medvedev
 * Date: 22.08.2013
 * Diko Source File
@@ -14,7 +14,7 @@
 #include "SearchDataStruct.h"
 #include "IBasicObject.h"
 
-class CFirePlace : public IBasicObject, public IPlaceable, public IActionListener, public CGameObjectExtensionHelper< CFirePlace, IGameObjectExtension >
+class CFirePlace : public IPlaceable, public IUsable, public IActionListener, public CGameObjectExtensionHelper< CFirePlace, IGameObjectExtension >
 {
 public:
 
@@ -64,10 +64,8 @@ public:
 	virtual void StopPlacing();
 	virtual void CheckLocalBounds(){};
 
-	// IBasicObject implementation
+	// IUsable Implementation
 	virtual void OnUse();
-	virtual void OnPickUp(EntityId id);
-	virtual void OnDrop(SInventoryItem* pItem, EntityId id);
 	virtual void Reset();
 
 	// Method to get search struct of fireplaces, to conduct nearest fireplace searches
@@ -82,6 +80,9 @@ private:
 	void StartFire();
 
 	void StopFire();
+
+	// Function to handle reset actions
+	void Reset();
 
 	// Function handles object behavior during placement
 	void UpdatePlacing();

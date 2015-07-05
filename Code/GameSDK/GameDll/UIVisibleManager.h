@@ -1,8 +1,21 @@
 //Отвечает за отображение флеш роликов
 
 #pragma once
+
 #include "Game.h"
 #include "IFlashUI.h"
+
+
+#define _CRAFT_MENU_ELEMENT_NAME	"CraftMenu"
+#define _DIALOG_MENU_ELEMENT_NAME	"DialogMenu"
+#define _DOT_ELEMENT_NAME			"Dot"
+#define _EXPERIENCE_ELEMENT_NAME	"ExperienceBar"
+#define _HEALTH_BAR_ELEMENT_NAME	"HealthBar"
+#define _INVENTORY_ELEMENT_NAME		"Inventory"
+#define _LOCATION_ELEMENT_NAME		"Location" //Bottom right
+#define _MONEY_ELEMENT_NAME			"Money"
+#define _SCREEN_SLOTS_ELEMENT_NAME	"ScreenSlots"
+
 
 class CUIVisibleManager
 {
@@ -56,5 +69,23 @@ public:
 		}
 		IUIElement* dot = gEnv->pFlashUI->GetUIElement("Dot");
 		if (dot) dot->SetVisible(true);
+	}
+
+	void HideList(std::vector<string> elements)
+	{
+		if (gEnv->pFlashUI == NULL)
+			return;
+
+		m_pVisibleUI.clear();
+		for (int i = 0; i < elements.size(); i++)
+		{
+			IUIElement* pElement = gEnv->pFlashUI->GetUIElement(elements[i]);
+			if (pElement != NULL)
+			{
+				pElement->SetVisible(false);
+				m_pVisibleUI.push_back(pElement);
+			}
+			else CryLog("[UIVisibleManager]: Element %s not found", elements[i]);
+		}
 	}
 };

@@ -1230,6 +1230,10 @@ bool CGame::Init(IGameFramework *pFramework)
 
 
 	//Traveller
+	if (!pEventsDispatcher)
+	{
+		pEventsDispatcher = new CEventsDispatcher();
+	}
 	if (!pCraftSystem)
 	{
 		pCraftSystem = new CCraftSystem();
@@ -1263,10 +1267,6 @@ bool CGame::Init(IGameFramework *pFramework)
 	if (!pEconomics)
 	{
 		pEconomics = new CEconomics();
-	}
-	if (!pEventsDispatcher)
-	{
-		pEventsDispatcher = new CEventsDispatcher();
 	}
 	//~
 

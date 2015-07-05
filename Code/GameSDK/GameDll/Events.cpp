@@ -24,6 +24,9 @@ CEventsDispatcher::~CEventsDispatcher()
 //-------------------------------------------------------------------
 void CEventsDispatcher::AddListener(IEvents* pListener)
 {
+	for (int i = 0; i < m_pListeners.size(); i++)
+		if (m_pListeners[i] == pListener)
+			return;
 	m_pListeners.push_back(pListener);
 }
 
@@ -31,8 +34,11 @@ void CEventsDispatcher::AddListener(IEvents* pListener)
 void CEventsDispatcher::RemoveListener(IEvents* pListener)
 {
 	for (int i = 0; i < m_pListeners.size(); i++)
-		if (m_pListeners[i] == pListener)
-			m_pListeners.erase(m_pListeners.begin() + i);
+	{
+		if (m_pListeners[i] != NULL)
+			if (m_pListeners[i] == pListener)
+				m_pListeners.erase(m_pListeners.begin() + i);
+	}
 }
 
 

@@ -7,13 +7,16 @@
 
 CBackpack::CBackpack()
 {
-	IGameFramework *pGameFramework = g_pGame->GetIGameFramework();
-	if (pGameFramework)
-		pGameFramework->RegisterListener(this, "CBackpack", FRAMEWORKLISTENERPRIORITY_DEFAULT);
-
 	IActionMapManager* pAmMgr = g_pGame->GetIGameFramework()->GetIActionMapManager();
 	if (pAmMgr != NULL)
 		pAmMgr->AddExtraActionListener(this);
+}
+
+CBackpack::~CBackpack()
+{
+	IActionMapManager* pAmMgr = g_pGame->GetIGameFramework()->GetIActionMapManager();
+	if (pAmMgr != NULL)
+		pAmMgr->RemoveExtraActionListener(this);
 }
 
 

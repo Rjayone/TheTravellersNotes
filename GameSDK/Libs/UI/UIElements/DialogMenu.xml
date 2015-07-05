@@ -8,21 +8,26 @@
     <functions>
 		<function name="CreateAnswerItem" funcname="createAnswerItem" >
 			<param name="Answer" desc="display message from Player and Create text of it"/>
+			<param name="NextId"/>
 		</function>
 		<function name="SetTargetName" funcname="setTargetName">
 			<param name="Name" desc="Name of Target"/>
 		</function>
 	
-		<function name="SetMessages" funcname="SetMessages" >
-			<param name="_Message" desc="display message from npc and last answer of player"/>
+		<function name="SetMessage" funcname="SetMessage" >
+			<param name="Message" desc="display message from npc and last answer of player"/>
+			<param name="NextId"/>
 		</function>
-		
-		<function name="Clear" funcname="Clear">
-		</function>
+		<function name="BeginShowAnswers" funcname="beginShowAnswers"/>
+		<function name="Clear" funcname="ClearList"/>
     </functions>
     <events>
-		<event name="OnSkip" fscommand="Skip" desc="Skip event on player click on message"/>
-		<event name="OnSelectAnswer" fscommand="SelectAnswer" desc=""/>
+		<event name="OnSkip" fscommand="Skip" desc="Skip event on player click on message">
+			<param name="Arg"/>
+		</event>
+		<event name="OnSelectAnswer" fscommand="SelectAnswer">
+			<param name="Arg"/>
+		</event>
     </events> 
  </UIElement>
 </UIElements>

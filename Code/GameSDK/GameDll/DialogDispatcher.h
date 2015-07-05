@@ -10,6 +10,8 @@
 #pragma once
 #include "GameActions.h"
 
+class CUIDialogMenu;
+
 class CDialogDispatcher : public IActionListener
 {
 public:
@@ -35,4 +37,6 @@ private:
 	//~
 
 	bool m_bCanStartDialog;
+	CUIDialogMenu* m_pDialogSystem;
+
 };

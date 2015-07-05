@@ -16,7 +16,7 @@
 // 1. Унаследуйте вашим классом IEvents
 // 2. В конструкторе вашего класса напишите строчку g_pGame->GetEventsDispatcher()->AddListener(this);
 // 3. Реализуйте необходимые методы
-// 4. В деструкторе напишите g_pGame->GetEventsDispatcher()->RemoveListener(this);
+// 4. В деструкторе напишите g_pGame->GetEventDispatcher()->RemoveListener(this);
 class IEvents 
 {
 public:

@@ -2,6 +2,8 @@
 #include "DialogDispatcher.h"
 #include "DialogSystem.h"
 #include "MouseUtils.h"
+#include "DialogSystem.h"
+#include "IAIObject.h"
 
 //-------------------------------------------------------------------
 CDialogDispatcher::CDialogDispatcher()
@@ -11,6 +13,7 @@ CDialogDispatcher::CDialogDispatcher()
 		pAmMgr->AddExtraActionListener(this);
 
 	m_bCanStartDialog = false;
+	m_pDialogSystem = g_pGame->GetDialogSystem();
 }
 
 //-------------------------------------------------------------------
@@ -22,21 +25,17 @@ CDialogDispatcher::~CDialogDispatcher()
 }
 
 //-------------------------------------------------------------------
-bool CDialogDispatcher::IsAI() 
+bool CDialogDispatcher::IsAI()
 {
 	IEntity *pEntity = CMouseUtils::GetMouseEntity(2.0f);
 	IUIElement* pDot = gEnv->pFlashUI->GetUIElement("Dot");
+	if (m_pDialogSystem == NULL)
+		m_pDialogSystem = g_pGame->GetDialogSystem();
 	if (pEntity != NULL)
 	{
 		if (pEntity->GetAI())
 		{
 			m_bCanStartDialog = true;
-			if (pDot)
-			{
-				SUIArguments args;
-				args.SetArguments("Talk");
-				pDot->CallFunction("PlayMessage", args);
-			}
 			return true;
 		}
 	}
@@ -58,41 +57,10 @@ IEntity* CDialogDispatcher::GetTarget()
 //-------------------------------------------------------------------
 void CDialogDispatcher::Update()
 {
-	IsAI();
-	if (m_bCanStartDialog == true)
+	if(!IsAI())
+		return;
+	if (m_bCanStartDialog == true && !GetTarget()->GetAI()->IsHostile(gEnv->pEntitySystem->GetEntity(LOCAL_PLAYER_ENTITY_ID)->GetAI(), false))
 		g_pGame->GetDialogSystem()->CanDialog(GetTarget());
-	
-	
-
-
-	//IScriptTable *pAIStript = GetTarget()->GetScriptTable();
-	//if (!pAIStript || !IsAI())
-	//	return;
-
-	//SmartScriptTable propertiesTable;
-	//SmartScriptTable dialogPropertiesTable;
-	//bool hasProperties = pAIStript->GetValue("Properties", propertiesTable);
-	//if (!hasProperties)
-	//	return;
-
-	//const bool hasPropertiesTable = propertiesTable->GetValue("DialogProperties", dialogPropertiesTable);
-	//if (!hasPropertiesTable)
-	//	return;
-
-	//bool bDialogEnable, bEnemy;
-	//const char* sDialogType;
-	//const char* sAIName;
-
-	//dialogPropertiesTable->GetValue("bDialogEnable", bDialogEnable);
-	//dialogPropertiesTable->GetValue("sAIName", sAIName);
-	//dialogPropertiesTable->GetValue("eDialogType", sDialogType);
-	//dialogPropertiesTable->GetValue("Faction", bEnemy);
-
-	//if (!bDialogEnable /*|| bEnemy */ || !sAIName || !sDialogType) //≈сли диалог недоступен то прерываем
-	//{
-	//	CryLog("Dialog not available");
-	//	return;
-	//}
 }
 
 //-------------------------------------------------------------------
@@ -101,6 +69,6 @@ void CDialogDispatcher::OnAction(const ActionId& action, int activationMode, flo
 	const CGameActions &actions = g_pGame->Actions();
 	if (actions.use == action && activationMode == eAAM_OnRelease && IsAI() == true)
 	{
-		g_pGame->GetDialogSystem()->StartDialog(GetTarget());
+		g_pGame->GetDialogSystem()->WillStartDialog(GetTarget());
 	}
 }
