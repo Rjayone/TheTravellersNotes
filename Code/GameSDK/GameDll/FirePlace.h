@@ -41,9 +41,9 @@ public:
 	virtual void PostReloadExtension(IGameObject * pGameObject, const SEntitySpawnParams &params){}
 	virtual bool GetEntityPoolSignature(TSerialize signature) { return true; }
 	virtual void Release(){ delete this; }
-	virtual void FullSerialize(TSerialize ser){}
+	virtual void FullSerialize(TSerialize serializer);
 	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags){ return true; }
-	virtual void PostSerialize(){}
+	virtual void PostSerialize();
 	virtual void SerializeSpawnInfo(TSerialize ser){}
 	virtual ISerializableInfoPtr GetSpawnInfo(){ return 0; }
 	virtual void Update(SEntityUpdateContext& ctx, int updateSlot);
@@ -90,6 +90,8 @@ private:
 	IEntity* m_pParticalEntity;
 	State state;
 	static ISearchDataStruct* searchStruct;
+	// For storing and serialization of object pos
+	Vec3 m_worldPos;
 
 	// Color mutiplier (implementation of brightness)
 	float m_fColorMultipier;

@@ -130,6 +130,18 @@ void CFirePlace::ProcessEvent(SEntityEvent& event)
 	}
 }
 
+//-----------------------------------------
+void CFirePlace::FullSerialize(TSerialize serializer) {
+	assert(serializer.GetSerializationTarget() != eST_Network);
+	serializer.Value("state", state);
+	serializer.Value("pos", m_worldPos);
+}
+
+//-----------------------------------------
+void CFirePlace::PostSerialize() {
+	GetEntity()->SetPos(m_worldPos);
+}
+
 //--------------------------------------
 void CFirePlace::OnUse()
 {

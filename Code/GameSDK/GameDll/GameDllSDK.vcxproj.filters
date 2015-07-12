@@ -2319,9 +2319,11 @@
     <ClCompile Include="Events.cpp">
       <Filter>TravellerNotes\Utils\Events</Filter>
     </ClCompile>
-    <ClCompile Include="SaveLoad.cpp" />
     <ClCompile Include="MD5.cpp">
       <Filter>TravellerNotes\Utils\Hash</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveLoad.cpp">
+      <Filter>TravellerNotes\Utils\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4326,12 +4328,13 @@
     <ClInclude Include="Placeable.h">
       <Filter>TravellerNotes\Game Objects</Filter>
     </ClInclude>
-    <ClInclude Include="SaveLoad.h" />
     <ClInclude Include="MD5.h">
       <Filter>TravellerNotes\Utils\Hash</Filter>
     </ClInclude>
     <ClInclude Include="Dot.h">
       <Filter>TravellerNotes\Utils\UI</Filter>
+    <ClInclude Include="SaveLoad.h">
+      <Filter>TravellerNotes\Utils\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
