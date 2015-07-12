@@ -62,6 +62,13 @@ void CSword::Select(bool select)
 			m_CombatStance = new CCombatStance();
 		m_CombatStance->Init(this);
 		m_CombatStance->ApplyStance(e_CombatStanceVertical);
+		CItem* pItem = (CItem*)GetOwnerActor()->GetCurrentItem();
+		if (pItem)
+		{
+			
+			pItem->Physicalize(true, true);
+			pItem->DisableCollisionWithPlayers();
+		}
 	}
 	else
 	{

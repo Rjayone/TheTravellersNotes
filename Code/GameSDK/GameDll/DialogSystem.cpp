@@ -117,6 +117,12 @@ void CUIDialogMenu::OnPostUpdate(float fDeltaTime)
 	if (m_pDialogDispathcer != NULL)
 		m_pDialogDispathcer->Update();
 
+	CPlayer* pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
+	if (pPlayer != NULL)
+	{
+		if (pPlayer->IsDead() == true && m_bDialogStarted == true)
+			StopDialog();
+	}	
 }
 
 //-------------------------------------------------------------------
@@ -124,13 +130,9 @@ void CUIDialogMenu::CanDialog(IEntity* pTarget)
 {
 	m_pTarget = pTarget;
 
-	IUIElement* pDot = gEnv->pFlashUI->GetUIElement("Dot");
-	if (pDot && m_bDialogStarted == false)
+	if (m_bDialogStarted == false)
 	{
-		pDot->SetVisible(true);
-		SUIArguments args;
-		args.SetArguments("Talk");
-		pDot->CallFunction("PlayMessage", args);
+		ShowDotWithTitle("Talk");
 	}
 }
 
@@ -268,10 +270,6 @@ void CUIDialogMenu::ContinueDialog(int nextNPCDialogId)
 		if (m_pNPCAnswer[i]->currentPhraseId == nextNPCDialogId /*&& !strcmp(m_pNPCAnswer[i]->specialEvent, "")*/)
 		{
 			//TODO: Обработка экшенов
-			if (m_pNPCAnswer[i]->inventoryActions.size() > 0)
-			{
-				//~
-			}
 			if (m_pNPCAnswer[i]->questActions.size() > 0)
 			{
 				//~
@@ -498,14 +496,6 @@ void CUIDialogMenu::ParseXML()
 							return;
 
 						const char* actionName = action->getTag();
-						if (!strcmp(actionName, "inventory"))
-						{
-							SDialogNPCAnswer::SDialogActionInventory invAction;
-							invAction.actionType = atoi(action->getAttr("type"));
-							invAction.count = atoi(action->getAttr("count"));
-							invAction.itemName = action->getAttr("item");
-							npcAnswer->inventoryActions.push_back(invAction);
-						}
 						if (!strcmp(actionName, "quest"))
 						{
 							SDialogNPCAnswer::SDialogActionQuest questAction;
@@ -531,7 +521,6 @@ void CUIDialogMenu::ParseXML()
 		}//~if Phrase
 	}//~for i
 }
-
 
 //-------------------------------------------------------------------
 void CUIDialogMenu::SetDialogCam(IEntity *pEntity, const char *CameraName)
@@ -677,9 +666,16 @@ void CUIDialogMenu::SetRenderStatus(bool bOn)
 {
 	IRenderer* pRenderer = gEnv->pRenderer;
 	CRY_ASSERT(pRenderer);
-	pRenderer->EF_SetPostEffectParam("Dof_User_Active", 1.f, true);
-	pRenderer->EF_SetPostEffectParam("Dof_User_FocusDistance", 8000, true);
-	pRenderer->EF_SetPostEffectParam("Dof_User_FocusRange", 0, true);
-	pRenderer->EF_SetPostEffectParam("Dof_User_BlurAmount", 1, true);
-	pRenderer->EF_SetPostEffectParam("Dof_User_ScaleCoc", 12, true);
+	if (bOn)
+	{
+		pRenderer->EF_SetPostEffectParam("Dof_User_Active", 1.f, true);
+		pRenderer->EF_SetPostEffectParam("Dof_User_FocusDistance", 8000, true);
+		pRenderer->EF_SetPostEffectParam("Dof_User_FocusRange", 0, true);
+		pRenderer->EF_SetPostEffectParam("Dof_User_BlurAmount", 1, true);
+		pRenderer->EF_SetPostEffectParam("Dof_User_ScaleCoc", 12, true);
+	}
+	else
+	{
+
+	}
 }

@@ -781,6 +781,7 @@
     <ClInclude Include="DataPatchDownloader.h" />
     <ClInclude Include="DialogDispatcher.h" />
     <ClInclude Include="DialogSystem.h" />
+    <ClInclude Include="Dot.h" />
     <ClInclude Include="DoubleMagazine.h" />
     <ClInclude Include="Dropable.h" />
     <ClInclude Include="EconomicResources.h" />

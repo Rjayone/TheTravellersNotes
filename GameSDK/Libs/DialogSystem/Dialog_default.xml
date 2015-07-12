@@ -35,9 +35,6 @@
 			Можно исопльзовать как один так и другой или все сразу.
 		-->
 		<actions><!--Данный тег используется для обозначения действий-->
-			<!--types: 1 - recive, 2 - delete; item - название айтема, count - количество-->
-			<inventory type="2" item="Cobble" count="1"/>
-			<inventory type="1" item="Gold"   count="500"/>
 			<!--Статусы: 1 - принят, 2 - завершен, 3 - провален; title - название квеста-->
 			<quest title="MyQuest" status="2"/> 
 		</actions>

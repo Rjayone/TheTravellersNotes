@@ -20,6 +20,7 @@
 #include "IFlashUI.h"
 #include "Timer.h"
 #include "Events.h"
+#include "Dot.h"
 
 class CUIVisibleManager;
 
@@ -50,14 +51,6 @@ struct SDialogNPCAnswer
 
 
 	//---------------------------------------------------------------
-	struct SDialogActionInventory
-	{
-		int actionType; //1 - recive, 2 - delete
-		int count;
-		const char* itemName;
-		SDialogActionInventory() : actionType(0), count(0), itemName("")
-		{}
-	};
 	struct SDialogActionQuest
 	{
 		const char* questTitle;
@@ -67,7 +60,6 @@ struct SDialogNPCAnswer
 	};
 	//~
 
-	std::vector<SDialogActionInventory> inventoryActions;
 	std::vector<SDialogActionQuest> questActions;
 
 
@@ -77,7 +69,11 @@ struct SDialogNPCAnswer
 };
 
 
-class CUIDialogMenu : public IGameFrameworkListener, public IUIElementEventListener, public ITimerEvents, public IEvents
+class CUIDialogMenu : public IGameFrameworkListener,
+	public IUIElementEventListener,
+	public ITimerEvents,
+	public IEvents,
+	public CUIDot
 {
 public:
 	CUIDialogMenu();
@@ -162,17 +158,6 @@ public:
 	void SetQuestCam(string camname);
 	void SetAudio(const char *AudioName, bool bEnabled = false);
 
-
-	////Управление интерфейсом
-	//Описание:
-	//Метод воспроизводит анимацию точки(что в центер экрана), которая обозначит возможность диалога
-	void ShowDotDialogIcon();
-
-	//Описание:
-	//Метод отображает на экран окно диалога в зависимости от значения bShow
-	void DisplayDialogMenu(bool bShow = true);
-	//~
-
 	//Описание:
 	//Метод включает/выключает глубину резкости фона
 	void SetRenderStatus(bool bOn);
@@ -187,8 +172,6 @@ private:
 	IEntity* m_pCurrentQuestCamera;
 	IEntity* m_pAudioTrigger;
 
-	//SDialogNPCAnswer* m_pNPCAnswer;
-	//SDialogPlayerAnswer* m_pPlayerAnswer;
 	std::vector<SDialogNPCAnswer*> m_pNPCAnswer;
 	std::vector<SDialogPlayerAnswer*> m_pPlayerAnswer;
 	int m_nLastParentDialogId;

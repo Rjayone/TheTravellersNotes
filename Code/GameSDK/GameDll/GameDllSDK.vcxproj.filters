@@ -4330,6 +4330,9 @@
     <ClInclude Include="MD5.h">
       <Filter>TravellerNotes\Utils\Hash</Filter>
     </ClInclude>
+    <ClInclude Include="Dot.h">
+      <Filter>TravellerNotes\Utils\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameActions.actions">

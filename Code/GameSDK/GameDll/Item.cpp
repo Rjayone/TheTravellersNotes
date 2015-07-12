@@ -1366,6 +1366,7 @@ void CItem::Select(bool select)
 		select = false;
 	}
 
+
 	CActor* pOwnerActor = GetOwnerActor();
 
 	m_itemLowerMode = eILM_Raised;
