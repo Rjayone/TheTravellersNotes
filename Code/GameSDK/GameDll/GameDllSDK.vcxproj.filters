@@ -4333,6 +4333,7 @@
     </ClInclude>
     <ClInclude Include="Dot.h">
       <Filter>TravellerNotes\Utils\UI</Filter>
+    </ClInclude>
     <ClInclude Include="SaveLoad.h">
       <Filter>TravellerNotes\Utils\Game</Filter>
     </ClInclude>
