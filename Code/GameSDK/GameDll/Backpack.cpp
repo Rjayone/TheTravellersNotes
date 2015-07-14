@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "Backpack.h"
-
+#include "RPGInventory.h"
 
 #define FILE_PATH "GameSDK/Objects/box.cgf"
-
+#define UI_NAME "Inventory"
 
 CBackpack::CBackpack()
 {
@@ -50,6 +50,28 @@ void CBackpack::Reset()
 	const char* model = NULL;
 	propertiesTable->GetValue("objModel", model);
 	GetEntity()->LoadGeometry(0, model);
+
+	Physicalize(PE_RIGID);
+}
+
+void CBackpack::Physicalize(int type)
+{
+	IEntity *pEntity = GetEntity();
+	if (pEntity == NULL) return;
+
+	float mass = 1;
+	SmartScriptTable propertiesTable;
+	pScriptable->GetValue("PhysParams", propertiesTable);
+	propertiesTable->GetValue("mass", mass);
+
+	SEntityPhysicalizeParams pp;
+	pp.type = type;
+	pp.nSlot = -1;
+	pp.mass = mass;
+	pp.nFlagsOR = pef_monitor_poststep;
+	pp.fStiffnessScale = 5;
+
+	pEntity->Physicalize(pp);
 }
 
 void CBackpack::OnAction(const ActionId& action, int activationMode, float value)
@@ -68,7 +90,11 @@ void CBackpack::ProcessEvent(SEntityEvent& entityEvent)
 			eventName = reinterpret_cast<const char*>(entityEvent.nParam[0]);
 			if (eventName && !strcmp(eventName, "Used"))
 			{
-			//InitOptions();
+				CRPGInventory *pUIInventory = g_pGame->GetRPGInventory();	
+				if (IUIElement* pInventory = gEnv->pFlashUI->GetUIElement(UI_NAME))
+				{
+					pUIInventory->ShowInventory(pInventory);
+				}
 			}
 
 		}

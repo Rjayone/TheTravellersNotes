@@ -7,6 +7,7 @@
 class CBackpack : public CGameObjectExtensionHelper<CBackpack, IGameObjectExtension>,
 	public IActionListener
 {
+public:
 	CBackpack();
 	~CBackpack();
 
@@ -42,6 +43,7 @@ private:
 	void Reset();
 	IScriptTable *pScriptable;
 	IEntity *pEntity;
+	void Physicalize(int type);
 };
 
 #endif

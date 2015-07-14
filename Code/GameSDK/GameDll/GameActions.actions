@@ -317,6 +317,7 @@ DECL_ACTION(ChangeViewNext)
 DECL_ACTION(ChangeViewPrev)
 
 DECL_ACTION(Loot)
+DECL_ACTION(DropInv)
 
 //end Ylly commands-----------------------------
 DECL_ACTION(UseProps)

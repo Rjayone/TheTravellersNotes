@@ -53,6 +53,7 @@ CRPGInventory::CRPGInventory()
 	m_bGameStarted = false;
 	m_SlotsCount = INITIAL_SLOT_COUNT;
 	m_pUIInventory = NULL;
+	m_bInventoryDroped = false;
 
 	if (gEnv->pFlashUI != NULL)
 	{
@@ -63,6 +64,10 @@ CRPGInventory::CRPGInventory()
 
 	if (g_pGame->GetIGameFramework() != NULL)
 		g_pGame->GetIGameFramework()->RegisterListener(this, "UIInventory", FRAMEWORKLISTENERPRIORITY_GAME);
+
+	IActionMapManager* pAmMgr = g_pGame->GetIGameFramework()->GetIActionMapManager();
+	if (pAmMgr != NULL)
+		pAmMgr->AddExtraActionListener(this);
 }
 
 CRPGInventory::~CRPGInventory()
@@ -352,27 +357,9 @@ void CRPGInventory::OnAction(const ActionId& action, int activationMode, float v
 				//Закомменчено из-за ассерта, о двойной регистрации слушателя
 				//pUIInventory->AddEventListener(this, "CRPGInventory");
 				if (!pUIInventory->IsVisible())
-				{
-					//Скрываем прочий худ
-					g_UIVisibleManager.HideAllUIElements();
-
-					SActionEvent event(eAE_inGame);
-					OnActionEvent(event);
-
-					IRenderer* pRenderer = gEnv->pRenderer;
-					CRY_ASSERT(pRenderer);
-					pRenderer->EF_SetPostEffectParam("Dof_User_Active", 1.f, true);
-					pRenderer->EF_SetPostEffectParam("Dof_User_FocusDistance", 0, true);
-					pRenderer->EF_SetPostEffectParam("Dof_User_FocusRange", 0, true);
-					pRenderer->EF_SetPostEffectParam("Dof_User_BlurAmount", 10000, true);
-					pRenderer->EF_SetPostEffectParam("Dof_User_ScaleCoc", 1000, true);
-
-					if (ICVar* myVar = gEnv->pConsole->GetCVar("t_scale"))
-						myVar->ForceSet("0.1");
-
-					pUIInventory->SetVisible(true);
-					g_pGameActions->FilterNoMove()->Enable(true);
-					g_pGameActions->FilterNoMouse()->Enable(true);
+				{			
+					if (m_bInventoryDroped ) return; // если рюкзак снят то не вызываем инвентарь
+					ShowInventory(pUIInventory);
 				}
 				else
 				{
@@ -433,6 +420,31 @@ void CRPGInventory::OnAction(const ActionId& action, int activationMode, float v
 	if (actions.MoveTo == action)
 	{
 	}
+
+	if (gEnv->pFlashUI->GetUIElement(UI_NAME)->IsVisible() && actions.DropInv == action)
+	{
+		CryLog("DROP INV");
+		if (!m_bInventoryDroped)
+		{
+			m_bInventoryDroped = true;
+			SEntitySpawnParams spawn;
+			IEntityClass *pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Backpack");
+			if (!pClass) return;
+			spawn.pClass = pClass;
+			spawn.vPosition = gEnv->pSystem->GetViewCamera().GetPosition() + gEnv->pSystem->GetViewCamera().GetViewdir() + Vec3(0, 0, 1);
+			spawn.nFlags |= ENTITY_FLAG_CASTSHADOW;
+			m_pBackpack = gEnv->pEntitySystem->SpawnEntity(spawn);
+
+			HideInventory();
+		}
+		else
+		{
+			CryLog("TAKE BACKPACKET");
+			m_bInventoryDroped = false;
+			gEnv->pEntitySystem->RemoveEntity(m_pBackpack->GetId(), true);
+			HideInventory();
+		}
+	}
 }
 
 //-------------------------------------------------------------------
@@ -472,4 +484,56 @@ void CRPGInventory::ResetUIItemsArray()
 			m_pUIInventory->CallFunction("CreateItem", args);
 		}
 	}
+}
+
+void CRPGInventory::HideInventory()
+{
+	IUIElement* pUIInventory = gEnv->pFlashUI->GetUIElement(UI_NAME);
+	g_UIVisibleManager.ShowHidenUIElements();
+	pUIInventory->SetVisible(false);
+	g_pGameActions->FilterNoMove()->Enable(false);
+	g_pGameActions->FilterNoMouse()->Enable(false);
+	pUIInventory->Unload();
+	pUIInventory->RemoveEventListener(this);
+
+	IRenderer* pRenderer = gEnv->pRenderer;
+	CRY_ASSERT(pRenderer);
+	pRenderer->EF_SetPostEffectParam("Dof_User_Active", 1.f, true);
+	pRenderer->EF_SetPostEffectParam("Dof_User_FocusDistance", 10000, true);
+	pRenderer->EF_SetPostEffectParam("Dof_User_FocusRange", 0, true);
+	pRenderer->EF_SetPostEffectParam("Dof_User_BlurAmount", 10, true);
+	pRenderer->EF_SetPostEffectParam("Dof_User_ScaleCoc", 1, true);
+
+	if (ICVar* myVar = gEnv->pConsole->GetCVar("t_scale"))
+		myVar->ForceSet("1");
+}
+
+void CRPGInventory::SetInventoryStatus(bool isDroped)
+{
+	m_bInventoryDroped = isDroped;
+}
+
+
+void CRPGInventory::ShowInventory(IUIElement* pUIInventory)
+{
+	//Скрываем прочий худ
+	g_UIVisibleManager.HideAllUIElements();
+
+	SActionEvent event(eAE_inGame);
+	OnActionEvent(event);
+
+	IRenderer* pRenderer = gEnv->pRenderer;
+	CRY_ASSERT(pRenderer);
+	pRenderer->EF_SetPostEffectParam("Dof_User_Active", 1.f, true);
+	pRenderer->EF_SetPostEffectParam("Dof_User_FocusDistance", 0, true);
+	pRenderer->EF_SetPostEffectParam("Dof_User_FocusRange", 0, true);
+	pRenderer->EF_SetPostEffectParam("Dof_User_BlurAmount", 10000, true);
+	pRenderer->EF_SetPostEffectParam("Dof_User_ScaleCoc", 1000, true);
+
+	if (ICVar* myVar = gEnv->pConsole->GetCVar("t_scale"))
+		myVar->ForceSet("0.1");
+
+	pUIInventory->SetVisible(true);
+	g_pGameActions->FilterNoMove()->Enable(true);
+	g_pGameActions->FilterNoMouse()->Enable(true);
 }

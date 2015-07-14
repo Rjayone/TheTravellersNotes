@@ -207,6 +207,7 @@
 		<!--Sovereign actions-->
 		<action name="craft"  onRelease="1"  keyboard="c"/>
 		<action name="inventory"  onRelease="1"  keyboard="i"/>
+		<action name="DropInv"  onRelease="1"  keyboard="p"/>
 		<action name="tringle"  onRelease="1"  keyboard="tab"/>
 		<action name="MoveTo" onRelease="1" keyboard="p"/>
 		<action name="GetNPC" onRelease="1" keyboard="o"/>

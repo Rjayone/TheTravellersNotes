@@ -158,6 +158,7 @@ History:
 
 //Props
 #include "Props.h"
+#include "Backpack.h"
 
 //Weapons
 #include "Sword.h"
@@ -440,6 +441,7 @@ void InitGameFactory(IGameFramework *pFramework)
 
 	//Props
 	REGISTER_GAME_OBJECT(pFramework, Props, "Scripts/Entities/Misc/Props.lua");
+	REGISTER_GAME_OBJECT(pFramework, Backpack, "Scripts/Entities/Misc/Backpack.lua");
 	//~Traveller Registration
 
 

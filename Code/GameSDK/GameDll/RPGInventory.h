@@ -68,8 +68,15 @@ public:
 	void ResetUIItemsArray();
 
 	std::vector<SInventoryItem*> m_pItemsArray;
+
+	void SetInventoryStatus(bool isDroped);
+	void ShowInventory(IUIElement* pUIInventory);
 private:	
 	IUIElement *m_pUIInventory;
 	int m_SlotsCount; // Количество слотов инвентаря основной сумки	
 	bool m_bGameStarted; // true если в игре, да бы исключить спаун левых итемов
+
+	bool m_bInventoryDroped; //Снят ли рюкзак(инвентарь)
+	void HideInventory(); //Скрытие инвентаря
+	IEntity* m_pBackpack;
 };
