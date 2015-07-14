@@ -28,6 +28,7 @@ bool CBackpack::Init(IGameObject * pGameObject)
 
 void CBackpack::PostInit(IGameObject * pGameObject)
 {
+	//инициализация при вытаскивании на сцену на случай если мы будем использовать рюкзак просто как объект
 	GetEntity()->LoadGeometry(0, FILE_PATH);
 	pGameObject->EnableUpdateSlot(this, 0);
 
@@ -56,6 +57,7 @@ void CBackpack::Reset()
 
 void CBackpack::Physicalize(int type)
 {
+	// Физикализация рюкзака. Масса берется из луа
 	IEntity *pEntity = GetEntity();
 	if (pEntity == NULL) return;
 
@@ -81,19 +83,19 @@ void CBackpack::OnAction(const ActionId& action, int activationMode, float value
 
 void CBackpack::ProcessEvent(SEntityEvent& entityEvent)
 {
-
+	
 	switch (entityEvent.event)
 	{
 		case ENTITY_EVENT_SCRIPT_EVENT:
 		{
 			const char* eventName = NULL;
 			eventName = reinterpret_cast<const char*>(entityEvent.nParam[0]);
-			if (eventName && !strcmp(eventName, "Used"))
+			if (eventName && !strcmp(eventName, "Used"))  // Ловит эвенте что игрок использует наш рюкзак
 			{
 				CRPGInventory *pUIInventory = g_pGame->GetRPGInventory();	
 				if (IUIElement* pInventory = gEnv->pFlashUI->GetUIElement(UI_NAME))
 				{
-					pUIInventory->ShowInventory(pInventory);
+					pUIInventory->ShowInventory(pInventory); // открывает инвентарь через рюкзак на земеле( будто мы шаримся в сумке)
 				}
 			}
 
