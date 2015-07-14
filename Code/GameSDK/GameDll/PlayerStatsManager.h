@@ -83,9 +83,14 @@ public:
 	//Данная функция вызывается самим статов, сообщая о том, что он изменился
 	//Данная функция, затем, оповещает слушателей об изменениях
 	void OnStatChanged(CPlayerStat* stat);
+
+	//Функции на получение статуса рюкзака (вне радиуса/в поле радиуса)
+	void SetBackpackStatus(bool isBackpackLost);
+	bool GetBackpackStatus();
 private:
 	std::vector<CPlayerStat*> m_pPlayerStats;	
 	std::vector<IPlayerStatsListener*> m_pListeners;
+	bool m_bBackpackLost = false;// статус рюкзака(вне радиуса/в поле радиуса)
 };
 
 #endif

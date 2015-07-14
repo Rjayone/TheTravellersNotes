@@ -96,3 +96,13 @@ void CPlayerStatsManager::OnStatChanged(CPlayerStat* stat)
 	for (int i = 0; i < m_pListeners.size(); i++)
 		m_pListeners[i]->OnStatChanged(stat);
 }
+
+bool CPlayerStatsManager::GetBackpackStatus()
+{
+	return m_bBackpackLost;
+}
+
+void CPlayerStatsManager::SetBackpackStatus(bool isBackpackLost)
+{
+	m_bBackpackLost = isBackpackLost;
+}
