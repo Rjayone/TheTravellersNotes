@@ -1,0 +1,16 @@
+<Modes>
+
+	<GameMode name='SinglePlayer'>
+		<Alias name='SP' />
+		<Rules path='Scripts/GameRules/SinglePlayer.xml' />
+		<DefaultHudState name="sp_core_hud" />
+	</GameMode>
+
+
+	<GameMode name='TNSinglePlayer'>
+		<Alias name='TNSP' />
+		<Rules path='Scripts/GameRules/TNSinglePlayer.xml' />
+		<DefaultHudState name="sp_core_hud" />
+	</GameMode>
+
+</Modes>
