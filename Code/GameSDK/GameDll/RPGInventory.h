@@ -71,6 +71,8 @@ public:
 
 	void SetInventoryStatus(bool isDroped);
 	void ShowInventory(IUIElement* pUIInventory);
+
+	void ClearInventory();
 private:	
 	IUIElement *m_pUIInventory;
 	int m_SlotsCount; // Количество слотов инвентаря основной сумки	

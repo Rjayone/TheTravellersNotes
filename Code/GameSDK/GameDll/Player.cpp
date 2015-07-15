@@ -148,7 +148,8 @@ History:
 #include "UI/UIManager.h"
 
 
-#include"PlayerStatsManager.h"
+#include "PlayerStatsManager.h"
+#include "RPGInventory.h"
 
 DEFINE_STATE_MACHINE( CPlayer, Movement ); 
 
@@ -1783,6 +1784,7 @@ void CPlayer::Update(SEntityUpdateContext& ctx, int updateSlot)
 		CryLogAlways("You lost your Backpack");
 		gEnv->pEntitySystem->RemoveEntity(pBAckpack->GetId(), true);
 		g_pGame->GetPlayerStatsManager()->SetBackpackStatus(true);
+		g_pGame->GetRPGInventory()->ClearInventory();
 	}
 //*********************************************************************
 }

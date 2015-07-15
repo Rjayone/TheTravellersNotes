@@ -260,6 +260,7 @@ bool CRPGInventory::DeleteItem(EntityId itemId)
 
 void CRPGInventory::AddItem(SInventoryItem *pItem,int count)
 {
+	if (g_pGame->GetPlayerStatsManager()->GetBackpackStatus()) return; // если рюкзак потерян то другие действия с инвентарем невозможны
 	//Если количество итемов меньше чем начальное значение сумки
 	if (m_pItemsArray.size() < m_SlotsCount || gEnv->pFlashUI)
 	{
@@ -541,4 +542,10 @@ void CRPGInventory::ShowInventory(IUIElement* pUIInventory)
 	pUIInventory->SetVisible(true);
 	g_pGameActions->FilterNoMove()->Enable(true);
 	g_pGameActions->FilterNoMouse()->Enable(true);
+}
+
+void CRPGInventory::ClearInventory()
+{
+	m_pItemsArray.clear();
+	ResetUIItemsArray();
 }
