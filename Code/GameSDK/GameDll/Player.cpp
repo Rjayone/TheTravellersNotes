@@ -147,6 +147,9 @@ History:
 
 #include "UI/UIManager.h"
 
+
+#include"PlayerStatsManager.h"
+
 DEFINE_STATE_MACHINE( CPlayer, Movement ); 
 
 #define FOOTSTEPS_DEEPWATER_DEPTH 1  // meters
@@ -1755,7 +1758,33 @@ void CPlayer::Update(SEntityUpdateContext& ctx, int updateSlot)
 		}
 	}
 #endif  // !_RELEASE
-	
+
+//*********Блок чекинг расстояния игрока от рюкзака******************
+	if (g_pGame->GetPlayerStatsManager()->GetBackpackStatus()) return;
+
+	if (!this) return;
+
+	IEntity* pBAckpack = gEnv->pEntitySystem->FindEntityByName("Backpack1");
+
+	if (!pBAckpack) return;
+
+	float len = (this->GetEntity()->GetPos() - pBAckpack->GetPos()).len();
+
+	//Чекаем расстояние на котором игрок от рюкзака
+	if (len >= 90 && len <= 91)
+	{
+		//Если вышли за пределы то выскакивает предупрждение 
+		CryLogAlways("Warning you can lost your Backpack");		
+	}	
+
+	if (len >= 100 && len <= 101)
+	{
+		//Если вышли за пределы то рюкзак теряется и задается статус о том что рюкзак потерян
+		CryLogAlways("You lost your Backpack");
+		gEnv->pEntitySystem->RemoveEntity(pBAckpack->GetId(), true);
+		g_pGame->GetPlayerStatsManager()->SetBackpackStatus(true);
+	}
+//*********************************************************************
 }
 
 void CPlayer::CreateInputClass(bool client)

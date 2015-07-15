@@ -38,6 +38,7 @@
 #include "FirePlace.h"
 #include "UIVisibleManager.h"
 #include "InventoryItems.h"
+#include "PlayerStatsManager.h"
 
 
 #define ITEMS_FOLDER "/Libs/Items/Library/ItemsDescription.xml"
@@ -347,6 +348,9 @@ void CRPGInventory::OnUse(EntityId id)
 
 void CRPGInventory::OnAction(const ActionId& action, int activationMode, float value)
 {
+
+	if (g_pGame->GetPlayerStatsManager()->GetBackpackStatus()) return; // если рюкзак потерян то другие действия с инвентарем невозможны
+
 	const CGameActions &actions = g_pGame->Actions();
 	if (actions.inventory == action)
 	{
@@ -431,6 +435,7 @@ void CRPGInventory::OnAction(const ActionId& action, int activationMode, float v
 			IEntityClass *pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Backpack");
 			if (!pClass) return;
 			spawn.pClass = pClass;
+			spawn.sName = "Backpack1";
 			spawn.vPosition = gEnv->pSystem->GetViewCamera().GetPosition() + gEnv->pSystem->GetViewCamera().GetViewdir() + Vec3(0, 0, 1);
 			spawn.nFlags |= ENTITY_FLAG_CASTSHADOW;
 			m_pBackpack = gEnv->pEntitySystem->SpawnEntity(spawn);

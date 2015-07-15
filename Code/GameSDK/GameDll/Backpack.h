@@ -45,7 +45,6 @@ private:
 	IScriptTable *pScriptable;
 	IEntity *pEntity;
 	void Physicalize(int type);
-	CPlayer *pPlayer;
 };
 
 #endif

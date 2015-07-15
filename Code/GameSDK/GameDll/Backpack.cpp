@@ -85,21 +85,7 @@ void CBackpack::OnAction(const ActionId& action, int activationMode, float value
 
 void CBackpack::Update(SEntityUpdateContext& ctx, int slot)
 {
-	if (g_pGame->GetPlayerStatsManager()->GetBackpackStatus()) return;
 	
-	pPlayer = (CPlayer*)g_pGame->GetIGameFramework()->GetClientActor();
-
-	if (pPlayer == NULL) return;
-
-	float len = (pPlayer->GetEntity()->GetPos() - this->GetEntity()->GetPos()).len();
-
-	//Чекаем расстояние на котором игрок от рюкзака
-	if (len >= 80 && len <= 81)
-	{
-		//Если вышли за пределы то выскакивает предупрждение и задается статус о том что рюкзак потерян
-		CryLogAlways("Warning you can lost your Backpack");
-		g_pGame->GetPlayerStatsManager()->SetBackpackStatus(true);
-	}	
 }
 
 void CBackpack::ProcessEvent(SEntityEvent& entityEvent)

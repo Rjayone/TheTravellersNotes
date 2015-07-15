@@ -132,9 +132,9 @@ void CFirePlace::ProcessEvent(SEntityEvent& event)
 
 //-----------------------------------------
 void CFirePlace::FullSerialize(TSerialize serializer) {
-	assert(serializer.GetSerializationTarget() != eST_Network);
+	/*assert(serializer.GetSerializationTarget() != eST_Network);
 	serializer.Value("state", state);
-	serializer.Value("pos", m_worldPos);
+	serializer.Value("pos", m_worldPos);*/
 }
 
 //-----------------------------------------
