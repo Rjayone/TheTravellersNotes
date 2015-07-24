@@ -39,7 +39,7 @@ struct SLookAroundParams : public IProceduralParams
 		ar(timeMax, "TimeMax", "Time Max");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = animRef.c_str();
 	}
@@ -132,11 +132,10 @@ public:
 		const SLookAroundParams& params = GetParams();
 
 		//--- TODO! Context use of random number generator!
-		float yaw   = Random(params.yawMin, params.yawMax);
-		float pitch = Random(params.pitchMin, params.pitchMax);
+		float yaw   = cry_random(params.yawMin, params.yawMax);
+		float pitch = cry_random(params.pitchMin, params.pitchMax);
 		m_lookOffset.Set(sin_tpl(yaw), cos_tpl(yaw), 0.0f);
-
-		m_lookAroundTime = Random(params.timeMin, params.timeMax);
+		m_lookAroundTime = cry_random(params.timeMin, params.timeMax);
 	}
 
 public:

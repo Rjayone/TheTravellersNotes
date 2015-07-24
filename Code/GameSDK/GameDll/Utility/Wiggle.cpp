@@ -8,10 +8,10 @@ CWiggle::CWiggle()
 	:	m_frequency(1.0f)
 	,	m_time(0.0f)
 {
-	m_points[0] = cry_frand();
-	m_points[1] = cry_frand();
-	m_points[2] = cry_frand();
-	m_points[3] = cry_frand();
+	m_points[0] = cry_random(-1.0f, 1.0f);
+	m_points[1] = cry_random(-1.0f, 1.0f);
+	m_points[2] = cry_random(-1.0f, 1.0f);
+	m_points[3] = cry_random(-1.0f, 1.0f);
 }
 
 
@@ -31,7 +31,7 @@ float CWiggle::Update(float deltaTime)
 		m_points[0] = m_points[1];
 		m_points[1] = m_points[2];
 		m_points[2] = m_points[3];
-		m_points[3] = cry_frand();
+		m_points[3] = cry_random(-1.0f, 1.0f);
 		m_time -= 1.0f;
 	}
 

@@ -12,10 +12,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IMaterialEffects.h)
 
-#ifndef __IMATERIALEFFECTS_H__
-#define __IMATERIALEFFECTS_H__
 #pragma once
 
 #if !defined(_RELEASE)
@@ -528,9 +525,9 @@ struct SMFXCustomParamValue
 };
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IMaterialEffects 
+struct IMaterialEffects 
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMaterialEffects(){}
 	virtual void LoadFXLibraries() = 0;
 	virtual void Reset( bool bCleanup ) = 0;
@@ -556,7 +553,5 @@ UNIQUE_IFACE struct IMaterialEffects
 	virtual int GetMatFXFlowGraphCount() const = 0;
 	virtual IFlowGraphPtr GetMatFXFlowGraph(int index, string* pFileName = NULL) const = 0;
 	virtual IFlowGraphPtr LoadNewMatFXFlowGraph(const string& filename) = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif // __IMATERIALEFFECTS_H__

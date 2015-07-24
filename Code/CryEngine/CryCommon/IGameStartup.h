@@ -15,15 +15,8 @@
 		- 30:7:2004   12:00 : Taken-over by Márcio Martins
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IGameStartup.h)
 
-#ifndef __IGAMESTARTUP_H__
-#define __IGAMESTARTUP_H__
-
-#if _MSC_VER > 1000
-#	pragma once
-#endif
-
+#pragma once
 
 #include <ISystem.h>
 #include <IGame.h> // <> required for Interfuscator
@@ -37,7 +30,7 @@ struct ISystemUserCallback;
 
 // Summary
 //   Interfaces used to initialize a game using CryEngine
-UNIQUE_IFACE struct IGameStartup
+struct IGameStartup
 {
 	// Summary
 	//   Entry function to the game
@@ -47,6 +40,7 @@ UNIQUE_IFACE struct IGameStartup
 	//   Entry function used to create a new instance of the game
 	typedef IGameStartup *(*TEntryFunction)();
 
+	// <interfuscator:shuffle>
 	virtual ~IGameStartup(){}
 
 	// Description:
@@ -83,8 +77,8 @@ UNIQUE_IFACE struct IGameStartup
 	virtual const char* GetPatch() const = 0;
 	//		Retrieves the next mod to use in case the engine got a restart request.
 	// Return Value:
-	//		true will indicates that a mod is requested
-	virtual bool GetRestartMod(char* pModName, int nameLenMax) = 0;
+	//		true indicates that a mod is requested
+	virtual bool GetRestartMod(char* pModNameBuffer, int modNameBufferSizeInBytes) = 0;
 
 	// Description:
 	//		Initiate and control the game loop!
@@ -99,7 +93,5 @@ UNIQUE_IFACE struct IGameStartup
 	//		Part of the tools package includes a key generator, which will generate a header file with the public key which can be easily included in code.
 	//		This *should* ideally be in IGame being game specific info, but paks are loaded very early on during boot and this data is needed to init CryPak.
 	virtual const uint8* GetRSAKey(uint32 *pKeySize) const { *pKeySize = 0; return NULL; }
-
+	// </interfuscator:shuffle>
 };
-
-#endif //__IGAMESTARTUP_H__

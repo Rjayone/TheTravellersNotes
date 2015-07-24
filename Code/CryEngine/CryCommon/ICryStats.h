@@ -80,7 +80,7 @@ typedef void (*CryStatsReadUserDataCallback)(CryLobbyTaskID taskID, ECryLobbyErr
 
 struct ICryStats
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICryStats(){}
 	// StatsRegisterLeaderBoards
 	// This function must be called before any other leaderboard functions.
@@ -227,9 +227,7 @@ struct ICryStats
 	// Get the leaderboard type.
 	virtual ECryLobbyLeaderboardType GetLeaderboardType() = 0;
 
-	// Access the profanity filter (only on PS3 at the moment - for Xbox profanity filter, see PlatformOS_Xenon).
-	virtual ECryLobbyError StatsVerifyString(uint32 user, uint8* pUTF8Buffer, uint32 nSizeofBuffer, CryLobbyTaskID* pTaskID, CryStatsCallback cb, void* pCbArg) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __ICRYSTATS_H__

@@ -26,6 +26,8 @@
 #include <ctype.h>
 #include <wctype.h>
 
+#include "CryString.h"
+
 #ifndef CRY_STRING_DEBUG
 #define CRY_STRING_DEBUG(s)
 #endif
@@ -64,7 +66,12 @@ public:
 
 	ILINE value_type _ascii_tolower(value_type c) const
 	{
-		return ( (((c) >= 'A') && ((c) <= 'Z')) ? ((c) - 'A' + 'a') : (c) );
+		return (c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c;
+	}
+
+	ILINE value_type _ascii_toupper(value_type c) const
+	{
+		return (c >= 'a' && c <= 'z') ? c - 'a' + 'A' : c;
 	}
 
 	ILINE int _strcmp ( const_str a, const_str b) const
@@ -165,7 +172,12 @@ public:
 
 	ILINE value_type _ascii_tolower(value_type c) const
 	{
-		return towlower(c);
+		return ( (((c) >= 'A') && ((c) <= 'Z')) ? ((c) - 'A' + 'a') : (c) );
+	}
+
+	ILINE value_type _ascii_toupper(value_type c) const
+	{
+		return ( (((c) >= 'a') && ((c) <= 'z')) ? ((c) - 'a' + 'A') : (c) );
 	}
 
 	ILINE int _strcmp ( const_str a, const_str b) const
@@ -339,7 +351,6 @@ public:
 	int compare( size_type _Pos1,size_type _Num1,const _Self& _Str ) const;
 	int compare( size_type _Pos1,size_type _Num1,const _Self& _Str,size_type nOff,size_type nCount ) const;
 	int compare( const value_type* _Ptr	) const;
-	int compare( size_type _Pos1,size_type _Num1,const value_type* _Ptr	) const;
 	int compare( size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 = npos	) const;
 
 	// Case insensitive comparison
@@ -347,7 +358,6 @@ public:
 	int compareNoCase( size_type _Pos1,size_type _Num1,const _Self& _Str ) const;
 	int compareNoCase( size_type _Pos1,size_type _Num1,const _Self& _Str,size_type nOff,size_type nCount ) const;
 	int compareNoCase( const value_type* _Ptr	) const;
-	int compareNoCase( size_type _Pos1,size_type _Num1,const value_type* _Ptr	) const;
 	int compareNoCase( size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 = npos	) const;
 
 	// Copies at most a specified number of characters from an indexed position in a source string to a target character array.
@@ -425,14 +435,7 @@ public:
 	_Self& operator+=( value_type ch );
 	_Self& operator+=( const_str str );
 	_Self& operator+=( const CryStringT<T> &str );
-	//template <class TT> friend CryStackStringT<TT> operator+( const CryStackStringT<TT>& str1, const CryStackStringT<TT>& str2 );
-	//template <class TT> friend CryStackStringT<TT> operator+( const CryStackStringT<TT>& str, value_type ch );
-	//template <class TT> friend CryStackStringT<TT> operator+( value_type ch, const CryStackStringT<TT>& str );
-	//template <class TT> friend CryStackStringT<TT> operator+( const CryStackStringT<TT>& str1, const_str str2 );
-	//template <class TT> friend CryStackStringT<TT> operator+( const_str str1, const CryStackStringT<TT>& str2 );
 
-	// Workaround: X360 compiler crash (XDK: 5426)
-#ifndef XENON
 	size_t GetAllocatedMemory() const
 	{
 		size_t size = sizeof(*this);
@@ -440,7 +443,6 @@ public:
 			size += (m_nAllocSize+1)*sizeof(value_type);
 		return size;
 	}
-#endif
 
 	//////////////////////////////////////////////////////////////////////////
 	// Extended functions.
@@ -454,10 +456,12 @@ public:
 	//  Make sure there is enough space to hold the string
 	_Self& FormatFast ( const value_type* format,... );
 
-	// This is _fast_ version
+	//! Converts the string to lower-case.
+	//  This function uses the "C" locale for case-conversion (ie, A-Z only).
 	_Self& MakeLower();
-	// This is correct version
-	_Self& MakeLowerLocale();
+
+	//! Converts the string to upper-case.
+	//  This function uses the "C" locale for case-conversion (ie, A-Z only).
 	_Self& MakeUpper();
 
 	_Self& Trim();
@@ -1018,12 +1022,6 @@ inline int CryStackStringT<T,S>::compare( const value_type* _Ptr	) const
 }
 
 template <class T, size_t S>
-inline int CryStackStringT<T,S>::compare( size_type _Pos1,size_type _Num1,const value_type* _Ptr	) const
-{
-	return compare( _Pos1,_Num1,_Ptr,npos );
-}
-
-template <class T, size_t S>
 inline int CryStackStringT<T,S>::compare( size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 ) const
 {
 	assert( _Pos1 < length() );
@@ -1031,7 +1029,7 @@ inline int CryStackStringT<T,S>::compare( size_type _Pos1,size_type _Num1,const 
 		_Num1 = length() - _Pos1; // trim to size
 
 	int res = _Num1 == 0 ? 0 : CharTraits<T>::_strncmp( m_str+_Pos1,_Ptr,(_Num1 < _Num2)?_Num1:_Num2);
-	return (res != 0 ? res : _Num1 < _Num2 ? -1 : _Num1 == _Num2 ? 0 : +1);
+	return (res != 0 ? res : _Num2 == npos && _Ptr[_Num1] == 0 ? 0 : _Num1 < _Num2 ? -1 : _Num1 == _Num2 ? 0 : +1);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1061,12 +1059,6 @@ inline int CryStackStringT<T,S>::compareNoCase( const value_type* _Ptr	) const
 }
 
 template <class T, size_t S>
-inline int CryStackStringT<T,S>::compareNoCase( size_type _Pos1,size_type _Num1,const value_type* _Ptr	) const
-{
-	return compareNoCase( _Pos1,_Num1,_Ptr,npos );
-}
-
-template <class T, size_t S>
 inline int CryStackStringT<T,S>::compareNoCase( size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 ) const
 {
 	assert( _Pos1 < length() );
@@ -1074,7 +1066,7 @@ inline int CryStackStringT<T,S>::compareNoCase( size_type _Pos1,size_type _Num1,
 		_Num1 = length() - _Pos1; // trim to size
 
 	int res = _Num1 == 0 ? 0 : CharTraits<T>::_strnicmp( m_str+_Pos1,_Ptr,(_Num1 < _Num2)?_Num1:_Num2);
-	return (res != 0 ? res : _Num1 < _Num2 ? -1 : _Num1 == _Num2 ? 0 : +1);
+	return (res != 0 ? res : _Num2 == npos && _Ptr[_Num1] == 0 ? 0 : _Num1 < _Num2 ? -1 : _Num1 == _Num2 ? 0 : +1);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1688,25 +1680,12 @@ inline CryStackStringT<T,S>& CryStackStringT<T,S>::MakeLower()
 
 //////////////////////////////////////////////////////////////////////////
 template <class T, size_t S> 
-inline CryStackStringT<T,S>& CryStackStringT<T,S>::MakeLowerLocale()
-{
-	_MakeUnique();
-	for (value_type *s = m_str; *s != 0; s++)
-	{
-		*s = this->_traits_tolower(*s);
-	}
-	return *this;
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-template <class T, size_t S> 
 inline CryStackStringT<T,S>& CryStackStringT<T,S>::MakeUpper()
 {
 	_MakeUnique();
 	for (value_type *s = m_str; *s != 0; s++)
 	{
-		*s = this->_traits_toupper(*s);
+		*s = this->_ascii_toupper(*s);
 	}
 	return *this;
 }
@@ -1933,9 +1912,6 @@ void move_init(CryStackStringT<T,S>& dest, CryStackStringT<T,S>& source)
 #if defined(_RELEASE)
 #define ASSERT_LEN        (void)(0)
 #define ASSERT_WLEN       (void)(0)
-#elif defined(XENON) || defined(PS3)
-#define ASSERT_LEN        assert(this->length()<=S)
-#define ASSERT_WLEN       assert(this->length()<=S)
 #else
 #define ASSERT_LEN        CRY_ASSERT_TRACE(this->length()<=S, ("String '%s' is %u character(s) longer than MAX_SIZE=%u", this->c_str(), this->length() - S, S))
 #define ASSERT_WLEN       CRY_ASSERT_TRACE(this->length()<=S, ("Wide-char string '%ls' is %u character(s) longer than MAX_SIZE=%u", this->c_str(), this->length() - S, S))

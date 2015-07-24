@@ -18,12 +18,15 @@
 
 #pragma once
 
-#include "DialogScript.h"
-#include <IDialogSystem.h>
 #include <SerializeFwd.h>
+
+#include "DialogScript.h"
+#include "IDialogSystem.h"
 #include "ILevelSystem.h"
+#include "DialogQueuesManager.h"
 
 class CDialogSession;
+class CDialogActorContext;
 
 #ifndef _RELEASE
 #define DEBUGINFO_DIALOGBUFFER
@@ -33,6 +36,7 @@ class CDialogSystem : public IDialogSystem, ILevelSystemListener
 {
 public:
 	typedef int SessionID;
+	typedef int ActorContextID;
 
 	CDialogSystem();
 	virtual ~CDialogSystem();
@@ -40,15 +44,15 @@ public:
 	void GetMemoryStatistics(ICrySizer * s);
 
 	// Later go into IDialogSystem i/f
-	VIRTUAL void Update(const float dt);
+	virtual void Update(const float dt);
 	virtual void Shutdown();
 	virtual void Serialize(TSerialize ser);   // serializes load/save. After load serialization PostLoad needs to be called
 
 	// IDialogSystem
-	VIRTUAL bool Init();
-	VIRTUAL void Reset(bool bUnload);
-	VIRTUAL IDialogScriptIteratorPtr CreateScriptIterator();
-	VIRTUAL bool ReloadScripts(const char *levelName = NULL);
+	virtual bool Init();
+	virtual void Reset(bool bUnload);
+	virtual IDialogScriptIteratorPtr CreateScriptIterator();
+	virtual bool ReloadScripts(const char *levelName = NULL);
 	// ~IDialogSystem
 
 	// ILevelSystemListener
@@ -64,9 +68,11 @@ public:
 	SessionID CreateSession(const string& scriptID);
 	bool      DeleteSession(SessionID id);
 	CDialogSession* GetSession(SessionID id) const;
+	CDialogSession* GetActiveSession(SessionID id) const;
+	CDialogActorContext* GetActiveSessionActorContext(ActorContextID id) const;
 	const CDialogScript* GetScriptByID(const string& scriptID) const;
 
-	VIRTUAL bool IsEntityInDialog(EntityId entityId) const;
+	virtual bool IsEntityInDialog(EntityId entityId) const;
 	bool FindSessionAndActorForEntity(EntityId entityId, SessionID& outSessionID, CDialogScript::TActorID& outActorId) const;
 
 	// called from CDialogSession
@@ -76,6 +82,8 @@ public:
 	// Debug dumping
 	void Dump(int verbosity = 0);
 	void DumpSessions();
+
+	CDialogQueuesManager* GetDialogQueueManager() { return &m_dialogQueueManager; }
 
 	static int sDiaLOGLevel;    // CVar ds_LogLevel
 	static int sPrecacheSounds; // CVar ds_PrecacheSounds
@@ -102,9 +110,9 @@ protected:
 	TDialogScriptMap  m_dialogScriptMap;
 	TDialogSessionMap m_allSessions;
 	TDialogSessionVec m_activeSessions;
-	TDialogSessionVec m_activeSessionsTemp;
 	TDialogSessionVec m_pendingDeleteSessions;
 	std::vector<SessionID> m_restoreSessions;
+	CDialogQueuesManager m_dialogQueueManager;
 };
 
 #endif

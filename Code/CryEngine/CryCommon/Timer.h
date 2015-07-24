@@ -9,7 +9,7 @@ struct Timer
 
 	void Reset( float duration, float variation = 0.0f )
 	{
-		endTime = gEnv->pSystem->GetITimer()->GetFrameStartTime() + CTimeValue(duration) + CTimeValue(cry_frand() * variation);
+		endTime = gEnv->pSystem->GetITimer()->GetFrameStartTime() + CTimeValue(duration) + CTimeValue(cry_random(0.0f, variation));
 	}
 
 	bool Elapsed() const

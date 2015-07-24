@@ -1,0 +1,86 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shader Tools", "Shader Tools", "{21947A1D-0868-480F-AB94-E142374913BF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrySCompileServer", "..\Tools\CrySCompileServer\CrySCompileServer\CrySCompileServer.vcxproj", "{FC4EDD46-B587-495E-BD35-8FEBFDF1D61A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Others", "Others", "{83716842-0048-48CE-B4D4-14A76DC2F5BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lua", "Lua", "{A02CEB3C-A27A-48D1-9564-36A30FF40A89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuaRemoteDebugger", "..\Tools\LuaRemoteDebugger\LuaRemoteDebugger\LuaRemoteDebugger.csproj", "{37004A77-DFDE-4D36-802A-32BAF216C018}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "..\Tools\LuaRemoteDebugger\Aga.Controls\Aga.Controls.csproj", "{E73BB233-D88B-44A7-A98F-D71EE158381D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SHAllocator", "..\Tools\SphericalHarmonics\SHAllocator\SHAllocator.vcxproj", "{DD0828F0-F152-4BC6-AD3D-97ABCDF8C83F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PRT", "..\Tools\SphericalHarmonics\PRT\PRT.vcxproj", "{B5D507B0-8FD2-4BAD-880B-2362D4358D61}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DBAPI", "..\Tools\DBAPI\DBAPI.vcxproj", "{CF3F3229-7B2E-4829-B528-2023CFA11779}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DXOrbisShaderCompiler", "..\Tools\DXOrbisShaderCompiler\DXOrbisShaderCompiler\DXOrbisShaderCompiler.vcxproj", "{A7F12F30-470E-4DB0-8E51-1EE59B2ACA0A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetTaggingTools", "..\Tools\AssetTagging\AssetTagging\AssetTaggingTools.vcxproj", "{B638AD52-E1A6-4154-9733-4CFD50A84439}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetTagging", "..\Sandbox\Plugins\AssetTaggingPlugin\AssetTagging.vcxproj", "{46E6826D-64F1-4C21-9219-230B9F95E367}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC4EDD46-B587-495E-BD35-8FEBFDF1D61A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FC4EDD46-B587-495E-BD35-8FEBFDF1D61A}.Debug|x64.ActiveCfg = Debug|x64
+		{FC4EDD46-B587-495E-BD35-8FEBFDF1D61A}.Release|Win32.ActiveCfg = Release|Win32
+		{FC4EDD46-B587-495E-BD35-8FEBFDF1D61A}.Release|x64.ActiveCfg = Release|x64
+		{37004A77-DFDE-4D36-802A-32BAF216C018}.Debug|Win32.ActiveCfg = Debug|x86
+		{37004A77-DFDE-4D36-802A-32BAF216C018}.Debug|x64.ActiveCfg = Debug|x86
+		{37004A77-DFDE-4D36-802A-32BAF216C018}.Release|Win32.ActiveCfg = Release|x86
+		{37004A77-DFDE-4D36-802A-32BAF216C018}.Release|x64.ActiveCfg = Release|x86
+		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Debug|Win32.ActiveCfg = Debug|x86
+		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Debug|x64.ActiveCfg = Debug|x86
+		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|Win32.ActiveCfg = Release|x86
+		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|x64.ActiveCfg = Release|x86
+		{DD0828F0-F152-4BC6-AD3D-97ABCDF8C83F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DD0828F0-F152-4BC6-AD3D-97ABCDF8C83F}.Debug|x64.ActiveCfg = Debug|x64
+		{DD0828F0-F152-4BC6-AD3D-97ABCDF8C83F}.Release|Win32.ActiveCfg = Release|Win32
+		{DD0828F0-F152-4BC6-AD3D-97ABCDF8C83F}.Release|x64.ActiveCfg = Release|x64
+		{B5D507B0-8FD2-4BAD-880B-2362D4358D61}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B5D507B0-8FD2-4BAD-880B-2362D4358D61}.Debug|x64.ActiveCfg = Debug|x64
+		{B5D507B0-8FD2-4BAD-880B-2362D4358D61}.Release|Win32.ActiveCfg = Release|Win32
+		{B5D507B0-8FD2-4BAD-880B-2362D4358D61}.Release|x64.ActiveCfg = Release|x64
+		{CF3F3229-7B2E-4829-B528-2023CFA11779}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CF3F3229-7B2E-4829-B528-2023CFA11779}.Debug|x64.ActiveCfg = Debug|x64
+		{CF3F3229-7B2E-4829-B528-2023CFA11779}.Release|Win32.ActiveCfg = Release|Win32
+		{CF3F3229-7B2E-4829-B528-2023CFA11779}.Release|x64.ActiveCfg = Release|x64
+		{A7F12F30-470E-4DB0-8E51-1EE59B2ACA0A}.Debug|Win32.ActiveCfg = Debug|x64
+		{A7F12F30-470E-4DB0-8E51-1EE59B2ACA0A}.Debug|x64.ActiveCfg = Debug|x64
+		{A7F12F30-470E-4DB0-8E51-1EE59B2ACA0A}.Release|Win32.ActiveCfg = Release|x64
+		{A7F12F30-470E-4DB0-8E51-1EE59B2ACA0A}.Release|x64.ActiveCfg = Release|x64
+		{B638AD52-E1A6-4154-9733-4CFD50A84439}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B638AD52-E1A6-4154-9733-4CFD50A84439}.Debug|x64.ActiveCfg = Debug|x64
+		{B638AD52-E1A6-4154-9733-4CFD50A84439}.Release|Win32.ActiveCfg = Release|Win32
+		{B638AD52-E1A6-4154-9733-4CFD50A84439}.Release|x64.ActiveCfg = Release|x64
+		{46E6826D-64F1-4C21-9219-230B9F95E367}.Debug|Win32.ActiveCfg = Debug|x64
+		{46E6826D-64F1-4C21-9219-230B9F95E367}.Debug|x64.ActiveCfg = Debug|x64
+		{46E6826D-64F1-4C21-9219-230B9F95E367}.Release|Win32.ActiveCfg = Release|x64
+		{46E6826D-64F1-4C21-9219-230B9F95E367}.Release|x64.ActiveCfg = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FC4EDD46-B587-495E-BD35-8FEBFDF1D61A} = {21947A1D-0868-480F-AB94-E142374913BF}
+		{A7F12F30-470E-4DB0-8E51-1EE59B2ACA0A} = {21947A1D-0868-480F-AB94-E142374913BF}
+		{DD0828F0-F152-4BC6-AD3D-97ABCDF8C83F} = {83716842-0048-48CE-B4D4-14A76DC2F5BF}
+		{B5D507B0-8FD2-4BAD-880B-2362D4358D61} = {83716842-0048-48CE-B4D4-14A76DC2F5BF}
+		{CF3F3229-7B2E-4829-B528-2023CFA11779} = {83716842-0048-48CE-B4D4-14A76DC2F5BF}
+		{B638AD52-E1A6-4154-9733-4CFD50A84439} = {83716842-0048-48CE-B4D4-14A76DC2F5BF}
+		{46E6826D-64F1-4C21-9219-230B9F95E367} = {83716842-0048-48CE-B4D4-14A76DC2F5BF}
+		{37004A77-DFDE-4D36-802A-32BAF216C018} = {A02CEB3C-A27A-48D1-9564-36A30FF40A89}
+		{E73BB233-D88B-44A7-A98F-D71EE158381D} = {A02CEB3C-A27A-48D1-9564-36A30FF40A89}
+	EndGlobalSection
+EndGlobal

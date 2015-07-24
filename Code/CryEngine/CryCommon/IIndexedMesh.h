@@ -12,15 +12,8 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IIndexedMesh.h)
 
-#ifndef __IIndexedMesh_h__
-#define __IIndexedMesh_h__
 #pragma once
-
-#ifdef PS3
-	#include "../CryCommon/CryPool/PoolAlloc.h"
-#endif
 
 #include "CryHeaders.h"
 #include "Cry_Color.h"
@@ -34,16 +27,105 @@
 //    2D Texture coordinates used by CMesh.
 struct SMeshTexCoord
 {
+	SMeshTexCoord() {}
+
+private:
 	float s,t;
 
-	bool operator==(const SMeshTexCoord& other) const
+public:
+	explicit SMeshTexCoord(float x, float y)
 	{
-		return s == other.s && t == other.t;
+		s = x;
+		t = y;
 	}
-	bool operator!=(const SMeshTexCoord& other) const
+
+	explicit SMeshTexCoord(const Vec2f16& other)
+	{
+		const Vec2 uv = other.ToVec2();
+
+		s = uv.x;
+		t = uv.y;
+	}
+
+	explicit SMeshTexCoord(const Vec2& other)
+	{
+		s = other.x;
+		t = other.y;
+	}
+
+	explicit SMeshTexCoord(const Vec4& other)
+	{
+		s = other.x;
+		t = other.y;
+	}
+
+	void ExportTo(Vec2f16& other) const
+	{
+		other = Vec2f16(s, t);
+	}
+
+	void ExportTo(float& others, float& othert) const
+	{
+		others = s;
+		othert = t;
+	}
+
+	bool operator ==(const SMeshTexCoord& other) const
+	{
+		return (s == other.s) && (t == other.t);
+	}
+	
+	bool operator !=(const SMeshTexCoord& other) const
 	{
 		return !(*this == other);
 	}
+
+	bool operator <(const SMeshTexCoord& other) const
+	{
+		return (s != other.s) ? (s < other.s) : (t < other.t);
+	}
+
+	bool IsEquivalent(const Vec2& other, float epsilon = 0.003f) const
+	{
+		return
+			(fabs_tpl(s - other.x) <= epsilon) &&
+			(fabs_tpl(t - other.y) <= epsilon);
+	}
+
+	bool IsEquivalent(const SMeshTexCoord& other, float epsilon = 0.00005f) const
+	{
+		return
+			(fabs_tpl(s - other.s) <= epsilon) &&
+			(fabs_tpl(t - other.t) <= epsilon);
+	}
+
+	ILINE Vec2 GetUV() const
+	{
+		return Vec2(s, t);
+	}
+
+	void GetUV(Vec2& otheruv) const
+	{
+		otheruv = GetUV();
+	}
+
+	void GetUV(Vec4& otheruv) const
+	{
+		otheruv = Vec4(s, t, 0.0f, 1.0f);
+	}
+
+	void Lerp(const SMeshTexCoord& other, float pos)
+	{
+		Vec2 texA;
+		Vec2 texB;
+		this->GetUV();
+		other.GetUV();
+
+		texA.SetLerp(texA, texB, pos);
+
+		*this = SMeshTexCoord(texA);
+	}
+
 	AUTO_STRUCT_INFO
 };
 
@@ -51,7 +133,87 @@ struct SMeshTexCoord
 //    RGBA Color description structure used by CMesh.
 struct SMeshColor
 {
+	SMeshColor() {}
+
+private:
 	uint8 r,g,b,a;
+
+public:
+	explicit SMeshColor(uint8 otherr, uint8 otherg, uint8 otherb, uint8 othera)
+	{
+		r = otherr;
+		g = otherg;
+		b = otherb;
+		a = othera;
+	}
+
+	explicit SMeshColor(const Vec4& otherc)
+	{
+		r = FtoI(otherc.x);
+		g = FtoI(otherc.y);
+		b = FtoI(otherc.z);
+		a = FtoI(otherc.w);
+	}
+
+	void TransferRGBTo(SMeshColor& other) const
+	{
+		other.r = r;
+		other.g = g;
+		other.b = b;
+	}
+
+	void TransferATo(SMeshColor& other) const
+	{
+		other.a = a;
+	}
+
+	void MaskA(uint8 maska)
+	{
+		a &= maska;
+	}
+
+	bool operator ==(const SMeshColor& other) const
+	{
+		return (r == other.r) && (g == other.g) && (b == other.b) && (a == other.a);
+	}
+
+	bool operator !=(const SMeshColor& other) const
+	{
+		return !(*this == other);
+	}
+
+	bool operator <(const SMeshColor& other) const
+	{
+		return (r != other.r) ? (r < other.r) : (g != other.g) ? (g < other.g) : (b != other.b) ? (b < other.b) : (a < other.a);
+	}
+
+	ILINE ColorB GetRGBA() const
+	{
+		return ColorB(r, g, b, a);
+	}
+
+	void GetRGBA(ColorB& otherc) const
+	{
+		otherc = GetRGBA();
+	}
+
+	void GetRGBA(Vec4& otherc) const
+	{
+		otherc = Vec4(r, g, b, a);
+	}
+
+	void Lerp(const SMeshColor& other, float pos)
+	{
+		Vec4 clrA;
+		Vec4 clrB;
+		this->GetRGBA(clrA);
+		other.GetRGBA(clrB);
+
+		clrA.SetLerp(clrA, clrB, pos);
+
+		*this = SMeshColor(clrA);
+	}
+
 	AUTO_STRUCT_INFO
 };
 
@@ -62,6 +224,100 @@ struct SMeshFace
 {
 	int v[3]; // indices to vertex, normals and optionally tangent basis arrays
 	unsigned char nSubset; // index to mesh subsets array.
+
+	AUTO_STRUCT_INFO
+};
+
+// Description:
+//    3D Normal Vector used by CMesh.
+struct SMeshNormal
+{
+	SMeshNormal() {}
+
+private:
+	Vec3 Normal;
+
+public:
+	explicit SMeshNormal(const Vec3& othern)
+	{
+		Normal = othern;
+	}
+
+	bool operator ==(const SMeshNormal& othern) const
+	{
+		return (Normal.x == othern.Normal.x) && (Normal.y == othern.Normal.y) && (Normal.z == othern.Normal.z);
+	}
+
+	bool operator !=(const SMeshNormal& othern) const
+	{
+		return !(*this == othern);
+	}
+
+	bool operator <(const SMeshNormal& othern) const
+	{
+		return (Normal.x != othern.Normal.x) ? (Normal.x < othern.Normal.x) : (Normal.y != othern.Normal.y) ? (Normal.y < othern.Normal.y) : (Normal.z < othern.Normal.z);
+	}
+
+	bool IsEquivalent(const Vec3& othern, float epsilon = 0.00005f) const
+	{
+		return
+			Normal.IsEquivalent(othern, epsilon);
+	}
+
+	bool IsEquivalent(const SMeshNormal& othern, float epsilon = 0.00005f) const
+	{
+		return
+			IsEquivalent(othern.Normal, epsilon);
+	}
+	
+	ILINE Vec3 GetN() const
+	{
+		return Normal;
+	}
+
+	void GetN(Vec3& othern) const
+	{
+		othern = GetN();
+	}
+
+	void RotateBy(const Matrix33& rot)
+	{
+		Normal = rot * Normal;
+	}
+
+	void RotateSafelyBy(const Matrix33& rot)
+	{
+		Normal = rot * Normal;
+		// normalize in case "rot" wasn't length-preserving
+		Normal.Normalize();
+	}
+
+	void RotateBy(const Matrix34& trn)
+	{
+		Normal = trn.TransformVector(Normal);
+	}
+
+	void RotateSafelyBy(const Matrix34& trn)
+	{
+		Normal = trn.TransformVector(Normal);
+		// normalize in case "trn" wasn't length-preserving
+		Normal.Normalize();
+	}
+
+	void Slerp(const SMeshNormal& other, float pos)
+	{
+		Vec3 nrmA = this->GetN();
+		Vec3 nrmB = other.GetN();
+
+		nrmA.Normalize();
+		nrmB.Normalize();
+
+		nrmA.SetSlerp(nrmA, nrmB, pos);
+
+		*this = SMeshNormal(nrmA);
+	}
+
+	AUTO_STRUCT_INFO
 };
 
 
@@ -69,14 +325,280 @@ struct SMeshFace
 //    Mesh tangents (tangent space normals).
 struct SMeshTangents
 {
+	SMeshTangents() {}
+
+private:
 	Vec4sf Tangent;
-	Vec4sf Binormal;
+	Vec4sf Bitangent;
+
+public:
+	explicit SMeshTangents(const Vec4sf& othert, const Vec4sf& otherb)
+	{
+		Tangent   = othert;
+		Bitangent = otherb;
+	}
+
+	explicit SMeshTangents(const SPipTangents& other)
+	{
+		Tangent   = other.Tangent;
+		Bitangent = other.Bitangent;
+	}
+
+	explicit SMeshTangents(const Vec4& othert, const Vec4& otherb)
+	{
+		Tangent   = PackingSNorm::tPackF2Bv(othert);
+		Bitangent = PackingSNorm::tPackF2Bv(otherb);
+	}
+
+	explicit SMeshTangents(const Vec3& othert, const Vec3& otherb, const Vec3& othern)
+	{
+		// TODO: can be optimized to use only integer arithmetic
+		int16 othersign = 1;
+		if (othert.Cross(otherb).Dot(othern) < 0)
+			othersign = -1;
+
+		Tangent   = Vec4sf(PackingSNorm::tPackF2B(othert.x), PackingSNorm::tPackF2B(othert.y), PackingSNorm::tPackF2B(othert.z), PackingSNorm::tPackS2B(othersign));
+		Bitangent = Vec4sf(PackingSNorm::tPackF2B(otherb.x), PackingSNorm::tPackF2B(otherb.y), PackingSNorm::tPackF2B(otherb.z), PackingSNorm::tPackS2B(othersign));
+	}
+
+	explicit SMeshTangents(const Vec3& othert, const Vec3& otherb, const int16& othersign)
+	{
+		Tangent   = Vec4sf(PackingSNorm::tPackF2B(othert.x), PackingSNorm::tPackF2B(othert.y), PackingSNorm::tPackF2B(othert.z), PackingSNorm::tPackS2B(othersign));
+		Bitangent = Vec4sf(PackingSNorm::tPackF2B(otherb.x), PackingSNorm::tPackF2B(otherb.y), PackingSNorm::tPackF2B(otherb.z), PackingSNorm::tPackS2B(othersign));
+	}
+
+	void ExportTo(Vec4sf& othert, Vec4sf& otherb) const
+	{
+		othert = Tangent;
+		otherb = Bitangent;
+	}
+
+	void ExportTo(SPipTangents& other) const
+	{
+		other.Tangent   = Tangent;
+		other.Bitangent = Bitangent;
+	}
+
+	bool operator ==(const SMeshTangents& other) const
+	{
+		return
+			Tangent[0] == other.Tangent[0] || 
+			Tangent[1] == other.Tangent[1] || 
+			Tangent[2] == other.Tangent[2] ||
+			Tangent[3] == other.Tangent[3] || 
+			Bitangent[0] == other.Bitangent[0] ||
+			Bitangent[1] == other.Bitangent[1] ||
+			Bitangent[2] == other.Bitangent[2] ||
+			Bitangent[3] == other.Bitangent[3];
+	}
+
+	bool operator !=(const SMeshTangents& other) const
+	{
+		return !(*this == other);
+	}
+
+	bool IsEquivalent(const Vec3& othert, const Vec3& otherb, const int16& othersign, float epsilon = 0.01f) const
+	{
+		// TODO: can be optimized to use only integer arithmetic
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z);
+		Vec3 btg3(btg.x, btg.y, btg.z);
+
+		return
+			(tng.w == othersign) &&
+			(btg.w == othersign) &&
+			(tng3.Dot(othert) >= (1.0f - epsilon)) &&
+			(btg3.Dot(otherb) >= (1.0f - epsilon));
+	}
+
+	void GetTB(Vec4sf& othert, Vec4sf& otherb) const
+	{
+		othert = Tangent;
+		otherb = Bitangent;
+	}
+
+	void GetTB(Vec4& othert, Vec4& otherb) const
+	{
+		othert = PackingSNorm::tPackB2F(Tangent);
+		otherb = PackingSNorm::tPackB2F(Bitangent);
+	}
+
+	void GetTB(Vec3& othert, Vec3& otherb) const
+	{
+		const Vec4 t = PackingSNorm::tPackB2F(Tangent);
+		const Vec4 b = PackingSNorm::tPackB2F(Bitangent);
+
+		othert = Vec3(t.x, t.y, t.z);
+		otherb = Vec3(b.x, b.y, b.z);
+	}
+
+	ILINE Vec3 GetN() const
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z);
+		Vec3 btg3(btg.x, btg.y, btg.z);
+
+		// assumes w 1 or -1
+		return tng3.Cross(btg3) * tng.w;
+	}
+
+	void GetN(Vec3& othern) const
+	{
+		othern = GetN();
+	}
+
+	void GetTBN(Vec3& othert, Vec3& otherb, Vec3& othern) const
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z);
+		Vec3 btg3(btg.x, btg.y, btg.z);
+
+		// assumes w 1 or -1
+		othert = tng3;
+		otherb = btg3;
+		othern = tng3.Cross(btg3) * tng.w;
+	}
+
+	ILINE int16 GetR() const
+	{
+		return PackingSNorm::tPackB2S(Tangent.w);
+	}
+
+	void GetR(int16& sign) const
+	{
+		sign = GetR();
+	}
+
+	void RotateBy(const Matrix33& rot)
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z);
+		Vec3 btg3(btg.x, btg.y, btg.z);
+
+		tng3 = rot * tng3;
+		btg3 = rot * btg3;
+
+		*this = SMeshTangents(tng3, btg3, PackingSNorm::tPackB2S(Tangent.w));
+	}
+
+	void RotateSafelyBy(const Matrix33& rot)
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z);
+		Vec3 btg3(btg.x, btg.y, btg.z);
+
+		tng3 = rot * tng3;
+		btg3 = rot * btg3;
+
+		// normalize in case "rot" wasn't length-preserving
+		tng3.Normalize();
+		btg3.Normalize();
+
+		*this = SMeshTangents(tng3, btg3, PackingSNorm::tPackB2S(Tangent.w));
+	}
+
+	void RotateBy(const Matrix34& trn)
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z);
+		Vec3 btg3(btg.x, btg.y, btg.z);
+
+		tng3 = trn.TransformVector(tng3);
+		btg3 = trn.TransformVector(btg3);
+
+		*this = SMeshTangents(tng3, btg3, PackingSNorm::tPackB2S(Tangent.w));
+	}
+
+	void RotateSafelyBy(const Matrix34& trn)
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z);
+		Vec3 btg3(btg.x, btg.y, btg.z);
+
+		tng3 = trn.TransformVector(tng3);
+		btg3 = trn.TransformVector(btg3);
+
+		// normalize in case "rot" wasn't length-preserving
+		tng3.Normalize();
+		btg3.Normalize();
+
+		*this = SMeshTangents(tng3, btg3, PackingSNorm::tPackB2S(Tangent.w));
+	}
+
+	void SlerpTowards(const SMeshTangents& other, const SMeshNormal& normal, float pos)
+	{
+		Vec3 tngA, btgA;
+		Vec3 tngB, btgB;
+		this->GetTB(tngA, btgA);
+		other.GetTB(tngB, btgB);
+
+		// Q: necessary?
+		tngA.Normalize();
+		tngB.Normalize();
+		btgA.Normalize();
+		btgB.Normalize();
+
+		tngA.SetSlerp(tngA, tngB, pos);
+		btgA.SetSlerp(btgA, btgB, pos);
+
+		*this = SMeshTangents(tngA, btgA, normal.GetN());
+	}
+
 	AUTO_STRUCT_INFO
 };
 
 struct SMeshQTangents
 {
-	Vec4sf TangentBinormal;
+	SMeshQTangents() {}
+
+private:
+	Vec4sf TangentBitangent;
+
+public:
+	explicit SMeshQTangents(const SPipQTangents& other)
+	{
+		TangentBitangent = other.QTangent;
+	}
+
+	explicit SMeshQTangents(const Quat& other)
+	{
+		TangentBitangent.x = PackingSNorm::tPackF2B(other.v.x);
+		TangentBitangent.y = PackingSNorm::tPackF2B(other.v.y);
+		TangentBitangent.z = PackingSNorm::tPackF2B(other.v.z);
+		TangentBitangent.w = PackingSNorm::tPackF2B(other.w);
+	}
+
+	void ExportTo(SPipQTangents& other)
+	{
+		other.QTangent = TangentBitangent;
+	}
+
+	ILINE Quat GetQ() const
+	{
+		Quat q;
+
+		q.v.x = PackingSNorm::tPackB2F(TangentBitangent.x); 
+		q.v.y = PackingSNorm::tPackB2F(TangentBitangent.y); 
+		q.v.z = PackingSNorm::tPackB2F(TangentBitangent.z); 
+		q.w   = PackingSNorm::tPackB2F(TangentBitangent.w); 
+
+		return q;
+	}
+
 	AUTO_STRUCT_INFO
 };
 
@@ -302,7 +824,10 @@ private:
 	template <class T>
 	inline static Vec2 ToVec2(const T& v)
 	{
-		return v.ToVec2();
+		Vec2 uv;
+		v.GetUV(uv);
+	
+		return uv;
 	}
 };
 
@@ -319,9 +844,15 @@ inline Vec2 CMeshHelpers::ToVec2<Vec2>(const Vec2& v)
 }
 
 template <>
+inline Vec2 CMeshHelpers::ToVec2<Vec2f16>(const Vec2f16& v)
+{
+	return v.ToVec2();
+}
+
+template <>
 inline Vec2 CMeshHelpers::ToVec2<SMeshTexCoord>(const SMeshTexCoord& v)
 {
-	return Vec2(v.s, v.t);
+	return v.GetUV();
 }
 
 
@@ -347,7 +878,6 @@ public:
 		BONEMAPPING,
 		VERT_MATS,
 		QTANGENTS,
-		PS3EDGEDATA,
 		P3S_C4B_T2S,
 
 		EXTRABONEMAPPING, // Extra stream. Does not have a stream ID in the CGF. Its data is saved at the end of the BONEMAPPING stream.
@@ -362,19 +892,19 @@ public:
 	vtx_idx* m_pIndices;   // indices are used for the final render-mesh
 	Vec3* m_pPositions;
 	Vec3f16* m_pPositionsF16;
-	Vec3* m_pNorms;
+
+	SMeshNormal* m_pNorms;
 	SMeshTangents* m_pTangents;
 	SMeshQTangents* m_pQTangents;
 	SMeshTexCoord* m_pTexCoord;
 	SMeshColor* m_pColor0;
 	SMeshColor* m_pColor1;
+	
 	int *m_pVertMats;
 	SVF_P3S_C4B_T2S* m_pP3S_C4B_T2S;
 
 	SMeshBoneMapping_uint16* m_pBoneMapping;  //bone-mapping for the final render-mesh
 	SMeshBoneMapping_uint16* m_pExtraBoneMapping;	//bone indices and weights for bones 5 to 8.
-
-	uint8 *m_ps3EdgeData;
 
 	int m_nCoorCount;					//number of texture coordinates in m_pTexCoord array
 	int m_streamSize[LAST_STREAM];
@@ -429,8 +959,6 @@ public:
 		m_pP3S_C4B_T2S = NULL;
 		m_pBoneMapping = NULL;
 		m_pExtraBoneMapping = NULL;
-
-		m_ps3EdgeData = NULL;
 
 		m_nCoorCount = 0;
 
@@ -632,10 +1160,6 @@ public:
 		case EXTRABONEMAPPING:
 			pStream = m_pExtraBoneMapping;
 			nElementSize = sizeof(SMeshBoneMapping_uint16);
-			break;
-		case PS3EDGEDATA:
-			pStream = m_ps3EdgeData;
-			nElementSize = 1;
 			break;
 		case P3S_C4B_T2S:
 			pStream = m_pP3S_C4B_T2S;
@@ -1315,11 +1839,11 @@ public:
 		const size_t cSizeStream[VSF_NUM] = {
 			0U,
 			sizeof(SPipTangents),        // VSF_TANGENTS
-			sizeof(SQTangents),          // VSF_QTANGENTS
+			sizeof(SPipQTangents),       // VSF_QTANGENTS
 			sizeof(SVF_W4B_I4S),         // VSF_HWSKIN_INFO
-			sizeof(SVF_P3F),             // VSF_HWSKIN_MORPHTARGET_INFO
+			sizeof(SVF_P3F),             // VSF_VERTEX_VELOCITY
 #if ENABLE_NORMALSTREAM_SUPPORT
-			sizeof(Vec3),                // VSF_NORMALS
+			sizeof(SPipNormal),          // VSF_NORMALS
 #endif
 		};
 
@@ -1378,7 +1902,7 @@ private:
 			m_pPositionsF16 = (Vec3f16*)pStream;
 			break;
 		case NORMALS:
-			m_pNorms = (Vec3*)pStream;
+			m_pNorms = (SMeshNormal*)pStream;
 			break;
 		case VERT_MATS:
 			m_pVertMats = (int*)pStream;
@@ -1414,9 +1938,6 @@ private:
 		case EXTRABONEMAPPING:
 			m_pExtraBoneMapping = (SMeshBoneMapping_uint16*)pStream;
 			break;
-		case PS3EDGEDATA:
-			m_ps3EdgeData = (uint8*)pStream;
-			break;
 		case P3S_C4B_T2S:
 			m_pP3S_C4B_T2S = (SVF_P3S_C4B_T2S*)pStream;
 			m_nCoorCount = nNewCount;
@@ -1433,7 +1954,7 @@ private:
 //    Editable mesh interface.
 //    IndexedMesh can be created directly or loaded from CGF file, before rendering it is converted into IRenderMesh.
 //    IStatObj is used to host IIndexedMesh, and corresponding IRenderMesh.
-UNIQUE_IFACE struct IIndexedMesh
+struct IIndexedMesh
 {
 	/*! Structure used for read-only access to mesh data. Used by GetMesh() function */
 	struct SMeshDescription
@@ -1441,7 +1962,7 @@ UNIQUE_IFACE struct IIndexedMesh
 		const SMeshFace*     m_pFaces;    // pointer to array of faces
 		const Vec3*          m_pVerts;    // pointer to array of vertices in f32 format
 		const Vec3f16*       m_pVertsF16; // pointer to array of vertices in f16 format
-		const Vec3*          m_pNorms;    // pointer to array of normals
+		const SMeshNormal*   m_pNorms;    // pointer to array of normals
 		const SMeshColor*    m_pColor;    // pointer to array of vertex colors
 		const SMeshTexCoord* m_pTexCoord; // pointer to array of texture coordinates
 		const vtx_idx*   m_pIndices;  // pointer to array of indices
@@ -1451,6 +1972,7 @@ UNIQUE_IFACE struct IIndexedMesh
 		int m_nIndexCount; // number of elements in m_pIndices array
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IIndexedMesh()	{}
 
 	// Release indexed mesh.
@@ -1521,13 +2043,10 @@ UNIQUE_IFACE struct IIndexedMesh
 	virtual void CalcBBox() = 0;
 
 	virtual void RestoreFacesFromIndices() = 0;
-
+	// </interfuscator:shuffle>
 
 #if defined(WIN32) || defined(WIN64)
 	// Optimizes mesh
 	virtual void Optimize(const char* szComment=NULL) = 0;
 #endif
 };
-
-
-#endif // __IIndexedMesh_h__

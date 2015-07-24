@@ -43,7 +43,7 @@ static const unsigned int IDC_hBtnBrowse		= 101;
 BOOL BrowseForFolder(HWND hWnd, LPCWSTR szInitialPath, LPWSTR szPath, LPCWSTR szTitle);
 
 // Desc: Static msg handler which passes messages to the application class.
-LRESULT static CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT static CALLBACK WndProcSettingsManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 { 
 	assert(g_pThis);
 
@@ -467,8 +467,8 @@ void CEngineSettingsManager::CallRootPathDialog(void* pParent)
 	const wchar_t *szWindowClass = L"CRYENGINEROOTPATHUI";
 
 	// Register the window class
-	WNDCLASSW wndClass = { 0, WndProc, 0, DLGWINDOWEXTRA, GetModuleHandleW(0), 
-		NULL, LoadCursor( NULL, IDC_ARROW ), (HBRUSH)COLOR_BTNSHADOW, NULL, szWindowClass };
+	WNDCLASSW wndClass = { 0, WndProcSettingsManager, 0, DLGWINDOWEXTRA, GetModuleHandleW(0), 
+		NULL, LoadCursorW( NULL, (LPCWSTR)IDC_ARROW ), (HBRUSH)COLOR_BTNSHADOW, NULL, szWindowClass };
 
 	RegisterClassW(&wndClass);
 
@@ -496,13 +496,13 @@ void CEngineSettingsManager::CallRootPathDialog(void* pParent)
 
 	// Create the window
 	HWND hDialogWnd = CreateWindowExW( WS_EX_TOOLWINDOW|WS_EX_CONTROLPARENT,szWindowClass,L"CryENGINE RootPath",WS_BORDER|WS_CAPTION|WS_SYSMENU|WS_VISIBLE, 
-		cwX,cwY,cwW,cwH,hParent,NULL,GetModuleHandleA(0),NULL);
+		cwX,cwY,cwW,cwH,hParent,NULL,GetModuleHandleW(0),NULL);
 
 	// ------------------------------------------
 
 	LoadEngineSettingsFromRegistry();
 
-	HINSTANCE hInst = GetModuleHandle(0);
+	HINSTANCE hInst = GetModuleHandleW(0);
 	HGDIOBJ hDlgFont = GetStockObject (DEFAULT_GUI_FONT);
 
 	// Engine Root Path
@@ -542,17 +542,17 @@ void CEngineSettingsManager::CallRootPathDialog(void* pParent)
 
 		while(!g_bWindowQuit) 
 		{
-			GetMessage(&msg, NULL, 0, 0);
+			GetMessageW(&msg, NULL, 0, 0);
 
 			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			DispatchMessageW(&msg);
 		}
 	}
 
 	// ------------------------------------------
 
 	DestroyWindow(hDialogWnd);
-	UnregisterClassW(szWindowClass,GetModuleHandle(0));
+	UnregisterClassW(szWindowClass,GetModuleHandleW(0));
 
 	if(bReEnableParent)
 		EnableWindow(hParent,true);

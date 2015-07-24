@@ -35,23 +35,23 @@ public:
 	void Release() { delete this; };
 
 	//! <code>VehicleSystem.GetVehicleImplementations()</code>
-	//! <description>Get a table of all implemented vehicles.
+	//! <description>Get a table of all implemented vehicles.</description>
 	int GetVehicleImplementations(IFunctionHandler* pH);
 
 	//! <code>VehicleSystem.GetOptionalScript(vehicleName)</code>
-	//! <description>Get an (optional) script for the named vehicle.
+	//! <description>Get an (optional) script for the named vehicle.</description>
 	int GetOptionalScript(IFunctionHandler* pH, char* vehicleName);
 
 	//! <code>VehicleSystem.SetTpvDistance(distance)</code>
-	//! <description>Distance of camera in third person view.
+	//! <description>Distance of camera in third person view.</description>
 	int SetTpvDistance(IFunctionHandler *pH, float distance);
 
 	//! <code>VehicleSystem.SetTpvHeight(height)</code>
-	//! <description>Height of camera in third person view.
+	//! <description>Height of camera in third person view.</description>
 	int SetTpvHeight(IFunctionHandler *pH, float height);
 
 	//! <code>VehicleSystem.ReloadSystem()</code>
-	//! <description>Reloads the vehicle system with default values.
+	//! <description>Reloads the vehicle system with default values.</description>
 	int ReloadSystem(IFunctionHandler *pH);
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const

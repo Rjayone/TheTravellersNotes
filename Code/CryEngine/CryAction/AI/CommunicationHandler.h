@@ -22,38 +22,36 @@ public:
 	virtual ~CommunicationHandler();
 
 	// IAICommunicationHandler
-	virtual SCommunicationSound PlaySound(CommPlayID playID, const char* name, IEventListener* listener = 0) OVERRIDE;
-	virtual void StopSound(const SCommunicationSound& soundToStop) OVERRIDE;
+	virtual SCommunicationSound PlaySound(CommPlayID playID, const char* name, IEventListener* listener = 0) override;
+	virtual void StopSound(const SCommunicationSound& soundToStop) override;
 
-	virtual SCommunicationSound PlayVoice(CommPlayID playID, const char* variationName, ELipSyncMethod lipSyncMethod, IEventListener* listener = 0) OVERRIDE;
-	virtual void StopVoice(const SCommunicationSound& voiceToStop) OVERRIDE;
+	virtual SCommunicationSound PlayVoice(CommPlayID playID, const char* variationName, ELipSyncMethod lipSyncMethod, IEventListener* listener = 0) override;
+	virtual void StopVoice(const SCommunicationSound& voiceToStop) override;
 
-	virtual void SendDialogueRequest(CommPlayID playID, const char* name, IEventListener* listener = 0) OVERRIDE{}
+	virtual void SendDialogueRequest(CommPlayID playID, const char* name, IEventListener* listener = 0) override{}
 
-	virtual void PlayAnimation(CommPlayID playID, const char* name, EAnimationMethod method, IEventListener* listener = 0) OVERRIDE;
-	virtual void StopAnimation(CommPlayID playID, const char* name, EAnimationMethod method) OVERRIDE;
+	virtual void PlayAnimation(CommPlayID playID, const char* name, EAnimationMethod method, IEventListener* listener = 0) override;
+	virtual void StopAnimation(CommPlayID playID, const char* name, EAnimationMethod method) override;
 
-	virtual bool IsInAGState(const char* name) OVERRIDE;
-	virtual void ResetAnimationState() OVERRIDE;
+	virtual bool IsInAGState(const char* name) override;
+	virtual void ResetAnimationState() override;
 
-	virtual bool IsPlayingAnimation() const OVERRIDE;
-	virtual bool IsPlayingSound() const OVERRIDE;
+	virtual bool IsPlayingAnimation() const override;
+	virtual bool IsPlayingSound() const override;
 
-	virtual void OnSoundTriggerFinishedToPlay(const TAudioControlID nTriggerID) OVERRIDE;
+	virtual void OnSoundTriggerFinishedToPlay(const TAudioControlID nTriggerID) override;
 	//~IAICommunicationHandler
 
 	// IAnimationgGraphStateListener
-	virtual void SetOutput(const char* output, const char* value) OVERRIDE {};
-	virtual void QueryComplete( TAnimationGraphQueryID queryID, bool succeeded ) OVERRIDE;
-	virtual void DestroyedState(IAnimationGraphState*) OVERRIDE;
+	virtual void SetOutput(const char* output, const char* value) override {};
+	virtual void QueryComplete( TAnimationGraphQueryID queryID, bool succeeded ) override;
+	virtual void DestroyedState(IAnimationGraphState*) override;
 	//~IAnimationgGraphStateListener
-
-	static void TriggerFinishedCallback(TAudioObjectID const nObjectID, TAudioControlID const nTriggerID, void* const pCookie);
 
 	void Reset();
 	void OnReused(IEntity* entity);
 
-	static void OnAudioEvent(SAudioRequestInfo const* const pAudioRequestInfo);
+	static void TriggerFinishedCallback(SAudioRequestInfo const* const pAudioRequestInfo);
 
 private:
 	enum ESoundType

@@ -27,7 +27,7 @@ enum eBitStreamHint
 
 struct IBitStream
 {
-
+	// <interfuscator:shuffle>
   //!
 //  virtual bool ReadBitStream( bool &Value )=0;
   //!
@@ -96,7 +96,7 @@ struct IBitStream
 	virtual void SimulateWriteRead( Vec3 &Value, const eBitStreamHint eHint )=0;
 	//! to get the compression error
   virtual void SimulateWriteRead( char *Value, const uint32 nBufferSize, const eBitStreamHint eHint )=0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //IBITSTREAM_H__

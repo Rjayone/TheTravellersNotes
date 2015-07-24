@@ -41,14 +41,14 @@ public:
 	};
 
 public:
-
+	// <interfuscator:shuffle>
 	virtual uint32 BeginCopy(void* pContext, UINT_PTR dstOffset, UINT_PTR srcOffset, UINT_PTR size, IDefragAllocatorCopyNotification* pNotification) = 0;
 	virtual void Relocate(uint32 userMoveId, void* pContext, UINT_PTR newOffset, UINT_PTR oldOffset, UINT_PTR size) = 0;
 	virtual void CancelCopy(uint32 userMoveId, void* pContext, bool bSync) = 0;
 
 	// Perform the copy and relocate immediately - will only be called when UnAppendSegment is
 	virtual void SyncCopy(void* pContext, UINT_PTR dstOffset, UINT_PTR srcOffset, UINT_PTR size) = 0;
-
+	// </interfuscator:shuffle>
 
 protected:
 	virtual ~IDefragAllocatorPolicy() {}
@@ -93,7 +93,7 @@ public:
 	};
 
 public:
-
+	// <interfuscator:shuffle>
 	virtual void Release(bool bDiscard = false) = 0;
 
 	virtual void Init(UINT_PTR capacity, UINT_PTR alignment, const Policy& policy = Policy()) = 0;
@@ -124,7 +124,7 @@ public:
 	virtual void Unpin(Hdl hdl) = 0;
 
 	virtual const char* GetSourceOf(Hdl hdl) = 0;
-
+	// </interfuscator:shuffle>
 
 #ifndef _RELEASE
 	virtual void DumpState(const char* filename) = 0;

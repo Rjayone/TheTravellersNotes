@@ -20,14 +20,13 @@ namespace ColliderModeRemapping
 		const bool initialized = ( g_colliderModeCrc[ eColliderMode_Undefined ] != 0 );
 		if ( ! initialized )
 		{
-			Crc32Gen* pCrc32Gen = gEnv->pSystem->GetCrc32Gen();
-			g_colliderModeCrc[ eColliderMode_Undefined ]         = pCrc32Gen->GetCRC32Lowercase( "Undefined" );
-			g_colliderModeCrc[ eColliderMode_Disabled ]          = pCrc32Gen->GetCRC32Lowercase( "Disabled" );
-			g_colliderModeCrc[ eColliderMode_GroundedOnly ]      = pCrc32Gen->GetCRC32Lowercase( "GroundedOnly" );
-			g_colliderModeCrc[ eColliderMode_Pushable ]          = pCrc32Gen->GetCRC32Lowercase( "Pushable" );
-			g_colliderModeCrc[ eColliderMode_NonPushable ]       = pCrc32Gen->GetCRC32Lowercase( "NonPushable" );
-			g_colliderModeCrc[ eColliderMode_PushesPlayersOnly ] = pCrc32Gen->GetCRC32Lowercase( "PushesPlayersOnly" );
-			g_colliderModeCrc[ eColliderMode_Spectator ]         = pCrc32Gen->GetCRC32Lowercase( "Spectator" );
+			g_colliderModeCrc[ eColliderMode_Undefined ]         = CCrc32::ComputeLowercase( "Undefined" );
+			g_colliderModeCrc[ eColliderMode_Disabled ]          = CCrc32::ComputeLowercase( "Disabled" );
+			g_colliderModeCrc[ eColliderMode_GroundedOnly ]      = CCrc32::ComputeLowercase( "GroundedOnly" );
+			g_colliderModeCrc[ eColliderMode_Pushable ]          = CCrc32::ComputeLowercase( "Pushable" );
+			g_colliderModeCrc[ eColliderMode_NonPushable ]       = CCrc32::ComputeLowercase( "NonPushable" );
+			g_colliderModeCrc[ eColliderMode_PushesPlayersOnly ] = CCrc32::ComputeLowercase( "PushesPlayersOnly" );
+			g_colliderModeCrc[ eColliderMode_Spectator ]         = CCrc32::ComputeLowercase( "Spectator" );
 		}
 
 		for ( size_t i = 0; i < eColliderMode_COUNT; ++i )

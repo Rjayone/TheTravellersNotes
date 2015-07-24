@@ -6,12 +6,9 @@ Copyright (c) 2001-2005 Crytek Studios. All Rights Reserved.
   Revision history:
   
 =============================================================================*/
-#include DEVIRTUALIZE_HEADER_FIX(CREBaseCloud.h)
 
 #ifndef __CREBASECLOUD_H__
 #define __CREBASECLOUD_H__
-
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 
 //================================================================================
 
@@ -131,7 +128,7 @@ inline const ColorF SCloudParticle::GetLitColor(unsigned int index) const
 
 //===========================================================================
 
-class CREBaseCloud : public CRendElementBase // make unique again for PS3 if feature is used (see RENDERNODES_LEAN_AND_MEAN in CryCommon/ProjectDefines.h)
+class CREBaseCloud : public CRendElementBase
 {
   friend class CRECloud;
 
@@ -148,7 +145,5 @@ public:
 		pSizer->AddObject(this, sizeof(*this));
 	}
 };
-
-#endif // #if !defined(RENDERNODES_LEAN_AND_MEAN)
 
 #endif	// __CREBASECLOUD_H__

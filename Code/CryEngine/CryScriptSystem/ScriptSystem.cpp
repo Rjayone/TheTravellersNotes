@@ -26,7 +26,7 @@
 #include <IDataProbe.h>
 #include <ITimer.h>
 #include <IAISystem.h>
-#include <MTPseudoRandom.h>
+#include <Random.h>
 
 #include <ISerialize.h>
 #include <CryProfileMarker.h>
@@ -165,7 +165,6 @@ public:
 			if (nsize)
 			{
 				nptr = (char*)alloc(nsize) + g_nPrecaution;
-
 				memcpy(nptr, ptr, nsize>osize ? osize : nsize);
 				m_iAllocated += nsize;
 			}
@@ -190,8 +189,6 @@ static lua_allocator gLuaAlloc;
 #endif // USE_RAW_LUA_ALLOCS
 
 CScriptSystem* CScriptSystem::s_mpScriptSystem = NULL;
-
-extern CRndGen g_random_generator;
 
 //////////////////////////////////////////////////////////////////////
 extern "C"
@@ -254,61 +251,100 @@ extern "C"
 	}
 	static int cutsom_lua_panic (lua_State *L)
 	{
-		ScriptWarning( "PANIC: unprotected error during Lua-API call\n" );
+		ScriptWarning( "PANIC: unprotected error during Lua-API call\nLua error string: '%s'", lua_tostring(L, -1));
 		DumpCallStack( L );
+
+		// from lua docs:
+		//
+		// "Lua calls a panic function and then calls exit(EXIT_FAILURE), thus exiting the host application."
+		//
+		//	so we might as well fatal error here - at least we can inform the user, create a crash dump and fill out a jira bug etc...
+		CryFatalError( "PANIC: unprotected error during Lua-API call\nLua error string: '%s'", lua_tostring(L, -1));
+
 		return 0;
 	}
 	
 	// Random function used by lua.
 	float script_frand0_1()
 	{
-		return g_random_generator.GenerateFloat();
+		return cry_random(0.0f, 1.0f);
 	}
 
 	void script_randseed( unsigned int seed )
 	{
-		g_random_generator.Seed( seed );
+		cry_random_seed( seed );
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
 // For debugger.
 //////////////////////////////////////////////////////////////////////////
-IScriptTable *CScriptSystem::GetLocalVariables( int nLevel )
+IScriptTable *CScriptSystem::GetLocalVariables( int nLevel, bool bRecursive )
 {
 	lua_Debug ar;
-	nLevel=0;
 	const char *name;
-	lua_newtable(L);
-	int nTable=lua_ref(L,1);
-	lua_getref(L,nTable);
-	
 	IScriptTable *pObj = CreateTable(true);
 	pObj->AddRef();
+	
+	// Attach a new table
+	const int checkStack = lua_gettop(L);
+	lua_newtable(L);
+	lua_pushvalue(L, -1);
 	AttachTable(pObj);
 
+	// Get the stack frame
 	while(lua_getstack(L, nLevel, &ar) != 0)
 	{
-		//return 0; /* failure: no such level in the stack */
-
-		//create a table and fill it with the local variables (name,value)
-
-		int i = 1;
-		while ((name = lua_getlocal(L, &ar, i)) != NULL) 
+		// Push a sub-table for this frame (recursive only)
+		if (bRecursive)
 		{
-			lua_getref(L,nTable);
-			lua_pushstring(L,name);
-			//::OutputDebugString(name);
-			//::OutputDebugString("\n");
-			lua_pushvalue(L,-3);
-			lua_rawset(L,-3);
-			//pop table and value
-			lua_pop(L,2);
-			i++;
+			assert(lua_istable(L, -1) && "The result table should be on the top of the stack");
+			lua_pushinteger(L, nLevel);
+			lua_newtable(L);
+			lua_pushvalue(L, -1);
+			lua_insert(L, -3);
+			lua_rawset(L, -4);
+			assert(lua_istable(L, -1) && lua_istable(L, -2) && lua_gettop(L) == checkStack + 2 && "There should now be two tables on the top of the stack");
 		}
+
+		// Assign variable names and values for the current frame to the table on top of the stack
+		int i = 1;
+		const int checkInner = lua_gettop(L);
+		assert(checkInner == checkStack + 1 + bRecursive && "Too much stack space used");
+		assert(lua_istable(L, -1) && "The target table must be on the top of the stack");
+		while ((name = lua_getlocal(L, &ar, i++)) != NULL) 
+		{
+			if (strcmp(name, "(*temporary)") == 0)
+			{
+				// Not interested in temporaries
+				lua_pop(L, 1);
+			}
+			else
+			{
+				// Push the name, swap the top two items, and set in the table
+				lua_pushstring(L,name);
+				lua_insert(L, -2);
+				assert(lua_gettop(L) == checkInner + 2 && "There should be a key-value pair on top of the stack");
+				lua_rawset(L, -3);
+			}
+			assert(lua_gettop(L) == checkInner && "Unbalanced algorithm problem");
+			assert(lua_istable(L, -1) && "The target table should be on the top of the stack");
+		}
+
+		// Pop the sub-table (recursive only)
+		if (bRecursive)
+		{
+			assert(lua_istable(L, -1) && lua_istable(L, -2) && "There should now be two tables on the top of the stack");
+			lua_pop(L, 1);
+		}
+		else break;
+
 		nLevel++;
 	}
-
+	
+	// Pop the result table from the stack
+	lua_pop(L, 1);
+	assert(lua_gettop(L) == checkStack && "Unbalanced algorithm problem");
 	return pObj;
 }
 
@@ -1713,16 +1749,17 @@ bool CScriptSystem::GetRecursiveAny( IScriptTable *pTable,const char *sKey,Scrip
 {
 	char key1[256];
 	char key2[256];
-	strncpy_s(key1,sKey,sizeof(key1));
-	key1[sizeof(key1)-1] = 0;
-	key2[0] = 0;
 
-	const char *sep = strchr(sKey,'.');
+	const char* const sep = strchr(sKey, '.');
 	if (sep)
 	{
-		key1[sep-sKey] = 0;
-		strncpy_s(key2,sep+1,sizeof(key2));
-		key1[sizeof(key1)-1] = 0;
+		cry_strcpy(key1, sKey, (size_t)(sep - sKey));
+		cry_strcpy(key2, sep + 1);
+	}
+	else
+	{
+		cry_strcpy(key1, sKey);
+		key2[0] = 0;
 	}
 
 	ScriptAnyValue localAny;
@@ -2187,7 +2224,7 @@ void CScriptSystem::SetGCFrequency( const float fRate )
 		m_fGCFreq = fRate;
 	else if (g_nPrecaution == 0)
 	{
-		g_nPrecaution = 1 + (rand()%3); // lets get nasty.
+		g_nPrecaution = cry_random(1,3); // lets get nasty.
 	}
 }
 
@@ -2272,7 +2309,14 @@ void* CScriptSystem::Allocate(size_t sz)
 #if USE_RAW_LUA_ALLOCS
 	_LuaAlloc(sz);
 #else
-	return gLuaAlloc.alloc(sz);
+	void *ret = gLuaAlloc.alloc(sz);
+#ifndef _RELEASE
+	if (!ret)
+	{
+		CryFatalError("Lua Allocator has run out of memory.");
+	}
+#endif
+	return ret;
 #endif
 
 }
@@ -2422,7 +2466,7 @@ void CScriptSystem::ExposedCallstackPop()
 
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IRecursiveLuaDump
+struct IRecursiveLuaDump
 {
 	virtual ~IRecursiveLuaDump(){}
 	virtual void OnElement( int nLevel,const char *sKey,int nKey,ScriptAnyValue &value ) = 0;
@@ -2699,4 +2743,4 @@ void CScriptSystem::ClearPreCachedBuffer()
 	m_vecPreCached.clear();
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IScriptSystem)
+

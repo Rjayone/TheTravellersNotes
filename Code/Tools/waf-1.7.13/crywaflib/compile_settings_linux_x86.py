@@ -14,7 +14,7 @@ def load_linux_x86_common_settings(v):
 	"""
 	
 	# Add common linux x86 defines
-	v['DEFINES'] += [ 'LINUX64' ]	
+	v['DEFINES'] += [ 'LINUX32' ]	
 	
 @conf
 def load_debug_linux_x86_settings(conf):

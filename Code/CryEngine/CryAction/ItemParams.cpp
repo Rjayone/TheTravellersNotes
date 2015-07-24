@@ -377,4 +377,4 @@ void CItemParamsNode::GetMemoryUsage( ICrySizer *pSizer) const
 	pSizer->AddContainer(m_children);	
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IItemParamsNode)
+

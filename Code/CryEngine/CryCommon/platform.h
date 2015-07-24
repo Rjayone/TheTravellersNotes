@@ -14,8 +14,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef _PLATFORM_H_
-#define _PLATFORM_H_
 #pragma once
 
 #if !defined(_WIN32_WINNT)
@@ -30,7 +28,7 @@
 	#endif
 
 	#define alignof _alignof
-#elif defined(__GNUC__) || defined(CAFE)
+#elif defined(__GNUC__)
 	#define alignof __alignof__
 #endif
 
@@ -40,76 +38,31 @@
 #define _FILE_OFFSET_BITS 64 // define large file support > 2GB
 #endif
 
-// When using cry_rand() we need to make sure the value of RAND_MAX is always 0x7fff. 
-// On UNIX platforms this is not the case.
-#define CRY_RAND_MAX 0x7fff
-
 #if defined(NOT_USE_CRY_MEMORY_MANAGER)
 #include <cstring>
 #endif
 
-#if !defined(PS3) && !defined(ORBIS)
+#if defined(_MSC_VER) // We want the class name to be included, but __FUNCTION__ doesn't contain that on GCC/clang
 	#define __FUNC__ __FUNCTION__
 #else
 	#define __FUNC__ __PRETTY_FUNCTION__
 #endif
 
-#if defined(_DEBUG) && !defined(PS3) && !defined(LINUX) && !defined(CAFE) && !defined(APPLE) && !defined(ORBIS)
+#if defined(_DEBUG) && !defined(LINUX) && !defined(APPLE) && !defined(ORBIS)
 	#include <crtdbg.h>
 #endif
 
-#if defined(PS3)
-	// use a special heap for big (>64kb) allocations which can be physicaly freed to prevent fragmentation
-	#define PS3_USE_SYSTEM_MEM_CONTAINER
 
-	// use this define to disable the node allocator in CryMemoryManager.cpp
-	#define PS3_DONT_USE_NODEALLOC
-
-#ifndef _RELEASE
-	#define MEM_MAN_ADD_SIZE_BLOCK_VMEM
-#endif
-
-//	#define CHECK_SIMD_ALIGNMENT_P(p) if(((unsigned int)(p) & 15) != 0) abort();
-//	#define CHECK_SIMD_ALIGNMENT if(((unsigned int)this & 15) != 0) abort();
-	#define CHECK_SIMD_ALIGNMENT_P(p)
-	#define CHECK_SIMD_ALIGNMENT
-	#ifndef __SPU__
-		#define ppu_volatile volatile
-		#define spu_volatile
-	#else
-		#define ppu_volatile
-		#define spu_volatile volatile
-	#endif
-#else
-	#define CHECK_SIMD_ALIGNMENT_P(p)
-	#define CHECK_SIMD_ALIGNMENT
-	#define ppu_volatile volatile
-#endif
-
-#ifdef __SPU__
-	#define ppu_virtual
-#else
-	#define ppu_virtual virtual
-#endif
-
-#undef GCC411_OR_LATER
 // we have to use it because of VS doesn't support restrict reference variables
-#if defined(PS3) || defined(APPLE) || defined(LINUX)
+#if defined(APPLE) || defined(LINUX)
 	#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
 		#define GCC411_OR_LATER
 	#endif
 	#define RESTRICT_REFERENCE __restrict
-	#define FLATTEN __attribute__ ((flatten))
 #else
-	#define __db16cycl__
 	#define RESTRICT_REFERENCE
-	#define FLATTEN
 #endif
 
-
-#if !defined(GCC411_OR_LATER) || defined(__SPU__)
-	#define __vecreg
-#endif
 
 #ifndef CHECK_REFERENCE_COUNTS //define that in your StdAfx.h to override per-project
 # define CHECK_REFERENCE_COUNTS 0 //default value
@@ -147,31 +100,8 @@
 
 // NDEBUG disables std asserts, etc.
 // Define it automatically if not compiling with Debug libs, or with ADEBUG flag.
-#if !defined(_DEBUG) && !defined(ADEBUG) && !defined(NDEBUG) && !defined(PS3)
+#if !defined(_DEBUG) && !defined(ADEBUG) && !defined(NDEBUG)
 	#define NDEBUG
-#endif
-
-#if defined(PS3) && defined(PS3OPT) && !defined(__SPU__)
-	#define MATH_H <fastmath.h>
-#else
-	#define MATH_H <math.h>
-#endif
-
-#ifdef PS3
-// Workaround for missing C++11 keyword on PS3
-#define nullptr (void*)0
-#endif
-
-// Xenon target. (We generally use _XBOX but should really use XENON).
-#if defined(_XBOX_VER)// && _XBOX_VER == 200
-	#define XENON
-#ifndef _XBOX
-	#define _XBOX
-#endif
-	// Build static library when compiling release on Xenon
-	#ifdef _RELEASE
-		#define _LIB
-	#endif
 #endif
 
 // Durango target.
@@ -187,7 +117,7 @@
 	#define _LIB
 #endif
 
-#if defined(DURANGO) || defined(ORBIS) || defined(PS3) || defined(XENON) || defined(CRY_MOBILE)
+#if defined(DURANGO) || defined(ORBIS) || defined(MOBILE)
 #define CONSOLE
 #endif
 
@@ -203,7 +133,7 @@
 
 
 // We use WIN macros without _.
-#if defined(_WIN32) && !defined(XENON) && !defined(DURANGO) && !defined(LINUX32) && !defined(LINUX64) && !defined(APPLE) && !defined(WIN32)
+#if defined(_WIN32) && !defined(DURANGO) && !defined(LINUX32) && !defined(LINUX64) && !defined(APPLE) && !defined(WIN32)
 	#define WIN32
 #endif
 #if defined(_WIN64) && !defined(WIN64) && !defined(DURANGO)
@@ -226,18 +156,7 @@
 
 #endif //WIN32
 
-#if defined(XENON)
-	#define __passinreg __declspec(passinreg)
-	#define __passinreg_vec __declspec(passinreg)
-#elif defined(PS3) && !defined(__CRYCG__) && !defined(__SNC__) && !defined(__SPU__)
-	#define __passinreg
-	#define __passinreg_vec __attribute__((d64_abi)) __attribute__((vecreturn))
-#else
-	#define __passinreg
-	#define __passinreg_vec
-#endif
-
-#if defined(LINUX) || defined(APPLE) || defined(PS3) || defined(CAFE) || defined(ORBIS)
+#if defined(LINUX) || defined(APPLE) || defined(ORBIS)
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #if defined(APPLE) || defined(LINUX64) || defined(ORBIS)
@@ -263,7 +182,7 @@
 #if !defined(PRISIZE_T)
     #if defined(WIN64)
         #define PRISIZE_T "I64u" //size_t defined as unsigned __int64
-    #elif defined(WIN32) || defined(XENON) || defined(PS3) || defined(LINUX32)
+    #elif defined(WIN32) || defined(LINUX32)
         #define PRISIZE_T "u"
     #elif defined(MAC) || defined(LINUX64) || defined(ORBIS) || defined (DURANGO) || defined(IOS)
         #define PRISIZE_T "lu"
@@ -308,13 +227,19 @@
 //
 // Note that 'this' is counted as a method argument. For non-static methods,
 // add 1 to the indices.
+//
+// Use PRINTF_EMPTY_STRING when you want to format an empty string using
+// a function defined with PRINTF_PARAMS to avoid zero length format string
+// warnings when these checks are enabled.
 
-#if defined(__GNUC__) && !defined(__SPU__) && !defined(_RELEASE)
+#if defined(__GNUC__)&& !defined(_RELEASE)
   #define PRINTF_PARAMS(...) __attribute__ ((format (printf, __VA_ARGS__)))
   #define SCANF_PARAMS(...) __attribute__ ((format (scanf, __VA_ARGS__)))
+  #define PRINTF_EMPTY_FORMAT "%s", ""
 #else
   #define PRINTF_PARAMS(...)
 	#define SCANF_PARAMS(...)
+  #define PRINTF_EMPTY_FORMAT ""
 #endif
 
 #if defined(IOS) || (defined(ANDROID) && defined(__clang__))
@@ -322,9 +247,7 @@
 #endif
 
 // Storage class modifier for thread local storage.
-#if defined(CAFE)
-	#define THREADLOCAL __unsupported_on_wiiu__ 
-#elif defined(USE_PTHREAD_TLS)
+#if defined(USE_PTHREAD_TLS)
 	// Does not support thread storage
 	#define THREADLOCAL
 #elif defined(__GNUC__) || defined(MAC)
@@ -338,13 +261,7 @@
 //////////////////////////////////////////////////////////////////////////
 // define Read Write Barrier macro needed for lockless programming
 //////////////////////////////////////////////////////////////////////////
-#if (defined(PS3) && !defined(__SPU__)) || defined(XENON)
-	#define READ_WRITE_BARRIER {__lwsync();}
-	//#pragma intrinsic(_ReadWriteBarrier)
-	//#define READ_WRITE_BARRIER \
-		//_ReadWriteBarrier() \
-		//AcquireLockBarrier()
-#elif defined(__arm__)
+#if defined(__arm__)
 /**
  * (ARMv7) Full memory barriar.
  *
@@ -367,16 +284,12 @@ static inline void  __dmb()
 
 //////////////////////////////////////////////////////////////////////////
 // define macro to prevent memory reoderings of reads/and writes
-#if defined(PS3) && !defined(__SPU__)	
-		#define MEMORY_RW_REORDERING_BARRIER do{ NIntrinsics::MemoryFence(); }while(0)	
-#else
-	#define MEMORY_RW_REORDERING_BARRIER do{/*not implemented*/}while(0)
-#endif
+//TODO implement for all GCC platforms, else there are potential crashes with strict aliasing
+#define MEMORY_RW_REORDERING_BARRIER do{/*not implemented*/}while(0)
 
 //default stack size for threads, currently only used on pthread platforms
 #ifdef ORBIS
 #define SIMPLE_THREAD_STACK_SIZE_KB (256)
-//default stack size for threads, currently only used on PS3
 #elif defined(LINUX) || defined(APPLE)
 #if !defined(_DEBUG)
 #define SIMPLE_THREAD_STACK_SIZE_KB (256)
@@ -388,19 +301,9 @@ static inline void  __dmb()
 #endif
 
 
-// DLL import / export
-#if defined(PS3)
-	#undef _MSC_VER
-	#undef WIN32
-	#undef WIN64
-#endif
-
-#if defined(__GNUC__) || defined(PS3)
+#if defined(__GNUC__)
 	#define DLL_EXPORT __attribute__ ((visibility("default")))
 	#define DLL_IMPORT __attribute__ ((visibility("default")))
-#elif defined(XENON) && !defined(SOFTCODE_ENABLED)
-	#define DLL_EXPORT 
-	#define DLL_IMPORT 
 #else
 	#if defined(_LIB) && !defined(IS_EAAS)
 		#define DLL_EXPORT
@@ -427,28 +330,20 @@ static inline void  __dmb()
 #endif
 //////////////////////////////////////////////////////////////////////////
 
-//will be defined for SPUs and PS3 therefore only
-#ifndef SPU_DEBUG_BREAK
-	#define SPU_DEBUG_BREAK
-#endif
-
 //////////////////////////////////////////////////////////////////////////
 // Globally Used Defines.
 //////////////////////////////////////////////////////////////////////////
 // CPU Types: _CPU_X86,_CPU_AMD64,_CPU_G5
-// Platform: WIN23,WIN64,LINUX32,LINUX64,MAC,_XBOX
+// Platform: WIN23,WIN64,LINUX32,LINUX64,MAC
 // CPU supported functionality: _CPU_SSE
 //////////////////////////////////////////////////////////////////////////
 
-#ifdef XENON
+
+#if defined(_MSC_VER)
+  #include "MSVCspecific.h"
   #define PREFAST_SUPPRESS_WARNING(W) __pragma(warning(suppress:W))
 #else
-  #if defined(_MSC_VER)
-    #include "MSVCspecific.h"
-    #define PREFAST_SUPPRESS_WARNING(W) __pragma(warning(suppress:W))
-  #else
-    #define PREFAST_SUPPRESS_WARNING(W) 
-  #endif
+  #define PREFAST_SUPPRESS_WARNING(W) 
 #endif
 
 #ifdef _PREFAST_
@@ -478,13 +373,6 @@ static inline void  __dmb()
 #include "AndroidSpecific.h"
 #endif
 
-#if defined(XENON)
-#include "XenonSpecific.h"
-#endif
-
-#if defined(PS3)
-#include "PS3Specific.h"
-#endif
 
 #if defined(DURANGO)
 #include "Durangospecific.h"
@@ -526,23 +414,26 @@ static inline void  __dmb()
 typedef	UINT_PTR TRUNCATE_PTR;
 typedef	UINT_PTR EXPAND_PTR;
 
-#if !defined(PS3)
-//dummy definitions to avoid ifdef's
-ILINE void SPUAddCacheWriteRangeAsync(const unsigned int, const unsigned int){}
-#define __cache_range_write_async(a,b)
-#define __spu_flush_cache_line(a)
-#define __flush_cache_range(a,b)
-#define __flush_cache()
-
-#undef IF
-#undef WHILE
-#undef IF_UNLIKELY	
-#undef IF_LIKELY
-#define IF(a, b) if((a))
-#define WHILE(a, b) while((a))
-#define IF_UNLIKELY(a) if((a))
-#define IF_LIKELY(a) if((a))
-#endif //!defined(PS3)
+// Use static branch prediction to improve the generated assembly when possible.
+// This feature has an indirect effect on runtime performance, as it ensures assembly code
+// which is more likely needed (the programmer has to decide this), is directly after the if
+// 
+// For reference, as far as i am aware, all compilers use the following heuristic for static branch prediction
+// if branches are always taken
+// forwward jumps are not taken
+// backwards jumps are taken (eg. jumping back to the beginning of a loop)
+#if defined(__clang__) || defined(__GNUC__)
+#	define IF(condition, hint)			if( __builtin_expect( !!(condition), hint ) )
+#	define WHILE(condition, hint)	while( __builtin_expect( !!(condition), hint ) )
+#	define IF_UNLIKELY(condition)	if( __builtin_expect( !!(condition), 0 ) )
+#	define IF_LIKELY(condition)		if( __builtin_expect( !!(condition), 1 ) )
+#else
+// Fallback for compilers which don't support static branch prediction (like MSVC)
+#	define IF(condition, hint)			if( (condition) )
+#	define WHILE(condition, hint)	while( (condition) )
+#	define IF_UNLIKELY(condition)	if( (condition) )
+#	define IF_LIKELY(condition)		if( (condition) )
+#endif // !defined(__clang__) || defined(__GNUC__)
 
 #include <stdio.h>
 
@@ -554,27 +445,15 @@ ILINE void SPUAddCacheWriteRangeAsync(const unsigned int, const unsigned int){}
 // Provide special cast function which mirrors C++ style casts to support aliasing correct type punning casts in gcc with strict-aliasing enabled
 template<typename DestinationType, typename SourceType>
 ILINE DestinationType alias_cast( SourceType pPtr )
-{
-	//STATIC_CHECK(sizeof(DestinationType) == sizeof(SourceType), ALIAS_CAST_BOTH_TYPES_NEED_TO_BE_OF_THE_SAME_SIZE );
-#if defined(__SPU__)
-	return reinterpret_cast<DestinationType>(pPtr);
-#else
+{	
 	union { 
 		SourceType pSrc;
 		DestinationType pDst;
 	} conv_union;
 	conv_union.pSrc = pPtr;
 	return conv_union.pDst;
-#endif
-}
 
-#if defined(__SPU__)
-template<>
-ILINE uint32 alias_cast<uint32, float>( float pPtr )
-{
-	return *reinterpret_cast<uint32*>(&pPtr);
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -589,7 +468,7 @@ ILINE uint32 alias_cast<uint32, float>( float pPtr )
 #else
 inline int IsHeapValid()
 {
-#if defined(_DEBUG) && !defined(RELEASE_RUNTIME) && !defined(XENON) && !defined(PS3)
+#if defined(_DEBUG) && !defined(RELEASE_RUNTIME)
 	return _CrtCheckMemory();
 #else
 	return true;
@@ -599,33 +478,9 @@ inline int IsHeapValid()
 
 // Memory manager breaks strdup
 // Use something higher level, like CryString
-// PS3 headers require this, does not compile otherwise
-#if !defined(PS3)
-	#undef strdup
-	#define strdup dont_use_strdup
-	#undef snPause
-	#define snPause()
-#endif
+#undef strdup
+#define strdup dont_use_strdup
 
-#ifdef PS3
-//defines necessary stuff for SPU Software Cache
-//needs to be included for all platforms (mostly empty decls. there)
-#include "PS3CryCache.h"
-#else
-#define __CRYCG_NOINLINE__
-#define __CRYCG_IGNORE_PARAM_MISMATCH__
-#define SPU_MAIN_PTR(PTR) (PTR)
-#define SPU_MAIN_REF(REF) (REF)
-#define SPU_LOCAL_PTR(PTR) (PTR)
-#define SPU_LOCAL_REF(REF) (REF)
-#define SPU_LINK_PTR(PTR, LINK) (PTR)
-#define SPU_LINK_REF(REF, LINK) (PTR)
-#define SPU_DOMAIN_MAIN
-#define SPU_DOMAIN_LOCAL
-#define SPU_DOMAIN_LINK(ID)
-#define SPU_VERBATIM_BLOCK(X) ((void)0)
-#define SPU_FRAME_PROFILER(X){}
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 #ifndef DEPRICATED
@@ -659,8 +514,8 @@ void   CryDebugBreak();
 void   CrySleep( unsigned int dwMilliseconds );
 void   CryLowLatencySleep( unsigned int dwMilliseconds );
 int    CryMessageBox( const char *lpText,const char *lpCaption,unsigned int uType);
-int    CryCreateDirectory( const char *lpPathName,void *lpSecurityAttributes );
-int    CryGetCurrentDirectory( unsigned int nBufferLength,char *lpBuffer );
+bool   CryCreateDirectory( const char *lpPathName );
+void   CryGetCurrentDirectory( unsigned int nBufferLength,char *lpBuffer );
 short  CryGetAsyncKeyState( int vKey );
 unsigned int CryGetFileAttributes( const char *lpFileName );
 int    CryGetWritableDirectory( unsigned int nBufferLength, char* lpBuffer );
@@ -673,7 +528,7 @@ int    CryGetWritableDirectory( unsigned int nBufferLength, char* lpBuffer );
 
 inline void CryHeapCheck()
 {
-#if !defined(LINUX) && !defined (PS3) && !defined (DURANGO) && !defined(ORBIS) && !defined(APPLE) // todo: this might be readded with later xdks?
+#if !defined(LINUX) && !defined (DURANGO) && !defined(ORBIS) && !defined(APPLE) // todo: this might be readded with later xdks?
   int Result = _heapchk();
   assert(Result!=_HEAPBADBEGIN);
   assert(Result!=_HEAPBADNODE);
@@ -682,57 +537,6 @@ inline void CryHeapCheck()
   assert(Result==_HEAPOK);
 #endif
 }
-
-//---------------------------------------------------------------------------
-// Pointer classification functions 
-// 
-// Note: Do not use the result of these functions to enable or disable conditional codepaths 
-// because they are not available on all platforms. Only use these to verify assumptions on more 
-// just one platform (e.g To ensure not to stack pointers into code paths that could be affected by 
-// spu jobs because they would cause mfc segment exceptions on their first access)
-#if !defined(RELEASE)
-#ifndef PLATFORM_HAS_SEGMENT_POINTER_CHECK
-# define PLATFORM_HAS_SEGMENT_POINTER_CHECK 0
-#endif 
-#ifndef PLATFORM_HAS_STACK_POINTER_CHECK
-# define PLATFORM_HAS_STACK_POINTER_CHECK 0
-#endif 
-
-// Returns not null 0 if the passed pointer comes from the heap.
-// Note: currently only available on ps3.
-inline unsigned IsPointerFromHeap(void* __ptr)
-{
-#if PLATFORM_HAS_SEGMENT_POINTER_CHECK && PLATFORM_HAS_STACK_POINTER_CHECK
-  return _IsPointerFromSegment(__ptr) && !_IsPointerFromStack(__ptr);
-#else
-  return 1; 
-#endif 
-}
-
-// Returns not null if the passed pointer resides on the stack of the
-// current thread 
-// Note: currently only available on ps3
-inline unsigned IsPointerFromStack(void* __ptr)
-{
-#if PLATFORM_HAS_STACK_POINTER_CHECK
-  return _IsPointerFromStack(__ptr);
-#else
-  return 0; 
-#endif 
-}
-
-// Returns not null if the passed pointer resides in the code, data or
-// bss segment of the executable.
-// Note: currently only available on ps3
-inline unsigned IsPointerFromSegment(void* __ptr)
-{
-#if PLATFORM_HAS_SEGMENT_POINTER_CHECK
-  return _IsPointerFromSegment(__ptr);
-#else
-  return 0; 
-#endif 
-}
-#endif 
 
 //---------------------------------------------------------------------------
 // Useful function to clean the structure.
@@ -871,23 +675,29 @@ bool IsAligned(T nData, size_t nAlign)
 	return (size_t(nData) & (nAlign-1)) == 0;
 }
 
-#if !defined(_SPU_JOB)
-#if !defined(NOT_USE_CRY_STRING) 
-  #include "CryString.h"
-  #if !defined(RESOURCE_COMPILER)
-		typedef CryStringT<char> string;	
-		typedef CryStringT<wchar_t> wstring;
-	#else
-		typedef CryStringLocalT<char> string;
-		typedef CryStringLocalT<wchar_t> wstring;
-	#endif
-#else // NOT_USE_CRY_STRING
-	#ifndef __SPU__
-		#include <string>				// STL string
-		typedef std::string string;
-		typedef std::wstring wstring;
-	#endif
-#endif // NOT_USE_CRY_STRING
+template<typename T, typename U> inline
+void SetFlags(T& dest, U flags, bool b)
+{
+	if (b) 
+		dest |= flags;
+	else
+		dest &= ~flags;
+}
+
+// Wrapper code for non-windows builds.
+#if defined(LINUX) || defined(APPLE)
+	#include "Linux_Win32Wrapper.h"
+#endif
+#if defined(DURANGO)
+	#include "Durango_Win32Legacy.h"
+#endif
+
+#if defined(ORBIS)
+	#include "Orbis_Win32Wrapper.h"
+#endif
+
+// Platform wrappers must be included before CryString.h
+#include "CryString.h"
 
 #include <functional>
 
@@ -940,58 +750,19 @@ namespace std
 // Include array.
 #include <CryArray.h>
 
-// Wrapper code for non-windows builds.
-#if defined(LINUX) || defined(APPLE)
-	#include "Linux_Win32Wrapper.h"
-#endif
-#if defined(PS3)
-	#include "PS3_Win32Wrapper.h"
-#endif
-#if defined(DURANGO)
-	#include "Durango_Win32Legacy.h"
-#endif
+bool   CrySetFileAttributes( const char *lpFileName,uint32 dwFileAttributes );
+threadID CryGetCurrentThreadId();
 
-#if defined(ORBIS)
-	#include "Orbis_Win32Wrapper.h"
-#endif
-
-#if defined(PS3)
-	//avoid overhead of yet another function indirection
-	#define CryGetCurrentThreadId GetCurrentThreadId
-	#define CrySetFileAttributes(lpFileName,dwFileAttributes)
-#else
-	bool   CrySetFileAttributes( const char *lpFileName,uint32 dwFileAttributes );
-	threadID CryGetCurrentThreadId();
-#endif
-
-#if !defined(NOT_USE_CRY_STRING) && (!defined(__SPU__) || defined(__CRYCG__))
-	// Fixed-Sized (stack based string)
-	// put after the platform wrappers because of missing wcsicmp/wcsnicmp functions
-	#include "CryFixedString.h"
+#if !defined(NOT_USE_CRY_STRING)
+// Fixed-Sized (stack based string)
+// put after the platform wrappers because of missing wcsicmp/wcsnicmp functions
+#include "CryFixedString.h"
 #endif
 
 #if defined(DURANGO)
 // Dec2012 XDK: MoveFileEx still in header but there's no MoveFileExA in kernelx.lib
 #undef MoveFileEx
-
-inline BOOL MoveFileEx(LPCSTR lpExistingFileName, LPCSTR lpNewFileName, DWORD dwFlags)
-{
-	size_t nChars = 0;
-	const uint32 STR_LEN = 128;
-	CryStackStringT<wchar_t, STR_LEN> wsExistingFileName;
-	const size_t existingFileNameLength = strlen(lpExistingFileName);
-	wsExistingFileName.resize(existingFileNameLength);
-	mbstowcs_s( &nChars, wsExistingFileName.m_str, existingFileNameLength, lpExistingFileName, STR_LEN );
-	assert(nChars>0);
-
-	CryStackStringT<wchar_t, STR_LEN> wsNewFileName;
-	const size_t newFileNameLength = strlen(lpNewFileName);
-	wsNewFileName.resize(newFileNameLength);
-	mbstowcs_s( &nChars, wsNewFileName.m_str, newFileNameLength, lpNewFileName,  STR_LEN );
-	assert(nChars>0);
-
-	return MoveFileExW(wsExistingFileName.c_str(), wsNewFileName.c_str(), dwFlags);
-}
+BOOL MoveFileEx(LPCSTR lpExistingFileName, LPCSTR lpNewFileName, DWORD dwFlags);
 #endif
 
 // need this in a common header file and any other file would be too misleading
@@ -1002,128 +773,34 @@ enum ETriState
 	eTS_maybe
 };
 
-#endif // !defined (_SPU_JOB)
+#ifdef __GNUC__
+#	define NO_INLINE __attribute__ ((noinline))
+#	define NO_INLINE_WEAK __attribute__ ((noinline)) __attribute__((weak)) // marks a function as no_inline, but also as weak to prevent multiple-defined errors
 
-#define SAFE_DELETE_VOID_ARRAY(p) { if(p) { delete[] (unsigned char*)(p);   (p)=NULL; } }
-
-//---------------------------------------------------------------------------
-
-#if defined __CRYCG__
-	#ifndef SPU_ENTRY
-		#define SPU_ENTRY(job_name) __attribute__ ((crycg_attr (entry, "job = " #job_name)))	
-	#endif
-	#ifndef SPU_INDIRECT
-		#define SPU_INDIRECT(...) __attribute__ ((crycg_attr (entry, "indirect = " #__VA_ARGS__)))
-	#endif
-	#ifndef SPU_INDIRECT_TAG
-    #define SPU_INDIRECT_TAG(tag) __attribute__ ((crycg_attr (indirect_tag,#tag)))
-	#endif
-	#ifndef SPU_LOCAL
-    #define SPU_LOCAL __attribute__ ((crycg_attr (spu_local,"__ALL__")))
-	#endif
-	#ifndef SPU_LOCAL_FOR_JOBS
-    #define SPU_LOCAL_FOR_JOBS(...) __attribute__ ((crycg_attr (spu_local,__VA_ARGS__)))
-	#endif
-	#ifndef SPU_EXTERN
-		#define SPU_EXTERN __attribute__ ((crycg_attr ("spu_extern"))) extern
-	#endif
-	#ifndef SPU_DRIVER
-		#define SPU_DRIVER(...) __attribute__ ((crycg_attr (driver, #__VA_ARGS__)))
-  #endif
-	#ifndef SPU_DEBUG
-		#define SPU_DEBUG __attribute__ ((crycg_attr ("noinline"))) __attribute__ ((crycg_attr ("spu_debug")))
-	#endif
-	#ifndef SPU_NO_INLINE
-		#define SPU_NO_INLINE __attribute__ ((crycg_attr ("noinline")))
-	#endif
+#	define __PACKED __attribute__ ((packed))
 #else
-	#ifndef SPU_ENTRY
-		#define SPU_ENTRY(job_name)
-	#endif
-	#ifndef SPU_INDIRECT
-		#define SPU_INDIRECT(...)
-	#endif
-	#ifndef SPU_INDIRECT_TAG
-		#define SPU_INDIRECT_TAG(tag) 
-	#endif
-	#ifndef SPU_LOCAL 
-		#define SPU_LOCAL 
-	#endif
-	#ifndef SPU_LOCAL_FOR_JOBS
-    #define SPU_LOCAL_FOR_JOBS(...)
-	#endif
-	#ifndef SPU_EXTERN
-		#define SPU_EXTERN extern
-	#endif
-	#ifndef SPU_DRIVER
-		#define SPU_DRIVER(...)
-	#endif
-	#ifndef SPU_DEBUG
-		#define SPU_DEBUG
-	#endif
-	#ifndef SPU_NO_INLINE
-		#define SPU_NO_INLINE
-	#endif
-	#ifndef SPU_DEFAULT_TO_LOCAL
-		#define SPU_DEFAULT_TO_LOCAL(...)
-	#endif
+#	define NO_INLINE _declspec(noinline)
+#	define NO_INLINE_WEAK _declspec(noinline) inline
+
+#	define __PACKED
 #endif
 
-#ifdef PS3
-	#ifdef __CRYCG__
-		#ifndef SPU_DEFAULT_TO_LOCAL
-		  #define SPU_DEFAULT_TO_LOCAL(...) __attribute__ ((crycg_attr(default_domain,#__VA_ARGS__)))
-		#endif
-		#define NO_INLINE __attribute__ ((noinline)) __attribute__ ((crycg_attr ("noinline")))
-	#else
-		#define NO_INLINE __attribute__ ((noinline))
-		#define SPU_DEFAULT_TO_LOCAL(...)
-	#endif
-#else
-	#ifdef __GNUC__
-		#define NO_INLINE __attribute__ ((noinline))
-	#else
-		#define NO_INLINE _declspec(noinline)
-	#endif
-#endif
-
-// NO_INLINE_WEAK
-// markes a function as no_inline, but also as weak to prevent multiple-defined errors
-#ifdef PS3	
-	#ifdef __CRYCG__
-		#define NO_INLINE_WEAK __attribute__ ((noinline)) __attribute__ ((crycg_attr ("noinline")))
-	#else
-		#define NO_INLINE_WEAK __attribute__ ((noinline)) __attribute__((weak))
-	#endif
-#else
-	#ifdef __GNUC__
-		#define NO_INLINE_WEAK __attribute__ ((noinline)) __attribute__((weak))
-	#else
-		#define NO_INLINE_WEAK _declspec(noinline) inline
-	#endif
-#endif
-
+// Fallback for Alignment macro of GCC/CLANG (must be after the class definition)
 #if !defined(_ALIGN)
-	#if defined(PS3)
-		#define _ALIGN(num) __attribute__ ((aligned(num)))
-	#else
-		#define _ALIGN(num) 
-	#endif
+	#define _ALIGN(num) 
 #endif
 
-//Align for Win and Xbox360
+// Fallback for Alignment macro of MSVC (must be before the class definition)
 #if !defined(_MS_ALIGN)
 		#define _MS_ALIGN(num) 
 #endif
 
-#if defined(WIN32) || defined(WIN64) || defined(XENON)
-#ifndef XENON
+#if defined(WIN32) || defined(WIN64)
 	extern "C" {
 		__declspec(dllimport) unsigned long __stdcall TlsAlloc();
 		__declspec(dllimport) void* __stdcall TlsGetValue(unsigned long dwTlsIndex);
 		__declspec(dllimport) int __stdcall TlsSetValue(unsigned long dwTlsIndex, void* lpTlsValue);
 	}
-#endif
 
 	#define TLS_DECLARE(type,var) extern int var##idx;
 	#define TLS_DEFINE(type,var) \
@@ -1160,129 +837,19 @@ enum ETriState
 	#define TLS_SET(var,val) (var=(val))
 #endif // defined(LINUX)
 
-	//provide empty macros for non-ps3 systems which don't need these
-#if !defined(PS3) && !defined(ORBIS)
-	#define FILE_IO_WRAPPER_NO_PATH_ADJUSTMENT
-	#define FILE_IO_WRAPPER_STREAMING_FILE
-	#define FILE_IO_WRAPPER_DIRECT_ACCESS_FILE
-#endif
-
-#ifndef PS3_NO_TAIL_PADDING
-	// Use this macro at the end of a struct/class definition to prevent
-	// GCC from overlaying the tail padding of the class with data members
-	// from other classes.  The macro adds an empty array member which is
-	// aligned to the alignment of the containing class.  Using this macro
-	// does _not_ affect the size of the containing class.
-	#define PS3_NO_TAIL_PADDING(CLASS)
-#endif
-
-#ifndef PS3_ALIGNMENT_BARRIER
-	// Enforce the specified alignment onto the next data member of the
-	// containing class.  When used at the end of the class, this macro
-	// eliminates tail padding up to the specified alignment.
-        //
-        // Note: At most one alignment barrier may be used per class.
-	#define PS3_ALIGNMENT_BARRIER(ALIGN)
-#endif
-
-#ifndef UNIQUE_IFACE
-	// UNIQUE_IFACE expands to nothing on _all_ platforms, but is recognized by
-	// the de-virtualization tool.  If placed in front of an interface
-	// struct/class, all methods are assumed to be unique-virtual.
-  #define UNIQUE_IFACE
-#endif
-
-#ifndef VIRTUAL
-	// VIRTUAL should be used for pure virtual methods with only a single
-	// implementation - it should be applied to both the method
-	// declaration/definition in the interface _and_ the implementation (as an
-	// alternative the 'virtual' keyword may be omitted from the
-	// implementation).  On platforms not using automatic de-virtualization
-	// VIRTUAL simply expands to 'virtual'.
-  #define VIRTUAL virtual
-#endif
-
-#ifndef UNIQUE_VIRTUAL_WRAPPER
-	// Expands to the name if the wrapper include file for an interface
-	// containing unique-virtual methods.  Expands to an empty include file on
-	// platforms not supporting de-virtualization.
-  #define UNIQUE_VIRTUAL_WRAPPER(NAME) <NoIfaceWrapper.h>
-	#include <NoIfaceWrapper.h>
-#endif
-
-#ifndef DEVIRTUALIZE_HEADER_FIX
-	// Expands to hea1er when using devirtualization, this ensures that only
-	// devirtualized header files are included. Expands to an empty include file on
-	// platforms not supporting de-virtualization.
-	#define DEVIRTUALIZE_HEADER_FIX( HEADER ) <NoIfaceWrapper.h>
-	#include <NoIfaceWrapper.h>
-#endif
-
-#ifndef DEVIRTUALIZATION_VTABLE_FIX
-	// Expands  to a dummy function declaration used to force generation of a vtable in a
-	// translation unit. Expands to nothing if the plattform doesn't support devirtualization
-	#define DEVIRTUALIZATION_VTABLE_FIX
-#endif
-
-#ifndef DEVIRTUALIZATION_VTABLE_FIX_IMPL
-	// Expands to a dummy function definition to get the compiler to generate a vtable object in the
-	// translation unit. Expands to nothing if the plattform doesn't support devirtualization
-	#define DEVIRTUALIZATION_VTABLE_FIX_IMPL( CLASS )
-#endif
-
-// check if the function is overriding with exactly same signature
-#ifndef OVERRIDE
-	#if defined(WIN32) || defined(XENON) || defined(DURANGO)
-		#define OVERRIDE override
-	#else
-		#define OVERRIDE
-	#endif
-#endif
-
-// to prevent inheriting from classes or overriding function in derived class
-#ifndef FINAL
-	#if defined(WIN32) || defined(XENON) || defined(DURANGO)
-		#if _MSC_VER >= 1700
-			#define FINAL final
-		#else
-			#define FINAL sealed
-		#endif
-	#else
-		#define FINAL
-	#endif
-#endif
-
-
-//memory transfer operations proxys for non SPU compilation (also for PC)
-#ifndef __SPU__ 
-	#define memtransfer_from_main(pDest, pSrc, cSize, cSyncPointID) memcpy(pDest, pSrc, cSize)
-	#define memtransfer_to_main(pDest, pSrc, cSize, cSyncPointID) memcpy(pDest, pSrc, cSize)
-	#define memtransfer_from_main_fenced memtransfer_from_main
-	#define memtransfer_to_main_fenced memtransfer_to_main
-	#define memtransfer_sync(cSyncPointID) (void)(cSyncPointID)
-	#define memtransfer_pending(id) false
-	#define __spu_flush_cache()
-	#define __spu_cache_barrier()
-#endif
-
-#if !defined(LINUX) && !defined(APPLE) && !defined(PS3) && !defined(ORBIS)
+#if !defined(LINUX) && !defined(APPLE) && !defined(ORBIS)
 	typedef int socklen_t;
 #endif
 
 
 // Include MultiThreading support.
-#ifndef __SPU__ 
-#  include "CryThread.h"
-#endif
+#include "CryThread.h"
 #include "MultiThread.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Include most commonly used STL headers
 // They end up in precompiled header and make compilation faster.
-// 
-// Note: Don't include them when spu code is compiled!
 //////////////////////////////////////////////////////////////////////////
-#if !defined(_SPU_JOB)
 #include <memory>
 #include <vector>
 #include <list>
@@ -1294,11 +861,11 @@ enum ETriState
 #include <functional>
 #include <iterator>
 #include "stl/STLAlignedAlloc.h"
-#endif
+
 //////////////////////////////////////////////////////////////////////////
 
 // In RELEASE disable printf and fprintf
-#if defined(_RELEASE) && (defined(PS3) || defined(XENON) || defined(DURANGO)) && !defined(RELEASE_LOGGING)
+#if defined(_RELEASE) && defined(CONSOLE) && !defined(RELEASE_LOGGING)
   #undef printf
   #define printf(...) (void) 0
   #undef fprintf
@@ -1310,10 +877,8 @@ enum ETriState
 #define _STRINGIFY(x) #x
 #define STRINGIFY(x) _STRINGIFY(x)
 
-#if defined(WIN32) || defined(WIN64) || defined(XENON) || defined(DURANGO)
+#if defined(WIN32) || defined(WIN64) || defined(DURANGO)
 #define MESSAGE(msg) message(__FILE__ "(" STRINGIFY(__LINE__) "): " msg)
 #else
 #define MESSAGE(msg)
 #endif
-
-#endif // _PLATFORM_H_

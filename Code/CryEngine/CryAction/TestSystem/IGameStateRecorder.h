@@ -13,7 +13,6 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IGameStateRedcorder.h)
 
 #ifndef __IGAMESTATERECORDER_H__
 #define __IGAMESTATERECORDER_H__
@@ -32,7 +31,7 @@ struct IGameplayListener;
 struct IEntity;
 struct GameplayEvent;
 
-UNIQUE_IFACE struct IGameStateRecorder
+struct IGameStateRecorder
 {
 	virtual ~IGameStateRecorder(){}
 	virtual void Enable(bool bEnable, bool bRecording) = 0;

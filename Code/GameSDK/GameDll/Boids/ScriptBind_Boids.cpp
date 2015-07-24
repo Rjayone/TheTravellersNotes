@@ -441,7 +441,6 @@ int CScriptBind_Boids::GetUsableMessage(IFunctionHandler *pH, SmartScriptTable f
 	{
 		CPlayer* pPlayer = static_cast<CPlayer*>(pActor);
 
-		CryFixedWStringT<64> localizedString;
 		CryFixedStringT<64> finalString;
 		CryFixedStringT<64> tempString;
 
@@ -451,8 +450,7 @@ int CScriptBind_Boids::GetUsableMessage(IFunctionHandler *pH, SmartScriptTable f
 			flock->GetBoidSettings(bc);
 
 			tempString.Format("@ui_boid_pickup %s", bc.pickableMessage);
-			localizedString = CHUDUtils::LocalizeStringW(tempString.c_str());
-			finalString.Format("%ls", localizedString.c_str());
+			finalString = CHUDUtils::LocalizeString(tempString.c_str());
 		}
 		return pH->EndFunction(finalString.c_str());
 	}

@@ -36,11 +36,12 @@
 		"lzss",
 		"lua",
 		"freetype",
+		"bigdigits",
 		
 		"CryGameSDK"
 	],
 	
-	"defines"																: ["DEDICATED_SERVER"],
+	"defines"																: ["DEDICATED_SERVER", "IS_EAAS"],
 	
 	"win_modules" 													: [ "DedicatedLauncher", "CryRenderNULL" ],
 	"win_debug_modules" 										: ["CryLiveCreate", "GameStream"],

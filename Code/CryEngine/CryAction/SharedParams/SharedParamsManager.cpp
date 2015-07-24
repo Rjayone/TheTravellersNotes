@@ -35,7 +35,7 @@ uint32 CSharedParamsManager::GenerateCRC32(const char *pName)
 		{
 			// Check to see if name has already been registered.
 
-			uint32										crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32(pName);
+			uint32										crc32 = CCrc32::Compute(pName);
 
 			TNameMap::const_iterator	iName = m_names.find(crc32);
 
@@ -151,7 +151,7 @@ void CSharedParamsManager::Remove(const char *pName)
 
 		if(pName)
 		{
-			uint32										crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32(pName);
+			uint32										crc32 = CCrc32::Compute(pName);
 
 			TNameMap::const_iterator	iName = m_names.find(crc32);
 
@@ -222,7 +222,7 @@ ISharedParamsConstPtr CSharedParamsManager::Get(const char *pName) const
 
 		if(pName)
 		{
-			uint32										crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32(pName);
+			uint32										crc32 = CCrc32::Compute(pName);
 
 			TNameMap::const_iterator	iName = m_names.find(crc32);
 
@@ -300,4 +300,4 @@ bool CSharedParamsManager::VerifyUnlocked() const
 	return !m_lock;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(ISharedParamsManager) 
+

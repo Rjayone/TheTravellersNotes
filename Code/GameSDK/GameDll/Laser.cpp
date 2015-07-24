@@ -355,7 +355,7 @@ void CLaserBeam::UpdateLaser(const CLaserBeam::SLaserUpdateDesc& laserUpdateDesc
 			if(m_laserUpdateTimer < LASER_UPDATE_TIME)
 				return;
 
-			m_laserUpdateTimer = Random(0.0f, LASER_UPDATE_TIME * 0.4f);
+			m_laserUpdateTimer = cry_random(0.0f, LASER_UPDATE_TIME * 0.4f);
 
 			if ((laserUpdateDesc.m_ownerCloaked && !laserUpdateDesc.m_weaponZoomed) || laserUpdateDesc.m_bOwnerHidden)
 			{

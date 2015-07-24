@@ -14,16 +14,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef __CryString_h__
-#define __CryString_h__
 #pragma once
+
+#if !defined(NOT_USE_CRY_STRING) 
 
 #include <string.h>
 #include <wchar.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <ctype.h>
-
 
 #define CRY_STRING
 
@@ -162,7 +161,6 @@ public:
 	int compare( size_type _Pos1,size_type _Num1,const _Self& _Str,size_type nOff,size_type nCount ) const;
 	int compare( const char* _Ptr	) const;
 	int compare( const wchar_t* _Ptr	) const;
-	int compare( size_type _Pos1,size_type _Num1,const value_type* _Ptr	) const;
 	int compare( size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 = npos	) const;
 
 	// Case insensitive comparison
@@ -170,7 +168,6 @@ public:
 	int compareNoCase( size_type _Pos1,size_type _Num1,const _Self& _Str ) const;
 	int compareNoCase( size_type _Pos1,size_type _Num1,const _Self& _Str,size_type nOff,size_type nCount ) const;
 	int compareNoCase( const value_type* _Ptr	) const;
-	int compareNoCase( size_type _Pos1,size_type _Num1,const value_type* _Ptr	) const;
 	int compareNoCase( size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 = npos	) const;
 	
 	// Copies at most a specified number of characters from an indexed position in a source string to a target character array.
@@ -289,10 +286,13 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//! Format string, use (sprintf)
 	_Self& Format( const value_type* format,... );
-	// This is _fast_ version
+
+	//! Converts the string to lower-case
+	//  This function uses the "C" locale for case-conversion (ie, A-Z only)
 	_Self& MakeLower();
-	// This is correct version
-	_Self& MakeLowerLocale();
+
+	//! Converts the string to upper-case
+	//  This function uses the "C" locale for case-conversion (ie, A-Z only)
 	_Self& MakeUpper();
 	
 	_Self& Trim();
@@ -347,13 +347,9 @@ protected:
 	// String header. Immediately after this header in memory starts actual string data.
 	struct StrHeader
 	{
-#if defined(XENON) || defined(PS3)
-		int16 nRefCount;
-		uint16 nLength;
-#else
+
 		int nRefCount;	
 		int nLength;
-#endif
 		int nAllocSize;		// Size of memory allocated at the end of this class.
 
 		value_type* GetChars() { return (value_type*)(this+1); }
@@ -466,14 +462,9 @@ private:
 	friend class CryStringT<char>;	//both are bidirectional friends to avoid any other accesses
 };
 
-//#ifndef XENON
+
 //macro needed because compiler somehow cannot find the cast operator when not invoked directly
 #define CONST_TEMP_STRING(a) ((const string&)CConstCharWrapper(a))	
-//#else
-// CConstCharWrapper is unsafe because it requires that the generated CCryString will never be copied.
-// Unfortunately, the Xenon std::map.find does this, so for now, disable on Xenon.
-//#define CONST_TEMP_STRING(a) (a)
-//#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CryStringT<T> Implementation
@@ -660,16 +651,15 @@ template <class T>
 inline void CryStringT<T>::_Concatenate( const_str sStr1,size_type nLen1,const_str sStr2,size_type nLen2 )
 {
 	size_type nLen = nLen1 + nLen2;
-#if !defined(PS3) && !defined(XENON)
+
 	if (nLen1 * 2 > nLen)
 		nLen = nLen1 * 2;
-#endif
+
 	if (nLen != 0)
 	{
-#if !defined(PS3) && !defined(XENON)
 		if (nLen < 8)
 			nLen = 8;
-#endif
+
 		_AllocData(nLen);
 		_copy( m_str,sStr1,nLen1 );
 		_copy( m_str+nLen1, sStr2,nLen2 );
@@ -744,9 +734,6 @@ inline void CryStringT<T>::_AllocData( size_type nLen )
 		StrHeader* pData = (StrHeader*)CryModuleMalloc( allocLen );
 
 		_usedMemory( allocLen ); // For statistics.
-#if defined(XENON) || defined(PS3)
-		assert(nLen < 65535);
-#endif
 		pData->nRefCount = 1;
 		m_str = pData->GetChars();
 		check_convert(pData->nLength) = nLen;
@@ -1160,12 +1147,6 @@ inline int CryStringT<T>::compare( const wchar_t* _Ptr	) const
 }
 
 template <class T>
-inline int CryStringT<T>::compare( size_type _Pos1,size_type _Num1,const value_type* _Ptr	) const
-{
-	return compare( _Pos1,_Num1,_Ptr,npos );
-}
-
-template <class T>
 inline int CryStringT<T>::compare( size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 ) const
 {
 	assert( _Pos1 < length() );
@@ -1173,7 +1154,7 @@ inline int CryStringT<T>::compare( size_type _Pos1,size_type _Num1,const value_t
 		_Num1 = length() - _Pos1; // trim to size
 
 	int res = _Num1 == 0 ? 0 : strncmp( m_str+_Pos1,_Ptr,(_Num1 < _Num2)?_Num1:_Num2);
-	return (res != 0 ? res : _Num1 < _Num2 ? -1 : _Num1 == _Num2 ? 0 : +1);
+	return (res != 0 ? res : _Num2 == npos && _Ptr[_Num1] == 0 ? 0 : _Num1 < _Num2 ? -1 : _Num1 == _Num2 ? 0 : +1);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1203,12 +1184,6 @@ inline int CryStringT<T>::compareNoCase( const value_type* _Ptr	) const
 }
 
 template <class T>
-inline int CryStringT<T>::compareNoCase( size_type _Pos1,size_type _Num1,const value_type* _Ptr	) const
-{
-	return compareNoCase( _Pos1,_Num1,_Ptr,npos );
-}
-
-template <class T>
 inline int CryStringT<T>::compareNoCase( size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 ) const
 {
 	assert( _Pos1 < length() );
@@ -1216,7 +1191,7 @@ inline int CryStringT<T>::compareNoCase( size_type _Pos1,size_type _Num1,const v
 		_Num1 = length() - _Pos1; // trim to size
 
 	int res = _Num1 == 0 ? 0 : strnicmp( m_str+_Pos1,_Ptr,(_Num1 < _Num2)?_Num1:_Num2);
-	return (res != 0 ? res : _Num1 < _Num2 ? -1 : _Num1 == _Num2 ? 0 : +1);
+	return (res != 0 ? res : _Num2 == npos && _Ptr[_Num1] == 0 ? 0 : _Num1 < _Num2 ? -1 : _Num1 == _Num2 ? 0 : +1);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2121,30 +2096,17 @@ inline CryStringT<T>& CryStringT<T>::Format( const_str format,... )
 }
 
 //////////////////////////////////////////////////////////////////////////
-#define __ascii_tolower(c)      ( (((c) >= 'A') && ((c) <= 'Z')) ? ((c) - 'A' + 'a') : (c) )
 template <class T> 
 inline CryStringT<T>& CryStringT<T>::MakeLower()
 {
 	_MakeUnique();
 	for (value_type *s = m_str; *s != 0; s++)
 	{
-		*s = __ascii_tolower(*s);
+		const value_type c = *s;
+		*s = (c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c; // ASCII only, standard "C" locale
 	}
 	return *this;
 }
-
-//////////////////////////////////////////////////////////////////////////
-template <class T> 
-inline CryStringT<T>& CryStringT<T>::MakeLowerLocale()
-{
-	_MakeUnique();
-	for (value_type *s = m_str; *s != 0; s++)
-	{
-		*s = ::tolower(*s);
-	}
-	return *this;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 template <class T> 
@@ -2153,7 +2115,8 @@ inline CryStringT<T>& CryStringT<T>::MakeUpper()
 	_MakeUnique();
 	for (value_type *s = m_str; *s != 0; s++)
 	{
-		*s = ::toupper(*s);
+		const value_type c = *s;
+		*s = (c >= 'a' && c <= 'z') ? c - 'a' + 'A' : c; // ASCII only, standard "C" locale
 	}
 	return *this;
 }
@@ -2380,4 +2343,19 @@ namespace std
 //////////////////////////////////////////////////////////////////////////
 #endif // WIN64
 
-#endif // __CryString_h__
+#if !defined(RESOURCE_COMPILER)
+typedef CryStringT<char> string;
+typedef CryStringT<wchar_t> wstring;
+#else
+typedef CryStringLocalT<char> string;
+typedef CryStringLocalT<wchar_t> wstring;
+#endif
+
+#else // !defined(NOT_USE_CRY_STRING)
+
+#include <string>  // STL string
+typedef std::string string;
+typedef std::wstring wstring;
+
+#endif // !defined(NOT_USE_CRY_STRING)
+

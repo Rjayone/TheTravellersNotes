@@ -147,9 +147,10 @@ History:
 
 #include "UI/UIManager.h"
 
+#include "Nodes/FlowFadeNode.h"
 
-#include "PlayerStatsManager.h"
-#include "RPGInventory.h"
+#include <IHMDDevice.h>
+#include <IHMDManager.h>
 
 DEFINE_STATE_MACHINE( CPlayer, Movement ); 
 
@@ -192,9 +193,6 @@ DEFINE_STATE_MACHINE( CPlayer, Movement );
 	v->SetValue("z", (value).z); \
 	} \
 	}
-
-#define RANDOM() ((((float)cry_rand()/(float)CRY_RAND_MAX)*2.0f)-1.0f)
-#define RANDOMR(a,b) ((float)a + ((cry_rand()/(float)CRY_RAND_MAX)*(float)(b-a)))
 
 #undef CALL_PLAYER_EVENT_LISTENERS
 #define CALL_PLAYER_EVENT_LISTENERS(func) \
@@ -360,6 +358,128 @@ void CPlayer::PostProcessAnimation(ICharacterInstance *pCharacter)
 			m_playerCamera->PostUpdate(delta);
 
 			m_isControllingCamera = false;
+
+			if (!IsThirdPerson())
+			{
+				const float fadeoutNearWallThreshold = g_pGameCVars->g_hmdFadeoutNearWallThreshold; // do a proper implementation
+				float fadeAmount(0.f);
+				float fadeTime(0.1f);
+
+				if (fadeoutNearWallThreshold > FLT_EPSILON)
+				{
+					const ICharacterInstance* pCharacter = GetEntity()->GetCharacter(0);
+
+					Vec3 eyeOffset(m_eyeOffset);
+
+					int cameraJoint = GetBoneID(BONE_CAMERA);
+
+					if (cameraJoint >= 0)
+					{
+						eyeOffset = pCharacter->GetISkeletonPose()->GetAbsJointByID(cameraJoint).t;
+					}
+					else
+					{
+						CryLogAlways("ERROR: Player Rig does not have a camera bone [BONE_CAMERA]");
+					}
+
+					Vec3 cameraOffset = Vec3(0.f, 0.f, eyeOffset.z) + GetBaseQuat() * Vec3(eyeOffset.x, eyeOffset.y, 0.f);
+
+					Vec3 hmdPositionTranslation(ZERO);
+					Vec3 hmdPosition(ZERO);
+					Quat hmdRotation(IDENTITY);
+
+					IHMDManager* pHmdManager = gEnv->pSystem->GetHMDManager();
+
+					if (pHmdManager && pHmdManager->IsStereoSetupOk())
+					{
+						const HMDTrackingState& sensorState = pHmdManager->GetHMDDevice()->GetTrackingState();
+
+						if (sensorState.CheckStatusFlags(HS_IsUsable))
+						{
+							const Vec3 hmdHeadPos = sensorState.pose.position;
+							hmdPosition = Vec3(hmdHeadPos.x, -hmdHeadPos.z, hmdHeadPos.y);
+
+							const Matrix33 ori = Matrix33(sensorState.pose.orientation);
+
+							Matrix33 oriFixed;
+							oriFixed.SetColumn(0,  ori.GetColumn0());
+							oriFixed.SetColumn(1, -ori.GetColumn2());
+							oriFixed.SetColumn(2,  ori.GetColumn1());
+
+							hmdRotation = Quat::CreateRotationX(DEG2RAD(90.0f)) * Quat(oriFixed);
+						}
+					}
+
+					if (!hmdPosition.IsZero())
+					{
+						hmdPositionTranslation = GetViewQuat() * hmdRotation.GetInverted() * hmdPosition;
+					}
+
+					Vec3 eyePosWithHMDTranslation = cameraOffset + hmdPositionTranslation;
+
+					// check for collision and fade to black
+					IPhysicalEntity* pSkipEntities[2];
+					const int numSkipEntities = GetPhysicalSkipEntities(pSkipEntities, 2);
+					const Vec3 worldEyePosWithHMDTranslation = GetEntity()->GetPos() + eyePosWithHMDTranslation;
+
+					// First, check if the camera is already behind a wall
+					const Vec3 sweepStart = GetEntity()->GetWorldPos() + Vec3(0.f, 0.f, GetEyeOffset().z) + GetViewQuat() * Vec3(GetEyeOffset().x, GetEyeOffset().y, 0.f);
+					const Vec3 sweepDirection = worldEyePosWithHMDTranslation - sweepStart;
+
+					primitives::sphere physPrimitive;
+					physPrimitive.center = sweepStart;
+					physPrimitive.r = 0.05f;
+
+					geom_contact* pContact;
+					const int entTypes = ent_all;
+					const int rwiFlags = rwi_stop_at_pierceable;
+
+					float hitDistance = gEnv->pPhysicalWorld->PrimitiveWorldIntersection(physPrimitive.type, &physPrimitive, sweepDirection, entTypes, &pContact, 0, rwiFlags, 0, 0, 0, pSkipEntities, numSkipEntities);
+
+					if (hitDistance > FLT_EPSILON)
+					{
+						fadeAmount = 1.f;
+						fadeTime = 0.01f;
+					}
+					else
+					{
+						// If not, check if the camera is close to a wall
+						physPrimitive.center = worldEyePosWithHMDTranslation;
+						physPrimitive.r = fadeoutNearWallThreshold;
+
+						hitDistance = gEnv->pPhysicalWorld->PrimitiveWorldIntersection(physPrimitive.type, &physPrimitive, ZERO, entTypes, &pContact, 0, rwiFlags, 0, 0, 0, pSkipEntities, numSkipEntities);
+
+						if (hitDistance > FLT_EPSILON)
+						{
+							const float distanceFromEyes = (pContact->pt - worldEyePosWithHMDTranslation).GetLength();
+							fadeAmount = clamp_tpl(1.f - (distanceFromEyes / fadeoutNearWallThreshold) * 0.5f, 0.f, 1.f);
+						}
+					}
+				}
+
+				if (fadeAmount != m_closeToWallFadeoutAmount)
+				{
+					m_closeToWallFadeoutAmount = fadeAmount;
+
+					CHUDFader* pFader = m_pMasterFader->GetHUDFader(0);
+
+					if (pFader)
+					{
+						ColorF col = Col_Black;
+						pFader->Stop();
+
+						if (fadeAmount > FLT_EPSILON)
+						{
+							ColorF currentFadeColor = pFader->GetCurrentColor();
+							pFader->FadeOut(col, fadeTime, "", true, false, fadeAmount, currentFadeColor.a);
+						}
+						else
+						{
+							pFader->FadeIn(col, fadeTime);
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -465,6 +585,9 @@ CPlayer::CPlayer()
 
 	m_eyeOffset.zero();
 	m_weaponOffset.zero();
+
+	m_pMasterFader = new CMasterFader();
+	m_closeToWallFadeoutAmount = 0.f;
 
 	m_pIEntityAudioProxy = IEntityAudioProxyPtr();
 	m_fLastEffectFootStepTime = 0.f;
@@ -620,6 +743,7 @@ CPlayer::~CPlayer()
 	StateMachineReleaseMovement();
 	SAFE_DELETE( m_pPlayerRotation );
 	SAFE_DELETE( m_pPlayerPluginEventDistributor );
+	SAFE_DELETE( m_pMasterFader );
 
 	// Release effects after state machine (in case some state is trying to do something with them on exit)
 	m_hitRecoilGameEffect.Release();
@@ -1053,6 +1177,23 @@ void CPlayer::InitLocalPlayer()
 		m_pIEntityAudioProxy = crycomponent_cast<IEntityAudioProxyPtr>(GetEntity()->CreateProxy(ENTITY_PROXY_AUDIO));
 		//m_pIEntityAudioProxy->SetFlags(m_pIEntityAudioProxy->GetFlags()|IEntityAudioProxy::FLAG_DELEGATE_SOUND_ANIM_EVENTS);
 
+		if (m_pIEntityAudioProxy != NULL)
+		{
+			TAudioControlID nObjectSpeedSwitchID = INVALID_AUDIO_CONTROL_ID;
+			TAudioSwitchStateID nObjectSpeedTrackingOnStateID = INVALID_AUDIO_SWITCH_STATE_ID;
+
+			gEnv->pAudioSystem->GetAudioSwitchID("object_velocity_tracking", nObjectSpeedSwitchID);
+			if (nObjectSpeedSwitchID != INVALID_AUDIO_CONTROL_ID)
+			{
+				gEnv->pAudioSystem->GetAudioSwitchStateID(nObjectSpeedSwitchID, "on", nObjectSpeedTrackingOnStateID);
+				if(nObjectSpeedTrackingOnStateID != INVALID_AUDIO_SWITCH_STATE_ID)
+				{
+					// This enables automatic updates of the object_speed ATLRtpc on the Player Character.
+					m_pIEntityAudioProxy->SetSwitchState(nObjectSpeedSwitchID, nObjectSpeedTrackingOnStateID);
+				}
+			}
+		}
+
 		if (IsClient())
 		{
 			m_netPlayerProgression.OwnClientConnected();
@@ -1098,6 +1239,10 @@ void CPlayer::InitLocalPlayer()
 			}
 		}
 	}
+
+	IEntity *pEntity = GetEntity();
+	// These flags are needed for the correct handling of the merged mesh collision sounds
+	pEntity->SetFlagsExtended(pEntity->GetFlagsExtended() | ENTITY_FLAG_EXTENDED_NEEDS_MOVEINSIDE | ENTITY_FLAG_EXTENDED_CAN_COLLIDE_WITH_MERGED_MESHES);
 }
 
 bool CPlayer::ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params )
@@ -1460,7 +1605,7 @@ void CPlayer::Update(SEntityUpdateContext& ctx, int updateSlot)
 		int damageTaken = (int)(0.5f + m_healthAtStartOfUpdate - max(0.f, m_health.GetHealth()));
 		if (damageTaken > 0)
 		{
-			Vec3 velocity(2.f * (cry_frand() - 0.5f), 2.f * (cry_frand() - 0.5f), (cry_frand() + 1.0f));
+			Vec3 velocity(cry_random(-1.0f, 1.0f), cry_random(-1.0f, 1.0f), cry_random(1.0f, 2.0f));
 			CryWatch3DAdd(string().Format("%d", damageTaken), GetLocalEyePos() + GetEntity()->GetWorldPos(), 2.f, & velocity, 3.f);
 		}
 	}
@@ -1759,34 +1904,7 @@ void CPlayer::Update(SEntityUpdateContext& ctx, int updateSlot)
 		}
 	}
 #endif  // !_RELEASE
-
-//*********Блок чекинг расстояния игрока от рюкзака******************
-	if (g_pGame->GetPlayerStatsManager()->GetBackpackStatus()) return;
-
-	if (!this) return;
-
-	IEntity* pBAckpack = gEnv->pEntitySystem->FindEntityByName("Backpack1");
-
-	if (!pBAckpack) return;
-
-	float len = (this->GetEntity()->GetPos() - pBAckpack->GetPos()).len();
-
-	//Чекаем расстояние на котором игрок от рюкзака
-	if (len >= 90 && len <= 91)
-	{
-		//Если вышли за пределы то выскакивает предупрждение 
-		CryLogAlways("Warning you can lost your Backpack");		
-	}	
-
-	if (len >= 100 && len <= 101)
-	{
-		//Если вышли за пределы то рюкзак теряется и задается статус о том что рюкзак потерян
-		CryLogAlways("You lost your Backpack");
-		gEnv->pEntitySystem->RemoveEntity(pBAckpack->GetId(), true);
-		g_pGame->GetPlayerStatsManager()->SetBackpackStatus(true);
-		g_pGame->GetRPGInventory()->ClearInventory();
-	}
-//*********************************************************************
+	
 }
 
 void CPlayer::CreateInputClass(bool client)
@@ -3429,7 +3547,6 @@ void CPlayer::Revive( EReasonForRevive reasonForRevive )
 	m_stats.lastAttacker = 0;
 
 	m_actions = 0;
-	m_actionFlags = eAF_NONE;
 
 	m_ragdollTime = 0.0f;
 	m_lastReloadTime = 0.f;
@@ -4237,13 +4354,13 @@ void CPlayer::CameraShake(float angle,float shift,float duration,float frequency
       pSeat->OnCameraShake(angleAmount, shiftAmount, pos, source);    
   }
 
-	Ang3 shakeAngle(\
-		RANDOMR(0.0f,1.0f)*angleAmount*0.15f, 
-		(angleAmount*min(1.0f,max(-1.0f,RANDOM()*7.7f)))*1.15f,
-		RANDOM()*angleAmount*0.05f
+	Ang3 shakeAngle(
+		cry_random(0.0f,1.0f)*angleAmount*0.15f, 
+		(angleAmount*std::min(1.0f,std::max(-1.0f,cry_random(-1.0f, 1.0f)*7.7f)))*1.15f,
+		cry_random(-1.0f,1.0f)*angleAmount*0.05f
 		);
 
-	Vec3 shakeShift(RANDOM()*shiftAmount,0,RANDOM()*shiftAmount);
+	Vec3 shakeShift(cry_random(-1.0f, 1.0f)*shiftAmount,0,cry_random(-1.0f, 1.0f)*shiftAmount);
 
 	IView *pView = g_pGame->GetIGameFramework()->GetIViewSystem()->GetViewByEntityId(GetEntityId());
 	if (pView)
@@ -6055,7 +6172,7 @@ void CPlayer::ExecuteFootStep(ICharacterInstance* pCharacter, const float frameT
 			{
 				gearEffectPossibility *= 10.0f;
 			}
-			else if ((stance == STANCE_STEALTH) && (cry_frand() < 0.3f))
+			else if ((stance == STANCE_STEALTH) && (cry_random(0.0f, 1.0f) < 0.3f))
 			{
 				if (IAIObject* pAI = GetEntity()->GetAI())
 				{
@@ -6066,7 +6183,7 @@ void CPlayer::ExecuteFootStep(ICharacterInstance* pCharacter, const float frameT
 				}
 			}
 
-			if(cry_frand() < gearEffectPossibility)
+			if(cry_random(0.0f, 1.0f) < gearEffectPossibility)
 			{
 				gearEffectId = pMaterialEffects->GetEffectIdByName(m_params.footstepEffectName.c_str(), "gear");
 			}
@@ -6544,8 +6661,7 @@ void CPlayer::SetSpectatorModeAndOtherEntId(const uint8 _mode, const EntityId _o
 
 				if(isLocalPlayer)
 				{
-					CRY_ASSERT_MESSAGE(gEnv->pSystem->GetCrc32Gen(),"Could not get CRC gen.");
-					static const uint32 kDefaultCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("Default");
+					static const uint32 kDefaultCRC = CCrc32::ComputeLowercase("Default");
 					const bool setOk = SetCurrentFollowCameraSettings(kDefaultCRC);
 					CRY_ASSERT_MESSAGE(setOk,"Could not set the view mode to \"Default\"");
 				}
@@ -6557,8 +6673,7 @@ void CPlayer::SetSpectatorModeAndOtherEntId(const uint8 _mode, const EntityId _o
 
 				if(isLocalPlayer)
 				{
-					CRY_ASSERT_MESSAGE(gEnv->pSystem->GetCrc32Gen(),"Could not get CRC gen.");
-					static const uint32 kKillerCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("Killer");
+					static const uint32 kKillerCRC = CCrc32::ComputeLowercase("Killer");
 					const bool setOk = SetCurrentFollowCameraSettings(kKillerCRC);
 					CRY_ASSERT_MESSAGE(setOk,"Could not set the view mode to \"Killer\"");
 				}
@@ -7236,6 +7351,7 @@ void CPlayer::AnimationEvent(ICharacterInstance *pCharacter, const AnimEventInst
 
 		const bool isClient = m_isClient;
 		const SActorAnimationEvents& animEventsTable = GetAnimationEventsTable();
+		static const uint32 audioTriggerCRC = CCrc32::ComputeLowercase("audio_trigger");
 
 		if (animEventsTable.m_meleeHitId == event.m_EventNameLowercaseCRC32)
 		{
@@ -7245,22 +7361,37 @@ void CPlayer::AnimationEvent(ICharacterInstance *pCharacter, const AnimEventInst
 			if (pMelee)
 				pMelee->OnMeleeHitAnimationEvent();
 		}
-		else if (animEventsTable.m_soundId == event.m_EventNameLowercaseCRC32)
+		else if (event.m_EventNameLowercaseCRC32 == audioTriggerCRC)
 		{
 			//Only client ones (the rest are processed in AudioProxy)
-			if (isClient)
+			if (isClient && m_pIEntityAudioProxy)
 			{
-				Vec3 offset(0.0f,0.0f,1.0f);
+				TAudioProxyID nAudioProxyID = INVALID_AUDIO_PROXY_ID;
+
 				if (event.m_BonePathName && event.m_BonePathName[0] && pCharacter)
 				{
 					ISkeletonPose* pSkeletonPose = pCharacter->GetISkeletonPose();
 					IDefaultSkeleton& rIDefaultSkeleton = pCharacter->GetIDefaultSkeleton();
-					int id = rIDefaultSkeleton.GetJointIDByName(event.m_BonePathName);
-					if (id >= 0)
+					int nJointID = rIDefaultSkeleton.GetJointIDByName(event.m_BonePathName);
+					if (nJointID >= 0)
 					{
-						QuatT boneQuat(pSkeletonPose->GetAbsJointByID(id));
-						offset = boneQuat.t;
+						nAudioProxyID = stl::find_in_map(m_cJointAudioProxies, nJointID, INVALID_AUDIO_PROXY_ID);
+						if (nAudioProxyID == INVALID_AUDIO_PROXY_ID)
+						{
+							nAudioProxyID = m_pIEntityAudioProxy->CreateAuxAudioProxy();
+							m_cJointAudioProxies[nJointID] = nAudioProxyID;
+						}
+
+						QuatT boneQuat(pSkeletonPose->GetAbsJointByID(nJointID));
+						m_pIEntityAudioProxy->SetAuxAudioProxyOffset(SATLWorldPosition(Matrix34(boneQuat)), nAudioProxyID);
 					}
+				}
+				TAudioControlID nTriggerID = INVALID_AUDIO_CONTROL_ID;
+				gEnv->pAudioSystem->GetAudioTriggerID(event.m_CustomParameter, nTriggerID);
+
+				if (nTriggerID != INVALID_AUDIO_CONTROL_ID)
+				{
+					m_pIEntityAudioProxy->ExecuteTrigger(nTriggerID, eLSM_None, nAudioProxyID);
 				}
 
 				REINST("needs verification!");
@@ -7291,7 +7422,7 @@ void CPlayer::AnimationEvent(ICharacterInstance *pCharacter, const AnimEventInst
 				const float expectedDurationSeconds = animPlayerProxy ? animPlayerProxy->GetTopAnimExpectedSecondsLeft(GetEntity(), 0) : -1;
 				if (0 <= expectedDurationSeconds)
 				{
-					m_ragdollTime = cry_frand() * expectedDurationSeconds;
+					m_ragdollTime = cry_random(0.0f, 1.0f) * expectedDurationSeconds;
 				}
 			}
 		}
@@ -8903,9 +9034,9 @@ void SNetPlayerProgression::SetRandomValues()
 		{
 			maxRank = 10;
 		}
-		m_serVals.rank = (cry_rand()%maxRank) + 1;
+		m_serVals.rank = cry_random(1, maxRank);
 		m_serVals.xp = pPlayerProgression->GetXPForRank(m_serVals.rank);
-		m_serVals.reincarnations = MAX((cry_rand()%20) - 10, 0);	// make it more likely to be 0
+		m_serVals.reincarnations = std::max(cry_random(-10, 9), 0);	// make it more likely to be 0
 	}
 }
 #endif
@@ -10131,6 +10262,8 @@ namespace CPlayerGetSpawnInfo
 
 int CPlayer::GetPhysicalSkipEntities(IPhysicalEntity** pSkipList, const int maxSkipSize) const
 {
+	int skipCount = 0;
+
 	if(maxSkipSize > 0)
 	{
 		// For now we just care about pick and throw objects
@@ -10143,13 +10276,38 @@ int CPlayer::GetPhysicalSkipEntities(IPhysicalEntity** pSkipList, const int maxS
 				IPhysicalEntity* pPhysEnt = pEntity->GetPhysics(); 
 				if(pPhysEnt)
 				{
+					++skipCount;
 					*pSkipList = pPhysEnt;
-					return 1; 
+				}
+			}
+		}
+		else
+		{
+			IPhysicalEntity *pPlayerPhysics = GetEntity()->GetPhysics();
+			if (pPlayerPhysics)
+			{
+				if(skipCount < maxSkipSize)
+				{
+					pSkipList[skipCount] = pPlayerPhysics;
+					++skipCount;
+				}
+			}
+			ICharacterInstance *pChar = GetEntity()->GetCharacter(0);
+			if (pChar)
+			{
+				ISkeletonPose *pPose = pChar->GetISkeletonPose();
+				if (pPose)
+				{
+					if(skipCount < maxSkipSize)
+					{
+						pSkipList[skipCount] = pPose->GetCharacterPhysics();
+						++skipCount;
+					}
 				}
 			}
 		}
 	}
-	return 0; 
+	return skipCount; 
 }
 
 //------------------------------------------------------------------------

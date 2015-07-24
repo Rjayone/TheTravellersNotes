@@ -342,16 +342,6 @@ void CVehicleComponent::OnVehicleDestroyed()
 			pVehicleDamageBehavior->OnDamageEvent(eVDBE_VehicleDestroyed, eventParams);
 		}
 	}
-
-	// we also notify all the parts related to the component that the thing blew up
-	IVehiclePart::SVehiclePartEvent partEvent;
-	partEvent.type = IVehiclePart::eVPE_Damaged;
-
-	for (TVehiclePartVector::iterator ite = m_parts.begin(); ite != m_parts.end(); ++ite)
-	{
-		IVehiclePart* pPart = *ite;
-		pPart->OnEvent(partEvent);
-	}
 }
 
 //------------------------------------------------------------------------
@@ -615,9 +605,8 @@ float CVehicleComponent::ProcessDamage(const HitInfo& hitInfo, bool impact, cons
 	else
 	{
 #if ENABLE_VEHICLE_DEBUG
-		const int debugStringSize = 256;
-		char str[debugStringSize] = {0};
-		if( gEnv->pGame->GetIGameFramework()->GetNetworkSafeClassName( str, debugStringSize, hitInfo.projectileClassId ) )
+		char str[256];
+		if( gEnv->pGame->GetIGameFramework()->GetNetworkSafeClassName( str, sizeof(str), hitInfo.projectileClassId ) )
 		{
 			pDisplayDamageType = str;
 		}

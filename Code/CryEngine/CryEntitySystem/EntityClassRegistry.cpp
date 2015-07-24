@@ -32,7 +32,7 @@ CEntityClassRegistry::~CEntityClassRegistry()
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool CEntityClassRegistry::RegisterClass( IEntityClass *pClass )
+bool CEntityClassRegistry::RegisterEntityClass( IEntityClass *pClass )
 {
 	assert( pClass != NULL );
 
@@ -42,7 +42,7 @@ bool CEntityClassRegistry::RegisterClass( IEntityClass *pClass )
 		IEntityClass *pOldClass = FindClass(pClass->GetName());
 		if (pOldClass)
 		{
-			EntityWarning( "CEntityClassRegistry::RegisterClass failed, class with name %s already registered",
+			EntityWarning( "CEntityClassRegistry::RegisterEntityClass failed, class with name %s already registered",
 				pOldClass->GetName() );
 			return false;
 		}
@@ -54,7 +54,7 @@ bool CEntityClassRegistry::RegisterClass( IEntityClass *pClass )
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool CEntityClassRegistry::UnregisterClass( IEntityClass *pClass )
+bool CEntityClassRegistry::UnregisterEntityClass( IEntityClass *pClass )
 {
 	assert( pClass != NULL );
 	if (FindClass(pClass->GetName()))
@@ -101,11 +101,17 @@ IEntityClass* CEntityClassRegistry::RegisterStdClass( const SEntityClassDesc &en
 	pClass->SetEntityAttributes(entityClassDesc.entityAttributes);
 
 	// Check if need to create entity script.
-	if (entityClassDesc.sScriptFile[0])
+	if (entityClassDesc.sScriptFile[0] || entityClassDesc.pScriptTable)
 	{
 		// Create a new entity script.
 		CEntityScript *pScript = new CEntityScript;
-		if (!pScript->Init(entityClassDesc.sName,entityClassDesc.sScriptFile))
+		bool ok = false;
+		if(entityClassDesc.sScriptFile[0])
+			ok = pScript->Init(entityClassDesc.sName,entityClassDesc.sScriptFile);
+		else 
+			ok = pScript->Init(entityClassDesc.sName, entityClassDesc.pScriptTable);
+		
+		if(!ok)
 		{
 			EntityWarning( "EntityScript %s failed to initialize",entityClassDesc.sScriptFile );
 			pScript->Release();
@@ -115,7 +121,7 @@ IEntityClass* CEntityClassRegistry::RegisterStdClass( const SEntityClassDesc &en
 		pClass->SetEntityScript( pScript );
 	}
 
-	if (!RegisterClass( pClass ))
+	if (!RegisterEntityClass( pClass ))
 	{
 		// Register class failed.
 		pClass->Release();
@@ -190,10 +196,10 @@ void CEntityClassRegistry::InitializeDefaultClasses()
 	stdFlowgraphClass.editorClassInfo.sIcon = "FlowgraphEntity.bmp";
 	RegisterStdClass( stdFlowgraphClass );
 
-  SEntityClassDesc stdListenerClass;
-  stdListenerClass.flags |= ECLF_INVISIBLE|ECLF_DEFAULT;
-  stdListenerClass.sName = "SoundListener";
-  RegisterStdClass( stdListenerClass );
+  SEntityClassDesc stdAudioListenerClass;
+  stdAudioListenerClass.flags |= ECLF_INVISIBLE|ECLF_DEFAULT;
+  stdAudioListenerClass.sName = "AudioListener";
+  RegisterStdClass( stdAudioListenerClass );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -213,9 +219,9 @@ void CEntityClassRegistry::LoadClasses( const char *sRootPath,bool bOnlyNewClass
 		do
 		{
 			// Animation file found, load it.
-			strcpy(filename,sPath);
-			strcat(filename,"/");
-			strcat(filename,fd.name);
+			cry_strcpy(filename,sPath);
+			cry_strcat(filename,"/");
+			cry_strcat(filename,fd.name);
 
 			// Load xml file.
 			XmlNodeRef root = m_pSystem->LoadXmlFromFile(filename);
@@ -288,4 +294,4 @@ void CEntityClassRegistry::NotifyListeners( EEntityClassRegistryEvent event, con
 	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityClassRegistry)
+

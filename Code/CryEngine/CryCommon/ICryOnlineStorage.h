@@ -7,10 +7,10 @@ struct CryOnlineStorageQueryData;
 
 struct IOnlineStorageListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IOnlineStorageListener(){}
 	virtual void OnOnlineStorageOperationComplete( const CryOnlineStorageQueryData& QueryData ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 enum ECryOnlineStorageLocation
@@ -65,14 +65,14 @@ struct CryOnlineStorageQueryData
 //PSN and Xbox LIVE! both implement flavors of this
 struct ICryOnlineStorage
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICryOnlineStorage(){};
 
 	virtual void Tick(CTimeValue tv) = 0;
 
 	//Add an operation to the queue
 	virtual ECryLobbyError OnlineStorageDataQuery( CryOnlineStorageQueryData *pQueryData ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__ICRYONLINESTORAGE_H__

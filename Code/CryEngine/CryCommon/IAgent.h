@@ -11,15 +11,7 @@ History:
 - 
 
 *********************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IAgent.h)
-
-#ifndef _IAGENT_H_
-#define _IAGENT_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
 
 #include "Cry_Math.h"
 #include "AgentParams.h"
@@ -875,7 +867,7 @@ struct SFireCommandProjectileInfo
 //	 Interface to the fire command handler.
 struct IFireCommandHandler
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFireCommandHandler(){}
 	// Summary:
 	//	 Gets the name identifier of the handler.
@@ -923,7 +915,7 @@ struct IFireCommandHandler
 	virtual float GetTimeToNextShot() const = 0;
 	
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const{}
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -1080,7 +1072,7 @@ enum EBodyOrientationMode
 struct IPipeUser
 {
 	typedef boost::shared_ptr<Vec3> LookTargetPtr;
-
+	// <interfuscator:shuffle>
 	virtual ~IPipeUser() {}
 	virtual bool SelectPipe(int id, const char *name, IAIObject *pArgument = 0, int goalPipeId = 0, bool resetAlways = false, const GoalParams *node = 0) = 0;
 	virtual IGoalPipe* InsertSubPipe(int id, const char *name, IAIObject *pArgument = 0, int goalPipeId = 0, const GoalParams *node = 0) = 0;
@@ -1097,7 +1089,9 @@ struct IPipeUser
 	virtual void ResetCurrentPipe( bool bAlways) {;}
 	virtual IAIObject* GetSpecialAIObject(const char* objName, float range = 0.0f) = 0;
 	virtual void MakeIgnorant(bool ignorant) = 0;
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	virtual bool SetCharacter(const char *character, const char* behaviour = NULL) = 0;
+#endif
 
 	virtual void SetInCover(bool inCover) = 0;
 	virtual bool IsInCover() const = 0;
@@ -1151,7 +1145,7 @@ struct IPipeUser
 	virtual bool IsAllowingBodyTurn() = 0;
 
 	virtual LookTargetPtr CreateLookTarget() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -1180,6 +1174,7 @@ struct ISmartObjectManager
 {
 	typedef IStatObj* IStatObjPtr;
 
+	// <interfuscator:shuffle>
 	virtual ~ISmartObjectManager(){}
 	virtual void RemoveSmartObject(IEntity *pEntity) = 0;
 
@@ -1204,34 +1199,34 @@ struct ISmartObjectManager
 	virtual int SmartObjectEvent( const char* sEventName, IEntity*& pUser, IEntity*& pObject, const Vec3* pExtraPoint = NULL, bool bHighPriority = false ) = 0;
 
 	virtual SmartObjectHelper* GetSmartObjectHelper( const char* className, const char* helperName ) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IAIAction;
 
-UNIQUE_IFACE struct IAIActionManager : public IGoalPipeListener
+struct IAIActionManager : public IGoalPipeListener
 {
-
+	// <interfuscator:shuffle>
 	// returns an existing AI Action from the library or NULL if not found
-	VIRTUAL IAIAction* GetAIAction( const char* sName ) = 0;
+	virtual IAIAction* GetAIAction( const char* sName ) = 0;
 
 	// returns an existing AI Action by its index in the library or NULL index is out of range
-	VIRTUAL IAIAction* GetAIAction( size_t index ) = 0;
+	virtual IAIAction* GetAIAction( size_t index ) = 0;
 
-	VIRTUAL void ReloadActions() = 0;
+	virtual void ReloadActions() = 0;
 
 	// aborts specific AI Action (specified by goalPipeId) or all AI Actions (goalPipeId == 0) in which pEntity is a user
-	VIRTUAL void AbortAIAction( IEntity* pEntity, int goalPipeId = 0 ) = 0;
+	virtual void AbortAIAction( IEntity* pEntity, int goalPipeId = 0 ) = 0;
 
 	// finishes specific AI Action (specified by goalPipeId) for the pEntity as a user
-	VIRTUAL void FinishAIAction( IEntity* pEntity, int goalPipeId ) = 0;
-
+	virtual void FinishAIAction( IEntity* pEntity, int goalPipeId ) = 0;
+	// </interfuscator:shuffle>
 };
 
 
 struct IPuppet 
 {		
-
+	// <interfuscator:shuffle>
 	virtual ~IPuppet() {}
 	virtual void UpTargetPriority(const IAIObject *pTarget, float fPriorityIncrement)=0;
 	virtual void UpdateBeacon()=0;
@@ -1286,12 +1281,12 @@ struct IPuppet
 	// ROD Handler
 	virtual void SetRODHandler(IAIRateOfDeathHandler *pHandler) = 0;
 	virtual void ClearRODHandler() = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IAISignalExtraData
+struct IAISignalExtraData
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAISignalExtraData(){}
 	virtual void Serialize( TSerialize ser ) = 0;
 	virtual const char* GetObjectName() const = 0;
@@ -1300,7 +1295,7 @@ UNIQUE_IFACE struct IAISignalExtraData
 	// To/from script table
 	virtual void ToScriptTable(SmartScriptTable &table) const = 0;
 	virtual void FromScriptTable(const SmartScriptTable &table) = 0;
-
+	// </interfuscator:shuffle>
 
 	IAISignalExtraData() : string1( NULL ), string2( NULL ) {}
 
@@ -1320,36 +1315,28 @@ UNIQUE_IFACE struct IAISignalExtraData
 
 struct AISIGNAL
 {
-	//AISIGNAL():point(0,0,0){}
-	int						nSignal;
-	//private:
-	uint32				m_nCrcText;
+	int nSignal;
+	uint32 m_nCrcText;
+	EntityId senderID;
+	IAISignalExtraData* pEData;
+	static const int SIGNAL_NAME_LENGTH = 50;
+	char strText[SIGNAL_NAME_LENGTH];
 
-	//CryString				strText;
-	EntityId	senderID;
-	IAISignalExtraData*		pEData;
+	AISIGNAL()
+	: nSignal(0)
+	, m_nCrcText(0)
+	, senderID(0)
+	, pEData(NULL)
+	{
+		strText[0]=0;
+	}
 
-	// for 64b alignment
-	static const int SIGNAL_STRING_LENGTH = 50;
-	char					strText[SIGNAL_STRING_LENGTH];
-	// for 512b alignment
-	//	char					strText[498];
+	void Serialize( TSerialize ser );
 
 	inline bool Compare(uint32 crc) const 
 	{
 		return m_nCrcText == crc;
 	}
-
-	AISIGNAL()
-	: nSignal(0)
-	, senderID(0)
-	, pEData(NULL)
-	, m_nCrcText(0)
-	{
-		strText[0]=0;
-	}
-	void Serialize( TSerialize ser );
-
 };
 
 struct PATHPOINT
@@ -1932,12 +1919,13 @@ struct IAICommunicationHandler
 
 	struct IEventListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~IEventListener(){}
 		virtual void OnCommunicationHandlerEvent(ECommunicationHandlerEvent type, CommPlayID playID, EntityId actorID) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IAICommunicationHandler(){}
 	virtual SCommunicationSound PlaySound(CommPlayID playID, const char* name, IEventListener* listener = 0) = 0;
 	virtual void StopSound(const SCommunicationSound& soundToStop) = 0;
@@ -1957,11 +1945,9 @@ struct IAICommunicationHandler
 	virtual bool IsPlayingSound() const = 0;
 
 	virtual void OnSoundTriggerFinishedToPlay(const TAudioControlID nTriggerID) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
 enum EWaypointNodeType {WNT_UNSET, WNT_WAYPOINT, WNT_HIDE,  WNT_ENTRYEXIT, WNT_EXITONLY, WNT_HIDESECONDARY};
 enum EWaypointLinkType {WLT_AUTO_PASS = 320, WLT_AUTO_IMPASS = -320, WLT_EDITOR_PASS = 321, WLT_EDITOR_IMPASS = -321, WLT_UNKNOWN_TYPE = 0};
-
-#endif //_IAGENT_H_

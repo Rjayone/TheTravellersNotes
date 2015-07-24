@@ -358,63 +358,16 @@ void CUIDraw::DrawTextSimple(IFFont *pFont,
 															const char *strText, ColorF color,
 															EUIDRAWHORIZONTAL	eUIDrawHorizontal, EUIDRAWVERTICAL		eUIDrawVertical)
 {
-	if (!pFont)
-		return;
-
-	// Note: First ScaleCoordY is not a mistake
-	if (fSizeX <= 0.0f) fSizeX = 15.0f;
-	if (fSizeY <= 0.0f) fSizeY = 15.0f;
-
-	STextDrawContext cxt;
-	cxt.SetSizeIn800x600(false);
-	cxt.SetSize(vector2f(fSizeX, fSizeY));
-	cxt.SetColor(color);
-
-/*
-	if (UIDRAWHORIZONTAL_CENTER == eUIDrawHorizontalDocking)
-		fX += m_pRenderer->GetWidth() * 0.5f;
-	else if (UIDRAWHORIZONTAL_RIGHT == eUIDrawHorizontalDocking)
-		fX += m_pRenderer->GetWidth();
-
-	if (UIDRAWVERTICAL_CENTER == eUIDrawVerticalDocking)
-		fY += m_pRenderer->GetHeight() * 0.5f;
-	else if (UIDRAWVERTICAL_BOTTOM == eUIDrawVerticalDocking)
-		fY += m_pRenderer->GetHeight();
-*/
-
-	Vec2 vDim = pFont->GetTextSize(strText, true, cxt);
-
-	int flags = 0;
-	if (UIDRAWHORIZONTAL_CENTER == eUIDrawHorizontal)
-	{
-		fX -= vDim.x * 0.5f;
-		flags |= eDrawText_Center;
-	}
-	else if (UIDRAWHORIZONTAL_RIGHT == eUIDrawHorizontal)
-	{
-		fX -= vDim.x;
-		flags |= eDrawText_Right;
-	}
-
-	if (UIDRAWVERTICAL_CENTER == eUIDrawVertical)
-	{
-		fY -= vDim.y * 0.5f;
-		flags |= eDrawText_CenterV;
-	}
-	else if (UIDRAWVERTICAL_BOTTOM == eUIDrawVertical)
-	{
-		fY -= vDim.y;
-		flags |= eDrawText_Bottom;
-	}
-
-	cxt.SetFlags(flags);
-
-	pFont->DrawString(fX,fY,strText, true, cxt);
+	InternalDrawText(pFont, fX, fY, 0.0f,
+		fSizeX, fSizeY,
+		strText,
+		color.a, color.r, color.g, color.b,
+		UIDRAWHORIZONTAL_LEFT, UIDRAWVERTICAL_TOP, eUIDrawHorizontal, eUIDrawVertical);
 }
 
 //-----------------------------------------------------------------------------------------------------
 
-void CUIDraw::DrawText(	IFFont *pFont,
+void CUIDraw::DrawText(IFFont *pFont,
 												float fX,
 												float fY,
 												float fSizeX,
@@ -429,149 +382,20 @@ void CUIDraw::DrawText(	IFFont *pFont,
 												EUIDRAWHORIZONTAL	eUIDrawHorizontal,
 												EUIDRAWVERTICAL		eUIDrawVertical)
 {
-	if(NULL == pFont)
-	{
-		return;
-	}
-	// Note: First ScaleCoordY is not a mistake
-	if (fSizeX<=0.0f) fSizeX=15.0f;
-	if (fSizeY<=0.0f) fSizeY=15.0f;
-
-	fSizeX = m_pRenderer->ScaleCoordY(fSizeX);
-	fSizeY = m_pRenderer->ScaleCoordY(fSizeY);
-
-	// Note: First ScaleCoordY is not a mistake
-	float fTextX = m_pRenderer->ScaleCoordY(fX);
-	float fTextY = m_pRenderer->ScaleCoordY(fY);
-
-	if(UIDRAWHORIZONTAL_CENTER == eUIDrawHorizontalDocking)
-	{
-		fTextX += m_pRenderer->GetWidth() * 0.5f;
-	}
-	else if(UIDRAWHORIZONTAL_RIGHT == eUIDrawHorizontalDocking)
-	{
-		fTextX += m_pRenderer->GetWidth();
-	}
-
-	if(UIDRAWVERTICAL_CENTER == eUIDrawVerticalDocking)
-	{
-		fTextY += m_pRenderer->GetHeight() * 0.5f;
-	}
-	else if(UIDRAWVERTICAL_BOTTOM == eUIDrawVerticalDocking)
-	{
-		fTextY += m_pRenderer->GetHeight();
-	}
-
-	STextDrawContext ctx;
-	vector2f vDim = pFont->GetTextSize(strText, true, ctx);
-
-	if(UIDRAWHORIZONTAL_CENTER == eUIDrawHorizontal)
-	{
-		fTextX -= vDim.x * 0.5f;
-	}
-	else if(UIDRAWHORIZONTAL_RIGHT == eUIDrawHorizontal)
-	{
-		fTextX -= vDim.x;
-	}
-
-	if(UIDRAWVERTICAL_CENTER == eUIDrawVertical)
-	{
-		fTextY -= vDim.y * 0.5f;
-	}
-	else if(UIDRAWVERTICAL_BOTTOM == eUIDrawVertical)
-	{
-		fTextY -= vDim.y;
-	}
-
-	SDrawTextInfo info;
-	info.color[0] = fRed;
-	info.color[1] = fGreen;
-	info.color[2] = fBlue;
-	info.color[3] = fAlpha;
-
- 	// Adjusting the scale values for the Draw2dText call
-	info.xscale = fSizeX/UIDRAW_TEXTSIZEFACTOR;
-	info.yscale = fSizeY/UIDRAW_TEXTSIZEFACTOR;
-
-	info.flags = eDrawText_2D | eDrawText_FixedSize ;
-
-	DrawText(fTextX, fTextY, info, "%s", strText);
-}
-
-void CUIDraw::DrawText( float x, float y, SDrawTextInfo& info, const char * format, ...) {
-	va_list args;
-	va_start(args, format);
-	m_pRenderer->DrawTextQueued(Vec3(x, y, 0.0f), info, "%s", args);
-	va_end(args);
-}
-//-----------------------------------------------------------------------------------------------------
-void CUIDraw::GetTextDim(	IFFont *pFont,
-													float *fWidth,
-													float *fHeight,
-													float fSizeX,
-													float fSizeY,
-													const char *strText)
-{
-	if(NULL == pFont)
-	{
-		return;
-	}
-
-	//	fSizeX = m_pRenderer->ScaleCoordX(fSizeX);
-	//	fSizeY = m_pRenderer->ScaleCoordY(fSizeY);
-
-	// Note: First ScaleCoordY is not a mistake
-	if (fSizeX<=0.0f) fSizeX=15.0f;
-	if (fSizeY<=0.0f) fSizeY=15.0f;
-
-	fSizeX = m_pRenderer->ScaleCoordY(fSizeX);
-	fSizeY = m_pRenderer->ScaleCoordY(fSizeY);
-
-	STextDrawContext ctx;
-	ctx.SetSizeIn800x600(false);
-	ctx.SetSize(vector2f(fSizeX,fSizeY));
-
-	Vec2 dim=pFont->GetTextSize(strText, true, ctx);
-	
-	float fScaleBack=1.0f/m_pRenderer->ScaleCoordY(1.0f);
-	if (fWidth)
-		*fWidth=dim.x*fScaleBack;
-	if (fHeight)
-		*fHeight=dim.y*fScaleBack;
-}
-
-
-//-----------------------------------------------------------------------------------------------------
-
-void CUIDraw::DrawTextW(IFFont *pFont,
-												float fX,
-												float fY,
-												float fSizeX,
-												float fSizeY,
-												const wchar_t *strText,
-												float fAlpha,
-												float fRed,
-												float fGreen,
-												float fBlue,
-												EUIDRAWHORIZONTAL	eUIDrawHorizontalDocking,
-												EUIDRAWVERTICAL		eUIDrawVerticalDocking,
-												EUIDRAWHORIZONTAL	eUIDrawHorizontal,
-												EUIDRAWVERTICAL		eUIDrawVertical)
-{
-	InternalDrawTextW(pFont, fX, fY, 0.0f,
+	InternalDrawText(pFont, fX, fY, 0.0f,
 		fSizeX, fSizeY, 
 		strText, 
 		fAlpha, fRed, fGreen, fBlue, 
 		eUIDrawHorizontalDocking, eUIDrawVerticalDocking, eUIDrawHorizontal, eUIDrawVertical);
 }
 
-void CUIDraw::DrawWrappedTextW(	IFFont *pFont,
+void CUIDraw::DrawWrappedText(	IFFont *pFont,
 																float fX,
 																float fY,
 																float fMaxWidth,
 																float fSizeX,
 																float fSizeY,
-																const wchar_t *strText,
+																const char *strText,
 																float fAlpha,
 																float fRed,
 																float fGreen,
@@ -582,7 +406,7 @@ void CUIDraw::DrawWrappedTextW(	IFFont *pFont,
 																EUIDRAWVERTICAL		eUIDrawVertical
 												)
 {
-	InternalDrawTextW(pFont, fX, fY, fMaxWidth,
+	InternalDrawText(pFont, fX, fY, fMaxWidth,
 		fSizeX, fSizeY, 
 		strText, 
 		fAlpha, fRed, fGreen, fBlue, 
@@ -592,13 +416,13 @@ void CUIDraw::DrawWrappedTextW(	IFFont *pFont,
 
 //-----------------------------------------------------------------------------------------------------
 
-void CUIDraw::InternalDrawTextW(IFFont *pFont,
+void CUIDraw::InternalDrawText(IFFont *pFont,
 																float fX,
 																float fY,
 																float fMaxWidth,
 																float fSizeX,
 																float fSizeY,
-																const wchar_t *strText,
+																const char *strText,
 																float fAlpha,
 																float fRed,
 																float fGreen,
@@ -656,14 +480,14 @@ void CUIDraw::InternalDrawTextW(IFFont *pFont,
 		fTextY += m_pRenderer->GetHeight();
 	}
 
-	wstring wrappedStr;
+	string wrappedStr;
 	if (bWrapText)
 	{
 		pFont->WrapText(wrappedStr, fMaxWidth, strText, ctx);
 		strText = wrappedStr.c_str();
 	}
 
-	Vec2 vDim = pFont->GetTextSizeW(strText, true, ctx);
+	Vec2 vDim = pFont->GetTextSize(strText, true, ctx);
 	int flags = 0;
 
 	if(UIDRAWHORIZONTAL_CENTER == eUIDrawHorizontal)
@@ -690,18 +514,18 @@ void CUIDraw::InternalDrawTextW(IFFont *pFont,
 
 	ctx.SetFlags(flags);
 
-	pFont->DrawStringW(fTextX, fTextY, strText, true, ctx);
+	pFont->DrawString(fTextX, fTextY, strText, true, ctx);
 }
 
 //-----------------------------------------------------------------------------------------------------
 
-void CUIDraw::InternalGetTextDimW(IFFont *pFont,
+void CUIDraw::InternalGetTextDim(IFFont *pFont,
 													float *fWidth,
 													float *fHeight,
 													float fMaxWidth,
 													float fSizeX,
 													float fSizeY,
-													const wchar_t *strText)
+													const char *strText)
 {
 	if(NULL == pFont)
 	{
@@ -726,14 +550,14 @@ void CUIDraw::InternalGetTextDimW(IFFont *pFont,
 	ctx.SetSizeIn800x600(false);
 	ctx.SetSize(Vec2(fSizeX, fSizeY));
 
-	wstring wrappedStr;
+	string wrappedStr;
 	if (bWrapText)
 	{
 		pFont->WrapText(wrappedStr, fMaxWidth, strText, ctx);
 		strText = wrappedStr.c_str();
 	}
 
-	Vec2 dim = pFont->GetTextSizeW(strText, true, ctx);
+	Vec2 dim = pFont->GetTextSize(strText, true, ctx);
 
 	float fScaleBack=1.0f/m_pRenderer->ScaleCoordY(1.0f);
 	if (fWidth)
@@ -744,25 +568,25 @@ void CUIDraw::InternalGetTextDimW(IFFont *pFont,
 
 //-----------------------------------------------------------------------------------------------------
 
-void CUIDraw::GetTextDimW(IFFont *pFont,
+void CUIDraw::GetTextDim(IFFont *pFont,
 																 float *fWidth,
 																 float *fHeight,
 																 float fSizeX,
 																 float fSizeY,
-																 const wchar_t *strText)
+																 const char *strText)
 {
-	InternalGetTextDimW(pFont, fWidth, fHeight, 0.0f, fSizeX, fSizeY, strText);
+	InternalGetTextDim(pFont, fWidth, fHeight, 0.0f, fSizeX, fSizeY, strText);
 }
 
-void CUIDraw::GetWrappedTextDimW(IFFont *pFont,
+void CUIDraw::GetWrappedTextDim(IFFont *pFont,
 																 float *fWidth,
 																 float *fHeight,
 																 float fMaxWidth,
 																 float fSizeX,
 																 float fSizeY,
-																 const wchar_t *strText)
+																 const char *strText)
 {
-	InternalGetTextDimW(pFont, fWidth, fHeight, fMaxWidth, fSizeX, fSizeY, strText);
+	InternalGetTextDim(pFont, fWidth, fHeight, fMaxWidth, fSizeX, fSizeY, strText);
 }
 
 
@@ -776,4 +600,4 @@ void CUIDraw::GetMemoryStatistics(ICrySizer * s)
 }
 
 //-----------------------------------------------------------------------------------------------------
-#include UNIQUE_VIRTUAL_WRAPPER(IUIDraw)
+

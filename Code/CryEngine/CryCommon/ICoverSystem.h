@@ -170,6 +170,7 @@ struct ICoverSampler
 		IEntity* referenceEntity;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ICoverSampler(){}
 	virtual void Release() = 0;
 	virtual ESamplerState StartSampling(const Params& params) = 0;
@@ -182,7 +183,7 @@ struct ICoverSampler
 	virtual uint32 GetSurfaceFlags() const = 0;
 
 	virtual void DebugDraw() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -207,6 +208,7 @@ struct ICoverSystem
 		uint32 flags;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ICoverSystem(){}
 	virtual ICoverSampler* CreateCoverSampler(const char* samplerName = "default") = 0;
 
@@ -223,7 +225,7 @@ struct ICoverSystem
 	virtual uint32 GetCover(const Vec3& center, float range, const Vec3* eyes, uint32 eyeCount, float distanceToCover, Vec3* locations, uint32 maxLocationCount, uint32 maxLocationsPerSurface) const = 0;
 
 	virtual void DrawSurface(const CoverSurfaceID& surfaceID) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 

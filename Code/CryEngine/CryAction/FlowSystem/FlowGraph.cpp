@@ -2054,4 +2054,4 @@ const TFlowNodeId CFlowGraphBase::NOT_MODIFIED = ~TFlowNodeId(0);
 const TFlowNodeId CFlowGraphBase::END_OF_MODIFIED_LIST = NOT_MODIFIED-1;
 #endif
 
-#include UNIQUE_VIRTUAL_WRAPPER(IFlowGraph)
+

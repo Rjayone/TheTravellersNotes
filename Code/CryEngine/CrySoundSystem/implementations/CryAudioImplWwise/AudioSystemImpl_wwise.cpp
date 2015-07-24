@@ -17,6 +17,11 @@
 
 #include <AK/Plugin/AllPluginsRegistrationHelpers.h>
 
+#if defined(WWISE_USE_OCULUS)
+#include <AK/Plugin/OculusSpatializer.h>
+#include <CryLibrary.h>
+#endif // WWISE_USE_OCULUS
+
 #include <ICryPak.h>
 #include <IAudioSystem.h>
 
@@ -123,7 +128,8 @@ void EndEventCallback(AkCallbackType eType, AkCallbackInfo* pCallbackInfo)
 		{
 			SAudioRequest oRequest;
 			SAudioCallbackManagerRequestData<eACMRT_REPORT_FINISHED_EVENT> oRequestData(pEventData->nATLID, true);
-			oRequest.pData = &oRequestData;
+			oRequest.nFlags	= eARF_THREAD_SAFE_PUSH;
+			oRequest.pData	= &oRequestData;
 
 			gEnv->pAudioSystem->PushRequest(oRequest);
 		}
@@ -145,7 +151,8 @@ void PrepareEventCallback(
 
 		SAudioRequest oRequest;
 		SAudioCallbackManagerRequestData<eACMRT_REPORT_FINISHED_EVENT> oRequestData(pEventData->nATLID, eLoadResult ==  AK_Success);
-		oRequest.pData = &oRequestData;
+		oRequest.nFlags	= eARF_THREAD_SAFE_PUSH;
+		oRequest.pData	= &oRequestData;
 
 		gEnv->pAudioSystem->PushRequest(oRequest);
 	}
@@ -173,8 +180,11 @@ CAudioSystemImpl_wwise::CAudioSystemImpl_wwise()
 	: m_nDummyGameObjectID(static_cast<AkGameObjectID>(-2))
 	, m_nInitBankID(AK_INVALID_BANK_ID)
 #if !defined(WWISE_FOR_RELEASE)
-	,	m_bCommSystemInitialized(false)
+	, m_bCommSystemInitialized(false)
 #endif // !WWISE_FOR_RELEASE
+#if defined(WWISE_USE_OCULUS)
+	, m_pOculusSpatializerLibrary(NPTR)
+#endif // WWISE_USE_OCULUS
 {
 	string sGameFolder = PathUtil::GetGameFolder().c_str();
 
@@ -204,6 +214,26 @@ void CAudioSystemImpl_wwise::Update(float fUpdateIntervalMS)
 {
 	if (AK::SoundEngine::IsInitialized())
 	{
+#if defined(INCLUDE_WWISE_IMPL_PRODUCTION_CODE)
+		AKRESULT eResult = AK_Fail;
+		static int nEnableOutputCapture = 0;
+
+		if (g_AudioWwiseImplCVars.m_nEnableOutputCapture == 1 && nEnableOutputCapture == 0)
+		{
+			AkOSChar const* sOutputCaptureFileName = NPTR;
+			CONVERT_CHAR_TO_OSCHAR("../wwise_audio_capture.wav", sOutputCaptureFileName);
+			eResult = AK::SoundEngine::StartOutputCapture(sOutputCaptureFileName);
+			AKASSERT((eResult == AK_Success) || !"StartOutputCapture failed!");
+			nEnableOutputCapture = g_AudioWwiseImplCVars.m_nEnableOutputCapture;
+		}
+		else if (g_AudioWwiseImplCVars.m_nEnableOutputCapture == 0 && nEnableOutputCapture == 1)
+		{
+			eResult = AK::SoundEngine::StopOutputCapture();
+			AKASSERT((eResult == AK_Success) || !"StopOutputCapture failed!");
+			nEnableOutputCapture = g_AudioWwiseImplCVars.m_nEnableOutputCapture;
+		}
+#endif // INCLUDE_WWISE_IMPL_PRODUCTION_CODE
+
 		AK::SoundEngine::RenderAudio();
 	}
 }
@@ -211,46 +241,67 @@ void CAudioSystemImpl_wwise::Update(float fUpdateIntervalMS)
 ///////////////////////////////////////////////////////////////////////////
 EAudioRequestStatus CAudioSystemImpl_wwise::Init()
 {
+	// If something fails so severely during initialization that we need to fall back to the NULL implementation
+	// we will need to shut down what has been initialized so far. Therefore make sure to call Shutdown() before returning eARS_FAILURE!
+
 	AkMemSettings oMemSettings;
 	oMemSettings.uMaxNumPools = 20;
-
 	AKRESULT eResult = AK::MemoryMgr::Init(&oMemSettings);
 
 	if (eResult != AK_Success)
 	{
 		g_AudioImplLogger.Log(eALT_ERROR, "AK::MemoryMgr::Init() returned AKRESULT %d", eResult);
+		ShutDown();
 
 		return eARS_FAILURE;
 	}
 
-	AkMemPoolId const nPrepareMemPoolID = AK::MemoryMgr::CreatePool(NPTR, 2*1024*1024, 16, AkMalloc, 16);
+	AkMemPoolId const nPrepareMemPoolID = AK::MemoryMgr::CreatePool(NPTR, g_AudioWwiseImplCVars.m_nPrepareEventMemoryPoolSize<<10, 16, AkMalloc, 16);
 
 	if (nPrepareMemPoolID == AK_INVALID_POOL_ID)
 	{
-		g_AudioImplLogger.Log(eALT_ERROR, "AK::MemoryMgr::CreatePool() failed \n");
+		g_AudioImplLogger.Log(eALT_ERROR, "AK::MemoryMgr::CreatePool() PrepareEventMemoryPool failed!\n");
+		ShutDown();
+
+		return eARS_FAILURE;
+	}
+
+	eResult = AK::MemoryMgr::SetPoolName(nPrepareMemPoolID, "PrepareEventMemoryPool");
+
+	if (eResult != AK_Success)
+	{
+		g_AudioImplLogger.Log(eALT_ERROR, "AK::MemoryMgr::SetPoolName() could not set name of event prepare memory pool!\n");
+		ShutDown();
 
 		return eARS_FAILURE;
 	}
 
 	AkStreamMgrSettings oStreamSettings;
 	AK::StreamMgr::GetDefaultSettings(oStreamSettings);
+	oStreamSettings.uMemorySize = g_AudioWwiseImplCVars.m_nStreamManagerMemoryPoolSize<<10; // 64 KiB is the default value!
 
 	if (AK::StreamMgr::Create(oStreamSettings) == NPTR)
 	{
-		g_AudioImplLogger.Log(eALT_ERROR, "AK::StreamMgr::Create() failed\n");
-		
+		g_AudioImplLogger.Log(eALT_ERROR, "AK::StreamMgr::Create() failed!\n");
+		ShutDown();
+
 		return eARS_FAILURE;
 	}
 
 	AkDeviceSettings oDeviceSettings;
 	AK::StreamMgr::GetDefaultDeviceSettings(oDeviceSettings);
-	//oDeviceSettings.threadProperties.dwAffinityMask = 1;
+	oDeviceSettings.uIOMemorySize = g_AudioWwiseImplCVars.m_nStreamDeviceMemoryPoolSize<<10; // 2 MiB is the default value!
+
+#if defined(ORBIS)
+	oDeviceSettings.threadProperties.dwAffinityMask = BIT(5);
+#endif
 
 	eResult = m_oFileIOHandler.Init(oDeviceSettings);
 
 	if (eResult != AK_Success)
 	{
 		g_AudioImplLogger.Log(eALT_ERROR, "m_oFileIOHandler.Init() returned AKRESULT %d", eResult);
+		ShutDown();
 
 		return eARS_FAILURE;
 	}
@@ -263,12 +314,18 @@ EAudioRequestStatus CAudioSystemImpl_wwise::Init()
 
 	AkInitSettings oInitSettings;
 	AK::SoundEngine::GetDefaultInitSettings(oInitSettings);
-	oInitSettings.uDefaultPoolSize = 16*1024*1024;
-	oInitSettings.uPrepareEventMemoryPoolID = nPrepareMemPoolID;
-	oInitSettings.bEnableGameSyncPreparation = false;//TODO: ???
+	oInitSettings.uDefaultPoolSize						= g_AudioWwiseImplCVars.m_nSoundEngineDefaultMemoryPoolSize<<10;
+	oInitSettings.uCommandQueueSize						= g_AudioWwiseImplCVars.m_nCommandQueueMemoryPoolSize<<10;
+#if defined(INCLUDE_WWISE_IMPL_PRODUCTION_CODE)
+	oInitSettings.uMonitorPoolSize						= g_AudioWwiseImplCVars.m_nMonitorMemoryPoolSize<<10;
+	oInitSettings.uMonitorQueuePoolSize				= g_AudioWwiseImplCVars.m_nMonitorQueueMemoryPoolSize<<10;
+#endif // INCLUDE_WWISE_IMPL_PRODUCTION_CODE
+	oInitSettings.uPrepareEventMemoryPoolID		= nPrepareMemPoolID;
+	oInitSettings.bEnableGameSyncPreparation	= false;//TODO: ???
+
 	AkPlatformInitSettings oPlatformInitSettings;
 	AK::SoundEngine::GetDefaultPlatformInitSettings(oPlatformInitSettings);
-	oPlatformInitSettings.uLEngineDefaultPoolSize = 16*1024*1024;
+	oPlatformInitSettings.uLEngineDefaultPoolSize = g_AudioWwiseImplCVars.m_nLowerEngineDefaultPoolSize<<10;
 
 #if defined(WIN32) || defined(WIN64)
 	oPlatformInitSettings.threadBankManager.dwAffinityMask	= 0;
@@ -276,9 +333,11 @@ EAudioRequestStatus CAudioSystemImpl_wwise::Init()
 	oPlatformInitSettings.threadMonitor.dwAffinityMask			= 0;
 #elif defined(DURANGO)
 #elif defined(ORBIS)
+	oPlatformInitSettings.threadBankManager.dwAffinityMask	= BIT(5);
+	oPlatformInitSettings.threadLEngine.dwAffinityMask			= BIT(5);
+	oPlatformInitSettings.threadMonitor.dwAffinityMask			= BIT(5);
 #elif defined(MAC)
 #elif defined(LINUX)
-#elif defined(CAFE)
 #else
 #error "Undefined platform."
 #endif
@@ -288,7 +347,8 @@ EAudioRequestStatus CAudioSystemImpl_wwise::Init()
 	if (eResult != AK_Success)
 	{
 		g_AudioImplLogger.Log(eALT_ERROR, "AK::SoundEngine::Init() returned AKRESULT %d", eResult);
-		
+		ShutDown();
+
 		return eARS_FAILURE;
 	}
 
@@ -300,7 +360,8 @@ EAudioRequestStatus CAudioSystemImpl_wwise::Init()
 	if (eResult != AK_Success)
 	{
 		g_AudioImplLogger.Log(eALT_ERROR, "AK::MusicEngine::Init() returned AKRESULT %d", eResult);
-		
+		ShutDown();
+
 		return eARS_FAILURE;
 	}
 
@@ -336,6 +397,66 @@ EAudioRequestStatus CAudioSystemImpl_wwise::Init()
 	/// To reduce executable code size register/link only the plug-ins required by your game 
 	eResult = AK::SoundEngine::RegisterAllPlugins();
 
+#if defined(WWISE_USE_OCULUS)
+	m_pOculusSpatializerLibrary = CryLoadLibrary("OculusSpatializer.dll");
+
+	if (m_pOculusSpatializerLibrary != NPTR)
+	{
+		typedef bool (__stdcall *AkGetSoundEngineCallbacksType)
+			(unsigned short in_usCompanyID,
+			unsigned short in_usPluginID,
+			AkCreatePluginCallback& out_funcEffect,
+			AkCreateParamCallback&  out_funcParam);
+
+		AkGetSoundEngineCallbacksType AkGetSoundEngineCallbacks = 
+			(AkGetSoundEngineCallbacksType)CryGetProcAddress(m_pOculusSpatializerLibrary, "AkGetSoundEngineCallbacks");
+
+		if (AkGetSoundEngineCallbacks != NPTR)
+		{
+			AkCreatePluginCallback CreateOculusFX;
+			AkCreateParamCallback  CreateOculusFXParams;
+
+			// Register plugin effect
+			if (AkGetSoundEngineCallbacks(AKEFFECTID_OCULUS, AKEFFECTID_OCULUS_SPATIALIZER, CreateOculusFX, CreateOculusFXParams))
+			{
+				eResult = AK::SoundEngine::RegisterPlugin(AkPluginTypeMixer, AKEFFECTID_OCULUS, AKEFFECTID_OCULUS_SPATIALIZER, CreateOculusFX, CreateOculusFXParams);
+
+				if (eResult != AK_Success)
+				{
+					g_AudioImplLogger.Log(eALT_ERROR, "Failed to register OculusSpatializer plugin.");
+				}
+			}
+			else
+			{
+				g_AudioImplLogger.Log(eALT_ERROR, "Failed call to AkGetSoundEngineCallbacks in OculusSpatializer.dll");
+			}
+
+			// Register plugin attachment (for data attachment on individual sounds, like frequency hints etc.)
+			if (AkGetSoundEngineCallbacks(AKEFFECTID_OCULUS, AKEFFECTID_OCULUS_SPATIALIZER_ATTACHMENT, CreateOculusFX, CreateOculusFXParams))
+			{
+				eResult = AK::SoundEngine::RegisterPlugin(AkPluginTypeEffect, AKEFFECTID_OCULUS, AKEFFECTID_OCULUS_SPATIALIZER_ATTACHMENT, NPTR, CreateOculusFXParams);
+
+				if (eResult != AK_Success)
+				{
+					g_AudioImplLogger.Log(eALT_ERROR, "Failed to register OculusSpatializer attachment.");
+				}
+			}
+			else
+			{
+				g_AudioImplLogger.Log(eALT_ERROR, "Failed call to AkGetSoundEngineCallbacks in OculusSpatializer.dll");
+			}
+		}
+		else
+		{
+			g_AudioImplLogger.Log(eALT_ERROR, "Failed to load functions AkGetSoundEngineCallbacks in OculusSpatializer.dll");
+		}
+	}
+	else
+	{
+		g_AudioImplLogger.Log(eALT_ERROR, "Failed to load OculusSpatializer.dll");
+	}
+#endif // WWISE_USE_OCULUS
+
 	/*eResult = AK::SoundEngine::RegisterPlugin(AkPluginTypeEffect, AKCOMPANYID_AUDIOKINETIC, 
 		AKEFFECTID_CONVOLUTIONREVERB,
 		CreateConvolutionReverbFX,
@@ -363,12 +484,17 @@ EAudioRequestStatus CAudioSystemImpl_wwise::Init()
 	}
 
 	// Load Init.bnk before making the system available to the users
-	eResult = AK::SoundEngine::LoadBank(L"Init.bnk", AK_DEFAULT_POOL_ID, m_nInitBankID);
+	sTemp = "Init.bnk";
+	CONVERT_CHAR_TO_OSCHAR(sTemp.c_str(), pTemp);
+
+	eResult = AK::SoundEngine::LoadBank(pTemp, AK_DEFAULT_POOL_ID, m_nInitBankID);
 
 	if (eResult != AK_Success)
 	{
+		// This does not qualify for a fallback to the NULL implementation!
+		// Still notify the user about this failure!
 		g_AudioImplLogger.Log(eALT_ERROR, "Wwise failed to load Init.bnk, returned the AKRESULT: %d", eResult);
-		return eARS_FAILURE;
+		m_nInitBankID = AK_INVALID_BANK_ID;
 	}
 
 	return eARS_SUCCESS;
@@ -377,10 +503,28 @@ EAudioRequestStatus CAudioSystemImpl_wwise::Init()
 ///////////////////////////////////////////////////////////////////////////
 EAudioRequestStatus CAudioSystemImpl_wwise::ShutDown()
 {
+	AKRESULT eResult = AK_Fail;
+
+#if !defined(WWISE_FOR_RELEASE)
+	if (m_bCommSystemInitialized)
+	{
+		AK::Comm::Term();
+
+		eResult = AK::Monitor::SetLocalOutput(0, NPTR);
+
+		if (eResult != AK_Success)
+		{
+			g_AudioImplLogger.Log(eALT_WARNING, "AK::Monitor::SetLocalOutput() returned AKRESULT %d", eResult);
+		}
+
+		m_bCommSystemInitialized = false;
+	}
+#endif // !WWISE_FOR_RELEASE
+
+	AK::MusicEngine::Term();
+
 	if (AK::SoundEngine::IsInitialized())
 	{
-		AKRESULT eResult = AK_Fail;
-
 		// UnRegister the DummyGameObject
 		eResult = AK::SoundEngine::UnregisterGameObj(m_nDummyGameObjectID);
 
@@ -396,24 +540,6 @@ EAudioRequestStatus CAudioSystemImpl_wwise::ShutDown()
 			g_AudioImplLogger.Log(eALT_ERROR, "Failed to clear banks\n");
 		}
 
-#if !defined(WWISE_FOR_RELEASE)
-		if (m_bCommSystemInitialized)
-		{
-			AK::Comm::Term();
-
-			eResult = AK::Monitor::SetLocalOutput(0, NPTR);
-
-			if (eResult != AK_Success)
-			{
-				g_AudioImplLogger.Log(eALT_WARNING, "AK::Monitor::SetLocalOutput() returned AKRESULT %d", eResult);
-			}
-
-			m_bCommSystemInitialized = false;
-		}
-#endif // !WWISE_FOR_RELEASE
-
-		AK::MusicEngine::Term();
-
 		REINST("Unregister global callback")
 		//eResult = AK::SoundEngine::UnregisterGlobalCallback(GlobalCallback);
 		//ASSERT_WWISE_OK(eResult);
@@ -424,23 +550,31 @@ EAudioRequestStatus CAudioSystemImpl_wwise::ShutDown()
 		//}
 
 		AK::SoundEngine::Term();
-
-		// Terminate the streaming device and streaming manager
-		// CAkFilePackageLowLevelIOBlocking::Term() destroys its associated streaming device 
-		// that lives in the Stream Manager, and unregisters itself as the File Location Resolver.
-		if (AK::IAkStreamMgr::Get())
-		{
-			m_oFileIOHandler.ShutDown();
-			AK::IAkStreamMgr::Get()->Destroy();
-		}
-
-		// Terminate the Memory Manager
-		if (AK::MemoryMgr::IsInitialized())
-		{
-			eResult = AK::MemoryMgr::DestroyPool(0);
-			AK::MemoryMgr::Term();
-		}
 	}
+
+	// Terminate the streaming device and streaming manager
+	// CAkFilePackageLowLevelIOBlocking::Term() destroys its associated streaming device 
+	// that lives in the Stream Manager, and unregisters itself as the File Location Resolver.
+	if (AK::IAkStreamMgr::Get())
+	{
+		m_oFileIOHandler.ShutDown();
+		AK::IAkStreamMgr::Get()->Destroy();
+	}
+
+	// Terminate the Memory Manager
+	if (AK::MemoryMgr::IsInitialized())
+	{
+		eResult = AK::MemoryMgr::DestroyPool(0);
+		AK::MemoryMgr::Term();
+	}
+
+#if defined(WWISE_USE_OCULUS)
+	if (m_pOculusSpatializerLibrary != NPTR)
+	{
+		CryFreeLibrary(m_pOculusSpatializerLibrary);
+		m_pOculusSpatializerLibrary = NPTR;
+	}
+#endif // WWISE_USE_OCULUS
 
 	return eARS_SUCCESS;
 }
@@ -458,6 +592,8 @@ EAudioRequestStatus CAudioSystemImpl_wwise::Release()
 	{
 		delete[] (uint8*)(pMemSystem);
 	}
+
+	g_AudioWwiseImplCVars.UnregisterVariables();
 
 	return eARS_SUCCESS;
 }
@@ -677,7 +813,7 @@ EAudioRequestStatus CAudioSystemImpl_wwise::StopEvent(
 
 	if (pAKEventData != NPTR)
 	{
-		switch(pAKEventData->eAKType)
+		switch (pAKEventData->eAKType)
 		{
 		case eWET_PLAY:
 			{
@@ -688,7 +824,10 @@ EAudioRequestStatus CAudioSystemImpl_wwise::StopEvent(
 			}
 		default:
 			{
-				assert(false);//Stopping an event of this type is not supported yet
+				// Stopping an event of this type is not supported!
+				assert(false);
+
+				break;
 			}
 		}
 	}
@@ -1679,19 +1818,29 @@ EAudioRequestStatus CAudioSystemImpl_wwise::PostEnvironmentAmounts(IATLAudioObje
 //////////////////////////////////////////////////////////////////////////
 void CAudioSystemImpl_wwise::OnAudioSystemRefresh()
 {
-	AKRESULT eResult = AK::SoundEngine::UnloadBank(m_nInitBankID, NPTR);
+	AKRESULT eResult = AK_Fail;
 
-	if (eResult != AK_Success)
+	if (m_nInitBankID != AK_INVALID_BANK_ID)
 	{
-		g_AudioImplLogger.Log(eALT_ERROR, "Wwise failed to unload Init.bnk, returned the AKRESULT: %d", eResult);
-		assert(false);
+		AKRESULT eResult = AK::SoundEngine::UnloadBank(m_nInitBankID, NPTR);
+
+		if (eResult != AK_Success)
+		{
+			g_AudioImplLogger.Log(eALT_ERROR, "Wwise failed to unload Init.bnk, returned the AKRESULT: %d", eResult);
+			assert(false);
+		}
 	}
 
-	eResult = AK::SoundEngine::LoadBank(L"Init.bnk", AK_DEFAULT_POOL_ID, m_nInitBankID);
+	CryFixedStringT<MAX_AUDIO_FILE_PATH_LENGTH> const sTemp("Init.bnk");
+	AkOSChar const* pTemp = NPTR;
+	CONVERT_CHAR_TO_OSCHAR(sTemp.c_str(), pTemp);
+
+	eResult = AK::SoundEngine::LoadBank(pTemp, AK_DEFAULT_POOL_ID, m_nInitBankID);
 
 	if (eResult != AK_Success)
 	{
 		g_AudioImplLogger.Log(eALT_ERROR, "Wwise failed to load Init.bnk, returned the AKRESULT: %d", eResult);
+		m_nInitBankID = AK_INVALID_BANK_ID;
 		assert(false);
 	}
 }

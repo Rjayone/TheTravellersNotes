@@ -75,7 +75,7 @@ namespace Telemetry
 
 	struct ITelemetrySystem
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~ITelemetrySystem() {};
 
 		virtual bool Init() = 0;
@@ -99,7 +99,7 @@ namespace Telemetry
 		virtual void Send(uint32 aspectId, uint32 eventId, const char *pTableParams, const TVariadicParams &params, uint32 verbosity) = 0;
 
 		virtual void Flush() = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 	//////////////////////////////////////////////////////////////////////////
@@ -114,14 +114,14 @@ namespace Telemetry
 	// the repository stores all telemetry data
 	struct ITelemetryRepository
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~ITelemetryRepository() {}
 
 		virtual void RegisterTimelineRenderer(const char* timelineName, TRenderCallback pCallback) = 0;
 
 		virtual uint64 GetFilterTimeStart() const = 0;
 		virtual uint64 GetFilterTimeEnd() const = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 	// recorded data on a single event
@@ -163,7 +163,7 @@ namespace Telemetry
 	// Timelines provide the basic storage of events
 	struct ITelemetryTimeline
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~ITelemetryTimeline() {}
 
 		virtual const char* GetName() const = 0;
@@ -171,7 +171,7 @@ namespace Telemetry
 		virtual const STelemetryEvent* const* GetEvents() const = 0;
 
 		virtual ITelemetryRepository* const GetRepository() const = 0;
-
+		// </interfuscator:shuffle>
 	};
 }
 

@@ -122,10 +122,10 @@ namespace CW
 		typedef char n[2];
 
 		template <typename S>
-		static __CRYCG_IGNORE_PARAM_MISMATCH__ y& test(typename S::FullCompositeList*);
+		static y& test(typename S::FullCompositeList*);
 
 		template <typename>
-		static __CRYCG_IGNORE_PARAM_MISMATCH__ n& test(...);
+		static n& test(...);
 
 	public:
 		enum
@@ -268,7 +268,7 @@ template<typename T>
 class CFactory : public ICryFactory
 { 
 public:
-	virtual const char* GetClassName() const
+	virtual const char* GetName() const
 	{
 		return T::GetCName();
 	}

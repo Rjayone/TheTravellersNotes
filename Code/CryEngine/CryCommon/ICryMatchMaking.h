@@ -247,7 +247,7 @@ struct SCrySessionData
 		m_numData = 0;
 		m_numPublicSlots = 0;
 		m_numPrivateSlots = 0;
-		m_name[0] = 0;
+		memset(m_name, 0, MAX_SESSION_NAME_LENGTH);
 		m_ranked = false;
 	}
 
@@ -931,7 +931,7 @@ public:
 	// Retreive the user name from a matchmaking connection
 	// gh - Game session handle
 	virtual const char* GetNameFromGameSessionHandle(CrySessionHandle gh) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __ICRYMATCHMAKING_H__

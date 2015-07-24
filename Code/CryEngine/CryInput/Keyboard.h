@@ -41,7 +41,7 @@ public:
 	virtual bool SetExclusiveMode(bool value);
 	virtual void ClearKeyState();
 	virtual char GetInputCharAscii(const SInputEvent& event);
-	virtual const wchar_t* GetOSKeyName(const SInputEvent& event);
+	virtual const char* GetOSKeyName(const SInputEvent& event);
 	virtual void OnLanguageChange();
 	// ~IInputDevice
 

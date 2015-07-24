@@ -23,7 +23,7 @@ void CAudioSystemImplCVars::RegisterVariables()
 	m_nPrimaryPoolSize		= 128<<10;	// 128 MiB
 #elif defined(MAC)
 	m_nPrimaryPoolSize		= 128<<10;	// 128 MiB
-#elif defined(LINUX)
+#elif defined(LINUX) && !defined(ANDROID)
 	m_nPrimaryPoolSize		= 128<<10;	// 128 MiB
 #elif defined(IOS)
 	m_nPrimaryPoolSize		= 8<<10;		// 8 MiB

@@ -143,11 +143,10 @@ bool CVehiclePartTread::Init(IVehicle* pVehicle, const CVehicleParams& table, IV
     if (0 != boneName)
     {
       // extract wheel name
-      size_t len = strcspn(boneName, "_");
-      if (len < strlen(boneName) && len < 255)
+      const size_t len = strcspn(boneName, "_");
+      if (len < strlen(boneName) && len < sizeof(wheelName))
       { 
-        strncpy(wheelName, boneName, len);
-        wheelName[len] = '\0';
+        cry_strcpy(wheelName, boneName, len);
 
         CVehiclePartSubPartWheel* pWheel = (CVehiclePartSubPartWheel*)m_pVehicle->GetPart(wheelName);
         if (pWheel)

@@ -40,7 +40,7 @@ struct IFileChangeListener
 
 struct IFileChangeMonitor
 {
-
+	// <interfuscator:shuffle>
 	// Register the path of a file or directory to monitor
 	// Path is relative to game directory, e.g. "Libs/WoundSystem/" or "Libs/WoundSystem/HitLocations.xml"
 	virtual bool RegisterListener(IFileChangeListener *pListener, const char* sMonitorItem) = 0;
@@ -48,7 +48,7 @@ struct IFileChangeMonitor
 	//   RegisterListener(pListener, "Animations", "caf")
 	virtual bool RegisterListener(IFileChangeListener *pListener, const char* sFolder, const char* sExtension) = 0;
 	virtual bool UnregisterListener(IFileChangeListener *pListener) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //_IFILECHANGEMONITOR_H_

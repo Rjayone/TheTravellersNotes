@@ -32,7 +32,7 @@
 //		{
 //			m_playingSoundIDs.reserve( 1 );
 //
-//			const size_t soundIndex = (pSpecificRandomSoundIndex && *pSpecificRandomSoundIndex>=0 && *pSpecificRandomSoundIndex<(int)soundCount) ? (size_t)*pSpecificRandomSoundIndex : Random(soundCount);
+//			const size_t soundIndex = (pSpecificRandomSoundIndex && *pSpecificRandomSoundIndex>=0 && *pSpecificRandomSoundIndex<(int)soundCount) ? (size_t)*pSpecificRandomSoundIndex : cry_random(0, soundCount - 1);
 //			if(pSpecificRandomSoundIndex)
 //				*pSpecificRandomSoundIndex = (int)soundIndex;
 //			const CGameAudio::CSound& sound = pAudioSignal->m_sounds[soundIndex];
@@ -436,7 +436,7 @@ void CAudioSignalPlayer::JustPlay( TAudioSignalID signalID, EntityId entityID, c
 	{
 		if(soundCount > 0)
 		{
-			const size_t soundIndex = Random(soundCount);
+			const size_t soundIndex = cry_random(0, soundCount - 1);
 			const CGameAudio::CSound& sound = pAudioSignal->m_sounds[soundIndex];
 			PlaySound( sound.m_name, sound.m_semantic, entityID, pParam, param, sound.m_flags );
 		}
@@ -478,7 +478,7 @@ void CAudioSignalPlayer::JustPlay( TAudioSignalID signalID, const Vec3& pos )
 	{
 		if(soundCount > 0)
 		{
-			const size_t soundIndex = Random(soundCount);
+			const size_t soundIndex = cry_random(0, soundCount - 1);
 			const CGameAudio::CSound& sound = pAudioSignal->m_sounds[soundIndex];
 			PlaySound( sound.m_name, sound.m_semantic, pos, sound.m_flags );
 		}

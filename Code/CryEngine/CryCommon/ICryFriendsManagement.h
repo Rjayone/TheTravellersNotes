@@ -68,7 +68,7 @@ typedef void (*CryFriendsManagementStatusCallback)(CryLobbyTaskID taskID, ECryLo
 
 struct ICryFriendsManagement
 {
-
+	// <interfuscator:shuffle>
 	virtual	~ICryFriendsManagement() {}
 
 	// FriendsManagementAddFriend
@@ -205,7 +205,7 @@ struct ICryFriendsManagement
 	// CancelTask
 	// Cancels a task
 	virtual void CancelTask(CryLobbyTaskID) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__ICRYFRIENDSMANAGEMENT_H__ 

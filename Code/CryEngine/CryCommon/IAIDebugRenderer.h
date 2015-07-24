@@ -24,7 +24,7 @@ History:
 
 struct IAIDebugRenderer
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIDebugRenderer() {}
 
 	// Get view camera's VERTICAL field of view in RADIANS from range [0, PI)
@@ -170,7 +170,7 @@ struct IAIDebugRenderer
 	// (e.g. flags like alpha blending, back face culling, etc)
 	virtual unsigned int PopState()		= 0;
 	virtual unsigned int PushState()	= 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif	// #ifndef _I_AI_DEBUG_RENDERER_H_

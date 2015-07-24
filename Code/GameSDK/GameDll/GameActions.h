@@ -17,9 +17,8 @@ public:
 	void Init();
 	ILINE IActionFilter*	FilterNoMove() const {	return m_pFilterNoMove;	}
 	ILINE IActionFilter*	FilterNoMouse() const {	return m_pFilterNoMouse;	}
-	//Traveller
-	ILINE IActionFilter*	FilterNoMouseMove() const { return m_pFilterNoMouseMove; }
-	//~
+	ILINE IActionFilter*	FilterMouseX() const { return m_pFilterMouseX; }
+	ILINE IActionFilter*	FilterMouseY() const { return m_pFilterMouseY; }
 	ILINE IActionFilter*	FilterTutorialNoMove() const {	return m_pFilterTutorialNoMove;	}
 	ILINE IActionFilter*	FilterNoWeaponCustomization() const {	return m_pFilterNoWeaponCustomization;	}
 	ILINE IActionFilter*	FilterNoFireModeSwitch() const {	return m_pFilterNoFireModeSwitch;	}
@@ -37,7 +36,6 @@ public:
 	ILINE IActionFilter*	FilterCutscenePlayerMoving() const {	return m_pFilterCutscenePlayerMoving;	}
 	ILINE IActionFilter*	FilterVehicleNoSeatChangeAndExit() const {	return m_pFilterVehicleNoSeatChangeAndExit;	}
 	ILINE IActionFilter*	FilterNoConnectivity() const {	return m_pFilterNoConnectivity;	}
-	ILINE IActionFilter*	FilterTweakMenu() const { return m_pFilterTweakMenu; }
 	ILINE IActionFilter*	FilterIngameMenu() const { return m_pFilterIngameMenu; }
 	ILINE IActionFilter*	FilterScoreboard() const { return m_pFilterScoreboard; }
 	ILINE IActionFilter*	FilterStrikePointer() const { return m_pFilterStrikePointer; }
@@ -53,7 +51,8 @@ public:
 private:
 	void	CreateFilterNoMove();
 	void	CreateFilterNoMouse();
-	void	CreateFilterNoMouseMove();
+	void	CreateFilterMouseX();
+	void	CreateFilterMouseY();
 	void	CreateTutorialNoMove();
 	void	CreateFilterNoWeaponCustomization();
 	void	CreateFilterNoFireModeSwitch();
@@ -71,7 +70,6 @@ private:
 	void	CreateFilterCutscenePlayerMoving();
 	void	CreateFilterVehicleNoSeatChangeAndExit();
 	void	CreateFilterNoConnectivity();
-	void	CreateFilterTweakMenu();
 	void CreateFilterIngameMenu();
 	void CreateFilterScoreboard();
 	void CreateFilterStrikePointer();
@@ -87,9 +85,8 @@ private:
 
 	IActionFilter*	m_pFilterNoMove;
 	IActionFilter*	m_pFilterNoMouse;
-	//Traveller Defenition
-	IActionFilter*  m_pFilterNoMouseMove;
-	//~
+	IActionFilter*	m_pFilterMouseX;
+	IActionFilter*	m_pFilterMouseY;
 	IActionFilter*	m_pFilterTutorialNoMove;
 	IActionFilter*	m_pFilterNoWeaponCustomization;
 	IActionFilter*	m_pFilterNoFireModeSwitch;
@@ -107,7 +104,6 @@ private:
 	IActionFilter*	m_pFilterCutscenePlayerMoving;
 	IActionFilter*	m_pFilterVehicleNoSeatChangeAndExit;
 	IActionFilter*	m_pFilterNoConnectivity;
-	IActionFilter*	m_pFilterTweakMenu;
 	IActionFilter*  m_pFilterIngameMenu;
 	IActionFilter*  m_pFilterScoreboard;
 	IActionFilter*	m_pFilterStrikePointer;

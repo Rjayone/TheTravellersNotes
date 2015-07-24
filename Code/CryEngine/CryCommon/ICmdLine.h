@@ -13,15 +13,8 @@
 		- 30:7:2004   12:00 : Created by Márcio Martins
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(ICmdLine.h)
 
-#ifndef __ICMDLINE_H__
-#define __ICMDLINE_H__
-
-#if _MSC_VER > 1000
-#	pragma once
-#endif
-
+#pragma once
 
 // The type of command line argument
 enum ECmdLineArgType
@@ -41,10 +34,10 @@ enum ECmdLineArgType
 };
 
 // Container for a command line Argument
-UNIQUE_IFACE class ICmdLineArg
+class ICmdLineArg
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~ICmdLineArg(){}
 	// Description:
 	//		Retrieve the name of the argument.
@@ -77,14 +70,14 @@ public:
 	// Return Value:
 	//		The value of the argument as integer number.
 	virtual const int GetIValue() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Command line interface
-UNIQUE_IFACE class ICmdLine
+class ICmdLine
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~ICmdLine(){}
 	// Description:
 	//		Returns the n-th command line argument.
@@ -112,7 +105,5 @@ public:
 	// See Also:
 	//		ICmdLineArg
 	virtual const ICmdLineArg *FindArg( const ECmdLineArgType ArgType, const char *name, bool caseSensitive = false) const = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif //__ICMDLINE_H__

@@ -31,7 +31,7 @@ typedef void (*CryFriendsGetFriendsListCallback)(CryLobbyTaskID taskID, ECryLobb
 
 struct ICryFriends
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICryFriends(){}
 	// FriendsGetFriendsList
 	// Retrieves the Friends list of the specified user.
@@ -55,7 +55,7 @@ struct ICryFriends
 	// pCbArg			- Pointer to application-specified data that is passed to the callback
 	// return			- eCLE_Success if function successfully started or an error code if function failed to start
 	virtual ECryLobbyError	FriendsSendGameInvite(uint32 user, CrySessionHandle h, CryUserID* pUserIDs, uint32 numUserIDs, CryLobbyTaskID* pTaskID, CryFriendsCallback cb, void* pCbArg) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __ICRYFRIENDS_H__

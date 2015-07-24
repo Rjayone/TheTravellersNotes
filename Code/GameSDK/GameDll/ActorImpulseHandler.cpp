@@ -261,7 +261,7 @@ void CActorImpulseHandler::AddLocalHitImpulse(const SHitImpulse& hitImpulse)
 			Vec3 msTangent = msDir.Cross(Vec3Constants<float>::fVec3_OneZ);
 			msTangent.Normalize();
 
-			float tiltFactor = (cry_frand() - 0.5f) * 2.0f * g_pGameCVars->pl_impulseMaxTwist;
+			float tiltFactor = cry_random(-1.0f, 1.0f) * g_pGameCVars->pl_impulseMaxTwist;
 			Quat qImpulse = Quat::CreateRotationAA(- g_pGameCVars->pl_impulseMaxPitch, msTangent) * Quat::CreateRotationAA(tiltFactor, Vec3Constants<float>::fVec3_OneZ);
 			Quat qImpulseCounter = Quat::CreateRotationAA( g_pGameCVars->pl_impulseMaxPitch *  g_pGameCVars->pl_impulseCounterFactor, msTangent) * Quat::CreateRotationAA(-tiltFactor *  g_pGameCVars->pl_impulseCounterFactor, Vec3Constants<float>::fVec3_OneZ);
 
@@ -291,10 +291,8 @@ void CActorImpulseHandler::ApplyDeathImpulse(const HitInfo& lastHit)
 	//************** Dir calculation	
 	Vec3 dir = lastHit.dir;
 
-	// Up the direction vector randomly from 0.1 to 0.7		
-	// ToDo: Remove these magic numbers
-	dir.z += (cry_frand()*6.0f + 1.0f)*0.1f;
-
+	// Up the direction vector
+	dir.z += cry_random(0.1f, 0.7f);
 
 	//************** Hit pos calculation			
 	// elevate player position 1 meter high (so it's approximately on the character's waist)
@@ -331,11 +329,9 @@ void CActorImpulseHandler::ApplyDeathImpulse(const HitInfo& lastHit)
 			else
 				myDirection = impulse.vDirection;
 
-			// randomize a bit scaling from 0.8 to 1.2 noise to each component
+			// randomize a bit scaling
 			// ToDo: Is this really needed?
-			myDirection.x = myDirection.x * (cry_frand()*0.4f + 0.8f);
-			myDirection.y = myDirection.y * (cry_frand()*0.4f + 0.8f);
-			myDirection.z = myDirection.z * (cry_frand()*0.4f + 0.8f);
+			myDirection = myDirection.CompMul(cry_random_componentwise(Vec3(0.8f), Vec3(1.2f)));
 
 			// Impulse Strength
 			float myImpulse = 0;
@@ -346,7 +342,7 @@ void CActorImpulseHandler::ApplyDeathImpulse(const HitInfo& lastHit)
 
 			// randomize scaling it from 0.8 to 1.2
 			// ToDo: Is this really needed?
-			myImpulse *= (cry_frand()*0.4f + 0.8f);
+			myImpulse *= cry_random(0.8f, 1.2f);
 			myImpulse = static_cast<float>(__fsel(m_pParams->fMaxRagdollImpulse, min(m_pParams->fMaxRagdollImpulse, myImpulse), myImpulse));
 
 			// Impulse Application
@@ -469,8 +465,7 @@ void CActorImpulseHandler::ApplyDeathAngularImpulse(float fAngularImpulseScale, 
 	delta.z = 0.0f;
 
 	// Angular Impulse Calculation
-	// Impulse is (damage * rand(6,9)), with a maximum of 650 and a minimum of 30
-	float impulse = min(650.0f, max(10.0f, lastHit.damage) * (cry_frand()*3.0f + 6.0f));
+	float impulse = std::min(650.0f, std::max(10.0f, lastHit.damage) * cry_random(6.0f, 9.0f));
 
 	float dotRight = rightVec.dot(delta);
 	float angImpulse = (dotRight * gf_PI) * (impulse / 650.0f) * m_pParams->fMass;

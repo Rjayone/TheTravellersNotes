@@ -13,7 +13,6 @@
 //	 02/07/2003  Extracted declaration from I3dEngine.h to be able to easy
 //               modify it
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(ILMSerializationManager.h)
 
 #ifndef _CRY_COMMON_LM_SERIALIZATION_MANAGER_HDR_
 #define _CRY_COMMON_LM_SERIALIZATION_MANAGER_HDR_
@@ -29,9 +28,9 @@ struct TexCoord2Comp;
 
 // Summary:
 //	 Interface for lightmap serialization.
-UNIQUE_IFACE struct ILMSerializationManager
+struct ILMSerializationManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ILMSerializationManager(){}
 
 	virtual void Release() = 0;
@@ -81,7 +80,7 @@ UNIQUE_IFACE struct ILMSerializationManager
 	virtual uint32 GetHashValue( const std::pair<int32,int32> iniGLM_ID_UsingTexCoord ) const=0;
 
 	virtual bool ExportDLights(const char *pszFileName, const CDLight **ppLights, uint32 iNumLights, bool bNewZip = true) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

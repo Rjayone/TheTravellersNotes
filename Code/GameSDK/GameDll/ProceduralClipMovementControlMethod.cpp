@@ -15,6 +15,12 @@
 struct SProceduralClipMovementControlMethodParams
 	: public IProceduralParams
 {
+	SProceduralClipMovementControlMethodParams() 
+		: horizontal(0.0f)
+		, vertical(0.0f)
+	{
+	}
+
 	virtual void Serialize(Serialization::IArchive& ar)
 	{
 		ar(horizontal, "Horizontal", "Horizontal");

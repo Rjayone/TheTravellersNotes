@@ -17,7 +17,7 @@
 
 // Summary:
 //     Interface to hold geom cache data
-UNIQUE_IFACE struct IGeomCache : public IStreamable
+struct IGeomCache : public IStreamable
 {
 	// Description:
 	//     Increase the reference count of the object.

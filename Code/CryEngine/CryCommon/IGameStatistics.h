@@ -76,7 +76,7 @@ struct SNodeLocator;
 // while postponing XML construction until serialization stage
 struct IXMLSerializable
 {
-
+	// <interfuscator:shuffle>
 	virtual						~IXMLSerializable(){}
 	virtual void				AddRef() = 0;
 	virtual void				Release() = 0;
@@ -86,7 +86,7 @@ struct IXMLSerializable
 	// Indirection to allow dispatch typed notifications to callback
 	virtual void				DispatchEventToCallback(const SNodeLocator& locator, size_t eventID, const CTimeValue& time, IGameStatisticsCallback* pCallback) = 0;
 	virtual void				DispatchStateToCallback(const SNodeLocator& locator, size_t stateID, IGameStatisticsCallback* pCallback) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -404,7 +404,7 @@ struct SNodeLocator
 
 struct IGameStatisticsCallback
 {
-
+	// <interfuscator:shuffle>
 	virtual	~IGameStatisticsCallback(){}
 	// Called when some tracker reports an event
 	virtual void OnEvent(const SNodeLocator& locator, size_t eventID, const CTimeValue& time, const SStatAnyValue& val) = 0;
@@ -419,7 +419,7 @@ struct IGameStatisticsCallback
 	virtual void OnNodeAdded(const SNodeLocator& locator) = 0;
 	// Called when element is removed or scope popped (all elements are removed when their scope is popped)
 	virtual void OnNodeRemoved(const SNodeLocator& locator, IStatsTracker* tracker) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -427,7 +427,7 @@ struct IGameStatisticsCallback
 // Storage for event tracks and states
 struct IStatsContainer
 {
-
+	// <interfuscator:shuffle>
 	virtual	~IStatsContainer(){}
 	virtual void Init(size_t numEvents, size_t numStates) = 0;
 	virtual void AddEvent(size_t eventID, const CTimeValue& time, const SStatAnyValue& val) = 0;
@@ -440,16 +440,16 @@ struct IStatsContainer
 	virtual void GetMemoryStatistics(ICrySizer *pSizer) = 0;
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 typedef _smart_ptr< IStatsContainer > IStatsContainerPtr;
 
 //////////////////////////////////////////////////////////////////////////
 
-UNIQUE_IFACE struct IStatsTracker
+struct IStatsTracker
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IStatsTracker() {}
 	// Adds state to the track
 	virtual void StateValue(size_t stateID, const SStatAnyValue& value = SStatAnyValue()) = 0;
@@ -459,7 +459,7 @@ UNIQUE_IFACE struct IStatsTracker
 	virtual IStatsContainer* GetStatsContainer() = 0;
 	
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const =0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -595,11 +595,11 @@ enum EStatNodeState
 
 struct IStatsSerializer
 {
-
+	// <interfuscator:shuffle>
 	virtual	~IStatsSerializer(){}
 	virtual void VisitNode(const SNodeLocator& locator, const char* serializeName, IStatsContainer& container, EStatNodeState state) = 0;
 	virtual void LeaveNode(const SNodeLocator& locator, const char* serializeName, IStatsContainer& container, EStatNodeState state) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -607,17 +607,17 @@ struct IStatsSerializer
 // Use factory objects to specify custom implementations of stats containers
 struct IStatsStorageFactory
 {
-
+	// <interfuscator:shuffle>
 	virtual	~IStatsStorageFactory(){}
 	virtual IStatsContainer* CreateContainer() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 
 struct IGameStatistics
 {
-
+	// <interfuscator:shuffle>
 	// Register multiple game events at once
 	// returns false on name or id collision
 	virtual bool RegisterGameEvents(const SGameStatDesc *eventDescs, size_t numEvents) = 0;
@@ -722,7 +722,7 @@ struct IGameStatistics
 
 	virtual void GetMemoryStatistics(ICrySizer *pSizer)const = 0;
 	virtual ~IGameStatistics(){}
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////

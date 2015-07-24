@@ -59,7 +59,7 @@ namespace BehaviorTree
 		{
 		}
 
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) override
 		{
 			const string fragName = xml->getAttr("name");
 			IF_UNLIKELY (fragName.empty())
@@ -70,14 +70,14 @@ namespace BehaviorTree
 #ifdef USING_BEHAVIOR_TREE_NODE_CUSTOM_DEBUG_TEXT
 			m_fragName = fragName;
 #endif
-			m_fragNameCrc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(fragName);
+			m_fragNameCrc32 = CCrc32::ComputeLowercase(fragName);
 
 			return LoadSuccess;
 		}
 
 
 #ifdef USING_BEHAVIOR_TREE_NODE_CUSTOM_DEBUG_TEXT
-		virtual void GetCustomDebugText(const UpdateContext& updateContext, stack_string& debugText) const OVERRIDE
+		virtual void GetCustomDebugText(const UpdateContext& updateContext, stack_string& debugText) const override
 		{
 			debugText = m_fragName;
 		}
@@ -86,20 +86,20 @@ namespace BehaviorTree
 
 	protected:
 
-		virtual void OnInitialize(const UpdateContext& context) OVERRIDE
+		virtual void OnInitialize(const UpdateContext& context) override
 		{
 			QueueAction(context);
 		}
 
 
-		virtual void OnTerminate(const UpdateContext& context) OVERRIDE
+		virtual void OnTerminate(const UpdateContext& context) override
 		{
 			RuntimeData& runtimeData = GetRuntimeData<RuntimeData>(context);
 			runtimeData.ReleaseAction();
 		}
 
 
-		virtual Status Update(const UpdateContext& context) OVERRIDE
+		virtual Status Update(const UpdateContext& context) override
 		{
 			RuntimeData& runtimeData = GetRuntimeData<RuntimeData>(context);
 			

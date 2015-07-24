@@ -726,6 +726,4 @@ void CVehicleSystem::DumpClasses(IConsoleCmdArgs* pArgs)
 }
 #endif
 
-#include UNIQUE_VIRTUAL_WRAPPER(SParticleParams)
-#include UNIQUE_VIRTUAL_WRAPPER(SExhaustParams)
-#include UNIQUE_VIRTUAL_WRAPPER(SEnvironmentLayer)
+

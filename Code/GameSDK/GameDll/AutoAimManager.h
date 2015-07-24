@@ -62,8 +62,7 @@ enum EAutoaimTargetFlags
 typedef struct SAutoaimTarget
 {
 	SAutoaimTarget()
-		: aiFaction(0xff)		//InvalidFaction
-		, entityId(0)
+		: entityId(0)
 		, fallbackOffset(0.0f)
 		, innerRadius(0.4f)
 		, outerRadius(0.8f)
@@ -98,7 +97,6 @@ typedef struct SAutoaimTarget
 	int16			physicsBoneId;
 	int16			secondaryBoneId;
 	int8			flags;
-	uint8			aiFaction;
 	bool			hasSkeleton;
 
 } SAutoaimTarget;

@@ -52,7 +52,7 @@ namespace TargetTrackHelpers
 //! Custom threat modifier helper for game-side specific logic overriding
 struct ITargetTrackThreatModifier
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITargetTrackThreatModifier() {}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -72,12 +72,12 @@ struct ITargetTrackThreatModifier
 	//	outThreat - The threat value to be applied to this target now
 	//////////////////////////////////////////////////////////////////////////
 	virtual void ModifyTargetThreat(IAIObject &ownerAI, IAIObject &targetAI, const ITargetTrack &track, float &outThreatRatio, EAITargetThreat &outThreat) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct ITargetTrack
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITargetTrack() {}
 
 	virtual const Vec3& GetTargetPos() const = 0;
@@ -89,12 +89,12 @@ struct ITargetTrack
 
 	virtual float GetHighestEnvelopeValue() const = 0;
 	virtual float GetUpdateInterval() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct ITargetTrackManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITargetTrackManager() {}
 
 	// Threat modifier
@@ -109,7 +109,7 @@ struct ITargetTrackManager
 	virtual bool HandleStimulusEventInRange(tAIObjectID aiTargetId, const char* szStimulusName, const TargetTrackHelpers::SStimulusEvent &eventInfo, float fRadius) = 0;
 	virtual bool HandleStimulusEventForAgent(tAIObjectID aiAgentId, tAIObjectID aiTargetId, const char* szStimulusName, const TargetTrackHelpers::SStimulusEvent &eventInfo) = 0;
 	virtual bool TriggerPulse(tAIObjectID aiObjectId, tAIObjectID targetId, const char* szStimulusName, const char* szPulseName) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__ITARGET_TRACK_MANAGER_H__

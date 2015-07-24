@@ -77,16 +77,11 @@ void CPlayerProfileImplConsole::InternalMakeFSPath(SUserEntry* pEntry, const cha
 	}
 	if (profileName && *profileName)
 	{
-#ifdef PS3
-		if(!GetISystem()->GetPlatformOS()->UserIsSignedIn(0))
-#endif
+		// [Ian:11/10/10] We currently need to pass the profile name through the filename so we can figure out which user in PlatformOS.
+		//if(!pEntry) // only do this for the default profile
 		{
-			// [Ian:11/10/10] We currently need to pass the profile name through the filename so we can figure out which user in PlatformOS.
-			//if(!pEntry) // only do this for the default profile
-			{
-				outPath.append(profileName);
-				outPath.append("/");
-			}
+			outPath.append(profileName);
+			outPath.append("/");
 		}
 	}
 }
@@ -103,26 +98,16 @@ void CPlayerProfileImplConsole::InternalMakeFSSaveGamePath(SUserEntry* pEntry, c
 		outPath.append("/");
 		if (!bNeedFolder)
 		{
-#ifdef PS3
-			if(!GetISystem()->GetPlatformOS()->UserIsSignedIn(0))
-#endif
-			{
-				// [Ian:20/10/10] We currently need to pass the profile name through the filename so we can figure out which user in PlatformOS.
-				outPath.append(profileName);
-				outPath.append("_");
-			}
+			// [Ian:20/10/10] We currently need to pass the profile name through the filename so we can figure out which user in PlatformOS.
+			outPath.append(profileName);
+			outPath.append("_");
 		}
 	}
 	else
 	{
 		outPath = "%USER%/Profiles/";
-#ifdef PS3
-		if(!GetISystem()->GetPlatformOS()->UserIsSignedIn(0))
-#endif
-		{
-			// [Ian:20/10/10] We currently need to pass the profile name through the filename so we can figure out which user in PlatformOS.
-			outPath.append(profileName);
-		}
+		// [Ian:20/10/10] We currently need to pass the profile name through the filename so we can figure out which user in PlatformOS.
+		outPath.append(profileName);
 		outPath.append("/SaveGames/");
 	}
 }

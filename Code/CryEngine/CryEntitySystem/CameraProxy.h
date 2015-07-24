@@ -54,8 +54,8 @@ public:
 	virtual bool GetSignature( TSerialize signature );
 	//////////////////////////////////////////////////////////////////////////
 
-	VIRTUAL void SetCamera( CCamera &cam );
-	VIRTUAL CCamera& GetCamera() { return m_camera; };
+	virtual void SetCamera( CCamera &cam );
+	virtual CCamera& GetCamera() { return m_camera; };
 	//////////////////////////////////////////////////////////////////////////
 
 	void UpdateMaterialCamera();

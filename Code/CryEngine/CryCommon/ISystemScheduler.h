@@ -10,14 +10,15 @@
 struct ISystemScheduler 
 {
 	virtual ~ISystemScheduler(){}
-
+	
+	// <interfuscator:shuffle>
 	// Map load slicing functionality support
 	virtual void SliceAndSleep(const char* sliceName, int line) = 0;
 	virtual void SliceLoadingBegin() = 0;
 	virtual void SliceLoadingEnd() = 0;
 
 	virtual void SchedulingSleepIfNeeded(void) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 ISystemScheduler* GetISystemScheduler(void);

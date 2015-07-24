@@ -28,6 +28,7 @@ class IStencilShadowConnectivity
 public:
 	typedef unsigned short vindex;				// vertex index (0..0xffff)
 
+	// <interfuscator:shuffle>
 	//! don't forget to call Release for freeing the memory resources
 	virtual void Release( void )=0;
 
@@ -58,7 +59,7 @@ public:
 	//! number of orphaned (open) edges
 	//! /return orphaned (open) count
 	virtual unsigned numOrphanEdges() const = 0;
-
+	// </interfuscator:shuffle>
 
 #ifdef WIN32
 	//! /param szFilename filename with path (or relative) and extension
@@ -72,7 +73,7 @@ class IEdgeConnectivityBuilder
 {
 public:
 	typedef IStencilShadowConnectivity::vindex vindex;
-
+	// <interfuscator:shuffle>
 	virtual ~IEdgeConnectivityBuilder() {}
 
 	//! return to the state right after construction
@@ -119,7 +120,7 @@ public:
 
 	//! return memory usage
 	virtual void GetMemoryUsage(class ICrySizer * pSizer) {} // todo: implement
-
+	// </interfuscator:shuffle>
 };
 
 // *****************************************************************
@@ -130,6 +131,7 @@ class IEdgeDetector
 public:
 	typedef unsigned short vindex;
 
+	// <interfuscator:shuffle>
 	virtual ~IEdgeDetector(){}
 	// vertex index
 
@@ -176,7 +178,7 @@ public:
 
 	//! get memory usage
 	virtual void GetMemoryUsage(class ICrySizer * pSizer) {}
-
+	// </interfuscator:shuffle>
 };
 
 

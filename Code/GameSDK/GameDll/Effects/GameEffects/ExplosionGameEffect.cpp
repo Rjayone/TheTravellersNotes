@@ -374,7 +374,7 @@ void CExplosionGameEffect::SpawnScreenExplosionEffect(const SExplosionContainer 
 
 				if (pClientActor)
 				{
-					static_cast<CActor*>(pClientActor)->AddAngularImpulse(Ang3(Random(-angleX*0.5f,angleX),0.0f,Random(-angleZ,angleZ)),0.0f,dt*2.0f);
+					static_cast<CActor*>(pClientActor)->AddAngularImpulse(Ang3(cry_random(-angleX*0.5f,angleX),0.0f,cry_random(-angleZ,angleZ)),0.0f,dt*2.0f);
 				}
 			}
 		}

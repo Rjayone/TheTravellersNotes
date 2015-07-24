@@ -154,7 +154,7 @@ void CVehicleDamageBehaviorDetachPart::OnDamageEvent(EVehicleDamageBehaviorEvent
     if (!pPart || !pPart->GetStatObj())
       return;
 
-		if (max(1.f-behaviorParams.randomness, pPart->GetDetachProbability()) < Random()) 
+		if (max(1.f-behaviorParams.randomness, pPart->GetDetachProbability()) < cry_random(0.0f, 1.0f)) 
 			return;
 
 		IEntity* pDetachedEntity = SpawnDetachedEntity();
@@ -195,11 +195,11 @@ void CVehicleDamageBehaviorDetachPart::OnDamageEvent(EVehicleDamageBehaviorEvent
 		  // set the impulse
 		  const Vec3& velocity = m_pVehicle->GetStatus().vel;  				  		  
 		  Vec3 baseForce = m_pVehicle->GetEntity()->GetWorldTM().TransformVector(pPart->GetDetachBaseForce());
-		  baseForce *= Random() * (10 - 6) + 6;
+		  baseForce *= cry_random(6.0f, 10.0f);
   		
       pe_action_impulse actionImpulse;
 		  actionImpulse.impulse = physicsParams.mass * (velocity + baseForce);
-      actionImpulse.angImpulse = physicsParams.mass * Vec3(Random(-1,1), Random(-1,1), Random(-1,1));
+      actionImpulse.angImpulse = physicsParams.mass * Vec3(cry_random(-1.0f,1.0f), cry_random(-1.0f,1.0f), cry_random(-1.0f,1.0f));
       actionImpulse.iApplyTime = 1;
 		  
       pPhysics->Action(&actionImpulse);		
@@ -312,7 +312,7 @@ void CVehicleDamageBehaviorDetachPart::AttachParticleEffect(IEntity* pDetachedEn
 		if (IParticleEmitter* pParticleEmitter = pDetachedEntity->GetParticleEmitter(slot))
 		{
 			SpawnParams spawnParams;
-			spawnParams.fSizeScale = (Random() * 0.5f) + 0.5f;
+			spawnParams.fSizeScale = cry_random(0.5f, 1.0f);
 
 			pParticleEmitter->SetSpawnParams(spawnParams);
 		}

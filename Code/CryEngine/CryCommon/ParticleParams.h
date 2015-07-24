@@ -19,6 +19,7 @@
 
 #include <CryCustomTypes.h>
 #include <Cry_Math.h>
+#include <Random.h>
 
 BASIC_TYPE_INFO(CCryName)
 
@@ -151,6 +152,7 @@ typedef TRangedType<float>					SFloat;
 typedef TRangedType<float,0>				UFloat;
 typedef TRangedType<float,0,1>			UnitFloat;
 typedef TRangedType<float,0,2>			Unit2Float;
+typedef TRangedType<float,0,4>			Unit4Float;
 typedef TRangedType<float,-180,180>	SAngle;
 typedef TRangedType<float,0,180>		UHalfAngle;
 typedef TRangedType<float,0,360>		UFullAngle;
@@ -187,7 +189,7 @@ struct TStorageTraits<SAngle>
 template<class TFixed>
 bool RandomActivate(const TFixed& chance)
 {
-	return Random(chance.GetMaxStore()) < chance.GetStore();
+	return cry_random(0, chance.GetMaxStore() - 1) < chance.GetStore();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -252,13 +254,13 @@ public:
 	{
 		if (m_bRandomHue)
 		{
-			ColorB clr(cry_rand32());
+			ColorB clr(cry_random_uint32());
 			float fScale = float(*this) / 255.f;
 			return Color3F(clr.r * fScale, clr.g * fScale, clr.b * fScale);
 		}
 		else
 		{
-			return Color3F(Random(float(*this)));
+			return Color3F(cry_random(0.0f, float(*this)));
 		}
 	}
 
@@ -268,10 +270,6 @@ protected:
 	TSmallBool	m_bRandomHue;
 };
 
-inline Color3F Random(RandomColor const& rc)
-{
-	return rc.GetRandom();
-}
 
 template<>
 struct TStorageTraits<Color3F>
@@ -381,9 +379,20 @@ struct TVarParam: S
 		T operator () (type_random) const
 		{
 			if (!!Range())
-				return T(1) - T(Random(Range()));
+				return T(1) - T(ParamRandom(Range()));
 			else
 				return T(1);
+		}
+
+	private:
+		static Color3F ParamRandom(RandomColor const& rc)
+		{
+			return rc.GetRandom();
+		}
+
+		static float ParamRandom(float v)
+		{
+			return cry_random(0.0f, v);
 		}
 	};
 
@@ -806,9 +815,9 @@ struct ParticleParams
 
 	struct SLightSource
 	{
+		TSmallBool bAffectsThisAreaOnly;		// Affect current clip volume only
 		TVarEPParam<UFloat> fRadius;				// <SoftMax=10> Radius of light
 		TVarEPParam<UFloat> fIntensity;			// <SoftMax=10> Intensity of light (color from Appearance/Color)
-		SFloat fHDRDynamic;									// <SoftMin=-2> $<SoftMax=2>
 		AUTO_STRUCT_INFO
 	} LightSource;												// Per-particle light generation
 
@@ -967,6 +976,8 @@ struct ParticleParams
 	TRangedType<uint8,0,2> nSortQuality;	// Sort new particles as accurately as possible into list, by main camera distance
 	TSmallBool bHalfRes;									// Use half resolution rendering
 	TSmallBoolTrue bStreamable;						// Texture/geometry allowed to be streamed
+	TSmallBool bVolumeFog;								// Use as a participating media of volumetric fog
+	Unit4Float fVolumeThickness;					// Thickness factor for particle size
 
 	// <Group=Configuration>
 	DEFINE_ENUM( EConfigSpecBrief,
@@ -1004,6 +1015,7 @@ struct ParticleParams
 		fMotionBlurCamStretchScale(1.f),
 #endif
 		fSphericalApproximation(1.f),
+		fVolumeThickness(1.0f),
 		fSoundFXParam(1.f),
 		eConfigMax(eConfigMax.VeryHigh)
 	{}

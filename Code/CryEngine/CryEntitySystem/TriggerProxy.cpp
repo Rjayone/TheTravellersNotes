@@ -165,4 +165,4 @@ void CTriggerProxy::SetAABB( const AABB &aabb )
 	OnMove();
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityTriggerProxy)
+

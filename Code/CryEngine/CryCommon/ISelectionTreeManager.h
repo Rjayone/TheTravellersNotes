@@ -33,7 +33,7 @@ struct ISelectionTreeDebugger
 
 struct ISelectionTreeManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISelectionTreeManager(){}
 	virtual uint32 GetSelectionTreeCount() const = 0;
 	virtual uint32 GetSelectionTreeCountOfType(const char* typeName) const = 0;
@@ -44,7 +44,7 @@ struct ISelectionTreeManager
 	virtual void Reload() = 0;
 
 	virtual ISelectionTreeDebugger* GetDebugger() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

@@ -56,10 +56,10 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IEntityFlowGraphProxy interface implementation.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetFlowGraph( IFlowGraph *pFlowGraph );
-	VIRTUAL IFlowGraph* GetFlowGraph();
-	VIRTUAL void AddEventListener( IEntityEventListener *pListener );
-	VIRTUAL void RemoveEventListener( IEntityEventListener *pListener );
+	virtual void SetFlowGraph( IFlowGraph *pFlowGraph );
+	virtual IFlowGraph* GetFlowGraph();
+	virtual void AddEventListener( IEntityEventListener *pListener );
+	virtual void RemoveEventListener( IEntityEventListener *pListener );
 	//////////////////////////////////////////////////////////////////////////
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer )const

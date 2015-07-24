@@ -96,7 +96,7 @@ typedef void ( *CrySignInGetUserCredentialsCallback )( CryLobbyTaskID taskID, EC
 
 struct ICrySignIn
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICrySignIn() {}
 
 	// UserSignIn
@@ -151,7 +151,7 @@ struct ICrySignIn
 	// Cancel a task
 	// lTaskID		   - lobby task ID
 	virtual void CancelTask( CryLobbyTaskID lTaskID ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__ICRYSIGNIN_H__

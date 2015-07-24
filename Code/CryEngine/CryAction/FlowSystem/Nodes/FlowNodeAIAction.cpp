@@ -1118,6 +1118,7 @@ void CFlowNode_AIExecute::Finish()
 }
 
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 //////////////////////////////////////////////////////////////////////////
 // Set Character
 //////////////////////////////////////////////////////////////////////////
@@ -1168,6 +1169,7 @@ void CFlowNode_AISetCharacter::DoProcessEvent( EFlowEvent event, SActivationInfo
 		m_EntityId = 0;
 	}
 }
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -2360,14 +2362,16 @@ bool CFlowNode_AILookAt::OnUpdate( SActivationInfo* pActInfo )
 		EntityId objectEntityId = GetPortEntityId(pActInfo, 4);
 		if (objectEntityId != 0)
 		{
-			IEntity* pObjectEntity = gEnv->pEntitySystem->GetEntity(objectEntityId);
-			if (IAIObject* aiObject = pObjectEntity->GetAI())
+			if (IEntity* pObjectEntity = gEnv->pEntitySystem->GetEntity(objectEntityId))
 			{
-				pos = aiObject->GetPos();
-			}
-			else
-			{
-				pos = pObjectEntity->GetPos();
+				if (IAIObject* aiObject = pObjectEntity->GetAI())
+				{
+					pos = aiObject->GetPos();
+				}
+				else
+				{
+					pos = pObjectEntity->GetPos();
+				}
 			}
 		}
 	}
@@ -4030,7 +4034,10 @@ void CFlowNode_AIEnterVehicle::DoProcessEvent( EFlowEvent event, SActivationInfo
 
 	if(actor && actor->IsPlayer())
 	{
-		pVehicle->GetSeatById(seatId)->Enter(pEntity->GetId(), true);
+		if(IVehicleSeat* pVehicleSeat = pVehicle->GetSeatById(seatId))
+		{
+			pVehicleSeat->Enter(pEntity->GetId(), true);
+		}
 	}
   else if(pEntity && pEntity->GetAI())
   {
@@ -4494,7 +4501,9 @@ REGISTER_FLOW_NODE( "AI:AIAnimEx", CFlowNode_AIAnimEx )
 REGISTER_FLOW_NODE( "AI:AIFollowPath", CFlowNode_AIFollowPath )
 REGISTER_FLOW_NODE( "AI:AIFollowPathSpeedStance", CFlowNode_AIFollowPathSpeedStance )
 REGISTER_FLOW_NODE( "AI:AIUnload", CFlowNode_AIUnload_Old )
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 REGISTER_FLOW_NODE( "AI:AISetCharacter", CFlowNode_AISetCharacter )
+#endif
 REGISTER_FLOW_NODE( "AI:AIGrabObject", CFlowNode_AIGrabObject )
 REGISTER_FLOW_NODE( "AI:AIDropObject", CFlowNode_AIDropObject )
 REGISTER_FLOW_NODE( "AI:AIWeaponDraw", CFlowNode_AIWeaponDraw )

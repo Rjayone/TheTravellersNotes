@@ -54,7 +54,7 @@ void CAIFaceManager::OnReused(IEntity *pEntity)
 //------------------------------------------------------------------------------
 int CAIFaceManager::SelectExpressionTime() const
 {
-	return (int)((30.f + Random(20.f)) * 1000.0f);
+	return cry_random(30000, 50000);
 }
 
 //
@@ -221,7 +221,7 @@ void	CAIFaceManager::SetExpression(e_ExpressionEvent expression, bool forceChang
 	TExprState& theState = s_Expressions[expression];
 	if (!theState.empty())
 	{
-		m_CurrentExprIdx = Random(static_cast<uint32>(theState.size()));
+		m_CurrentExprIdx = cry_random(0, (int)theState.size() - 1);
 		MakeFace(theState[m_CurrentExprIdx]);
 	}
 	m_ExprStartTime = gEnv->pTimer->GetFrameStartTime();

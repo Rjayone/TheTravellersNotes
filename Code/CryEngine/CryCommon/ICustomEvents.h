@@ -16,10 +16,10 @@ static const TCustomEventId CUSTOMEVENTID_INVALID = 0;
 ///////////////////////////////////////////////////
 struct ICustomEventListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICustomEventListener(){}
 	virtual void OnCustomEvent( const TCustomEventId eventId ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 ///////////////////////////////////////////////////
@@ -27,7 +27,7 @@ struct ICustomEventListener
 ///////////////////////////////////////////////////
 struct ICustomEventManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICustomEventManager(){}
 
 	// Registers custom event listener
@@ -47,7 +47,7 @@ struct ICustomEventManager
 
 	// Gets next free event id
 	virtual TCustomEventId GetNextCustomEventId() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

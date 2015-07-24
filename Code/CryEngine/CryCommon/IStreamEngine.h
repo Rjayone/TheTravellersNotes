@@ -13,7 +13,6 @@
  * The client should take care of all fast operations. Looking up file size should be fast on the virtual
  * file system in a pak file, because the directory should be preloaded in memory
  */
-#include DEVIRTUALIZE_HEADER_FIX(IStreamEngine.h)
 
 #ifndef _CRY_COMMON_STREAM_ENGINE_HDR_
 #define _CRY_COMMON_STREAM_ENGINE_HDR_
@@ -143,7 +142,7 @@ struct StreamReadBatchParams
 
 struct IStreamEngineListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IStreamEngineListener() {}
 
 	virtual void OnStreamEnqueue(const void* pReq, const char* filename, EStreamTaskType source, const StreamReadParams& readParams) = 0;
@@ -159,13 +158,13 @@ struct IStreamEngineListener
 	virtual void OnStreamDone(const void* pReq) = 0;
 	virtual void OnStreamPreempted(const void* pReq) = 0;
 	virtual void OnStreamResumed(const void* pReq) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //	 The highest level. There is only one StreamingEngine in the application
 //	 and it controls all I/O streams.
-UNIQUE_IFACE struct IStreamEngine
+struct IStreamEngine
 {
 public:
 
@@ -195,6 +194,7 @@ public:
 		FLAGS_WRITE_ONLY_EXTERNAL_BUFFER = BIT(3),
 	};
 
+	// <interfuscator:shuffle>
 	// Description:
 	//	 Starts asynchronous read from the specified file (the file may be on a
 	//	 virtual file system, in pak or zip file or wherever).
@@ -291,7 +291,7 @@ public:
 #endif
 
 	virtual ~IStreamEngine() {}
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
@@ -307,10 +307,10 @@ public:
 //		 IReadStream_AutoPtr pReadStream = pStreamEngine->StartRead ("bla.xxx", this);
 //	 OR:
 //		 pStreamEngine->StartRead ("MusicSystem","bla.xxx", this);
-UNIQUE_IFACE class IReadStream
+class IReadStream
 {
 public:
-
+	// <interfuscator:shuffle>
 	// Summary:
 	//   Increment ref count, returns new count
 	virtual int AddRef() = 0;
@@ -401,7 +401,7 @@ public:
 	//	 Free temporary memory allocated for this stream, when not needed anymore.
 	//   Can be called from Async callback, to free memory earlier, not waiting for synchrounus callback.
 	virtual void FreeTemporaryMemory() = 0;
-
+	// </interfuscator:shuffle>
 
 protected:
 	// Summary:
@@ -444,7 +444,7 @@ TYPEDEF_AUTOPTR(IReadStream);
 class IStreamCallback
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IStreamCallback(){}
 
 	// Description:
@@ -475,7 +475,7 @@ public:
 	//	 nError == 0 : Success
 	//	 nError != 0 : Error code
 	virtual void StreamOnComplete (IReadStream* pStream, unsigned nError) {}
-
+	// </interfuscator:shuffle>
 };
 
 #endif //_CRY_COMMON_STREAM_ENGINE_HDR_

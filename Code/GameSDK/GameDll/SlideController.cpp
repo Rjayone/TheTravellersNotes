@@ -62,7 +62,7 @@ public:
 		}
 		else
 		{
-			static uint32 leanParamCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("SlideFactor");
+			static uint32 leanParamCRC = CCrc32::ComputeLowercase("SlideFactor");
 
 			const Matrix34 &worldTM = m_player.GetEntity()->GetWorldTM();
 			const Vec3 baseRgt = worldTM.GetColumn0();

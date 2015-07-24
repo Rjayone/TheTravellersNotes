@@ -17,7 +17,7 @@ namespace BehaviorTree
 			m_child = child;
 		}
 
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) override
 		{
 			IF_UNLIKELY (BaseClass::LoadFromXml(xml, context) == LoadFailure)
 				return LoadFailure;
@@ -25,7 +25,7 @@ namespace BehaviorTree
 			return LoadChildFromXml(xml, context);
 		}
 
-		virtual void HandleEvent(const EventContext& context, const Event& event) OVERRIDE
+		virtual void HandleEvent(const EventContext& context, const Event& event) override
 		{
 			assert(m_child.get() != NULL);
 			if (m_child)
@@ -44,7 +44,7 @@ namespace BehaviorTree
 #endif
 
 #ifdef USING_BEHAVIOR_TREE_XML_DESCRIPTION_CREATION
-		virtual XmlNodeRef CreateXmlDescription() OVERRIDE
+		virtual XmlNodeRef CreateXmlDescription() override
 		{
 			XmlNodeRef xml = GetISystem()->CreateXmlNode( "Decorator" );
 			if( m_child )
@@ -76,18 +76,18 @@ namespace BehaviorTree
 			return LoadFailure;
 		}
 
-		virtual void OnInitialize(const UpdateContext& context) OVERRIDE
+		virtual void OnInitialize(const UpdateContext& context) override
 		{
 			BaseClass::OnInitialize(context);
 		}
 
-		virtual void OnTerminate(const UpdateContext& context) OVERRIDE
+		virtual void OnTerminate(const UpdateContext& context) override
 		{
 			m_child->Terminate(context);
 			BaseClass::OnTerminate(context);
 		}
 
-		virtual Status Update(const UpdateContext& context) OVERRIDE
+		virtual Status Update(const UpdateContext& context) override
 		{
 			return m_child->Tick(context);
 		}

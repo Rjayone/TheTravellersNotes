@@ -576,9 +576,9 @@ bool CGameContext::InitChannelEstablishmentTasks( IContextEstablisher * pEst, IN
 			{
 				// Don't send all the cvar's again - makes it ages to join a network game
 				// Might want to do this on a PC build - need to discuss it
-#if ENABLE_CVARS_FLUSHING && !defined(XENON) && !defined(PS3)
+#if ENABLE_CVARS_FLUSHING
 				AddCVarSync( pEst, eCVS_Begin, static_cast<CGameServerChannel*>(pChannel->GetGameChannel()) );
-#endif // #if 0 && !defined(XENON) && !defined(PS3)
+#endif
 				if(CCryActionCVars::Get().g_syncClassRegistry)
 				{
 					AddSendClassRegistration( pEst, eCVS_Begin, &m_classRegistry, &pWaitFor );
@@ -2009,7 +2009,7 @@ void CGameContext::EndUpdateObjects()
 	if (m_pPhysicsSync)
 	{
 		m_pPhysicsSync->OnPacketFooter();
-		m_pPhysicsSync = 0;
+		m_pPhysicsSync = nullptr;
 	}
 }
 
@@ -2136,10 +2136,10 @@ string CGameContext::GetConnectionString(CryFixedStringT<HOST_MIGRATION_MAX_PLAY
 	sprintf(buf, "%d", (int)time(NULL));
 	constr = buf + constr;
 	int len = constr.length();
-	int r = cry_rand32()%20 + CLAMP(64-len, 0, 64);
+	int r = cry_random(0, 19) + CLAMP(64-len, 0, 64);
 	for (int i=0; i<r || (constr.length()&7); i++)
 	{
-		char c = 'a' + cry_rand32()%26;
+		char c = cry_random('a', 'z');
 		constr = c + constr;
 	}
 	len = constr.length();
@@ -2331,5 +2331,4 @@ bool CGameContext::SetImmersive( bool immersive )
 		m_flags &= ~eGSF_ImmersiveMultiplayer;
 	return true;
 }
-#include UNIQUE_VIRTUAL_WRAPPER(ICVarListProcessorCallback)
-#include UNIQUE_VIRTUAL_WRAPPER(IGameContext)
+

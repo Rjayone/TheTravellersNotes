@@ -15,7 +15,8 @@ def build(bld):
 		file_list   = 'cryscriptsystem.waf_files',
 
 		pch         = 'StdAfx.cpp',		
-		includes    = 'Lua',
+		includes    = Path('Code/SDKs/Lua/src'),
+		use_module  = [ 'lua' ],
 
 		win_lib     = [ 'shell32', 'Gdi32', 'wininet', 'Ole32' ],
 	)

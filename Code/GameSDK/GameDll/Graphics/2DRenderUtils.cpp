@@ -490,7 +490,7 @@ void C2DRenderUtils::DrawText(
 	InitFont( m_pFont, sizeX, sizeY, color );
 
 	float w=0.0f, h=0.0f;
-	InternalGetTextDim( m_pFont, &w, &h, strText );
+	InternalGetTextDim( m_pFont, &w, &h, 0.0f, strText );
 	const float wcpy=w, hcpy=h;
 	m_pLayoutManager->AdjustToSafeArea( &drawX, &drawY, &w, &h, eUIDrawHorizontal, eUIDrawVertical, eUIDrawHorizontalDocking, eUIDrawVerticalDocking );
 	// Scale the font
@@ -533,15 +533,24 @@ void C2DRenderUtils::GetTextDim(	IFFont *pFont,
 
 	InitFont( pFont, sizeX, sizeY );
 
-	InternalGetTextDim( pFont, fWidth, fHeight, strText );
+	InternalGetTextDim( pFont, fWidth, fHeight, 0.0f, strText );
 }
 
 //-----------------------------------------------------------------------------------------------------
 void C2DRenderUtils::InternalGetTextDim(	IFFont *pFont,
 																				float *fWidth,
 																				float *fHeight,
+																				float fMaxWidth,
 																				const char *strText)
 {
+	string wrappedStr;
+	const bool bWrapText = fMaxWidth > 0.0f;
+	if (bWrapText)
+	{
+		m_pFont->WrapText(wrappedStr, fMaxWidth, strText, m_ctx);
+		strText = wrappedStr.c_str();
+	}
+
 	Vec2 dim=pFont->GetTextSize(strText, true, m_ctx);
 	m_pLayoutManager->ConvertFromRenderToVirtualScreenSpace( &dim.x, &dim.y );
 
@@ -552,45 +561,13 @@ void C2DRenderUtils::InternalGetTextDim(	IFFont *pFont,
 }
 
 //-----------------------------------------------------------------------------------------------------
-
-void C2DRenderUtils::DrawTextW(
-															 const float fX,
-															 const float fY,
-															 const float fSizeX,
-															 const float fSizeY,
-															 const wchar_t *strText,
-															 const ColorF& cfColor,
-															 const EUIDRAWHORIZONTAL	eUIDrawHorizontal        /*= UIDRAWHORIZONTAL_LEFT*/,  // checked
-															 const EUIDRAWVERTICAL		eUIDrawVertical          /*= UIDRAWVERTICAL_TOP*/,
-															 const EUIDRAWHORIZONTAL	eUIDrawHorizontalDocking /*= UIDRAWHORIZONTAL_LEFT*/,
-															 const EUIDRAWVERTICAL		eUIDrawVerticalDocking   /*= UIDRAWVERTICAL_TOP*/ )
-{
-	float drawX = fX;
-	float drawY = fY;
-	float sizeX = (fSizeX<=0.0f) ? 15.0f : fSizeX;
-	float sizeY = (fSizeY<=0.0f) ? 15.0f : fSizeY;
-
-	InitFont( m_pFont, sizeX, sizeY, cfColor );
-
-	float w=0.0f, h=0.0f;
-	GetTextDimW( m_pFont, &w, &h, sizeX, sizeY, strText );
-	const float wcpy=w, hcpy=h;
-	m_pLayoutManager->AdjustToSafeArea( &drawX, &drawY, &w, &h, eUIDrawHorizontal, eUIDrawVertical, eUIDrawHorizontalDocking, eUIDrawVerticalDocking );
-
-	// scale font size appropriately
-	sizeX *= w/wcpy; 
-	sizeY *= h/hcpy;
-
-	InternalDrawTextW( drawX, drawY, 0.0f, strText );
-}
-
-void C2DRenderUtils::DrawWrappedTextW(
+void C2DRenderUtils::DrawWrappedText(
 																			const float fX,
 																			const float fY,
 																			const float fMaxWidth,
 																			const float fSizeX,
 																			const float fSizeY,
-																			const wchar_t *strText,
+																			const char *strText,
 																			const ColorF& cfColor,
 																			const EUIDRAWHORIZONTAL	eUIDrawHorizontal /*= UIDRAWHORIZONTAL_LEFT*/, // Checked
 																			const EUIDRAWVERTICAL		eUIDrawVertical /*= UIDRAWVERTICAL_TOP*/,
@@ -605,14 +582,14 @@ void C2DRenderUtils::DrawWrappedTextW(
 
 	InitFont( m_pFont, fSizeX, fSizeY, cfColor );
 
-	wstring wrappedStr;
+	string wrappedStr;
 	const bool bWrapText = fMaxWidth > 0.0f;
 	if (bWrapText)
 	{
 		m_pFont->WrapText(wrappedStr, fMaxWidth, strText, m_ctx);
 		strText = wrappedStr.c_str();
 	}
-	Vec2 vDim = m_pFont->GetTextSizeW(strText, true, m_ctx);
+	Vec2 vDim = m_pFont->GetTextSize(strText, true, m_ctx);
 
 	const float wcpy=vDim.x, hcpy=vDim.y;
 	m_pLayoutManager->AdjustToSafeArea( &drawX, &drawY, &vDim.x, &vDim.y, eUIDrawHorizontal, eUIDrawVertical, eUIDrawHorizontalDocking, eUIDrawVerticalDocking );
@@ -622,94 +599,25 @@ void C2DRenderUtils::DrawWrappedTextW(
 	sizeY *= vDim.y/hcpy;
 	InitFont( m_pFont, sizeX, sizeY, cfColor );
 	//InternalDrawRect( drawX, drawY, vDim.x, vDim.y, ColorF(0.0f,1.0f,0.0f,0.1f));
-	InternalDrawTextW( drawX, drawY, fMaxWidth, strText );
-}
-
-
-//-----------------------------------------------------------------------------------------------------
-void C2DRenderUtils::InternalDrawTextW(const float fX, const float fY,
-																			 const float /*fMaxWidth*/,
-																			 const wchar_t *strText )
-{
-	float drawX = fX;
-	float drawY = fY;
-	m_pLayoutManager->ConvertFromVirtualToRenderScreenSpace( &drawX, &drawY );
-	//////////////////////////////////////////////////////////////////////////
-	// refactoring comment: text is prewrapped now by DrawWrappedTextW()
-
-	//const bool bWrapText = fMaxWidth > 0.0f;
-
-	//if (bWrapText)
-	//{
-	//	//CRY_TODO( 01, 12, 2009, "Do a text-align instead of text BB align. /FH")
-	//	m_pFont->DrawWrappedStringW(drawX, drawY, fMaxWidth, strText);
-	//}
-	//else
-	//{
-	//	m_pFont->DrawStringW(drawX, drawY, strText);
-	//}
-	//////////////////////////////////////////////////////////////////////////
-	m_pFont->DrawStringW(drawX, drawY, strText, true, m_ctx);
-}
-
-//-----------------------------------------------------------------------------------------------------
-
-void C2DRenderUtils::InternalGetTextDimW(IFFont *pFont,
-																				 float *fWidth,
-																				 float *fHeight,
-																				 const float fMaxWidth,
-																				 const wchar_t *strText)
-{
-	wstring wrappedStr;
-	const bool bWrapText = fMaxWidth > 0.0f;
-	if (bWrapText)
-	{
-		m_pFont->WrapText(wrappedStr, fMaxWidth, strText, m_ctx);
-		strText = wrappedStr.c_str();
-	}
-
-	Vec2 dim = pFont->GetTextSizeW(strText, true, m_ctx);
-
-	if (fWidth)
-	{
-		*fWidth = dim.x;
-	}
-
-	if (fHeight)
-	{
-		*fHeight = dim.y;
-	}
-}
-
-//-----------------------------------------------------------------------------------------------------
-
-void C2DRenderUtils::GetTextDimW(IFFont *pFont,
-																 float *fWidth,
-																 float *fHeight,
-																 const float fSizeX,
-																 const float fSizeY,
-																 const wchar_t *strText)
-{
-	InitFont( pFont, fSizeX, fSizeY );
-	InternalGetTextDimW(pFont, fWidth, fHeight, 0.0f, strText);
+	InternalDrawText( drawX, drawY, strText );
 }
 
 //-----------------------------------------------------------------------------------------------------
 // TODO :
 //	* Fix/Check rendering location/scaling.
-void C2DRenderUtils::GetWrappedTextDimW(IFFont *pFont,
+void C2DRenderUtils::GetWrappedTextDim(IFFont *pFont,
 																				float *fWidth,
 																				float *fHeight,
 																				const float fMaxWidth,
 																				const float fSizeX,
 																				const float fSizeY,
-																				const wchar_t *strText)
+																				const char *strText)
 {
 	float sizeX = (fSizeX<=0.0f) ? 15.0f : fSizeX;
 	float sizeY = (fSizeY<=0.0f) ? 15.0f : fSizeY;
 
 	InitFont( pFont, sizeX, sizeY );
-	InternalGetTextDimW(pFont, fWidth, fHeight, fMaxWidth, strText);
+	InternalGetTextDim(pFont, fWidth, fHeight, fMaxWidth, strText);
 }
 
 
@@ -804,24 +712,24 @@ void C2DRenderUtils::RenderTest_Text( float fTime, const ColorF& color )
 	ColorF trans = color;
 	trans.a *= 0.5;
 
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"TLWRAPPED", trans, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP );
-	DrawWrappedTextW( 800.f,   0.f, maxWidth, 20.f, 20.f, L"TRWRAPPED", trans, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP );
-	DrawWrappedTextW( 400.f,   0.f, maxWidth, 20.f, 20.f, L"TCWRAPPED", trans, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP );
-	DrawWrappedTextW( 800.f, 600.f, maxWidth, 20.f, 20.f, L"BRWRAPPED", trans, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW(   0.f, 600.f, maxWidth, 20.f, 20.f, L"BLWRAPPED", trans, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW( 400.f, 600.f, maxWidth, 20.f, 20.f, L"BCWRAPPED", trans, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW( 800.f, 300.f, maxWidth, 20.f, 20.f, L"MRWRAPPED", trans, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW(   0.f, 300.f, maxWidth, 20.f, 20.f, L"MLWRAPPED", trans, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW( 400.f, 300.f, maxWidth, 20.f, 20.f, L"MCWRAPPED", trans, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"TLWRAPPEDA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"TRWRAPPEDA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"TCWRAPPEDA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"BRWRAPPEDA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"BLWRAPPEDA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"BCWRAPPEDA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"MRWRAPPEDA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_CENTER );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"MLWRAPPEDA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_CENTER );
-	DrawWrappedTextW(   0.f,   0.f, maxWidth, 20.f, 20.f, L"MCWRAPPEDA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "TLWRAPPED", trans, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP );
+	DrawWrappedText( 800.f,   0.f, maxWidth, 20.f, 20.f, "TRWRAPPED", trans, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP );
+	DrawWrappedText( 400.f,   0.f, maxWidth, 20.f, 20.f, "TCWRAPPED", trans, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP );
+	DrawWrappedText( 800.f, 600.f, maxWidth, 20.f, 20.f, "BRWRAPPED", trans, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText(   0.f, 600.f, maxWidth, 20.f, 20.f, "BLWRAPPED", trans, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText( 400.f, 600.f, maxWidth, 20.f, 20.f, "BCWRAPPED", trans, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText( 800.f, 300.f, maxWidth, 20.f, 20.f, "MRWRAPPED", trans, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText(   0.f, 300.f, maxWidth, 20.f, 20.f, "MLWRAPPED", trans, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText( 400.f, 300.f, maxWidth, 20.f, 20.f, "MCWRAPPED", trans, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "TLWRAPPEDA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "TRWRAPPEDA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "TCWRAPPEDA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "BRWRAPPEDA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "BLWRAPPEDA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "BCWRAPPEDA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "MRWRAPPEDA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_CENTER );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "MLWRAPPEDA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_CENTER );
+	DrawWrappedText(   0.f,   0.f, maxWidth, 20.f, 20.f, "MCWRAPPEDA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER );
 
 	// char
 	/*
@@ -851,7 +759,7 @@ void C2DRenderUtils::RenderTest_Text( float fTime, const ColorF& color )
 
 	{
 		ColorF dbgColour(1.f, 1.f, 1.f, 0.2f);
-		CHUD* pHud = g_pGame->GetUI();
+		CUIManager* pHud = g_pGame->GetUI();
 		ScreenLayoutManager* pLayoutManager = pHud->GetLayoutManager();
 		ScreenLayoutStates prevStates = pLayoutManager->GetState();
 		gEnv->pRenderer->SetState(GS_NODEPTHTEST);
@@ -886,24 +794,24 @@ void C2DRenderUtils::RenderTest_Text( float fTime, const ColorF& color )
 	DrawText(   0.f,   0.f, 20.f, 20.f, "MiddleCenterDTSA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER );
 
 	// wchar
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"TLDW", color, UIDRAWHORIZONTAL_LEFT,  UIDRAWVERTICAL_TOP );
-	DrawTextW( 800.f,   0.f, 20.f, 20.f, L"TRDW", color, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP );
-	DrawTextW( 400.f,   0.f, 20.f, 20.f, L"TCDW", color, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP );
-	DrawTextW( 800.f, 600.f, 20.f, 20.f, L"BRDW", color, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
-	DrawTextW(   0.f, 600.f, 20.f, 20.f, L"BLDW", color, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
-	DrawTextW( 400.f, 600.f, 20.f, 20.f, L"BCDW", color, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
-	DrawTextW( 800.f, 300.f, 20.f, 20.f, L"MRDW", trans, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
-	DrawTextW(   0.f, 300.f, 20.f, 20.f, L"MLDW", trans, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
-	DrawTextW( 400.f, 300.f, 20.f, 20.f, L"MCDW", trans, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"TLDWA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"TRDWA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"TCDWA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"BRDWA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"BLDWA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"BCDWA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"MRDWA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_CENTER );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"MLDWA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_CENTER );
-	DrawTextW(   0.f,   0.f, 20.f, 20.f, L"MCDWA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "TLDW", color, UIDRAWHORIZONTAL_LEFT,  UIDRAWVERTICAL_TOP );
+	DrawText( 800.f,   0.f, 20.f, 20.f, "TRDW", color, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP );
+	DrawText( 400.f,   0.f, 20.f, 20.f, "TCDW", color, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP );
+	DrawText( 800.f, 600.f, 20.f, 20.f, "BRDW", color, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
+	DrawText(   0.f, 600.f, 20.f, 20.f, "BLDW", color, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
+	DrawText( 400.f, 600.f, 20.f, 20.f, "BCDW", color, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
+	DrawText( 800.f, 300.f, 20.f, 20.f, "MRDW", trans, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
+	DrawText(   0.f, 300.f, 20.f, 20.f, "MLDW", trans, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
+	DrawText( 400.f, 300.f, 20.f, 20.f, "MCDW", trans, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "TLDWA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_TOP );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "TRDWA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_TOP );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "TCDWA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP,    UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_TOP );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "BRDWA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_BOTTOM );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "BLDWA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_BOTTOM );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "BCDWA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_BOTTOM );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "MRDWA", colAligned, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_RIGHT,  UIDRAWVERTICAL_CENTER );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "MLDWA", colAligned, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_LEFT,   UIDRAWVERTICAL_CENTER );
+	DrawText(   0.f,   0.f, 20.f, 20.f, "MCDWA", colAligned, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER, UIDRAWHORIZONTAL_CENTER, UIDRAWVERTICAL_CENTER );
 
 	for( int i=0; i<gEnv->pRenderer->GetWidth(); i+=10)
 	{

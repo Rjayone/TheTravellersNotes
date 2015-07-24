@@ -199,7 +199,7 @@ public:
 			m_pGraph->SetEntityId(m_nodeID, 0);
 		}
 		else
-		if(event.event == ENTITY_EVENT_ACTIVE_FLOW_NODE_OUTPUT)
+		if(event.event == ENTITY_EVENT_ACTIVATE_FLOW_NODE_OUTPUT)
 		{
 			SFlowNodeConfig config;
 			GetConfiguration(config);
@@ -226,7 +226,7 @@ public:
 		if(m_entityId)
 		{
 			gEnv->pEntitySystem->AddEntityEventListener(m_entityId, ENTITY_EVENT_DONE, this);
-			gEnv->pEntitySystem->AddEntityEventListener(m_entityId, ENTITY_EVENT_ACTIVE_FLOW_NODE_OUTPUT, this);
+			gEnv->pEntitySystem->AddEntityEventListener(m_entityId, ENTITY_EVENT_ACTIVATE_FLOW_NODE_OUTPUT, this);
 		}
 
 	}
@@ -235,7 +235,7 @@ public:
 		if ( m_entityId )
 		{
 			gEnv->pEntitySystem->RemoveEntityEventListener(m_entityId, ENTITY_EVENT_DONE, this);
-			gEnv->pEntitySystem->RemoveEntityEventListener(m_entityId, ENTITY_EVENT_ACTIVE_FLOW_NODE_OUTPUT, this);
+			gEnv->pEntitySystem->RemoveEntityEventListener(m_entityId, ENTITY_EVENT_ACTIVATE_FLOW_NODE_OUTPUT, this);
 		}
 	}
 

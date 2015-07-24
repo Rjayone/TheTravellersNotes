@@ -18,6 +18,7 @@
 #include <SDL.h>
 
 #include <StringUtils.h>
+#include "UnicodeIterator.h"
 
 #define KEYBOARD_MAX_PEEP 64
 
@@ -87,13 +88,13 @@ void CSDLKeyboard::Update(bool focus)
 				continue;
 			pSymbol->state = eIS_Pressed;
 			pSymbol->value = 1.f;
-            // Check for CRTL+ALT combintaions
+            // Check for CTRL+ALT combintaions
             if ((keyEvent->keysym.mod & KMOD_ALT) && (keyEvent->keysym.mod & KMOD_CTRL))
 			{
-                // CRLT + ALT + SHIFT + g = ungrab
+                // CTRL + ALT + SHIFT + g = ungrab
                 if (keySym == SDL_SCANCODE_G && keyEvent->keysym.mod & KMOD_SHIFT)
                     GetLinuxInput().GrabInput(false);
-                // CRLT + ALT + g  = grab
+                // CTRL + ALT + g  = grab
                 else if (keySym == SDL_SCANCODE_G)
                     GetLinuxInput().GrabInput(true);
 			}
@@ -133,37 +134,29 @@ void CSDLKeyboard::Update(bool focus)
 			pSymbol->value = 0.f;
 			PostEvent(pSymbol, keyEvent->keysym.mod);
 		}
-        else if (type == SDL_TEXTINPUT)
-        {
-#if !defined(_RELEASE)
-            if (!didPressTild)
-            {
-#endif
-                SDL_TextInputEvent *const txtEvent = &eventList[i].text;
-                // try to convert the utf8 string to a single wchar_t character
-
-								wstring strWide;
-								CryStringUtils::UTF8ToWStr(&txtEvent->text[0], strWide);
-								for(size_t i = 0; i < strWide.length(); ++i)
-								{
-									SInputEvent event;
-									event.deviceType = m_deviceType;
-									event.state = eIS_UI;
-									event.value = 1.0f;
-									event.inputChar = strWide[i];
-									event.keyName = txtEvent->text;
-									GetLinuxInput().PostInputEvent(event);
-								}
-#if !defined(_RELEASE)
-            }
-#endif
-        }
-        else
+		else if (type == SDL_TEXTINPUT)
 		{
-            // Unexpect0;//ed event type.
+#if !defined(_RELEASE)
+			if (!didPressTild)
+			{
+#endif
+				SDL_TextInputEvent *const txtEvent = &eventList[i].text;
+				uint32_t codepoint;
+				for(Unicode::CIterator<const char *, false> it(txtEvent->text); codepoint = *it; ++it)
+				{
+					SUnicodeEvent event(codepoint);
+					GetLinuxInput().PostUnicodeEvent(event);
+				}
+#if !defined(_RELEASE)
+			}
+#endif
+		}
+		else
+		{
+			// Unexpected event type.
 			abort();
 		}
-    }
+	}
 }
 
 char CSDLKeyboard::GetInputCharAscii(const SInputEvent& event)

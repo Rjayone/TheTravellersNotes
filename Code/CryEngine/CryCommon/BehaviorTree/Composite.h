@@ -22,13 +22,13 @@ namespace BehaviorTree
 			m_children.push_back(child);
 		}
 
-		virtual LoadResult LoadFromXml( const XmlNodeRef& xml, const LoadContext& context ) OVERRIDE
+		virtual LoadResult LoadFromXml( const XmlNodeRef& xml, const LoadContext& context ) override
 		{
 			return BaseClass::LoadFromXml( xml, context );
 		}
 
 #ifdef USING_BEHAVIOR_TREE_SERIALIZATION
-		virtual void Serialize( Serialization::IArchive& archive ) OVERRIDE
+		virtual void Serialize( Serialization::IArchive& archive ) override
 		{
 			archive( m_children, "children", "^[+<>]" );
 
@@ -46,7 +46,7 @@ namespace BehaviorTree
 #endif
 
 #ifdef USING_BEHAVIOR_TREE_XML_DESCRIPTION_CREATION
-		virtual XmlNodeRef CreateXmlDescription() OVERRIDE
+		virtual XmlNodeRef CreateXmlDescription() override
 		{
 			XmlNodeRef xml = GetISystem()->CreateXmlNode( "Composite" );
 
@@ -71,7 +71,7 @@ namespace BehaviorTree
 		typedef Composite<INodePtr> BaseClass;
 
 	public:
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) override
 		{
 			IF_UNLIKELY (BaseClass::LoadFromXml(xml, context) == LoadFailure)
 				return LoadFailure;

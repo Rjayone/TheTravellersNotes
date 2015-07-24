@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	VIRTUAL ~CAnimationDatabase();
+	virtual ~CAnimationDatabase();
 
 	virtual bool Validate(const IAnimationSet *animSet, MannErrorCallback errorCallback, MannErrorCallback warningCallback, void *errorCallbackContext) const;
 	virtual void EnumerateAnimAssets(const IAnimationSet *animSet, MannAssetCallback assetCallback, void *callbackContext) const;
@@ -114,7 +114,7 @@ public:
 		return NULL;
 	}
 
-	VIRTUAL const CFragment *GetBestEntry(const SFragmentQuery &fragQuery, SFragmentSelection *fragSelection = NULL) const
+	virtual const CFragment *GetBestEntry(const SFragmentQuery &fragQuery, SFragmentSelection *fragSelection = NULL) const
 	{
 		const uint32 numFragmentTypes = m_fragmentList.size();
 		SFragTagState *pSelectedFragTags = NULL;
@@ -162,7 +162,7 @@ public:
 		return NULL;
 	}
 
-	VIRTUAL bool Query(SFragmentData &outFragmentData, const SFragmentQuery &inFragQuery, SFragmentSelection *outFragSelection = NULL) const
+	virtual bool Query(SFragmentData &outFragmentData, const SFragmentQuery &inFragQuery, SFragmentSelection *outFragSelection = NULL) const
 	{
 		const CFragment *fragment = GetBestEntry(inFragQuery, outFragSelection);
 
@@ -179,9 +179,9 @@ public:
 		return false;
 	}
 
-	VIRTUAL uint32 Query(SFragmentData &outFragmentData, const SBlendQuery &inBlendQuery, uint32 inOptionIdx, const IAnimationSet *inAnimSet, SFragmentSelection *outFragSelection = NULL) const;
+	virtual uint32 Query(SFragmentData &outFragmentData, const SBlendQuery &inBlendQuery, uint32 inOptionIdx, const IAnimationSet *inAnimSet, SFragmentSelection *outFragSelection = NULL) const;
 
-	VIRTUAL uint32 FindBestMatchingTag(const SFragmentQuery &inFragQuery, SFragTagState *matchedTagState/* = NULL*/, uint32* tagSetIdx/* = NULL*/) const
+	virtual uint32 FindBestMatchingTag(const SFragmentQuery &inFragQuery, SFragTagState *matchedTagState/* = NULL*/, uint32* tagSetIdx/* = NULL*/) const
 	{
 		if (m_pFragDef->IsValidTagID(inFragQuery.fragID))
 		{
@@ -212,27 +212,27 @@ public:
 		return 0;
 	}
 	
-	VIRTUAL const CTagDefinition &GetTagDefs() const
+	virtual const CTagDefinition &GetTagDefs() const
 	{
 		return *m_pTagDef;
 	}
 
-	VIRTUAL const CTagDefinition &GetFragmentDefs() const
+	virtual const CTagDefinition &GetFragmentDefs() const
 	{
 		return *m_pFragDef;
 	}
 
-	VIRTUAL FragmentID GetFragmentID(const char *szFragmentName) const
+	virtual FragmentID GetFragmentID(const char *szFragmentName) const
 	{
 		return m_pFragDef->Find(szFragmentName);
 	}
 
 	//--- Transition queries
 
-	VIRTUAL uint32 GetNumBlends(FragmentID fragmentIDFrom, FragmentID fragmentIDTo, const SFragTagState &tagFrom, const SFragTagState &tagTo) const;
-	VIRTUAL const SFragmentBlend *GetBlend(FragmentID fragmentIDFrom, FragmentID fragmentIDTo, const SFragTagState &tagFrom, const SFragTagState &tagTo, uint32 blendNum) const;
-	VIRTUAL const SFragmentBlend *GetBlend(FragmentID fragmentIDFrom, FragmentID fragmentIDTo, const SFragTagState &tagFrom, const SFragTagState &tagTo, SFragmentBlendUid uid) const;
-	VIRTUAL void FindBestBlends(const SBlendQuery &blendQuery, SBlendQueryResult &result1, SBlendQueryResult &result2) const;
+	virtual uint32 GetNumBlends(FragmentID fragmentIDFrom, FragmentID fragmentIDTo, const SFragTagState &tagFrom, const SFragTagState &tagTo) const;
+	virtual const SFragmentBlend *GetBlend(FragmentID fragmentIDFrom, FragmentID fragmentIDTo, const SFragTagState &tagFrom, const SFragTagState &tagTo, uint32 blendNum) const;
+	virtual const SFragmentBlend *GetBlend(FragmentID fragmentIDFrom, FragmentID fragmentIDTo, const SFragTagState &tagFrom, const SFragTagState &tagTo, SFragmentBlendUid uid) const;
+	virtual void FindBestBlends(const SBlendQuery &blendQuery, SBlendQueryResult &result1, SBlendQueryResult &result2) const;
 
 	//--- Editor entries
 
@@ -248,22 +248,22 @@ public:
 	void Compress();
 
 
-	VIRTUAL const char* FindSubADBFilenameForID ( FragmentID fragmentID ) const;
-	VIRTUAL bool RemoveSubADBFragmentFilter ( FragmentID fragmentID );
-	VIRTUAL bool AddSubADBFragmentFilter ( const string &sADBFileName, FragmentID fragmentID );
-	VIRTUAL void GetSubADBFragmentFilters( SMiniSubADB::TSubADBArray &outList );
+	virtual const char* FindSubADBFilenameForID ( FragmentID fragmentID ) const;
+	virtual bool RemoveSubADBFragmentFilter ( FragmentID fragmentID );
+	virtual bool AddSubADBFragmentFilter ( const string &sADBFileName, FragmentID fragmentID );
+	virtual void GetSubADBFragmentFilters( SMiniSubADB::TSubADBArray &outList ) const;
 
-	VIRTUAL bool AddSubADBTagFilter( const string &sParentFilename, const string &sADBFileName, const TagState tag );
-	VIRTUAL bool MoveSubADBFilter( const string &sADBFileName, const bool bMoveUp);
-	VIRTUAL bool DeleteSubADBFilter( const string &sADBFileName );
-	VIRTUAL bool ClearSubADBFilter( const string &sADBFileName );
+	virtual bool AddSubADBTagFilter( const string &sParentFilename, const string &sADBFileName, const TagState tag );
+	virtual bool MoveSubADBFilter( const string &sADBFileName, const bool bMoveUp);
+	virtual bool DeleteSubADBFilter( const string &sADBFileName );
+	virtual bool ClearSubADBFilter( const string &sADBFileName );
 
-	VIRTUAL const char *GetFilename() const
+	virtual const char *GetFilename() const
 	{
 		return m_filename.c_str();
 	}
 
-	VIRTUAL void QueryUsedTags(const FragmentID fragmentID, const SFragTagState &filter, SFragTagState &usedTags) const;
+	virtual void QueryUsedTags(const FragmentID fragmentID, const SFragTagState &filter, SFragTagState &usedTags) const;
 
 	void DeleteFragmentID(FragmentID fragmentID);
 
@@ -446,11 +446,13 @@ private:
 	const char* FindSubADBFilenameForIDInternal ( FragmentID fragmentID, const SSubADB & pSubADB ) const;
 	bool RemoveSubADBFragmentFilterInternal ( FragmentID fragmentID, SSubADB &subADB );
 	bool AddSubADBFragmentFilterInternal ( const string &sADBFileName, FragmentID fragmentID, SSubADB &subADB );
-	void FillMiniSubADB(SMiniSubADB &outMiniSub, const SSubADB &inSub);
+	void FillMiniSubADB(SMiniSubADB &outMiniSub, const SSubADB &inSub) const;
 	bool MoveSubADBFilterInternal( const string &sADBFileName, SSubADB &subADB, const bool bMoveUp );
 	bool DeleteSubADBFilterInternal( const string &sADBFileName, SSubADB &subADB );
 	bool ClearSubADBFilterInternal( const string &sADBFileName, SSubADB &subADB );
 	bool AddSubADBTagFilterInternal( const string &sParentFilename, const string &sADBFileName, const TagState tag, SSubADB &subADB );
+
+	static void AdjustSubADBListAfterFragmentIDDeletion(SSubADB::TSubADBList& subADBs, const FragmentID fragmentID);
 
 	bool ValidateSet(const TFragmentTagSetList &tagSetList);
 

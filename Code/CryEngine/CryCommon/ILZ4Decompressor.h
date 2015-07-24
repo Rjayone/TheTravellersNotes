@@ -13,7 +13,7 @@
 #ifndef __ILZ4DECOMPRESSOR_H__
 #define __ILZ4DECOMPRESSOR_H__
 
-UNIQUE_IFACE struct ILZ4Decompressor
+struct ILZ4Decompressor
 {
 	protected:
 		virtual ~ILZ4Decompressor()	{}; // use Release()

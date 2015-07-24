@@ -35,11 +35,14 @@ def get_platform_list(self, platform ):
 		return [ platform, 'linux_x64', 'linux' ]
 	if platform in ('darwin_x86', 'darwin_x64'):
 		return [ platform, 'darwin' ]
+	if platform in ('android_arm_gcc', 'android_arm_clang'):
+		return [ platform, 'android', 'android_arm' ]
+	
 	if platform in ('project_generator', 'cppcheck', []):
 		#TODO: Only return the ones supported by the SKU
-		return ['win_x86', 'win_x64', 'win', 'linux_x86_gcc', 'linux_x64_gcc', 'linux_x86_clang', 'linux_x64_clang', 'linux', 'darwin_x86', 'darwin_x64', 'darwin', 'orbis', 'durango' ]
+		return ['win_x86', 'win_x64', 'win', 'linux_x86_gcc', 'linux_x64_gcc', 'linux_x86_clang', 'linux_x64_clang', 'linux', 'darwin_x86', 'darwin_x64', 'darwin', 'orbis', 'durango', 'android', 'android_arm' ]
 	
-	# Alwasy return a list, even if there is no alias
+	# Always return a list, even if there is no alias
 	if platform == []:
 		return []
 	return [ platform ] 
@@ -59,7 +62,7 @@ def SanitizeInput(ctx, kw):
 		if not isinstance(kw[entry],list):
 			kw[entry] = [ kw[entry] ]				
 
-	for entry in 'output_file_name files additional_settings use_module export_definitions meta_includes file_list winres_includes winres_defines defines features lib libpath linkflags use cflags cxxflags includes framework'.split():
+	for entry in 'output_file_name files additional_settings use_module export_definitions meta_includes file_list winres_includes winres_defines defines features java_source lib libpath linkflags use cflags cxxflags includes framework'.split():
 	
 		# Base entry
 		_SanitizeInput(kw, entry)
@@ -222,6 +225,7 @@ def LoadFileLists(ctx, kw, file_lists):
 	no_uber_file_files			= []
 	header_files						= []
 	darwin_source_files			= []
+	java_source_files       = []
 	qt_source_files					= []
 	resource_files					= []
 	uber_file_list					= []
@@ -277,7 +281,6 @@ def LoadFileLists(ctx, kw, file_lists):
 					file_node = ctx.path.make_node(file)
 					
 					task_generator_files.add(file_node.abspath().lower())
-					
 					# Collect per file information		
 					if file == pch_file:
 						# PCHs are not compiled with the normal compilation, hence don't collect them
@@ -292,6 +295,13 @@ def LoadFileLists(ctx, kw, file_lists):
 						source_files 									+= [ file ]
 						if not generate_uber_file:
 							no_uber_file_files 					+= [ file ]
+
+					elif 'android' in ctx.env['PLATFORM'] and file.endswith('.s'): #TODO this should have a real handling for assembly files
+						source_files 								+= [ file ]
+						no_uber_file_files 					+= [ file ]
+						
+					elif file.endswith('.java'):
+						java_source_files 						+= [ file ]
 							
 					elif file.endswith('.mm'):
 						darwin_source_files 					+= [ file ]
@@ -326,7 +336,7 @@ def LoadFileLists(ctx, kw, file_lists):
 	# Compute final source list based on platform	
 	if platform == 'project_generator' or ctx.options.file_filter != "":
 		# Collect all files plus uber files for project generators and when doing a single file compilation
-		kw['source'] = uber_file_relative_list + source_files + qt_source_files + darwin_source_files + header_files + resource_files + other_files
+		kw['source'] = uber_file_relative_list + source_files + qt_source_files + darwin_source_files + java_source_files + header_files + resource_files + other_files
 		if platform == 'project_generator' and pch_file != '':
 			kw['source'] += [ pch_file ] # Also collect PCH for project generators
 
@@ -348,7 +358,8 @@ def LoadFileLists(ctx, kw, file_lists):
 			kw['source'] += darwin_source_files
 		if 'win' in ctx.get_platform_list( platform ):
 			kw['source'] += resource_files
-	
+		kw['java_source'] = java_source_files
+		
 	# Handle PCH files
 	if pch_file != '' and found_pch == False:
 		# PCH specified but not found
@@ -627,9 +638,21 @@ def CryEngineModule(ctx, *k, **kw):
 	if not BuildTaskGenerator(ctx, kw):
 		return
 
-	if _is_monolithic_build(ctx):									# For monolithc builds, simply collect all build settings
+	if _is_monolithic_build(ctx) and kw['target'] != 'AndroidLauncher':									# For monolithc builds, simply collect all build settings
 		MonolithicBuildModule(ctx, getattr(ctx, 'game_project', None), *k, **kw)
 		return
+	
+	# Temp monolothinc build hack for android
+	if 'android' in ctx.env['PLATFORM']:
+		kw['defines'] += [ '_LIB' ]
+		kw['features'] += [ 'apply_monolithic_build_settings' ]
+		active_project_name = ctx.spec_game_projects(ctx.game_project)
+		
+		if len (active_project_name) != 1:
+			Logs.warn("Multiple project names found: %s, but only one is supported for android - using '%s'." % (active_project_name, active_project_name[0]))
+			active_project_name = active_project_name[0]
+			
+		kw['project_name'] = "".join(active_project_name)
 	
 	kw['features'] 			+= [ 'generate_rc_file' ]		# Always Generate RC files for Engine DLLs
 	if ctx.env['PLATFORM'] == 'darwin_x64':
@@ -1207,14 +1230,17 @@ def get_current_spec_defines(ctx):
 @before_method('process_source')
 def apply_monolithic_build_settings(self):
 	# Add collected settings to link task	
-	self.use 		+= list(set(self.bld.monolitic_build_settings['use']))
-	self.lib 		+= list(set(self.bld.monolitic_build_settings['lib']))
-	self.libpath 	+= list(set(self.bld.monolitic_build_settings['libpath']))
-	self.linkflags 	+= list(set(self.bld.monolitic_build_settings['linkflags']))
-	
-	# Add game specific files
-	prefix 			= self.project_name + '_'
-	self.use 		+= list(set(self.bld.monolitic_build_settings[prefix + 'use']))
-	self.lib 		+= list(set(self.bld.monolitic_build_settings[prefix + 'lib']))
-	self.libpath 	+= list(set(self.bld.monolitic_build_settings[prefix + 'libpath']))
-	self.linkflags 	+= list(set(self.bld.monolitic_build_settings[prefix + 'linkflags']))
+	try:
+		self.use 		+= list(set(self.bld.monolitic_build_settings['use']))
+		self.lib 		+= list(set(self.bld.monolitic_build_settings['lib']))
+		self.libpath 	+= list(set(self.bld.monolitic_build_settings['libpath']))
+		self.linkflags 	+= list(set(self.bld.monolitic_build_settings['linkflags']))
+		
+		# Add game specific files
+		prefix 			= self.project_name + '_'
+		self.use 		+= list(set(self.bld.monolitic_build_settings[prefix + 'use']))
+		self.lib 		+= list(set(self.bld.monolitic_build_settings[prefix + 'lib']))
+		self.libpath 	+= list(set(self.bld.monolitic_build_settings[prefix + 'libpath']))
+		self.linkflags 	+= list(set(self.bld.monolitic_build_settings[prefix + 'linkflags']))
+	except:
+		print "failed in apply monolithic"

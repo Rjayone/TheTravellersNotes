@@ -11,14 +11,13 @@ History:
 - 12:03:2009 : Interface created by Kevin Kirst
 
 *********************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IRangeSignaling.h)
 
 #ifndef __IRANGESIGNALING_H__
 #define __IRANGESIGNALING_H__
 
 struct IAISignalExtraData;
 
-UNIQUE_IFACE struct IRangeSignaling
+struct IRangeSignaling
 {
 	virtual ~IRangeSignaling() {}
 

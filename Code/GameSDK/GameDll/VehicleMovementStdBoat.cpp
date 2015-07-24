@@ -144,7 +144,7 @@ bool CVehicleMovementStdBoat::Init(IVehicle* pVehicle, const CVehicleParams& tab
 	MOVEMENT_VALUE_OPT("waveEffect", &waveEffect, table);
 	m_pWaveEffect = gEnv->pParticleManager->FindEffect(waveEffect, "MovementStdBoat");
 
-  m_waveTimer = Random()*gf_PI;
+  m_waveTimer = cry_random(0.0f, gf_PI);
   m_diving = false;
   m_wakeSlot = -1;   
   m_waveSoundPitch = 0.f;
@@ -166,7 +166,7 @@ void CVehicleMovementStdBoat::Reset()
   CVehicleMovementBase::Reset();
 
   Lift(false);    
-  m_waveTimer = Random()*gf_PI;
+  m_waveTimer = cry_random(0.0f, gf_PI);
 
   m_prevAngle = 0.0f;
   m_diving = false;  
@@ -571,7 +571,7 @@ void CVehicleMovementStdBoat::UpdateSurfaceEffects(const float deltaTime)
       SpawnParams spawnParams;
       spawnParams.fSizeScale = spawnParams.fCountScale = 0.5f + 0.25f*speedRatio;
       spawnParams.fSizeScale  += 0.4f*m_waveRandomMult;
-      spawnParams.fCountScale += 0.4f*Random();
+      spawnParams.fCountScale += cry_random(0.0f, 0.4f);
 
       m_wakeSlot = pEntity->LoadParticleEmitter(m_wakeSlot, m_pWaveEffect, &spawnParams);        
     }
@@ -807,7 +807,7 @@ void CVehicleMovementStdBoat::ProcessMovement(const float deltaTime)
 
   // new randomized amount for this oscillation
   if (m_waveTimer >= gf_PI && waveTimerPrev < gf_PI) 
-    m_waveRandomMult = Random();  
+    m_waveRandomMult = cry_random(0.0f, 1.0f);  
   
   if (m_waveTimer >= 2*gf_PI)  
     m_waveTimer -= 2*gf_PI;    

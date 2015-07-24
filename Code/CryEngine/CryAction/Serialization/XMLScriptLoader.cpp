@@ -22,21 +22,21 @@ public:
 	virtual void AddRef();
 	virtual void Release();
 
-	VIRTUAL IReadXMLSinkPtr BeginTable( const char * name, const XmlNodeRef& definition );
-	VIRTUAL IReadXMLSinkPtr BeginTableAt( int elem, const XmlNodeRef& definition );
-	VIRTUAL bool SetValue( const char * name, const TValue& value, const XmlNodeRef& definition );
-	VIRTUAL bool EndTableAt( int elem );
-	VIRTUAL bool EndTable( const char * name );
+	virtual IReadXMLSinkPtr BeginTable( const char * name, const XmlNodeRef& definition );
+	virtual IReadXMLSinkPtr BeginTableAt( int elem, const XmlNodeRef& definition );
+	virtual bool SetValue( const char * name, const TValue& value, const XmlNodeRef& definition );
+	virtual bool EndTableAt( int elem );
+	virtual bool EndTable( const char * name );
 
-	VIRTUAL IReadXMLSinkPtr BeginArray( const char * name, const XmlNodeRef& definition );
-	VIRTUAL bool SetAt( int elem, const TValue& value, const XmlNodeRef& definition );
-	VIRTUAL bool EndArray( const char * name );
+	virtual IReadXMLSinkPtr BeginArray( const char * name, const XmlNodeRef& definition );
+	virtual bool SetAt( int elem, const TValue& value, const XmlNodeRef& definition );
+	virtual bool EndArray( const char * name );
 
-  VIRTUAL bool IsCreationMode(){ return false; }
-  VIRTUAL void SetCreationNode( XmlNodeRef definition ){}
-  VIRTUAL XmlNodeRef GetCreationNode(){ return XmlNodeRef(0); }  
+  virtual bool IsCreationMode(){ return false; }
+  virtual void SetCreationNode( XmlNodeRef definition ){}
+  virtual XmlNodeRef GetCreationNode(){ return XmlNodeRef(0); }  
 
-	VIRTUAL bool Complete();
+	virtual bool Complete();
 	// ~IReadXMLSink
 
 private:
@@ -197,19 +197,19 @@ public:
 	virtual void AddRef();
 	virtual void Release();
 
-	VIRTUAL IWriteXMLSourcePtr BeginTable( const char * name );
-	VIRTUAL IWriteXMLSourcePtr BeginTableAt( int elem );
-	VIRTUAL bool HaveValue( const char * name );
-	VIRTUAL bool GetValue( const char * name, TValue& value, const XmlNodeRef& definition );
-	VIRTUAL bool EndTableAt( int elem );
-	VIRTUAL bool EndTable( const char * name );
+	virtual IWriteXMLSourcePtr BeginTable( const char * name );
+	virtual IWriteXMLSourcePtr BeginTableAt( int elem );
+	virtual bool HaveValue( const char * name );
+	virtual bool GetValue( const char * name, TValue& value, const XmlNodeRef& definition );
+	virtual bool EndTableAt( int elem );
+	virtual bool EndTable( const char * name );
 
-	VIRTUAL IWriteXMLSourcePtr BeginArray( const char * name, size_t * numElems, const XmlNodeRef& definition );
-	VIRTUAL bool HaveElemAt( int elem );
-	VIRTUAL bool GetAt( int elem, TValue& value, const XmlNodeRef& definition );
-	VIRTUAL bool EndArray( const char * name );
+	virtual IWriteXMLSourcePtr BeginArray( const char * name, size_t * numElems, const XmlNodeRef& definition );
+	virtual bool HaveElemAt( int elem );
+	virtual bool GetAt( int elem, TValue& value, const XmlNodeRef& definition );
+	virtual bool EndArray( const char * name );
 
-	VIRTUAL bool Complete();
+	virtual bool Complete();
 	// ~IWriteXMLSource
 
 private:
@@ -392,5 +392,4 @@ bool XmlScriptSave( const char * definitionFile, const char * dataFile, SmartScr
 	return GetISystem()->GetXmlUtils()->GetIReadWriteXMLSink()->WriteXML( definitionFile, dataFile, &*pSaver );
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IReadXMLSink)
-#include UNIQUE_VIRTUAL_WRAPPER(IWriteXMLSource)
+

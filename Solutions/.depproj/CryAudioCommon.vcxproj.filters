@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\ATLEntityData.h">
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\AudioLogger.h">
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\IAudioSystemImplementation.h">
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\STLSoundAllocator.h">
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\SoundAllocator.h">
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\audiocommon.waf_files">
+				<Filter>_WAF_</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\wscript">
+				<Filter>_WAF_</Filter>
+			</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+			<Filter Include="_WAF_">
+				<UniqueIdentifier>{88F32D28-D9A2-467A-82CE-4D592F9E94FE}</UniqueIdentifier>
+			</Filter>
+	</ItemGroup>
+</Project>

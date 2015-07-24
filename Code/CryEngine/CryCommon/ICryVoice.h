@@ -5,7 +5,7 @@
 
 struct ICryVoice
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICryVoice(){}
 	// Mute
 	// Turn voice on/off between a local and remote user. When mute is on no voice will be sent to or received from the remote user.
@@ -90,7 +90,7 @@ struct ICryVoice
 	// localUser	- The pad number of the local user.
 	// return			- volume. 0.0 to 1.0
 	virtual float GetVoicePlaybackVolume(uint32 localUser) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __ICRYVOICE_H__

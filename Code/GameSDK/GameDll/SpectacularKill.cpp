@@ -256,7 +256,7 @@ bool CSpectacularKill::GetValidAnim(const CActor* pTarget, SSpectacularKillAnima
 		int iNumValidAnims = static_cast<int>(validAnims.size());
 		if (iNumValidAnims > 0)
 		{
-			anim = validAnims[cry_rand() % iNumValidAnims];
+			anim = validAnims[cry_random(0, iNumValidAnims - 1)];
 			bSuccess = true;
 		}
 		else

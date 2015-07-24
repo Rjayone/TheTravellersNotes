@@ -24,7 +24,7 @@ struct		SRenderingPassInfo;
 ////////////////////////////////////////////////////////////////////////////////////////////////
 struct IProcess
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IProcess(){}
 	virtual	bool	Init() = 0;	
 	virtual void	Update() = 0;
@@ -32,7 +32,7 @@ struct IProcess
 	virtual	void	ShutDown() = 0;		
 	virtual	void	SetFlags(int flags) = 0;
 	virtual	int		GetFlags(void) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

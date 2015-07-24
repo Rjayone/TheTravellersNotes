@@ -75,50 +75,74 @@ inline void mathMatrixPerspectiveFov(Matrix44A* pMatr, f32 fovY, f32 Aspect, f32
 	f32 yScale = 1.0f/tan_tpl(fovY/2.0f);
 	f32 xScale = yScale / Aspect;
 
+	f32 m22 = f32(f64(zf)/(f64(zn) - f64(zf)));
+	f32 m32 = f32(f64(zn)*f64(zf)/(f64(zn)-f64(zf)));
+
 	(*pMatr)(0,0) = xScale;		(*pMatr)(0,1) = 0;			(*pMatr)(0,2) = 0;						(*pMatr)(0,3) = 0; 
 	(*pMatr)(1,0) = 0;				(*pMatr)(1,1) = yScale; (*pMatr)(1,2) = 0;						(*pMatr)(1,3) = 0; 
-	(*pMatr)(2,0) = 0;				(*pMatr)(2,1) = 0;			(*pMatr)(2,2) = zf/(zn-zf);		(*pMatr)(2,3) = -1.0f; 
-	(*pMatr)(3,0) = 0;				(*pMatr)(3,1) = 0;			(*pMatr)(3,2) = zn*zf/(zn-zf); (*pMatr)(3,3) = 0; 
+	(*pMatr)(2,0) = 0;				(*pMatr)(2,1) = 0;			(*pMatr)(2,2) = m22;					(*pMatr)(2,3) = -1.0f; 
+	(*pMatr)(3,0) = 0;				(*pMatr)(3,1) = 0;			(*pMatr)(3,2) = m32;					(*pMatr)(3,3) = 0; 
 }
 
 
 
 inline void mathMatrixOrtho(Matrix44A* pMatr, f32 w, f32 h, f32 zn, f32 zf)
 {
+	f32 m22 = f32(1.0/(f64(zn) - f64(zf)));
+	f32 m32 = f32(f64(zn)/(f64(zn)-f64(zf)));
 
 	(*pMatr)(0,0) = 2.0f/w;  (*pMatr)(0,1) = 0;			 (*pMatr)(0,2) = 0;							(*pMatr)(0,3) = 0;
 	(*pMatr)(1,0) = 	0;		 (*pMatr)(1,1) = 2.0f/h; (*pMatr)(1,2) = 0;							(*pMatr)(1,3) = 0;
-	(*pMatr)(2,0) =		0;     (*pMatr)(2,1) = 0;			 (*pMatr)(2,2) = 1.0f/(zn-zf);	(*pMatr)(2,3) = 0;
-	(*pMatr)(3,0) =		0;		 (*pMatr)(3,1) = 0;			 (*pMatr)(3,2) = zn/(zn-zf);		(*pMatr)(3,3) =	1;
+	(*pMatr)(2,0) =		0;     (*pMatr)(2,1) = 0;			 (*pMatr)(2,2) = m22;						(*pMatr)(2,3) = 0;
+	(*pMatr)(3,0) =		0;		 (*pMatr)(3,1) = 0;			 (*pMatr)(3,2) = m32;						(*pMatr)(3,3) =	1;
 
 }
 
 inline void mathMatrixOrthoOffCenter(Matrix44A* pMatr, f32 l, f32 r, f32 b, f32 t, f32 zn, f32 zf)
 {
+	f32 m22 = f32(1.0/(f64(zn) - f64(zf)));
+	f32 m32 = f32(f64(zn)/(f64(zn)-f64(zf)));
+
 	(*pMatr)(0,0) = 2.0f/(r-l);		(*pMatr)(0,1) = 0;					(*pMatr)(0,2) = 0;						(*pMatr)(0,3) =	0;
 	(*pMatr)(1,0) = 	0;          (*pMatr)(1,1) = 2.0f/(t-b);	(*pMatr)(1,2) = 0;						(*pMatr)(1,3) = 0;
-	(*pMatr)(2,0) =		0;          (*pMatr)(2,1) =	 0;					(*pMatr)(2,2) =	1.0f/(zn-zf);	(*pMatr)(2,3) =	0;
-	(*pMatr)(3,0) =	(l+r)/(l-r);  (*pMatr)(3,1) =(t+b)/(b-t); (*pMatr)(3,2) = zn/(zn-zf);		(*pMatr)(3,3) = 1.0f;
+	(*pMatr)(2,0) =		0;          (*pMatr)(2,1) =	 0;					(*pMatr)(2,2) = m22;					(*pMatr)(2,3) =	0;
+	(*pMatr)(3,0) =	(l+r)/(l-r);  (*pMatr)(3,1) =(t+b)/(b-t); (*pMatr)(3,2) = m32;					(*pMatr)(3,3) = 1.0f;
 }
 
 
 inline void mathMatrixOrthoOffCenterLH(Matrix44A* pMatr, f32 l, f32 r, f32 b, f32 t, f32 zn, f32 zf)
 {
+	f32 m22 = f32(1.0/(f64(zf) - f64(zn)));
+	f32 m32 = f32(f64(zn)/(f64(zn)-f64(zf)));
+
 	(*pMatr)(0,0) = 2.0f/(r-l);		(*pMatr)(0,1) = 0;					(*pMatr)(0,2) = 0;						(*pMatr)(0,3) =	0;
 	(*pMatr)(1,0) = 	0;          (*pMatr)(1,1) = 2.0f/(t-b);	(*pMatr)(1,2) = 0;						(*pMatr)(1,3) = 0;
-	(*pMatr)(2,0) =		0;          (*pMatr)(2,1) =	 0;					(*pMatr)(2,2) =	1.0f/(zf-zn);	(*pMatr)(2,3) =	0;
-	(*pMatr)(3,0) =	(l+r)/(l-r);  (*pMatr)(3,1) =(t+b)/(b-t); (*pMatr)(3,2) = zn/(zn-zf);		(*pMatr)(3,3) = 1.0f;
+	(*pMatr)(2,0) =		0;          (*pMatr)(2,1) =	 0;					(*pMatr)(2,2) = m22;					(*pMatr)(2,3) =	0;
+	(*pMatr)(3,0) =	(l+r)/(l-r);  (*pMatr)(3,1) =(t+b)/(b-t); (*pMatr)(3,2) = m32;					(*pMatr)(3,3) = 1.0f;
 }
 
 
 inline void mathMatrixPerspectiveOffCenter(Matrix44A* pMatr, f32 l, f32 r, f32 b, f32 t, f32 zn, f32 zf)
 {
+	f32 m22 = f32(f64(zf)/(f64(zn) - f64(zf)));
+	f32 m32 = f32(f64(zn)*f64(zf)/(f64(zn)-f64(zf)));
+
 	(*pMatr)(0,0) =	2*zn/(r-l);			(*pMatr)(0,1) =  0;						(*pMatr)(0,2) = 0;							(*pMatr)(0,3) = 0;
 	(*pMatr)(1,0) = 0;            	(*pMatr)(1,1) = 2*zn/(t-b);   (*pMatr)(1,2) = 0;							(*pMatr)(1,3) =	0;
-	(*pMatr)(2,0) =	(l+r)/(r-l);		(*pMatr)(2,1) =	(t+b)/(t-b);  (*pMatr)(2,2) =	zf/(zn-zf);			(*pMatr)(2,3) =	-1;
-	(*pMatr)(3,0) =	0;							(*pMatr)(3,1) =	0;            (*pMatr)(3,2) =	zn*zf/(zn-zf);	(*pMatr)(3,3) =	0;
+	(*pMatr)(2,0) =	(l+r)/(r-l);		(*pMatr)(2,1) =	(t+b)/(t-b);  (*pMatr)(2,2) =	m22;						(*pMatr)(2,3) =	-1;
+	(*pMatr)(3,0) =	0;							(*pMatr)(3,1) =	0;            (*pMatr)(3,2) =	m32;						(*pMatr)(3,3) =	0;
 }
 
+inline void mathMatrixPerspectiveOffCenterReverseDepth(Matrix44A* pMatr, f32 l, f32 r, f32 b, f32 t, f32 zn, f32 zf)
+{
+	f32 m22 = f32(-f64(zn)/(f64(zn) - f64(zf)));
+	f32 m32 = f32(-f64(zn)*f64(zf)/(f64(zn)-f64(zf)));
+
+	(*pMatr)(0,0) =	2*zn/(r-l);			(*pMatr)(0,1) =  0;						(*pMatr)(0,2) = 0;							(*pMatr)(0,3) = 0;
+	(*pMatr)(1,0) = 0;            	(*pMatr)(1,1) = 2*zn/(t-b);   (*pMatr)(1,2) = 0;							(*pMatr)(1,3) =	0;
+	(*pMatr)(2,0) =	(l+r)/(r-l);		(*pMatr)(2,1) =	(t+b)/(t-b);  (*pMatr)(2,2) =	m22;						(*pMatr)(2,3) =	-1;
+	(*pMatr)(3,0) =	0;							(*pMatr)(3,1) =	0;            (*pMatr)(3,2) =	m32;						(*pMatr)(3,3) =	0;
+}
 
 //RH
 inline void mathMatrixLookAt(Matrix44A* pMatr, const Vec3& Eye, const Vec3& At, const Vec3& Up)
@@ -134,6 +158,34 @@ inline void mathMatrixLookAt(Matrix44A* pMatr, const Vec3& Eye, const Vec3& At, 
 	(*pMatr)(3,0) = -xaxis.Dot(Eye);	(*pMatr)(3,1) = -yaxis.Dot(Eye);	(*pMatr)(3,2) = -zaxis.Dot(Eye);	(*pMatr)(3,3) = 1; 
 }
 
+inline bool mathMatrixPerspectiveFovInverse(Matrix44_tpl<f64>* pResult, const Matrix44A* pProjFov)
+{
+	if((*pProjFov)(0,1) == 0.0f && (*pProjFov)(0,2) == 0.0f && (*pProjFov)(0,3) == 0.0f && 
+     (*pProjFov)(1,0) == 0.0f && (*pProjFov)(1,2) == 0.0f && (*pProjFov)(1,3) == 0.0f && 
+     (*pProjFov)(3,0) == 0.0f && (*pProjFov)(3,1) == 0.0f && (*pProjFov)(3,2) != 0.0f)
+	{
+		(*pResult)(0,0) = 1.0 / (*pProjFov).m00;              (*pResult)(0,1) = 0;                                  (*pResult)(0,2) = 0;   (*pResult)(0,3) = 0;
+		(*pResult)(1,0) = 0;                                  (*pResult)(1,1) = 1.0 / (*pProjFov).m11;              (*pResult)(1,2) = 0;   (*pResult)(1,3) = 0;
+		(*pResult)(2,0) = 0;                                  (*pResult)(2,1) = 0;                                  (*pResult)(2,2) = 0;   (*pResult)(2,3) = 1.0 / (*pProjFov).m32;
+		(*pResult)(3,0) = (*pProjFov).m20 / (*pProjFov).m00;  (*pResult)(3,1) = (*pProjFov).m21 / (*pProjFov).m11;  (*pResult)(3,2) =-1;   (*pResult)(3,3) = (*pProjFov).m22 / (*pProjFov).m32;
+
+		return true;
+	}
+
+	return false;
+}
+
+template<class T_out, class T_in> inline void mathMatrixLookAtInverse(Matrix44_tpl<T_out>* pResult, const Matrix44_tpl<T_in>* pLookAt)
+{
+	(*pResult)(0,0) = (*pLookAt).m00;  (*pResult)(0,1) = (*pLookAt).m10;  (*pResult)(0,2) = (*pLookAt).m20;  (*pResult)(0,3) = (*pLookAt).m03;
+	(*pResult)(1,0) = (*pLookAt).m01;  (*pResult)(1,1) = (*pLookAt).m11;  (*pResult)(1,2) = (*pLookAt).m21;  (*pResult)(1,3) = (*pLookAt).m13;
+	(*pResult)(2,0) = (*pLookAt).m02;  (*pResult)(2,1) = (*pLookAt).m12;  (*pResult)(2,2) = (*pLookAt).m22;  (*pResult)(2,3) = (*pLookAt).m23;
+
+	(*pResult)(3,0) = T_out(-(f64((*pLookAt).m00) * f64((*pLookAt).m30) + f64((*pLookAt).m01) * f64((*pLookAt).m31) + f64((*pLookAt).m02) * f64((*pLookAt).m32)));
+	(*pResult)(3,1) = T_out(-(f64((*pLookAt).m10) * f64((*pLookAt).m30) + f64((*pLookAt).m11) * f64((*pLookAt).m31) + f64((*pLookAt).m12) * f64((*pLookAt).m32)));
+	(*pResult)(3,2) = T_out(-(f64((*pLookAt).m20) * f64((*pLookAt).m30) + f64((*pLookAt).m21) * f64((*pLookAt).m31) + f64((*pLookAt).m22) * f64((*pLookAt).m32)));
+	(*pResult)(3,3) = (*pLookAt).m33;
+};
 
 inline void mathVec4Transform(f32 out[4], const f32 m[16], const f32 in[4])
 {
@@ -321,73 +373,6 @@ inline Vec3* mathVec3UnprojectArray(	Vec3 *pOut, uint32 OutStride, const Vec3 *p
 }
 
 
-#define mathVec3TransformCoordArrayF(pOut, OutStride, pV, VStride, pM, n) mathVec3TransformCoordArray((Vec3*)pOut, OutStride, (Vec3*)pV, VStride, (Matrix44*)pM, n)
-
-
-inline Vec3* mathVec3TransformCoordArray(	Vec3 *pOut, uint32 OutStride,	const Vec3 *pV, uint32 VStride, const Matrix44* pM,	uint32 n )
-{
-	Vec4 in, out;
-
-	int8* pOutT = (int8*)pOut;
-	int8* pInT = (int8*)pV;
-
-	Vec3* pvOut;
-	Vec3* pvIn;
-
-	for (uint32 i=0; i<n; i++)
-	{
-		pvOut = (Vec3*)pOutT;
-		pvIn = (Vec3*)pInT;
-
-		in.x = pvIn->x;
-		in.y = pvIn->y;
-		in.z = pvIn->z;
-		in.w = 1.0f;
-
-		mathVec4Transform((f32*)&out, pM->GetData(), (f32*)&in);
-
-		if (out.w == 0.0f)
-			return NULL;
-
-		pvOut->x = out.x / out.w;
-		pvOut->y = out.y / out.w;
-		pvOut->z = out.z / out.w;
-
-		pOutT += OutStride;
-		pInT += VStride;
-	}
-
-	return pOut;
-}
-
-
-
-
-
-
-
-
-class CIntToFloat
-{
-public:
-	ILINE explicit CIntToFloat(int64 i) : tmp((float)i) {}
-	ILINE float Convert()	{	return tmp;	}
-private:
-	float tmp;
-};
-
-
-class CFloatToInt
-{
-public:
-	ILINE CFloatToInt() {}
-	ILINE explicit CFloatToInt(double d) : tmp(d){}
-	ILINE void Set(double d)	{	tmp=d;	}
-	ILINE int64 Convert()	{	return int64(tmp); }
-private:
-	double tmp;
-};
-
 
 
 /*****************************************************
@@ -468,18 +453,6 @@ ILINE int __fastcall FtoI(float  x)
 #else
 inline int FtoI(float x) { return (int)x; }
 #endif
-
-
-
-//////////////////////////////////////
-#define rnd()	(((float)cry_rand())/CRY_RAND_MAX)  // Floating point random number generator ( 0 -> 1)
-
-
-
-
-
-
-
 
 #endif //math
 

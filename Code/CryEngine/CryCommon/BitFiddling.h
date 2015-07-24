@@ -19,19 +19,6 @@
 
 #if defined(LINUX) || defined(APPLE) || defined(ORBIS)
 #define countLeadingZeros32(x)              __builtin_clz(x)
-#elif defined(XENON)
-#define countLeadingZeros32(x)              _CountLeadingZeros(x)
-#elif defined(PS3)
-#if defined(__SPU__)
-#define countLeadingZeros32(x)              (spu_extract( spu_cntlz( spu_promote((x),0) ),0) )
-#else // #if defined(__SPU__)
-// SDK3.2 linker errors when using __cntlzw
-ILINE uint8 countLeadingZeros32( uint32 x)
-{
-	return NIntrinsics::CountLeadingZeros32Bit(x);
-}
-
-#endif // #if defined(__SPU__)
 #else		// Windows implementation
 ILINE uint32 countLeadingZeros32(uint32 x)
 {

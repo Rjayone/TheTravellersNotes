@@ -45,7 +45,7 @@ public:
 		if ( dataInOut.nextUpdateTime < timeNow )
 		{
 			dataInOut.nextUpdateTime = timeNow + CTimeValue( params.updateSeconds );
-			dataInOut.value = Random( -params.range, params.range );
+			dataInOut.value = cry_random( -params.range, params.range );
 		}
 	}
 

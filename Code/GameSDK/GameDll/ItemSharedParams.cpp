@@ -226,9 +226,7 @@ bool CItemSharedParams::ReadParams(const XmlNodeRef& paramsNode)
 	params.aiAttachment[IItem::eIH_Right] = reader.ReadParamValue("ai_attachment_right", params.aiAttachment[IItem::eIH_Right].c_str());
 	params.aiAttachment[IItem::eIH_Left] = reader.ReadParamValue("ai_attachment_left", params.aiAttachment[IItem::eIH_Left].c_str());
 
-	reader.ReadParamValue<bool>("heavy_weapon", params.heavy_weapon);
 	reader.ReadParamValue<bool>("auto_droppable", params.auto_droppable);
-	reader.ReadParamValue<int>("hud_style", params.hud_style);
 	reader.ReadParamValue<bool>("auto_pickable", params.auto_pickable);
 	reader.ReadParamValue<bool>("has_first_select", params.has_first_select);
 	reader.ReadParamValue<bool>("attach_to_back", params.attach_to_back);

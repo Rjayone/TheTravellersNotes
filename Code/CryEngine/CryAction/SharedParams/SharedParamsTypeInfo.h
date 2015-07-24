@@ -38,14 +38,15 @@ class CSharedParamsTypeInfo
 		{
 			if(pName)
 			{
-				size_t	length = strlen(pName), pos = 0;
+				const size_t length = strlen(pName);
+				size_t pos = 0;
 
-				if(length > MaxNameLength)
+				if(length > sizeof(m_name) - 1)
 				{
-					pos = length - MaxNameLength;
+					pos = length - (sizeof(m_name) - 1);
 				}
 
-				strncpy(m_name, pName + pos, MaxNameLength);
+				cry_strcpy(m_name, pName + pos);
 			}
 			else
 			{
@@ -54,14 +55,15 @@ class CSharedParamsTypeInfo
 
 			if(pFileName)
 			{
-				size_t	length = strlen(pFileName), pos = 0;
+				const size_t length = strlen(pFileName);
+				size_t pos = 0;
 
-				if(length > MaxFileNameLength)
+				if(length > sizeof(m_fileName) - 1)
 				{
-					pos = length - MaxFileNameLength;
+					pos = length - (sizeof(m_fileName) - 1);
 				}
 
-				strncpy(m_fileName, pFileName + pos, MaxFileNameLength);
+				cry_strcpy(m_fileName, pFileName + pos);
 			}
 			else
 			{
@@ -70,7 +72,7 @@ class CSharedParamsTypeInfo
 			
 			m_line = line;
 
-			CryFixedStringT<256>	temp;
+			CryFixedStringT<256> temp;
 
 			temp.Format("%d%s%s%d", size, m_name, m_fileName, m_line);
 
@@ -140,13 +142,15 @@ class CSharedParamsTypeInfo
 
 	private:
 
-		enum { MaxNameLength = 63, MaxFileNameLength = 63 };
+		size_t m_size;
 
-		size_t	m_size;
+		char m_name[64];
+		char m_fileName[64];
 
-		char		m_name[MaxNameLength + 1], m_fileName[MaxFileNameLength + 1];
-
-		uint32	m_line, m_uniqueId;
+		uint32 m_line;
+		uint32 m_uniqueId;
 };
+
+#undef DEBUG_SHARED_PARAMS_TYPE_INFO
 
 #endif //__SHAREDPARAMSTYPEINFO_H__

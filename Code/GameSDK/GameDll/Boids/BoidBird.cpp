@@ -21,12 +21,6 @@
 
 #define MAX_BIRDS_DISTANCE 300
 
-#undef MAX_REST_TIME
-#define MAX_REST_TIME 5
-
-#define LANDING_FORCE 38.0f
-#define TAKEOFF_FORCE 12.0f
-
 #define MAX_FLIGHT_TIME 10
 #define MIN_FLIGHT_TIME 10
 #define BIRDS_PHYSICS_DENSITY 200
@@ -58,7 +52,7 @@ CBoidBird::CBoidBird( SBoidContext &bc )
 	SetStatus(Bird::FLYING);
 
 	m_maxActionTime = bc.flightTime *(1.2f +Boid::Frand()* 0.2f);// /2*(MAX_FLIGHT_TIME-MIN_FLIGHT_TIME);
-	m_desiredHeigh = bc.MinHeight + cry_frand()*(bc.MaxHeight - bc.MinHeight) + bc.flockPos.z;
+	m_desiredHeigh = cry_random(bc.MinHeight, bc.MaxHeight) + bc.flockPos.z;
 	m_birdOriginPos = bc.flockPos;
 	m_birdOriginPosTrg = m_birdOriginPos;
 	m_takeOffStartTime = gEnv->pTimer->GetFrameStartTime();
@@ -262,14 +256,14 @@ void CBoidBird::UpdateOnGroundAction(float dt, SBoidContext& bc)
 				m_onGroundStatus = Bird::OGS_WALKING;
 				PlayAnimationId(Bird::ANIM_WALK,true);
 				m_actionTime = 0;
-				m_maxActionTime = Random(bc.fOnGroundWalkDurationMin, bc.fOnGroundWalkDurationMax);
+				m_maxActionTime = cry_random(bc.fOnGroundWalkDurationMin, bc.fOnGroundWalkDurationMax);
 			}
 			else
 			{
 				// otherwise just keep idling
 				PlayAnimationId(Bird::ANIM_IDLE,true);
 				m_actionTime = 0;
-				m_maxActionTime = Random(bc.fOnGroundIdleDurationMin, bc.fOnGroundIdleDurationMax);
+				m_maxActionTime = cry_random(bc.fOnGroundIdleDurationMin, bc.fOnGroundIdleDurationMax);
 			}
 			break;
 
@@ -280,7 +274,7 @@ void CBoidBird::UpdateOnGroundAction(float dt, SBoidContext& bc)
 				m_onGroundStatus = Bird::OGS_IDLE;
 				PlayAnimationId(Bird::ANIM_IDLE,true);
 				m_actionTime = 0;
-				m_maxActionTime = Random(bc.fOnGroundIdleDurationMin, bc.fOnGroundIdleDurationMax);
+				m_maxActionTime = cry_random(bc.fOnGroundIdleDurationMin, bc.fOnGroundIdleDurationMax);
 			}
 			else
 			{
@@ -636,7 +630,7 @@ void CBoidBird::Think( float dt,SBoidContext &bc )
 	}
 	else
 	{
-		if ((rand()&31) == 1)
+		if (cry_random(0, 31) == 1)
 		{
 			m_birdOriginPos = Vec3(	bc.flockPos.x+Boid::Frand()*bc.fSpawnRadius,bc.flockPos.y+Boid::Frand()*bc.fSpawnRadius,bc.flockPos.z+Boid::Frand()*bc.fSpawnRadius );
 			if (m_birdOriginPos.z - bc.terrainZ < bc.MinHeight)
@@ -742,7 +736,7 @@ void CBoidBird::ThinkWalk( float dt,SBoidContext &bc )
 	}
 	else
 	{
-		if ((cry_rand()&31) == 1)
+		if (cry_random(0, 31) == 1)
 		{
 			m_birdOriginPos = Vec3(	bc.flockPos.x+Boid::Frand()*bc.fSpawnRadius,bc.flockPos.y+Boid::Frand()*bc.fSpawnRadius,bc.flockPos.z+Boid::Frand()*bc.fSpawnRadius );
 			if (m_birdOriginPos.z - bc.terrainZ < bc.MinHeight)

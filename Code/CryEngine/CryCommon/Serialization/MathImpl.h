@@ -134,7 +134,7 @@ namespace Serialization
 {
 
 template<class T>
-bool Serialize(Serialization::IArchive& ar, Serialization::AsAng3<T>& value, const char* name, const char* label)
+bool Serialize(Serialization::IArchive& ar, Serialization::QuatAsAng3<T>& value, const char* name, const char* label)
 {
 	if (ar.IsEdit()) 
 	{
@@ -148,6 +148,26 @@ bool Serialize(Serialization::IArchive& ar, Serialization::AsAng3<T>& value, con
 	}
 	else
 		return ar(*value.quat, name, label);
+}
+
+template<class T>
+bool Serialize(Serialization::IArchive& ar, Serialization::QuatTAsVec3Ang3<T>& value, const char* name, const char* label)
+{
+	if (ar.IsEdit())
+	{
+		if (!ar.OpenBlock(name,label))
+			return false;
+
+		ar(QuatAsAng3<T>((value.trans)->q), "rot", "Rotation");
+		ar.Doc("Euler Angles in degrees"); 
+		ar((value.trans)->t, "t", "Translation");
+		ar.CloseBlock();
+		return true;
+	}
+	else
+	{
+		return ar(*(value.trans),name,label);
+	}
 }
 
 }

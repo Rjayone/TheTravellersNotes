@@ -1240,6 +1240,7 @@ void CAIProxy::DebugDraw(int iParam)
 		pDebugRenderer->TextToScreen(50,78," DESIGNER ASSIGNED BEHAVIOUR: %s",szFirstBehaviour);
 
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 		const char *szCurrentCharacter = m_pAIHandler->m_sCharacterName.c_str();
 		const char *szPreviousCharacter = m_pAIHandler->m_sPrevCharacterName.c_str();
 		const char *szFirstCharacter = m_pAIHandler->m_sFirstCharacterName.c_str();
@@ -1247,6 +1248,7 @@ void CAIProxy::DebugDraw(int iParam)
 		pDebugRenderer->TextToScreen(50,82,"CHARACTER: %s",szCurrentCharacter);
 		pDebugRenderer->TextToScreen(50,84," PREVIOUS CHARACTER: %s",szPreviousCharacter);
 		pDebugRenderer->TextToScreen(50,86," DESIGNER ASSIGNED CHARACTER: %s",szFirstCharacter);
+#endif
 
 
 		if(m_pAIHandler)
@@ -1668,7 +1670,7 @@ void CAIProxy::SendSignal(int signalID, const char* szText, IEntity* pSender, co
 {
 	IF_UNLIKELY (crc == 0u)
 	{
-		crc = GetISystem()->GetCrc32Gen()->GetCRC32(szText);
+		crc = CCrc32::Compute(szText);
 	}
 
 	if (m_pAIHandler)
@@ -1729,6 +1731,7 @@ bool CAIProxy::IsCurrentBehaviorExclusive() const
 	return m_pAIHandler->m_CurrentExclusive;
 }
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 //
 //----------------------------------------------------------------------------------------------------------
 bool CAIProxy::SetCharacter(const char* character, const char* behavior)
@@ -1749,6 +1752,7 @@ const char* CAIProxy::GetCharacter()
 		return 0;
 	return m_pAIHandler->GetCharacter();
 }
+#endif
 
 //
 //----------------------------------------------------------------------------------------------------------
@@ -2072,4 +2076,4 @@ namespace AISpeed // should move somewhere in Game code instead (and also be rem
 
 //
 // ---------------------------------------------------------------------------
-#include UNIQUE_VIRTUAL_WRAPPER(IAIActorProxy)
+

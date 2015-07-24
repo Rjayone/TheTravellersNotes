@@ -29,28 +29,6 @@
 // Drawing
 #define GLASSCFG_GLASS_PLANE_FLAG_LOD			255			/* Fixed number used to flag if render call is plane or fragment */
 
-// X360/PS3 detail scaling
-#if defined(XENON) || defined(PS3)
-#define GLASSCFG_NUM_RADIAL_CRACKS				5				/* Maximum number of cracks generated from an impact */
-#define GLASSCFG_MAX_NUM_CRACK_POINTS			32			/* Maximum number of points used during crack generation */
-
-#define GLASSCFG_SIMPLIFY_CRACKS					8.5f		/* Higher value == Simpler geometry */
-#define GLASSCFG_SIMPLIFY_AREA						1.2f		/* Higher value == Pieces fall out more easily */
-#define GLASSCFG_SHATTER_ON_EXPLOSION			1				/* Automatically shatter on any explosion */
-#define GLASSCFG_SPLIT_ON_EXPLOSION				0				/* Split fragments before applying explosion clipping (Expensive) */
-
-#define	GLASSCFG_MAX_NUM_IMPACTS					6				/* Shatters after full count */
-#define GLASSCFG_MAX_NUM_IMPACT_DECALS		4				/* Number of visible decals, MUST be synced with shader (glass.cfx) */
-#define GLASSCFG_MAX_NUM_STABLE_FRAGMENTS	21			/* After hitting limit, any new fragments will all be loose */
-#define	GLASSCFG_MAX_NUM_FRAGMENTS				40			/* After hitting limit, will only destroy existing fragments. Assumption made that <= 64 */
-#define GLASSCFG_FRAGMENT_ARRAY_SIZE			18			/* Size of actual array used to store per-fragment data */
-
-#define GLASSCFG_MAX_NUM_ACTIVE_GLASS			6				/* Maximum number of active glass pieces before memory is recycled */
-#define GLASSCFG_MAX_NUM_PHYS_FRAGMENTS		6				/* Maximum number of active physicalized fragments before memory is recycled */
-#define	GLASSCFG_MAX_NUM_PLANE_VERTS			256			/* Expected maximum size for plane mesh */
-
-// PC/Café/Other detail scaling
-#else
 #define GLASSCFG_HIGH_QUALITY_MODE
 
 #define GLASSCFG_NUM_RADIAL_CRACKS				7
@@ -70,7 +48,6 @@
 #define GLASSCFG_MAX_NUM_ACTIVE_GLASS			20
 #define GLASSCFG_MAX_NUM_PHYS_FRAGMENTS		10
 #define	GLASSCFG_MAX_NUM_PLANE_VERTS			1024
-#endif
 
 // Geometry buffer sizes
 #define	GLASSCFG_MAX_NUM_CRACK_VERTS			(GLASSCFG_MAX_NUM_PLANE_VERTS*2)

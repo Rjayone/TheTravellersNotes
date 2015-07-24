@@ -12,7 +12,6 @@ History:
 - 20:6:2005        : Changed IItem to be a game object extension by Craig Tiller
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IItemSystem.h)
 
 #ifndef __IITEMSYSTEM_H__
 #define __IITEMSYSTEM_H__
@@ -37,7 +36,7 @@ enum EItemParamMapTypes
 	eIPT_String	=  boost::mpl::find<TFlowSystemDataTypes, string>::type::pos::value
 };
 
-UNIQUE_IFACE struct IItemParamsNode
+struct IItemParamsNode
 {
 	virtual ~IItemParamsNode() {}
 
@@ -289,7 +288,7 @@ struct IEquipmentPackPreCacheCallback
 
 // Summary
 //   Used to give predefined inventory to actors
-UNIQUE_IFACE struct IEquipmentManager
+struct IEquipmentManager
 {
 	virtual ~IEquipmentManager(){}
 	struct IListener
@@ -358,7 +357,7 @@ enum IItemSystemQuery
 
 // Summary
 //   Interface to the Item system
-UNIQUE_IFACE struct IItemSystem
+struct IItemSystem
 {
 	virtual ~IItemSystem(){}
 	virtual void Reset() = 0;

@@ -59,10 +59,10 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IEntityTriggerProxy
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetTriggerBounds( const AABB &bbox ) { SetAABB(bbox); };
-	VIRTUAL void GetTriggerBounds( AABB &bbox ) { bbox = m_aabb; };
-	VIRTUAL void ForwardEventsTo( EntityId id ) { m_forwardingEntity = id; }
-	VIRTUAL void InvalidateTrigger();
+	virtual void SetTriggerBounds( const AABB &bbox ) { SetAABB(bbox); };
+	virtual void GetTriggerBounds( AABB &bbox ) { bbox = m_aabb; };
+	virtual void ForwardEventsTo( EntityId id ) { m_forwardingEntity = id; }
+	virtual void InvalidateTrigger();
 	//////////////////////////////////////////////////////////////////////////
 
 	const AABB& GetAABB() const { return m_aabb; }

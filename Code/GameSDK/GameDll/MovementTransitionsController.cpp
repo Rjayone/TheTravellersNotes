@@ -182,7 +182,7 @@ public:
 		if (m_eStatus != Installed)
 			return;
 
-		static uint32 animExitCRC32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("animexit");
+		static uint32 animExitCRC32 = CCrc32::ComputeLowercase("animexit");
 		if (event.m_EventNameLowercaseCRC32 == animExitCRC32)
 		{
 			ForceFinish();

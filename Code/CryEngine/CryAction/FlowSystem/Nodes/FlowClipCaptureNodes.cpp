@@ -13,7 +13,7 @@ History:
 #include "StdAfx.h"
 
 #include <IPlatformOS.h>
-
+#include "UnicodeFunctions.h"
 #include "FlowBaseNode.h"
 
 // ------------------------------------------------------------------------
@@ -99,12 +99,14 @@ public:
 						const string & toast = GetPortString(pActInfo, eI_LocalizedClipName);
 						const string & metadata = GetPortString(pActInfo, eI_Metadata); 
 
-						wstring localizedToast;
+						string localizedToast;
+						wstring wideToast;
 						gEnv->pSystem->GetLocalizationManager()->LocalizeString(toast, localizedToast);
+						Unicode::Convert(wideToast, localizedToast);
 						
 						IPlatformOS::IClipCaptureOS::SClipTextInfo clipTextInfo(
 							clipName.c_str(), 
-							localizedToast.c_str(),
+							wideToast.c_str(),
 							metadata.c_str());
 
 						const bool ok = pClipCapture->RecordClip(clipTextInfo, span);

@@ -22,48 +22,45 @@ public:
 	CScriptBind_HitDeathReactions(ISystem *pSystem, IGameFramework *pGameFramework);
 	virtual ~CScriptBind_HitDeathReactions();
 
-	// Notifies a hit event to the hit death reactions system
-	// Params:
-	// scriptHitInfo = script table with the hit info
-	//
-	// Return:
-	// TRUE if the hit is processed successfully, FALSE otherwise
+	//! <description>Notifies a hit event to the hit death reactions system</description>
+	//! 	<param name="scriptHitInfo = script table with the hit info</param>
+	//! <returns>TRUE if the hit is processed successfully, FALSE otherwise</returns>
 	int										OnHit(IFunctionHandler *pH, SmartScriptTable scriptHitInfo);
 
 
-	// Executes a hit reaction using the default C++ execution code
-	// Params:
-	// reactionParams = script table with the reaction parameters
+	//! <description>Executes a hit reaction using the default C++ execution code</description>
+	//! 	<param name="reactionParams = script table with the reaction parameters</param>
 	int										ExecuteHitReaction (IFunctionHandler *pH, SmartScriptTable reactionParams);
 
-	// Executes a death reaction using the default C++ execution code
-	// Params:
-	// reactionParams = script table with the reaction parameters
+	//! <description>Executes a death reaction using the default C++ execution code</description>
+	//! 	<param name="reactionParams = script table with the reaction parameters</param>
 	int										ExecuteDeathReaction (IFunctionHandler *pH, SmartScriptTable reactionParams);
 
-	// Ends the current reaction
+	//! <returns>Ends the current reaction</returns>
 	int										EndCurrentReaction (IFunctionHandler *pH);
 
-	// Run the default C++ validation code and returns its result
-	// Params:
-	//	validationParams = script table with the validation parameters
-	//	scriptHitInfo = script table with the hit info
-	// Return:
-	//	TRUE is the validation was successful, FALSE otherwise
+	//! <description>Run the default C++ validation code and returns its result</description>
+	//! 	<param name="validationParams = script table with the validation parameters</param>
+	//! 	<param name="scriptHitInfo = script table with the hit info</param>
+	//! <returns>TRUE is the validation was successful, FALSE otherwise</returns>
 	int										IsValidReaction (IFunctionHandler *pH, SmartScriptTable validationParams, SmartScriptTable scriptHitInfo);
 
-	// Starts an animation through the HitDeathReactions. Pauses the animation graph while playing it
-	// and resumes automatically when the animation ends
-	// Params:
-	// (sAnimName, bool bLoop = false, float fBlendTime = 0.2f, int iSlot = 0, int iLayer = 0, float fAniSpeed = 1.0f)
+	//! <description>Starts an animation through the HitDeathReactions. Pauses the animation graph while playing it
+	//! 		and resumes automatically when the animation ends</description>
+	//! 	<param name="sAnimName</param>
+	//! 	<param name="bLoop">false</param>
+	//! 	<param name="fBlendTime">0.2f</param>
+	//! 	<param name="iSlot">0</param>
+	//! 	<param name="iLayer">0</param>
+	//! 	<param name="fAniSpeed">1.0f</param>
 	int										StartReactionAnim(IFunctionHandler *pH);
 
-	// Ends the current reaction anim, if any
+	//! <code>EndReactionAnim</code>
+	//! <description>Ends the current reaction anim, if any</description>
 	int										EndReactionAnim(IFunctionHandler *pH);
 
-	// Starts an interactive action. 
-	// Params:
-	// szActionName = name of the interactive action
+	//! <description>Starts an interactive action.</description>
+	//! 	<param name="szActionName">name of the interactive action</param>
 	int										StartInteractiveAction(IFunctionHandler *pH, const char* szActionName);
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const

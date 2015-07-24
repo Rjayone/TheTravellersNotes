@@ -152,7 +152,7 @@ const char * CSingleAllocTextBlock::StoreText(const char * textIn, bool doDuplic
 		if (reply == NULL)
 		{
 			CRY_ASSERT_MESSAGE(m_mem != NULL, "No memory has been allocated!");
-			if (cry_strncpy(m_mem + m_numBytesUsed, textIn, m_sizeNeeded - m_numBytesUsed))
+			if (cry_strcpy(m_mem + m_numBytesUsed, m_sizeNeeded - m_numBytesUsed, textIn))
 			{
 				reply = m_mem + m_numBytesUsed;
 				m_numBytesUsed += strlen(reply) + 1;

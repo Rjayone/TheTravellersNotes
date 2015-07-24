@@ -23,7 +23,7 @@ struct SProceduralClipAISignalParams
 		ar(dataString, "EnterAndExitSignalNames", "EnterAndExitSignalNames");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = dataString.c_str();
 	}

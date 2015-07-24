@@ -107,19 +107,19 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IFlowNodeData
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void GetConfiguration( SFlowNodeConfig& config )
+	virtual void GetConfiguration( SFlowNodeConfig& config )
 	{
 		DoGetConfiguration( config );
 	}
-	VIRTUAL TFlowNodeTypeId GetNodeTypeId() { return m_typeId; }
-	VIRTUAL const char* GetNodeName() { return m_name.c_str(); }
-	VIRTUAL IFlowNode * GetNode()
+	virtual TFlowNodeTypeId GetNodeTypeId() { return m_typeId; }
+	virtual const char* GetNodeName() { return m_name.c_str(); }
+	virtual IFlowNode * GetNode()
 	{
 		return &*GetImpl();
 	}
-	VIRTUAL int GetNumInputPorts() const { return m_nInputs; }
-	VIRTUAL int GetNumOutputPorts() const { return m_nOutputs; }
-	VIRTUAL EntityId GetCurrentForwardingEntity() const { return m_forwardingEntityID; }
+	virtual int GetNumInputPorts() const { return m_nInputs; }
+	virtual int GetNumOutputPorts() const { return m_nOutputs; }
+	virtual EntityId GetCurrentForwardingEntity() const { return m_forwardingEntityID; }
 	//////////////////////////////////////////////////////////////////////////
 	// ~IFlowNodeData
 	//////////////////////////////////////////////////////////////////////////

@@ -1,13 +1,9 @@
-#include DEVIRTUALIZE_HEADER_FIX(IEntityRenderState.h)
-
 #ifndef IRenderNodeSTATE_H
 #define IRenderNodeSTATE_H
 
-#if (!defined(PS3) && !defined(XENON))
-//on PS3 all goes through the shrinked occlusion buffer from GPU directly
 #define SUPP_HMAP_OCCL
 #define SUPP_HWOBJ_OCCL
-#endif
+
 
 struct IMaterial;
 struct IVisArea;
@@ -123,6 +119,7 @@ struct OcclusionTestClient
 #define ERF_EXCLUDE_FROM_TRIANGULATION			0x2000
 #define ERF_REGISTER_BY_BBOX					0x4000
 #define ERF_PICKABLE				            0x8000
+#define ERF_VOXELIZE_STATIC				0x10000
 #define ERF_NO_PHYSICS  						0x20000
 #define ERF_NO_DECALNODE_DECALS 				0x40000
 #define ERF_REGISTER_BY_POSITION				0x80000
@@ -130,6 +127,7 @@ struct OcclusionTestClient
 #define ERF_RECVWIND							0x200000
 #define ERF_COLLISION_PROXY						0x400000    // Collision proxy is a special object that is only visible in editor
 // and used for physical collisions with player and vehicles.
+#define ERF_VOXELIZE_DYNAMIC			0x800000
 #define ERF_SPEC_BIT0							0x1000000   // Bit0 of min config specification.
 #define ERF_SPEC_BIT1							0x2000000   // Bit1 of min config specification.
 #define ERF_SPEC_BIT2							0x4000000   // Bit2 of min config specification.
@@ -143,7 +141,7 @@ struct OcclusionTestClient
 
 struct IShadowCaster
 {
-
+	// <interfuscator:shuffle>
   virtual ~IShadowCaster(){}
   virtual bool HasOcclusionmap(int nLod, IRenderNode *pLightOwner ) { return false;}
 	virtual CLodValue ComputeLod(int wantedLod, const SRenderingPassInfo &passInfo) { return CLodValue(wantedLod); }
@@ -153,7 +151,7 @@ struct IShadowCaster
   virtual struct ICharacterInstance* GetEntityCharacter( unsigned int nSlot, Matrix34A * pMatrix = NULL, bool bReturnOnlyVisible = false ) = 0;
   virtual EERType GetRenderNodeType() = 0;
   virtual bool IsRenderNode() { return true; }
-
+	// </interfuscator:shuffle>
   uint8 m_cStaticShadowLod;
 };
 
@@ -220,8 +218,9 @@ struct IRenderNode : public IShadowCaster
 		m_cStaticShadowLod = 0;
   }
 
-	virtual bool CanExecuteRenderAsJob();
+	virtual bool CanExecuteRenderAsJob() { return false; }
 
+	// <interfuscator:shuffle>
   // Debug info about object.
   virtual const char* GetName() const = 0;
   virtual const char* GetEntityClassName() const = 0;
@@ -347,13 +346,24 @@ struct IRenderNode : public IShadowCaster
 
 	virtual uint8 GetSortPriority() { return 0; }
 
+#if defined(FEATURE_SVO_GI)
+	// Types of voxelization for objects and lights
+	enum EVoxMode
+	{
+		VM_None=0, // No voxelization
+		VM_Static, // Incremental or asynchronous lazy voxelization
+		VM_Dynamic, // Real-time every-frame voxelization on GPU
+	};
+	virtual EVoxMode GetVoxMode() {  return VM_None; }
+#endif
+
 	virtual void SetMinSpec( int nMinSpec ) { m_dwRndFlags &= ~ERF_SPEC_BITS_MASK; m_dwRndFlags |= (nMinSpec << ERF_SPEC_BITS_SHIFT) & ERF_SPEC_BITS_MASK; };
 
 	// Description:
 	//	Allows to adjust default max view distance settings, 
 	//	if fMaxViewDistRatio is 100 - default max view distance is used.
 	virtual void SetViewDistRatio(int nViewDistRatio);
-
+	// </interfuscator:shuffle>
 
   void CopyIRenderNodeData(IRenderNode * pDest) const
   {
@@ -516,27 +526,21 @@ inline void IRenderNode::SetViewDistRatio(int nViewDistRatio)
 	}
 }
 
-#if !defined(__SPU__)
+
 ///////////////////////////////////////////////////////////////////////////////
-// function is copied to ObjectsTree_SPU.cpp for SPUs to prevent CryCG issues
 inline IStatObj * IRenderNode::GetEntityStatObj( unsigned int nPartId, unsigned int nSubPartId, Matrix34A * pMatrix, bool bReturnOnlyVisible)
 { 
 	return 0; 
 }
 
-inline bool IRenderNode::CanExecuteRenderAsJob() 
-{ 
-	return false; 
-}
-#endif
 
 //We must use interfaces instead of unsafe type casts and unnecessary includes
-UNIQUE_IFACE struct IVegetation : public IRenderNode
+struct IVegetation : public IRenderNode
 {
   virtual float GetScale(void) const = 0;
 };
 
-UNIQUE_IFACE struct IBrush : public IRenderNode
+struct IBrush : public IRenderNode
 {
   virtual const Matrix34& GetMatrix() const = 0;
 	virtual void SetDrawLast(bool enable) = 0;
@@ -599,19 +603,19 @@ private: // --------------------------------------------------------
   Vec3			m_vSunDir;								// normalized sun direction
 };
 
-UNIQUE_IFACE struct ILightSource : public IRenderNode
+struct ILightSource : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
 	virtual void SetLightProperties(const CDLight & light) = 0;
 	virtual CDLight &GetLightProperties() = 0;
 	virtual const Matrix34& GetMatrix() = 0;
 	virtual struct ShadowMapFrustum * GetShadowFrustum(int nId = 0) = 0;
 	virtual bool IsLightAreasVisible() = 0;
 	virtual void SetCastingException(IRenderNode * pNotCaster) = 0;
-
+	virtual void SetSrcEntity(IEntity * pEnt) = 0;
+	// </interfuscator:shuffle>
 };
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 struct SCloudMovementProperties
 {
   bool m_autoMove;
@@ -622,29 +626,29 @@ struct SCloudMovementProperties
 
 // Summary:
 //	 ICloudRenderNode is an interface to the Cloud Render Node object.
-struct ICloudRenderNode : public IRenderNode // make unique again for PS3 if feature is used (see RENDERNODES_LEAN_AND_MEAN in CryCommon/ProjectDefines.h)
+struct ICloudRenderNode : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
   // Description:
   //    Loads a cloud from a cloud description XML file.
   virtual bool LoadCloud( const char *sCloudFilename ) = 0;
   virtual bool LoadCloudFromXml( XmlNodeRef cloudNode ) = 0;
   virtual void SetMovementProperties(const SCloudMovementProperties& properties) = 0;
-
+	// </interfuscator:shuffle>
 };
-#endif
 
 // Summary:
 //	 IRoadRenderNode is an interface to the Road Render Node object.
-UNIQUE_IFACE struct IRoadRenderNode : public IRenderNode
+struct IRoadRenderNode : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
   virtual void SetVertices(const Vec3 *pVerts, int nVertsNum, float fTexCoordBegin, float fTexCoordEnd, float fTexCoordBeginGlobal, float fTexCoordEndGlobal) = 0;
   virtual void SetSortPriority(uint8 sortPrio) = 0;
   virtual void SetIgnoreTerrainHoles(bool bVal) = 0;
+  virtual void SetPhysicalize(bool bVal) = 0;
   virtual void GetClipPlanes(Plane * pPlanes, int nPlanesNum, int nVertId=0) = 0;
   virtual void GetTexCoordInfo(float * pTexCoordInfo) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
@@ -655,9 +659,9 @@ struct SBreakableGlassState;
 struct SBreakableGlassCVars;
 struct SGlassPhysFragment;
 
-UNIQUE_IFACE struct IBreakableGlassRenderNode : public IRenderNode
+struct IBreakableGlassRenderNode : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
 	virtual bool		InitialiseNode(const SBreakableGlassInitParams& params, const Matrix34& matrix) = 0;
 	virtual void		SetId(const uint16 id) = 0;
 	virtual uint16	GetId() = 0;
@@ -671,15 +675,14 @@ UNIQUE_IFACE struct IBreakableGlassRenderNode : public IRenderNode
 	virtual void		DestroyPhysFragment(SGlassPhysFragment* pPhysFrag) = 0;
 
 	virtual void		SetCVars(const SBreakableGlassCVars* pCVars) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
 //	 IVoxelObject is an interface to the Voxel Object Render Node object.
-UNIQUE_IFACE struct IVoxelObject : public IRenderNode
+struct IVoxelObject : public IRenderNode
 {	
-  DEVIRTUALIZATION_VTABLE_FIX
-
+	// <interfuscator:shuffle>
   virtual struct IMemoryBlock * GetCompiledData(EEndian eEndian) = 0;
   virtual void SetCompiledData(void * pData, int nSize, uint8 ucChildId, EEndian eEndian) = 0;
   virtual void SetObjectName( const char * pName ) = 0;
@@ -690,7 +693,7 @@ UNIQUE_IFACE struct IVoxelObject : public IRenderNode
   virtual void Regenerate() = 0;
   virtual void CopyHM() = 0;
   virtual bool IsEmpty() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
@@ -704,6 +707,8 @@ struct SFogVolumeProperties
   Vec3		m_size; 
   ColorF		m_color;
   bool		m_useGlobalFogColor;
+	bool		m_ignoresVisAreas;
+	bool		m_affectsThisAreaOnly;
   float		m_globalDensity;
   float		m_densityOffset;
   float		m_softEdges;
@@ -714,16 +719,24 @@ struct SFogVolumeProperties
   float m_heightFallOffDirLati;			// Height based fog specifics.
   float m_heightFallOffShift;				// Height based fog specifics.
   float m_heightFallOffScale;				// Height based fog specifics.
+
+	float m_rampStart;
+	float m_rampEnd;
+	float m_rampInfluence;
+	float m_windInfluence;
+	float m_densityNoiseScale;
+	float m_densityNoiseOffset;
+	Vec3 m_densityNoiseFrequency;
 };
 
-UNIQUE_IFACE struct IFogVolumeRenderNode : public IRenderNode
+struct IFogVolumeRenderNode : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
   virtual void SetFogVolumeProperties( const SFogVolumeProperties& properties ) = 0;
   virtual const Matrix34& GetMatrix() const = 0;
 
   virtual void FadeGlobalDensity(float fadeTime, float newGlobalDensity) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -762,19 +775,19 @@ struct SDecalProperties
 
 // Description:
 //	 IDecalRenderNode is an interface to the Decal Render Node object.
-UNIQUE_IFACE struct IDecalRenderNode : public IRenderNode
+struct IDecalRenderNode : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
   virtual void SetDecalProperties( const SDecalProperties& properties ) = 0;
   virtual const SDecalProperties* GetDecalProperties() const = 0;
   virtual const Matrix34& GetMatrix( ) = 0;
   virtual void CleanUpOldDecals() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //	 IWaterVolumeRenderNode is an interface to the Water Volume Render Node object.
-UNIQUE_IFACE struct IWaterVolumeRenderNode : public IRenderNode
+struct IWaterVolumeRenderNode : public IRenderNode
 {
   enum EWaterVolumeType
   {
@@ -784,6 +797,7 @@ UNIQUE_IFACE struct IWaterVolumeRenderNode : public IRenderNode
     eWVT_River
   };
 
+	// <interfuscator:shuffle>
   // Description:
   // Sets if the render node is attached to a parent entity
   // This must be called right after the object construction if it is the case
@@ -814,7 +828,7 @@ UNIQUE_IFACE struct IWaterVolumeRenderNode : public IRenderNode
   virtual void SetRiverPhysicsArea( const Vec3* pVertices, unsigned int numVertices, bool keepSerializationParams = false ) = 0;
 
   virtual IPhysicalEntity* SetAndCreatePhysicsArea( const Vec3* pVertices, unsigned int numVertices ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
@@ -840,13 +854,13 @@ struct SWaterWaveParams
   float m_fCurrHeight;
 };
 
-UNIQUE_IFACE struct IWaterWaveRenderNode : public IRenderNode
+struct IWaterWaveRenderNode : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
   virtual void Create( uint64 nID, const Vec3 *pVertices, uint32 nVertexCount, const Vec2 &pUVScale, const Matrix34 &pWorldTM ) = 0;	    
   virtual void SetParams( const SWaterWaveParams &pParams ) = 0;
   virtual const SWaterWaveParams &GetParams() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
@@ -860,12 +874,11 @@ struct SDistanceCloudProperties
   const char* m_pMaterialName;
 };
 
-UNIQUE_IFACE struct IDistanceCloudRenderNode : public IRenderNode
+struct IDistanceCloudRenderNode : public IRenderNode
 {
   virtual void SetProperties( const SDistanceCloudProperties& properties ) = 0;
 };
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 struct SVolumeObjectProperties
 {
 };
@@ -880,15 +893,14 @@ struct SVolumeObjectMovementProperties
 
 // Description:
 //	 IVolumeObjectRenderNode is an interface to the Volume Object Render Node object.
-struct IVolumeObjectRenderNode : public IRenderNode // make unique again for PS3 if feature is used (see RENDERNODES_LEAN_AND_MEAN in CryCommon/ProjectDefines.h)
+struct IVolumeObjectRenderNode : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
   virtual void LoadVolumeData(const char* filePath) = 0;
   virtual void SetProperties(const SVolumeObjectProperties& properties) = 0;
   virtual void SetMovementProperties(const SVolumeObjectMovementProperties& properties) = 0;
-
+	// </interfuscator:shuffle>
 };
-#endif
 
 #if !defined(EXCLUDE_DOCUMENTATION_PURPOSE)
 struct IPrismRenderNode :public IRenderNode
@@ -897,7 +909,7 @@ struct IPrismRenderNode :public IRenderNode
 #endif // EXCLUDE_DOCUMENTATION_PURPOSE
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IRopeRenderNode : public IRenderNode
+struct IRopeRenderNode : public IRenderNode
 {
   enum ERopeParamFlags
   {
@@ -968,6 +980,7 @@ UNIQUE_IFACE struct IRopeRenderNode : public IRenderNode
     int nPartId;
   };
 
+	// <interfuscator:shuffle>
   virtual void SetName( const char *sNodeName ) = 0;
 
   virtual void SetParams( const SRopeParams& params ) = 0;
@@ -999,14 +1012,14 @@ UNIQUE_IFACE struct IRopeRenderNode : public IRenderNode
   virtual void SetRopeSound( char const* const pcSoundName, int unsigned const nSegmentToAttachTo, float const fOffset ) = 0;
   virtual void StopRopeSound() = 0;
   virtual void ResetRopeSound() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //	 ILPVRenderNode is an interface to the Light Propagation Volume Render Node object.
-struct ILPVRenderNode : public IRenderNode // // make unique again for PS3 if feature is used (see RENDERNODES_LEAN_AND_MEAN in CryCommon/ProjectDefines.h)
+struct ILPVRenderNode : public IRenderNode
 {
-
+	// <interfuscator:shuffle>
   virtual bool TryInsertLight( const CDLight &light ) = 0;
   virtual void UpdateMetrics(const Matrix34& mx, const bool recursive = false) = 0;
   virtual void SetDensity(const float fDensity) = 0;
@@ -1015,11 +1028,11 @@ struct ILPVRenderNode : public IRenderNode // // make unique again for PS3 if fe
   virtual bool IsSpecularEnabled() const = 0;
   virtual void GetMatrix(Matrix34& mxGrid) const = 0;
   virtual bool AutoFit(const DynArray<CDLight>& lightsToFit) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #if defined(USE_GEOM_CACHES)
-UNIQUE_IFACE struct IGeomCacheRenderNode : public IRenderNode
+struct IGeomCacheRenderNode : public IRenderNode
 {
 	virtual bool LoadGeomCache(const char *sGeomCacheFileName) = 0;
 

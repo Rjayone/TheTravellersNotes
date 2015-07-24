@@ -23,9 +23,9 @@ public:
 	CMFXEffectBase(const uint16 _typeFilterFlag);
 
 	//IMFXEffect (partial implementation)
-	virtual void SetCustomParameter(const char* customParameter, const SMFXCustomParamValue& customParameterValue) OVERRIDE;
-	virtual void PreLoadAssets() OVERRIDE;
-	virtual void ReleasePreLoadAssets() OVERRIDE;
+	virtual void SetCustomParameter(const char* customParameter, const SMFXCustomParamValue& customParameterValue) override;
+	virtual void PreLoadAssets() override;
+	virtual void ReleasePreLoadAssets() override;
 	//~IMFXEffect
 
 	bool CanExecute(const SMFXRunTimeEffectParams& params) const;

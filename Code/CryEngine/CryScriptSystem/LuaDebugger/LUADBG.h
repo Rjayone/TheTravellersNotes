@@ -415,7 +415,7 @@ protected:
 						m_wCallstack.GetItemText(sel,2,temp,sizeof(temp));
 						LoadFile(temp);
 						PlaceLineMarker(linenum);
-						
+						ShowLocalsForFrame(sel);
 					}
 				}
 
@@ -440,6 +440,8 @@ protected:
 	HTREEITEM AddVariableToTree(const char *sName, ScriptVarType type, HTREEITEM hParent = NULL);
 	void DumpTable(HTREEITEM hParent, IScriptTable *pITable, UINT& iRecursionLevel);
 	void SetFocusToEditControl();
+	void ShowLocalsForFrame(int frame);
+	void ShowSelf(IScriptTable *pFrame);
 
 	CSourceEdit m_wScriptWindow;
 	_TinyToolbar m_wToolbar;
@@ -489,5 +491,5 @@ protected:
 
 	BreakPoints m_breakPoints;
 	bool m_trackCoverage;
-	std::auto_ptr<CLUACodeCoverage> m_coverage;
+	std::unique_ptr<CLUACodeCoverage> m_coverage;
 };

@@ -527,7 +527,7 @@ void CGameBrowser::ConfigurationCallback(ECryLobbyService service, SConfiguratio
 				}
 			
 				// this will null terminate for us if necessary	
-				cry_strncpy(s_profileName, tUserName.c_str(), CRYLOBBY_USER_NAME_LENGTH);
+				cry_strcpy(s_profileName, tUserName.c_str());
 				int instance = gEnv->pSystem->GetApplicationInstance();
 				if (instance>0)
 				{

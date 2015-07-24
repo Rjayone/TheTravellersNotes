@@ -39,6 +39,8 @@ public:
 	virtual void SetMaterial(IMaterial* pMaterial);
 	virtual void OnVehicleEvent(EVehicleEvent event, const SVehicleEventParams& params);
 
+	virtual void OnEvent(const SVehiclePartEvent& event);
+
 	virtual const Matrix34& GetLocalTM(bool relativeToParentPart, bool forced = false);
 	virtual const Matrix34& GetWorldTM();
 	virtual const AABB& GetLocalBounds();

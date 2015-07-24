@@ -646,7 +646,6 @@ void CRecordingSystem::Init( XmlNodeRef root )
 
 	// Load Corpse Joint CRCs.
 	m_corpseADIKJointCRCs.clear();
-	Crc32Gen* pCRCGen = gEnv->pSystem->GetCrc32Gen();
 	XmlNodeRef corpseJoints = root->findChild("CorpseADIKJoints");
 	if(corpseJoints)
 	{
@@ -656,7 +655,7 @@ void CRecordingSystem::Init( XmlNodeRef root )
 		{
 			XmlNodeRef child = corpseJoints->getChild(i);
 			const char* pName = child->getAttr("name");
-			m_corpseADIKJointCRCs[i] = pCRCGen->GetCRC32Lowercase(pName);
+			m_corpseADIKJointCRCs[i] = CCrc32::ComputeLowercase(pName);
 			RecSysLogDebug(eRSD_Config, "ADIKJoint: [0x%08x] %s", m_corpseADIKJointCRCs[i], pName);
 		}
 	}
@@ -733,7 +732,7 @@ void CRecordingSystem::Init( XmlNodeRef root )
 			for(int i=0; i<count; i++)
 			{
 				XmlNodeRef child = excluded->getChild(i);
-				m_excludedSoundEffects.insert(pCRCGen->GetCRC32(child->getAttr("name")));
+				m_excludedSoundEffects.insert(CCrc32::Compute(child->getAttr("name")));
 			}
 		}
 	}
@@ -3707,7 +3706,7 @@ void CRecordingSystem::Update(const float frameTime)
 		{
 			DebugStoreHighlight(g_pGameCVars->kc_length, 0);
 			PlayHighlight(0);
-			m_stressTestTimer = (cry_frand() * 30.f) + 30.f;
+			m_stressTestTimer = cry_random(30.0f, 60.0f);
 		}
 		else
 			m_stressTestTimer -= frameTime;
@@ -4101,7 +4100,7 @@ void CRecordingSystem::UpdateBulletPosition()
 					// Let's spawn a blood splat particle effect
 					char effectName[] = "bullet.hit_flesh.a";
 					// Randomly change the a into either a, b or c to get a different blood effect each time
-					effectName[sizeof(effectName)-2] = 'a' + Random(3);
+					effectName[sizeof(effectName)-2] = cry_random('a', 'c');
 					IParticleEffect *pParticle = gEnv->pParticleManager->FindEffect(effectName);
 					if (pParticle)
 					{
@@ -6571,7 +6570,7 @@ void CRecordingSystem::OnItemSwitchToHand(CItem* pItem, int hand)
 //				if (event == SOUNDSYSTEM_EVENT_ON_START)
 //				{
 //					const char* name = pSound->GetName();
-//					const uint32 nameHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32(name);
+//					const uint32 nameHash = CCrc32::Compute(name);
 //					if (!m_excludedSoundEffects.count(nameHash))
 //					{
 //						RecSysLogDebug(eRSD_Sound, "REC: Start: %d, %s - semantic: %d", pSound->GetId(), name, BitIndex((uint32)pSound->GetSemantic()));
@@ -7724,7 +7723,7 @@ bool CRecordingSystem::ApplyEntityAttached(const SRecording_EntityAttached* pEnt
 	CReplayActor* pActor = GetReplayActor(pEntityAttached->actorId, true);
 	if(pEntity && pActor)
 	{
-		static const uint32 crcAttachmentName = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("left_weapon");
+		static const uint32 crcAttachmentName = CCrc32::ComputeLowercase("left_weapon");
 		const bool bFirstPerson = (pEntityAttached->actorId == m_killer && m_playInfo.m_view.currView==SPlaybackInfo::eVM_FirstPerson);
 		AttachmentUtils::AttachObject( bFirstPerson, pActor->GetEntity(), pEntity, crcAttachmentName, AttachmentUtils::eAF_Default&(~AttachmentUtils::eAF_SyncCloak) );
 	}
@@ -7735,7 +7734,7 @@ void CRecordingSystem::ApplyEntityDetached(const SRecording_EntityDetached* pEnt
 {
 	if(CReplayActor* pActor = GetReplayActor(pEntityDetached->actorId, true))
 	{
-		static const uint32 crcAttachmentName = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("left_weapon");
+		static const uint32 crcAttachmentName = CCrc32::ComputeLowercase("left_weapon");
 		AttachmentUtils::DetachObject( pActor->GetEntity(), GetReplayEntity(pEntityDetached->entityId), crcAttachmentName );
 	}
 }
@@ -7962,7 +7961,7 @@ void CRecordingSystem::OnPlayerJoined( EntityId playerId )
 			CryFixedStringT<DISPLAY_NAME_LENGTH> name;
 			pLobby->GetPlayerDisplayNameFromEntity(playerId, name);
 
-			cry_strncpy(joinedPacket.displayName, name.c_str(), DISPLAY_NAME_LENGTH);
+			cry_strcpy(joinedPacket.displayName, name.c_str());
 
 			uint8 rank=0, reincarnations=0;
 			pLobby->GetProgressionInfoByChannel(channelId, rank, reincarnations);
@@ -8083,7 +8082,7 @@ void CRecordingSystem::OnMannequinSetSlaveController(EntityId inMasterActorId, E
 		if( piOptionalDatabase )
 		{
 			const char* pDBName = piOptionalDatabase->GetFilename();
-			mannSetSlaveControllerPacket.optionalDatabaseFilenameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pDBName);
+			mannSetSlaveControllerPacket.optionalDatabaseFilenameCRC = CCrc32::ComputeLowercase(pDBName);
 		}
 		m_pBuffer->AddPacket(mannSetSlaveControllerPacket);
 	}
@@ -8095,7 +8094,7 @@ void CRecordingSystem::OnMannequinSetParam(EntityId inEntityId, const char *inPa
 	{
 		SRecording_MannSetParam mannSetParam;
 		mannSetParam.entityId = inEntityId;
-		mannSetParam.paramNameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(inParamName);
+		mannSetParam.paramNameCRC = CCrc32::ComputeLowercase(inParamName);
 		mannSetParam.quat = inQuatParam;
 		m_pBuffer->AddPacket(mannSetParam);
 	}
@@ -8693,8 +8692,8 @@ IEntity * CRecordingSystem::SpawnCorpse( EntityId originalId, const Vec3 &positi
 
 IEntityClass* CRecordingSystem::GetEntityClass_NetSafe( const uint16 classId )
 {
-	char className[129]={0};
-	g_pGame->GetIGameFramework()->GetNetworkSafeClassName(className, 128, classId);
+	char className[128];
+	g_pGame->GetIGameFramework()->GetNetworkSafeClassName(className, sizeof(className), classId);
 	return gEnv->pEntitySystem->GetClassRegistry()->FindClass(className);
 }
 

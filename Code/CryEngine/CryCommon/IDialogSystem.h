@@ -12,10 +12,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IDialogSystem.h)
 
-#ifndef __IDIALOGSYSTEM_H__
-#define __IDIALOGSYSTEM_H__
 #pragma once
 
 struct IDialogScriptIterator
@@ -28,19 +25,19 @@ struct IDialogScriptIterator
 		int numLines;
 		bool bIsLegacyExcel;
 	};
-
+	// <interfuscator:shuffle>
 	virtual ~IDialogScriptIterator(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
 	virtual bool Next(SDialogScript& ) = 0;
-
+	// </interfuscator:shuffle>
 };
 typedef _smart_ptr<IDialogScriptIterator> IDialogScriptIteratorPtr;
 
 
-UNIQUE_IFACE struct IDialogSystem
+struct IDialogSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IDialogSystem(){}
 	virtual bool Init() = 0;
 	virtual void Update(const float dt) = 0;
@@ -50,7 +47,5 @@ UNIQUE_IFACE struct IDialogSystem
 
 	// Returns if entity is currently playing a dialog
 	virtual bool IsEntityInDialog(EntityId entityId) const = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif

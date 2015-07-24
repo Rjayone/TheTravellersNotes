@@ -3,8 +3,6 @@
 
 #pragma once
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
-
 #include "VertexFormats.h"
 
 struct IParticleEmitter;
@@ -38,9 +36,6 @@ private:
 
 	// injects single texture or colored shadow map with vertex texture fetching
 	void _injectWithVTF(SReflectiveShadowMap& rCSM);
-
-	// injects single texture or colored shadow map with render to vertex buffer technique
-	void _injectWithR2VB(SReflectiveShadowMap& rCSM);
 
 	// injects occlusion from camera depth buffer
 	void _injectOcclusionFromCamera();
@@ -83,11 +78,7 @@ public:
 
 	enum EStaticProperties
 	{
-#if defined(XENON) || defined(PS3)
-		espMaxInjectRSMSize = 128ul,
-#else
 		espMaxInjectRSMSize = 384ul,
-#endif
 	};
 
 	// LPV render settings
@@ -177,15 +168,6 @@ protected:
 		ITexture*	m_pVolumeTextures[3];
 		CTexture*	m_pVolumeTexs[3];
 	};
-#ifdef XENON
-	D3DVolumeTexture*	m_pVolumeTexturesAux[3][32];	// work-around for X360
-#elif PS3
-	union																	// render to volume texture for PS3		
-	{
-		ITexture*	m_p2DVolumeUnwraps[3];
-		CTexture*	m_p2DVolumeUnwrapsTex[3];
-	};
-#endif
 
 	union																	// volume texture for fuzzy occlusion from depth buffers
 	{
@@ -207,7 +189,5 @@ protected:
 	typedef DynArray<CDLight> Lights;
 	Lights		m_lightsToPostinject[RT_COMMAND_BUF_COUNT][2];	// lights in the grid
 };
-
-#endif // #if !defined(RENDERNODES_LEAN_AND_MEAN)
 
 #endif // #ifndef _CRELIGHT_PROPAGATION_VOLUME_

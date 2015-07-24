@@ -44,8 +44,7 @@ enum EVertexFormat
 	eVF_C4B_C4B = 11,      // SH coefficients.
 	eVF_P3F_P3F_I4B = 12,  // Shape deformation stream.
 	eVF_P3F = 13,       // Velocity stream.
-
-	// Stream formats for SPU skinning
+	
 	eVF_C4B_T2S = 14,     // General (Position is merged with Tangent stream)
 
 	// Lens effects simulation
@@ -58,15 +57,7 @@ enum EVertexFormat
 	eVF_Max,
 };
 
-
-//#define TANG_FLOATS 1
-#ifdef TANG_FLOATS
-#define int16f float
-#else
-#define int16f short
-#endif
-
-typedef Vec4_tpl<int16f> Vec4sf;		// Used for tangents only.
+typedef Vec4_tpl<int16> Vec4sf;		// Used for tangents only.
 
 // bNeedNormals=1 - float normals; bNeedNormals=2 - byte normals
 _inline EVertexFormat VertFormatForComponents(bool bNeedCol, bool bHasTC, bool bHasPS, bool bHasNormal)
@@ -86,20 +77,27 @@ _inline EVertexFormat VertFormatForComponents(bool bNeedCol, bool bHasTC, bool b
 
 struct UCol
 {
-  union
-  {
-    uint32 dcolor;
-    uint8  bcolor[4];
-		#if defined(PS3) || defined(XENON)
-			struct { uint8 a, r, g, b; };
-			struct { uint8 w, x, y, z; };
-		#else
-			struct { uint8 b, g, r, a; };
-			struct { uint8 z, y, x, w; };
-		#endif
-  };
+	union
+	{
+		uint32 dcolor;
+		uint8  bcolor[4];
+		
+		struct { uint8 b, g, r, a; };
+		struct { uint8 z, y, x, w; };
+	};
 
-  AUTO_STRUCT_INFO
+	// get normal vector from unsigned 8bit integers (can't point up/down and is not normal)
+	ILINE Vec3 GetN()
+	{
+		return Vec3
+		(
+			(bcolor[0] - 128.0f) / 127.5f,
+			(bcolor[1] - 128.0f) / 127.5f,
+			(bcolor[2] - 128.0f) / 127.5f
+		);
+	}
+
+	AUTO_STRUCT_INFO
 };
 
 struct Vec3f16 : public CryHalf4
@@ -309,118 +307,332 @@ struct SVF_C4B_T2S
 };
 
 //=============================================================
-// Tangent vectors packing
+// Signed norm value packing [-1,+1]
 
-_inline int16f tPackF2B(const float f)
+namespace PackingSNorm
 {
-#ifdef TANG_FLOATS
-  return f;
-#else
-  return (int16f)(f * 32767.0f);
-#endif
-}
-_inline float tPackB2F(const int16f i)
-{
-#ifdef TANG_FLOATS
-  return i;
-#else
-  return (float)((float)i / 32767.0f);
-#endif
-}
+	ILINE int16 tPackF2B(const float f)
+	{
+		return (int16)(f * 32767.0f);
+	}
 
-_inline Vec4sf tPackF2Bv(const Vec4& v)
-{
-  Vec4sf vs;
-  vs.x = tPackF2B(v.x);
-  vs.y = tPackF2B(v.y);
-  vs.z = tPackF2B(v.z);
-  vs.w = tPackF2B(v.w);
+	ILINE int16 tPackS2B(const int16 s)
+	{
+		return (int16)(s * 32767);
+	}
 
-  return vs;
-}
-_inline Vec4sf tPackF2Bv(const Vec3& v)
-{
-  Vec4sf vs;
-  vs.x = tPackF2B(v.x);
-  vs.y = tPackF2B(v.y);
-  vs.z = tPackF2B(v.z);
-  vs.w = tPackF2B(1.0f);
+	ILINE float tPackB2F(const int16 i)
+	{
+		return (float)((float)i / 32767.0f);
+	}
 
-  return vs;
-}
-_inline Vec4 tPackB2F(const Vec4sf& v)
-{
-  Vec4 vs;
-  vs.x = tPackB2F(v.x);
-  vs.y = tPackB2F(v.y);
-  vs.z = tPackB2F(v.z);
-  vs.w = tPackB2F(v.w);
+	ILINE int16 tPackB2S(const int16 s)
+	{
+		// OPT: "(s >> 15) + !(s >> 15)" works as well
+		return (int16)(s / 32767);
+	}
 
-  return vs;
-}
-_inline void tPackB2F(const Vec4sf& v, Vec4& vDst)
-{
-  vDst.x = tPackB2F(v.x);
-  vDst.y = tPackB2F(v.y);
-  vDst.z = tPackB2F(v.z);
-  vDst.w = 1.0f;
-}
-_inline void tPackB2FScale(const Vec4sf& v, Vec4& vDst, const Vec3& vScale)
-{
-  vDst.x = (float)v.x * vScale.x;
-  vDst.y = (float)v.y * vScale.y;
-  vDst.z = (float)v.z * vScale.z;
-  vDst.w = 1.0f;
-}
-_inline void tPackB2FScale(const Vec4sf& v, Vec3& vDst, const Vec3& vScale)
-{
-  vDst.x = (float)v.x * vScale.x;
-  vDst.y = (float)v.y * vScale.y;
-  vDst.z = (float)v.z * vScale.z;
-}
+	ILINE Vec4sf tPackF2Bv(const Vec4& v)
+	{
+		Vec4sf vs;
 
-_inline void tPackB2F(const Vec4sf& v, Vec3& vDst)
-{
-  vDst.x = tPackB2F(v.x);
-  vDst.y = tPackB2F(v.y);
-  vDst.z = tPackB2F(v.z);
-}
+		vs.x = tPackF2B(v.x);
+		vs.y = tPackF2B(v.y);
+		vs.z = tPackF2B(v.z);
+		vs.w = tPackF2B(v.w);
+
+		return vs;
+	}
+
+	ILINE Vec4sf tPackF2Bv(const Vec3& v)
+	{
+		Vec4sf vs;
+
+		vs.x = tPackF2B(v.x);
+		vs.y = tPackF2B(v.y);
+		vs.z = tPackF2B(v.z);
+		vs.w = tPackF2B(1.0f);
+
+		return vs;
+	}
+
+	ILINE Vec4 tPackB2F(const Vec4sf& v)
+	{
+		Vec4 vs;
+
+		vs.x = tPackB2F(v.x);
+		vs.y = tPackB2F(v.y);
+		vs.z = tPackB2F(v.z);
+		vs.w = tPackB2F(v.w);
+
+		return vs;
+	}
+
+	ILINE void tPackB2F(const Vec4sf& v, Vec4& vDst)
+	{
+		vDst.x = tPackB2F(v.x);
+		vDst.y = tPackB2F(v.y);
+		vDst.z = tPackB2F(v.z);
+		vDst.w = 1.0f;
+	}
+
+	ILINE void tPackB2FScale(const Vec4sf& v, Vec4& vDst, const Vec3& vScale)
+	{
+		vDst.x = (float)v.x * vScale.x;
+		vDst.y = (float)v.y * vScale.y;
+		vDst.z = (float)v.z * vScale.z;
+		vDst.w = 1.0f;
+	}
+
+	ILINE void tPackB2FScale(const Vec4sf& v, Vec3& vDst, const Vec3& vScale)
+	{
+		vDst.x = (float)v.x * vScale.x;
+		vDst.y = (float)v.y * vScale.y;
+		vDst.z = (float)v.z * vScale.z;
+	}
+
+	ILINE void tPackB2F(const Vec4sf& v, Vec3& vDst)
+	{
+		vDst.x = tPackB2F(v.x);
+		vDst.y = tPackB2F(v.y);
+		vDst.z = tPackB2F(v.z);
+	}
+};
+
+//=============================================================
+// Pip => Graphics Pipeline structures, used for inputs for the GPU's Input Assembler
+// These structures are optimized for fast decoding (ALU and bandwidth) and
+// might be slow to encode on-the-fly
 
 struct SPipTangents
 {
-  Vec4sf Tangent;
-  Vec4sf Binormal;
+	SPipTangents() {}
+
+private:
+	Vec4sf Tangent;
+	Vec4sf Bitangent;
+
+public:
+	explicit SPipTangents(const Vec4sf& othert, const Vec4sf& otherb, const int16& othersign)
+	{
+		using namespace PackingSNorm;
+		Tangent   = othert; Tangent.w   = PackingSNorm::tPackS2B(othersign);
+		Bitangent = otherb; Bitangent.w = PackingSNorm::tPackS2B(othersign);
+	}
+
+	explicit SPipTangents(const Vec4sf& othert, const Vec4sf& otherb, const SPipTangents& othersign)
+	{
+		Tangent   = othert; Tangent.w   = othersign.Tangent.w;
+		Bitangent = otherb; Bitangent.w = othersign.Bitangent.w;
+	}
+
+	explicit SPipTangents(const Vec4sf& othert, const Vec4sf& otherb)
+	{
+		Tangent   = othert;
+		Bitangent = otherb;
+	}
+
+	explicit SPipTangents(const Vec3& othert, const Vec3& otherb, const int16& othersign)
+	{
+		Tangent   = Vec4sf(PackingSNorm::tPackF2B(othert.x), PackingSNorm::tPackF2B(othert.y), PackingSNorm::tPackF2B(othert.z), PackingSNorm::tPackS2B(othersign));
+		Bitangent = Vec4sf(PackingSNorm::tPackF2B(otherb.x), PackingSNorm::tPackF2B(otherb.y), PackingSNorm::tPackF2B(otherb.z), PackingSNorm::tPackS2B(othersign));
+	}
+
+	explicit SPipTangents(const Vec3& othert, const Vec3& otherb, const SPipTangents& othersign)
+	{
+		Tangent   = Vec4sf(PackingSNorm::tPackF2B(othert.x), PackingSNorm::tPackF2B(othert.y), PackingSNorm::tPackF2B(othert.z), othersign.Tangent.w);
+		Bitangent = Vec4sf(PackingSNorm::tPackF2B(otherb.x), PackingSNorm::tPackF2B(otherb.y), PackingSNorm::tPackF2B(otherb.z), othersign.Bitangent.w);
+	}
+
+	explicit SPipTangents(const Quat& other, const int16& othersign)
+	{
+		Vec3 othert = other.GetColumn0();
+		Vec3 otherb = other.GetColumn1();
+
+		Tangent   = Vec4sf(PackingSNorm::tPackF2B(othert.x), PackingSNorm::tPackF2B(othert.y), PackingSNorm::tPackF2B(othert.z), PackingSNorm::tPackS2B(othersign));
+		Bitangent = Vec4sf(PackingSNorm::tPackF2B(otherb.x), PackingSNorm::tPackF2B(otherb.y), PackingSNorm::tPackF2B(otherb.z), PackingSNorm::tPackS2B(othersign));
+	}
+
+	void ExportTo(Vec4sf& othert, Vec4sf& otherb) const
+	{
+		othert = Tangent;
+		otherb = Bitangent;
+	}
+
+	// get normal tangent and bitangent vectors
+	void GetTB(Vec4& othert, Vec4& otherb) const
+	{
+		othert = PackingSNorm::tPackB2F(Tangent);
+		otherb = PackingSNorm::tPackB2F(Bitangent);
+	}
+
+	// get normal vector (perpendicular to tangent and bitangent plane)
+	ILINE Vec3 GetN() const
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z),
+		     btg3(btg.x, btg.y, btg.z);
+
+		// assumes w 1 or -1
+		return tng3.Cross(btg3) * tng.w;
+	}
+
+	// get normal vector (perpendicular to tangent and bitangent plane)
+	void GetN(Vec3& othern) const
+	{
+		othern = GetN();
+	}
+
+	// get the tangent-space basis as individual normal vectors (tangent, bitangent and normal)
+	void GetTBN(Vec3& othert, Vec3& otherb, Vec3& othern) const
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z),
+		     btg3(btg.x, btg.y, btg.z);
+
+		// assumes w 1 or -1
+		othert = tng3;
+		otherb = btg3;
+		othern = tng3.Cross(btg3) * tng.w;
+	}
+
+	// get normal vector sign (reflection)
+	ILINE int16 GetR() const
+	{
+		return PackingSNorm::tPackB2S(Tangent.w);
+	}
+
+	// get normal vector sign (reflection)
+	void GetR(int16& sign) const
+	{
+		sign = GetR();
+	}
+
+	void TransformBy(const Matrix34& trn)
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z),
+		     btg3(btg.x, btg.y, btg.z);
+
+		tng3 = trn.TransformVector(tng3);
+		btg3 = trn.TransformVector(btg3);
+
+		*this = SPipTangents(tng3, btg3, PackingSNorm::tPackB2S(Tangent.w));
+	}
+
+	void TransformSafelyBy(const Matrix34& trn)
+	{
+		Vec4 tng, btg;
+		GetTB(tng, btg);
+
+		Vec3 tng3(tng.x, tng.y, tng.z),
+		     btg3(btg.x, btg.y, btg.z);
+
+		tng3 = trn.TransformVector(tng3);
+		btg3 = trn.TransformVector(btg3);
+
+		// normalize in case "trn" wasn't length-preserving
+		tng3.Normalize();
+		btg3.Normalize();
+
+		*this = SPipTangents(tng3, btg3, PackingSNorm::tPackB2S(Tangent.w));
+	}
+
+	friend struct SMeshTangents;
 };
-struct SQTangents
+
+struct SPipQTangents
 {
-  Vec4sf QTangent;
+	SPipQTangents() {}
+
+private:
+	Vec4sf QTangent;
+
+public:
+	explicit SPipQTangents(const Vec4sf& other)
+	{
+		QTangent = other;
+	}
+
+	bool operator ==(const SPipQTangents& other) const
+	{
+		return
+			QTangent[0] == other.QTangent[0] || 
+			QTangent[1] == other.QTangent[1] || 
+			QTangent[2] == other.QTangent[2] ||
+			QTangent[3] == other.QTangent[3];
+	}
+
+	bool operator !=(const SPipQTangents& other) const
+	{
+		return !(*this == other);
+	}
+
+	// get quaternion
+	ILINE Quat GetQ() const
+	{
+		Quat q;
+
+		q.v.x = PackingSNorm::tPackB2F(QTangent.x); 
+		q.v.y = PackingSNorm::tPackB2F(QTangent.y); 
+		q.v.z = PackingSNorm::tPackB2F(QTangent.z); 
+		q.w   = PackingSNorm::tPackB2F(QTangent.w); 
+
+		return q;
+	}
+
+	// get normal vector from quaternion
+	ILINE Vec3 GetN() const
+	{
+		const Quat q = GetQ();
+		return q.GetColumn2() * (q.w < 0.0f ? -1.0f : +1.0f);
+	}
+
+	friend struct SMeshQTangents;
 };
 
-// Normal extraction from vertex formats
-inline Vec3 GetNormal(const SPipTangents& tan2)
+struct SPipNormal : public Vec3
 {
-	Vec3 vTan1, vTan2;
-	tPackB2F(tan2.Tangent, vTan1);
-	tPackB2F(tan2.Binormal, vTan2);
-	return (vTan1 ^ vTan2) * tPackB2F(tan2.Binormal.w);
-}
+	SPipNormal() {}
 
-inline Vec3 GetNormal(const SQTangents& qtan)
-{
-	Vec4 v = tPackB2F(qtan.QTangent);
-	Quat q(v.w, v.x, v.y, v.z);
-	return q.GetColumn2() * fsgnf(v.w);
-}
+	explicit SPipNormal(const Vec3& othern)
+	{
+		x = othern.x;
+		y = othern.y;
+		z = othern.z;
+	}
 
-inline Vec3 GetNormal(UCol col)
-{
-	return Vec3
-	(
-		(col.bcolor [0] - 128.0f) / 127.5f,
-		(col.bcolor [1] - 128.0f) / 127.5f,
-		(col.bcolor [2] - 128.0f) / 127.5f
-	);
-}
+	// get normal vector
+	ILINE Vec3 GetN() const
+	{
+		return *this;
+	}
+
+	// get normal vector
+	void GetN(Vec3& othern) const
+	{
+		othern = GetN();
+	}
+
+	void TransformBy(const Matrix34& trn)
+	{
+		*this = SPipNormal(trn.TransformVector(*this));
+	}
+
+	void TransformSafelyBy(const Matrix34& trn)
+	{
+		// normalize in case "trn" wasn't length-preserving
+		*this = SPipNormal(trn.TransformVector(*this).normalize());
+	}
+
+	friend struct SMeshNormal;
+};
 
 //==================================================================================================
 
@@ -443,43 +655,42 @@ typedef SVF_P3F_C4B_T2F SAuxVertex;
 // Stream IDs
 enum EStreamIDs
 {
-  VSF_GENERAL,									// General vertex buffer
-  VSF_TANGENTS,									// Tangents buffer
-  VSF_QTANGENTS,		  					// Tangents buffer
-  VSF_HWSKIN_INFO,							// HW skinning buffer
-  VSF_VELOCITY,									// Velocity buffer
+	VSF_GENERAL,                 // General vertex buffer
+	VSF_TANGENTS,                // Tangents buffer
+	VSF_QTANGENTS,               // Tangents buffer
+	VSF_HWSKIN_INFO,             // HW skinning buffer
+	VSF_VERTEX_VELOCITY,                // Velocity buffer
 # if ENABLE_NORMALSTREAM_SUPPORT
-  VSF_NORMALS,                  // Normals, used for skinning
+	VSF_NORMALS,                 // Normals, used for skinning
 #endif
-  // <- Insert new stream IDs here
-  VSF_NUM,											// Number of vertex streams
-  
-  VSF_MORPHBUDDY = 8,           // Morphing (from m_pMorphBuddy)
-	VSF_INSTANCED = 9,						// Data is for instance stream
-  VSF_MORPHBUDDY_WEIGHTS = 15,  // Morphing weights
+	                             // <- Insert new stream IDs here
+	VSF_NUM,                     // Number of vertex streams
+
+	VSF_MORPHBUDDY = 8,          // Morphing (from m_pMorphBuddy)
+	VSF_INSTANCED = 9,           // Data is for instance stream
+	VSF_MORPHBUDDY_WEIGHTS = 15, // Morphing weights
 };
 
 // Stream Masks (Used during updating)
 enum EStreamMasks
 {
-  VSM_GENERAL    = 1 << VSF_GENERAL,
-  VSM_TANGENTS   = ((1<<VSF_TANGENTS) | (1<<VSF_QTANGENTS)),
-  VSM_HWSKIN     = 1 << VSF_HWSKIN_INFO,
-  VSM_VELOCITY   = 1 << VSF_VELOCITY,
+	VSM_GENERAL    = 1 << VSF_GENERAL,
+	VSM_TANGENTS   = ((1 << VSF_TANGENTS) | (1 << VSF_QTANGENTS)),
+	VSM_HWSKIN     = 1 << VSF_HWSKIN_INFO,
+	VSM_VERTEX_VELOCITY   = 1 << VSF_VERTEX_VELOCITY,
 # if ENABLE_NORMALSTREAM_SUPPORT
-  VSM_NORMALS                  = 1 << VSF_NORMALS,
+	VSM_NORMALS    = 1 << VSF_NORMALS,
 #endif
 
 	VSM_MORPHBUDDY = 1 << VSF_MORPHBUDDY,
-	VSM_INSTANCED = 1 << VSF_INSTANCED,
+	VSM_INSTANCED  = 1 << VSF_INSTANCED,
 
-  VSM_MASK     = ((1 << VSF_NUM)-1),
+	VSM_MASK       = ((1 << VSF_NUM) - 1),
 };
 
 //==================================================================================================================
 
 #pragma warning(pop)
-
 
 #endif
 

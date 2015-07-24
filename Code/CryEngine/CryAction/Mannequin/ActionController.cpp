@@ -1165,30 +1165,43 @@ bool CActionController::BlendOffActions(float timePassed)
 void CActionController::PruneQueue()
 {
 	int numTooManyActions = m_queuedActions.size() - MAX_ALLOWED_QUEUE_SIZE;
-	while (numTooManyActions > 0)
+
+	if (numTooManyActions > 0)
 	{
-		bool removedAction = false;
-		// Remove from the back of the list
-		for (int i = (int)m_queuedActions.size() - 1; i >= 0; --i)
+		// print the remaining action queue before shrinking it
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "--- Mannequin Error, attempting to queue too many actions on entity '%s' (queue size = %" PRISIZE_T ", but only up to %u allowed) ---", GetSafeEntityName(), m_queuedActions.size(), MAX_ALLOWED_QUEUE_SIZE);
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "    %" PRISIZE_T " actions in queue:", m_queuedActions.size());
+		for(size_t k = 0; k < m_queuedActions.size(); k++)
 		{
-			IActionPtr pOtherAction = m_queuedActions[i];
-			const bool isInterruptable = ((pOtherAction->GetFlags() & IAction::Interruptable) != 0);
-			if (!isInterruptable)
+			CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "    #%" PRISIZE_T ": %s", k, m_queuedActions[k]->GetName());
+		}
+
+		do
+		{
+			bool removedAction = false;
+			// Remove from the back of the list
+			for (int i = (int)m_queuedActions.size() - 1; i >= 0; --i)
 			{
-				CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_ERROR, "Error, attempting to queue too many actions on entity '%s'. Ditching other action '%s' (%p) (at queue index %d)", GetSafeEntityName(), pOtherAction->GetName(), pOtherAction.get(), i);
-				m_queuedActions.erase(m_queuedActions.begin() + i);
-				pOtherAction->Fail(AF_QueueFull);
-				numTooManyActions--;
-				removedAction = true;
+				IActionPtr pOtherAction = m_queuedActions[i];
+				const bool isInterruptable = ((pOtherAction->GetFlags() & IAction::Interruptable) != 0);
+				if (!isInterruptable)
+				{
+					CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Ditching other action '%s' (%p) (at queue index %d)", pOtherAction->GetName(), pOtherAction.get(), i);
+					m_queuedActions.erase(m_queuedActions.begin() + i);
+					pOtherAction->Fail(AF_QueueFull);
+					numTooManyActions = m_queuedActions.size() - MAX_ALLOWED_QUEUE_SIZE;	// need to re-compute the overflow as IAction::Fail() might have just queued new actions
+					removedAction = true;
+					break;
+				}
+			}
+			// Can't remove anything - so just bail out
+			if (removedAction == false)
+			{
+				CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Can't remove anything");
 				break;
 			}
-		}
-		// Can't remove anything - so just bail out
-		if (removedAction == false)
-		{
-			CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_ERROR, "Error, attempting to queue too many actions on entity '%s'. Can't remove anything", GetSafeEntityName());
-			break;
-		}
+		} while (numTooManyActions > 0);
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "---------------------");
 	}
 }
 
@@ -2192,7 +2205,7 @@ IProceduralContext *CActionController::CreateProceduralContext(const char *conte
 	if (!hasValidRootEntity)
 		return NULL;
 
-	const uint32 contextNameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(contextName);
+	const uint32 contextNameCRC = CCrc32::ComputeLowercase(contextName);
 
 	SProcContext newProcContext;
 	newProcContext.nameCRC = contextNameCRC;
@@ -2206,14 +2219,14 @@ IProceduralContext *CActionController::CreateProceduralContext(const char *conte
 
 const IProceduralContext *CActionController::FindProceduralContext( const char *contextName ) const
 {
-	const uint32 contextNameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(contextName);
+	const uint32 contextNameCRC = CCrc32::ComputeLowercase(contextName);
 	return FindProceduralContext(contextNameCRC);
 }
 
 
 IProceduralContext *CActionController::FindProceduralContext( const char *contextName )
 {
-	const uint32 contextNameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(contextName);
+	const uint32 contextNameCRC = CCrc32::ComputeLowercase(contextName);
 	return FindProceduralContext(contextNameCRC);
 }
 

@@ -61,21 +61,21 @@ public:
 	}
 
 	// ICustomAction
-	VIRTUAL IEntity* GetObjectEntity() const { return m_pObjectEntity; }
-	VIRTUAL const char* GetCustomActionGraphName() const { return m_customActionGraphName; }
-	VIRTUAL IFlowGraph* GetFlowGraph() const { return m_pFlowGraph; }
-	VIRTUAL bool StartAction();
-	VIRTUAL bool SucceedAction();
-	VIRTUAL bool SucceedWaitAction();
-	VIRTUAL bool SucceedWaitCompleteAction();
-	VIRTUAL bool EndActionSuccess();
-	VIRTUAL bool EndActionFailure();
-	VIRTUAL bool AbortAction();
-	VIRTUAL void TerminateAction();
-	VIRTUAL void Invalidate() { m_pFlowGraph = NULL; }
-	VIRTUAL ECustomActionState GetCurrentState() const { return m_currentState; }
-	VIRTUAL void RegisterListener( ICustomActionListener* pEventListener, const char* name ) { m_listeners.Add( pEventListener, name ); }
-	VIRTUAL void UnregisterListener( ICustomActionListener* pEventListener ) { m_listeners.Remove( pEventListener ); }
+	virtual IEntity* GetObjectEntity() const { return m_pObjectEntity; }
+	virtual const char* GetCustomActionGraphName() const { return m_customActionGraphName; }
+	virtual IFlowGraph* GetFlowGraph() const { return m_pFlowGraph; }
+	virtual bool StartAction();
+	virtual bool SucceedAction();
+	virtual bool SucceedWaitAction();
+	virtual bool SucceedWaitCompleteAction();
+	virtual bool EndActionSuccess();
+	virtual bool EndActionFailure();
+	virtual bool AbortAction();
+	virtual void TerminateAction();
+	virtual void Invalidate() { m_pFlowGraph = NULL; }
+	virtual ECustomActionState GetCurrentState() const { return m_currentState; }
+	virtual void RegisterListener( ICustomActionListener* pEventListener, const char* name ) { m_listeners.Add( pEventListener, name ); }
+	virtual void UnregisterListener( ICustomActionListener* pEventListener ) { m_listeners.Remove( pEventListener ); }
 	// ~ICustomAction
 
 	// Called on serialize

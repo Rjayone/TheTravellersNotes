@@ -332,22 +332,28 @@ void CFlowEntityNode::OnEntityEvent( IEntity *pEntity,SEntityEvent &event )
 					switch (event.nParam[1])
 					{
 					case IEntityClass::EVT_INT:
+						assert(event.nParam[2] && "Attempt to activate FlowGraph port of type int without value");
 						m_pGraph->ActivatePort( addr,*(int*)event.nParam[2] );
 						break;
 					case IEntityClass::EVT_FLOAT:
+						assert(event.nParam[2] && "Attempt to activate FlowGraph port of type float without value");
 						m_pGraph->ActivatePort( addr,*(float*)event.nParam[2] );
 						break;
 					case IEntityClass::EVT_BOOL:
+						assert(event.nParam[2] && "Attempt to activate FlowGraph port of type bool without value");
 						m_pGraph->ActivatePort( addr,*(bool*)event.nParam[2] );
 						break;
 					case IEntityClass::EVT_VECTOR:
+						assert(event.nParam[2] && "Attempt to activate FlowGraph port of type Vec3 without value");
 						m_pGraph->ActivatePort( addr,*(Vec3*)event.nParam[2] );
 						break;
 					case IEntityClass::EVT_ENTITY:
+						assert(event.nParam[2] && "Attempt to activate FlowGraph port of type EntityId without value");
 						m_pGraph->ActivatePort( addr,*(EntityId*)event.nParam[2] );
 						break;
 					case IEntityClass::EVT_STRING:
 						{
+							assert(event.nParam[2] && "Attempt to activate FlowGraph port of type string without value");
 							const char *str = (const char*)event.nParam[2];
 							m_pGraph->ActivatePort( addr,string(str) );
 						}
@@ -873,7 +879,7 @@ public:
 	{
 	}
 
-	virtual void GetConfiguration(SFlowNodeConfig &config) OVERRIDE
+	virtual void GetConfiguration(SFlowNodeConfig &config) override
 	{
 		static const SInputPortConfig inputs[] =
 		{
@@ -896,7 +902,7 @@ public:
 		config.SetCategory(EFLN_APPROVED);
 	}
 
-	virtual void ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo) OVERRIDE
+	virtual void ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo) override
 	{
 		switch(event)
 		{
@@ -923,7 +929,7 @@ public:
 		}
 	}
 
-	virtual void GetMemoryUsage(ICrySizer *s) const OVERRIDE
+	virtual void GetMemoryUsage(ICrySizer *s) const override
 	{
 		s->Add(*this);
 	}
@@ -938,20 +944,37 @@ class CFlowNode_EntityFaceAt : public CFlowEntityNodeBase
 public:
   enum EInputs
   {
-    IN_TARGET=0,
-    IN_VECTOR,
-    IN_START,
-    IN_STOP,
+		IN_TARGET=0,
+		IN_VECTOR,
+		IN_START,
+		IN_STOP,
+		IN_FWD_AXIS,
+		IN_REFERENCE,
   };
   enum EOutputs
   {
     OUT_CURRENT=0,
   };
 
-  CFlowNode_EntityFaceAt( SActivationInfo *pActInfo ) : CFlowEntityNodeBase()
+	enum EFwdAxis
+	{
+		eFA_XPlus = 0,
+		eFA_XMinus,
+		eFA_YPlus,
+		eFA_YMinus,
+		eFA_ZPlus,
+		eFA_ZMinus,
+	};
+
+
+
+  CFlowNode_EntityFaceAt( SActivationInfo *pActInfo )
+		: CFlowEntityNodeBase()
+		, m_targetPos(0.0f,0.0f,0.0f)
+		, m_fwdAxis(eFA_XPlus)
+		, m_referenceVector(0.0f,0.0f,0.0f)
+		, m_entityId(0)
   {
-    m_targetPos(0.0f,0.0f,0.0f);
-    m_entityId = 0;
   }
 
 	virtual IFlowNodePtr Clone( SActivationInfo *pActInfo ) { pActInfo->m_pUserData = (void*)(UINT_PTR)m_entityId; return new CFlowNode_EntityFaceAt(pActInfo); }
@@ -959,15 +982,17 @@ public:
   virtual void GetConfiguration( SFlowNodeConfig& config )
   {
     static const SInputPortConfig in_config[] = {
-      InputPortConfig<EntityId>("target", _HELP("face direction of target [EntityID]"), _HELP("Target")),
-      InputPortConfig<Vec3>("pos", Vec3(ZERO), _HELP("target this position [Vec3]")),
-      InputPortConfig<SFlowSystemVoid>("Activate", _HELP("start trigger")),
-      InputPortConfig<SFlowSystemVoid>("Deactivate", _HELP("stop trigger")),
-      {0}
+			InputPortConfig<EntityId>("target", _HELP("face direction of target [EntityID]"), _HELP("Target")),
+			InputPortConfig<Vec3>("pos", Vec3(ZERO), _HELP("target this position [Vec3]")),
+			InputPortConfig<SFlowSystemVoid>("Activate", _HELP("start trigger")),
+			InputPortConfig<SFlowSystemVoid>("Deactivate", _HELP("stop trigger")),
+			InputPortConfig<int>("FwdDir", eFA_XPlus, _HELP("Axis that will be made to point at the target"), _HELP( "FwdDir" ), "enum_int:X+=0,X-=1,Y+=2,Y-=3,Z+=4,Z-=5"),
+			InputPortConfig<Vec3>("ReferenceVec", Vec3( 0.0f, 0.0f, 1.0f ), _HELP("This reference vector represents the desired Up (Z+), unless you're using Z+ or Z- as FwdDir, in which case this vector represents the right vector (X+)")),
+			{0}
     };
     static const SOutputPortConfig out_config[] = {
-      OutputPortConfig<Vec3>("current", _HELP("the current directional vector")),
-      {0}
+			OutputPortConfig<Vec3>("current", _HELP("the current directional vector")),
+			{0}
     };
     config.sDescription = _HELP("Entity Looks At");
     config.nFlags |= EFLN_TARGET_ENTITY;
@@ -978,19 +1003,50 @@ public:
 
   void SnapToTarget(SActivationInfo* pActInfo)
   {
-    IEntity *pEntity = GetEntity();
-    if (!pEntity)
-      return;
+		IEntity *pEntity = GetEntity();
+		if (!pEntity)
+			return;
 
-    IEntity * pLookAtEntity = gEnv->pEntitySystem->GetEntity(m_entityId);
-    if ( pLookAtEntity )    
-      m_targetPos = pLookAtEntity->GetPos();
+		IEntity * pLookAtEntity = gEnv->pEntitySystem->GetEntity(m_entityId);
+		if ( pLookAtEntity )    
+			m_targetPos = pLookAtEntity->GetWorldPos();
 
-    Vec3 dir(1.0f,0.0f,0.0f);
-    const Quat targetQuat = Quat::CreateRotationV0V1(dir,(m_targetPos-pEntity->GetPos()).GetNormalizedSafe());
-    pEntity->SetRotation(targetQuat);
-    
-    ActivateOutput(pActInfo, OUT_CURRENT, Vec3(RAD2DEG(Ang3(targetQuat))));
+		const Vec3& worldPos = pEntity->GetWorldPos();
+		Vec3 facingDirection = ( m_targetPos - pEntity->GetPos() ).GetNormalized();
+
+		Vec3 xAxis( 1.0f, 0.0f, 0.0f );
+		Vec3 yAxis( 0.0f, 1.0f, 0.0f );
+		Vec3 zAxis( 0.0f, 0.0f, 1.0f );
+
+		switch( m_fwdAxis )
+		{
+		case eFA_XMinus:
+			facingDirection = -facingDirection;
+		case eFA_XPlus:
+			xAxis = facingDirection;
+			yAxis = m_referenceVector ^ xAxis;
+			zAxis = xAxis ^ yAxis;
+			break;
+		case eFA_YMinus:
+			facingDirection = -facingDirection;
+		case eFA_YPlus:
+			yAxis = facingDirection;
+			xAxis = yAxis ^ m_referenceVector;
+			zAxis = xAxis ^ yAxis;
+			break;
+		case eFA_ZMinus:
+			facingDirection = -facingDirection;
+		case eFA_ZPlus:
+			zAxis = facingDirection;
+			yAxis = zAxis ^ m_referenceVector;
+			xAxis = yAxis ^ zAxis;
+			break;
+		}
+
+		Matrix34 worldMatrix = Matrix34::CreateFromVectors( xAxis.GetNormalized(), yAxis.GetNormalized(), zAxis.GetNormalized(), worldPos );
+		pEntity->SetWorldTM( worldMatrix );
+
+		ActivateOutput(pActInfo, OUT_CURRENT, Vec3(RAD2DEG(Ang3(pEntity->GetRotation()))));
   }
 
   virtual void OnEntityEvent( IEntity *pEntity,SEntityEvent &event )
@@ -998,61 +1054,79 @@ public:
 
   }
 
-  virtual void ProcessEvent( EFlowEvent event,SActivationInfo *pActInfo )
-  {
-    CFlowEntityNodeBase::ProcessEvent(event,pActInfo);
+	virtual void ProcessEvent( EFlowEvent event,SActivationInfo *pActInfo )
+	{
+		CFlowEntityNodeBase::ProcessEvent(event,pActInfo);
  
-    IEntity *pEntity = GetEntity();
-    if (!pEntity)
-      return;
+		IEntity *pEntity = GetEntity();
+		if (!pEntity)
+			return;
 
-    switch (event)
-    {
-      case eFE_Activate:
-      {
-        if (IsPortActive(pActInfo, IN_STOP)) // Stop
-        {
-          pActInfo->pGraph->SetRegularlyUpdated( pActInfo->myID, false );
-        }
+		switch (event)
+		{
+			case eFE_Activate:
+			{
+				if (IsPortActive(pActInfo, IN_STOP)) // Stop
+				{
+					pActInfo->pGraph->SetRegularlyUpdated( pActInfo->myID, false );
+				}
 
-        if (IsPortActive(pActInfo, IN_TARGET))
-        {
-          m_entityId = GetPortEntityId(pActInfo,IN_TARGET);
-        }
-        else if (IsPortActive(pActInfo, IN_VECTOR))
-        {
-          m_targetPos = GetPortVec3(pActInfo,	IN_VECTOR);
-        }
+				if (IsPortActive(pActInfo, IN_TARGET))
+				{
+					m_entityId = GetPortEntityId(pActInfo,IN_TARGET);
+				}
+				else if (IsPortActive(pActInfo, IN_VECTOR))
+				{
+					m_targetPos = GetPortVec3(pActInfo,	IN_VECTOR);
+				}
 
-        if (IsPortActive(pActInfo,IN_START)) 
-        {
-          pActInfo->pGraph->SetRegularlyUpdated( pActInfo->myID, true	);
-        }
-        break;
-      }
+				if (IsPortActive(pActInfo, IN_FWD_AXIS))
+				{
+					m_fwdAxis = static_cast<EFwdAxis>( GetPortInt(pActInfo,IN_FWD_AXIS) );
+				}
 
-      case eFE_Initialize:
-      {
-        pActInfo->pGraph->SetRegularlyUpdated( pActInfo->myID, false );
-        break;
-      }
+				if (IsPortActive(pActInfo, IN_REFERENCE))
+				{
+					m_referenceVector = GetPortVec3(pActInfo,IN_REFERENCE);
+					m_referenceVector.Normalize();
+				}
 
-      case eFE_Update:
-      {
-        SnapToTarget(pActInfo);
-        break;
-      }
-    }
-  }
+				if (IsPortActive(pActInfo,IN_START)) 
+				{
+					pActInfo->pGraph->SetRegularlyUpdated( pActInfo->myID, true	);
+				}
+				break;
+			}
 
-  virtual void GetMemoryUsage(ICrySizer * s) const
-  {
-    s->Add(*this);
-  }
+			case eFE_Initialize:
+			{
+				m_entityId = GetPortEntityId(pActInfo,IN_TARGET);
+				m_targetPos = GetPortVec3(pActInfo,	IN_VECTOR);
+				m_fwdAxis = static_cast< EFwdAxis >( GetPortInt(pActInfo, IN_FWD_AXIS) );
+				m_referenceVector = GetPortVec3(pActInfo,IN_REFERENCE);
+				m_referenceVector.Normalize();
+				pActInfo->pGraph->SetRegularlyUpdated( pActInfo->myID, false );
+				break;
+			}
 
-  private:
-    Vec3 m_targetPos;
-    EntityId m_entityId;
+			case eFE_Update:
+			{
+				SnapToTarget(pActInfo);
+				break;
+			}
+		}
+	}
+
+	virtual void GetMemoryUsage(ICrySizer * s) const
+	{
+		s->Add(*this);
+	}
+
+	private:
+		Vec3 m_targetPos;
+		EFwdAxis m_fwdAxis;
+		Vec3 m_referenceVector;
+		EntityId m_entityId;
 };
 
 
@@ -1667,22 +1741,22 @@ public:
 					for(int i=0; i<3; i++)
 					{
 						ScriptAnyValue value;
-						char newKey[32] = "";
+						char newKey[32];
 
-						strcat(newKey,pKey);
+						cry_strcpy(newKey,pKey);
 
-						if(i==0)strcat(newKey,".x");
-						if(i==1)strcat(newKey,".y");
-						if(i==2)strcat(newKey,".z");
+						if(i==0) cry_strcat(newKey,".x");
+						if(i==1) cry_strcat(newKey,".y");
+						if(i==2) cry_strcat(newKey,".z");
 
 						if(ReadScriptValue( pTable, pPropertiesString, newKey, bPerArchetype, value ))
 						{
 							float fVal;
 							value.CopyTo( fVal );
 
-							if(i==0)vecValue.x = fVal;
-							if(i==1)vecValue.y = fVal;
-							if(i==2)vecValue.z = fVal;
+							if(i==0) vecValue.x = fVal;
+							if(i==1) vecValue.y = fVal;
+							if(i==2) vecValue.z = fVal;
 						}
 						else
 						{
@@ -4101,6 +4175,63 @@ public:
 	}
 };
 
+class CFlowNode_FindEntityByName : public CFlowBaseNode< eNCT_Singleton >
+{
+public:
+	CFlowNode_FindEntityByName( SActivationInfo * pActInfo )
+	{
+	}
+
+	enum EInPorts
+	{
+		eIP_Set = 0,
+		eIP_Name
+	};
+	enum EOutPorts
+	{
+		eOP_EntityId = 0
+	};
+
+	virtual void GetConfiguration( SFlowNodeConfig& config )
+	{
+		static const SInputPortConfig in_config[] =
+		{
+			InputPortConfig_Void   ( "Set", _HELP( "Start search for entity with the specified name." ) ),
+			InputPortConfig<string>( "Name", string(), _HELP( "Name of the entity to look for." ) ),
+			{0}
+		};
+		static const SOutputPortConfig out_config[] =
+		{
+			OutputPortConfig<EntityId>( "EntityId", _HELP( "Outputs the entity's ID if found, 0 otherwise." ) ),
+			{0}
+		};
+		config.sDescription = _HELP( "Searches for an entity using its name" );
+		config.pInputPorts = in_config;
+		config.pOutputPorts = out_config;
+		config.SetCategory(EFLN_APPROVED);
+	}
+
+	virtual void ProcessEvent( EFlowEvent event, SActivationInfo* pActInfo )
+	{
+		if (event == eFE_Activate)
+		{
+			if ( IsPortActive( pActInfo, eIP_Set ) )
+			{
+				const string& name = GetPortString( pActInfo, eIP_Name );
+				IEntity* pEntity = gEnv->pEntitySystem->FindEntityByName( name.c_str() );
+				ActivateOutput( pActInfo, eOP_EntityId, pEntity ? pEntity->GetId() : EntityId( 0 ) );
+			}
+		}
+	}
+
+	virtual void GetMemoryUsage( ICrySizer * s ) const
+	{
+		s->Add(*this);
+	}
+
+};
+
+
 REGISTER_FLOW_NODE( "Entity:EntityPos",CFlowNode_EntityPos )
 REGISTER_FLOW_NODE( "Entity:GetPos",CFlowNode_EntityGetPos )
 REGISTER_FLOW_NODE( "Entity:BroadcastEvent",CFlowNode_BroadcastEntityEvent )
@@ -4128,6 +4259,8 @@ REGISTER_FLOW_NODE( "Entity:CharAttachmentMaterialParam",CFlowNodeCharAttachment
 
 REGISTER_FLOW_NODE( "Entity:EntityPool",CFlowNode_EntityPool )
 REGISTER_FLOW_NODE( "Entity:EntityFaceAt",CFlowNode_EntityFaceAt )
+
+REGISTER_FLOW_NODE( "Entity:FindEntityByName", CFlowNode_FindEntityByName );
 
 // engine based
 REGISTER_FLOW_NODE( "Engine:MaterialParam",CFlowNodeMaterialShaderParam )

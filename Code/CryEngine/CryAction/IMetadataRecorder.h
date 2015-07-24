@@ -2,14 +2,12 @@
 // Copyright (C), Crytek, 1999-2014.
 
 
-#include DEVIRTUALIZE_HEADER_FIX(IMetadataRecorder.h)
-
 #ifndef __IMETADATARECORDER_H__
 #define __IMETADATARECORDER_H__
 
 #pragma once
 
-UNIQUE_IFACE struct IMetadata
+struct IMetadata
 {
 	static IMetadata* CreateInstance();
 	void Delete();
@@ -42,7 +40,7 @@ struct IMetadataListener
 };
 
 // Records toplevel metadata - everything being recorded is added to the toplevel in a sequential manner.
-UNIQUE_IFACE struct IMetadataRecorder
+struct IMetadataRecorder
 {
 	static IMetadataRecorder* CreateInstance();
 	void Delete();

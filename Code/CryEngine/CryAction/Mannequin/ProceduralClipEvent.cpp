@@ -19,7 +19,7 @@ struct SProceduralClipEventParams
 		ar(eventName, "EventName", "Event Name");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = eventName.c_str();
 	}

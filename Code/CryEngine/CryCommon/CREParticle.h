@@ -1,5 +1,3 @@
-#include DEVIRTUALIZE_HEADER_FIX(CREParticle.h)
-
 #ifndef __CREPARTICLE_H__
 #define __CREPARTICLE_H__
 
@@ -9,18 +7,16 @@
 
 // forward declarations
 class CREParticle;
-
-#define SVF_Particle		SVF_P3F_C4B_T4B_N3F2			// using typedef is problematic for CryCG
+typedef SVF_P3F_C4B_T4B_N3F2 SVF_Particle;	
 
 struct SRenderVertices
 {
 	FixedDynArray<SVF_Particle>			aVertices;
 	FixedDynArray<uint16>						aIndices;
-	int															nBaseVertexIndex;
 	float														fPixels;
 	
 	ILINE SRenderVertices()
-		: nBaseVertexIndex(0), fPixels(0.f) {}
+		: fPixels(0.f) {}
 };
 
 struct SCameraInfo
@@ -38,7 +34,7 @@ struct SCameraInfo
 	{}
 };
 
-UNIQUE_IFACE struct IParticleVertexCreator
+struct IParticleVertexCreator
 {
 	// Create the vertices for the particle emitter.
 	virtual void ComputeVertices( const SCameraInfo& camInfo, CREParticle* pRE, uint32 uRenderFlags, float fMaxPixels ) = 0;
@@ -49,6 +45,12 @@ UNIQUE_IFACE struct IParticleVertexCreator
 class CREParticle : public CRendElementBase
 {
 public:
+	enum EParticleObjFlags
+	{
+		ePOF_HALF_RES = 0x01,
+		ePOF_VOLUME_FOG = 0x02,
+	};
+
 	CREParticle();
 	void Reset( IParticleVertexCreator* pVC, int nThreadId );
 	
@@ -80,11 +82,10 @@ public:
 
 	// Additional methods.
 
-	// Interface to alloc render verts and indices from 3DEngine code.
-	// VIRTUAL creates regular call on staticly linked PS3, virtual call (cross-module) otherwise.
-	VIRTUAL SRenderVertices* AllocVertices( int nAllocVerts, int nAllocInds );
+	// Interface to alloc render verts and indices from 3DEngine code.	
+	virtual SRenderVertices* AllocVertices( int nAllocVerts, int nAllocInds );
 
-	void ComputeVertices( SCameraInfo camInfo, uint32 uRenderFlags, bool bisJob );
+	void ComputeVertices( SCameraInfo camInfo, uint32 uRenderFlags );
 
 	float GetPixels() const
 	{

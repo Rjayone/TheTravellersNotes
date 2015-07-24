@@ -230,11 +230,6 @@ bool CRichPresence::SetRichPresence(ERichPresenceState state)
 	return (error == eCLE_Success);
 }
 
-void CRichPresence::RefreshRichPresence()
-{
-}
-
-
 void CRichPresence::OnSetRichPresenceCallback(CryLobbyTaskID taskID, ECryLobbyError error)
 {
 	bool setCurrent = true;

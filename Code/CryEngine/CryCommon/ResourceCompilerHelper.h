@@ -17,7 +17,6 @@
 #define __RESOURCECOMPILERHELPER_H__
 
 #include "SettingsManagerHelpers.h"
-#include <stdio.h>     // strlen()
 
 enum ERcExitCode
 {
@@ -74,7 +73,7 @@ public:
 
 	//
 	// Arguments:
-	//   szFileName null terminated ABSOLUTE file path or 0 can be used to test for rc.exe existence, relative path needs to be relative to bin32/rc directory
+	//   szFileName null terminated file path (0 can be used to test for rc.exe existence)
 	//   szAdditionalSettings - 0 or e.g. "/refresh" or "/refresh /xyz=56"
 	//
 	static ERcCallResult CallResourceCompiler(
@@ -103,7 +102,7 @@ public:
 	// little helper function (to stay independent)
 	static const char* GetExtension(const char* in)
 	{
-		const size_t len = strlen(in);
+		const size_t len = SettingsManagerHelpers::Utils::strlen(in);
 		for(const char* p = in + len-1; p >= in; --p)
 		{
 			switch(*p)
@@ -138,8 +137,8 @@ public:
 			p.append(".");
 			p.append(new_ext);
 		}
-    
-		strncpy_s(buffer, bufferSizeInBytes, p.c_str(), _TRUNCATE);
+
+		SettingsManagerHelpers::Utils::strcpy_with_clamp(buffer, bufferSizeInBytes, p.c_str());
 	}
 	
 	// little helper function (to stay independent)
@@ -158,13 +157,13 @@ public:
 			out = chk + 1;
 		}
 
-		strncpy_s(buffer, bufferSizeInBytes, out, _TRUNCATE);
+		SettingsManagerHelpers::Utils::strcpy_with_clamp(buffer, bufferSizeInBytes, out);
 	}	
 
 	// little helper function (to stay independent)
 	static void RemoveFilename(const char* szFilePath, char* buffer, size_t bufferSizeInBytes)
 	{
-		strncpy_s(buffer, bufferSizeInBytes, szFilePath, _TRUNCATE);
+		SettingsManagerHelpers::Utils::strcpy_with_clamp(buffer, bufferSizeInBytes, szFilePath);
 
 		char* out = buffer;
 		char* chk = strrchr(out, '\\');
@@ -192,15 +191,14 @@ public:
 		if (ext)
 		{
 			if (_stricmp(ext, "tif") == 0 ||
-			    _stricmp(ext, "hdr") == 0 ||
-			    _stricmp(ext, "srf") == 0)
+			    _stricmp(ext, "hdr") == 0)
 			{
 				ReplaceExtension(szFilePath, "dds", buffer, bufferSizeInBytes);
 				return;
 			}
 		}
 
-		strncpy_s(buffer, bufferSizeInBytes, szFilePath, _TRUNCATE);
+		SettingsManagerHelpers::Utils::strcpy_with_clamp(buffer, bufferSizeInBytes, szFilePath);
 	}
 };
 

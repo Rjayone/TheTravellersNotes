@@ -12,15 +12,6 @@ and contents of StringUtils.cpp into CryEngine/CryCommon/StringUtils.cpp
 #define __STRING_UTILS_H__
 
 //--------------------------------------------------------------------------------
-// cry_strncpy: Parameter order is the same as strncpy; return value
-// states whether entirety of source was copied into destination.
-SC_API bool cry_strncpy(char * destination, const char * source, size_t bufferLength);
-
-//--------------------------------------------------------------------------------
-// cry_wstrncpy: Same as cry_strncpy, but accepts wide chars instead.
-bool cry_wstrncpy(wchar_t * destination, const wchar_t * source, size_t bufferLength);
-
-//--------------------------------------------------------------------------------
 // cry_sprintf: Same as sprintf but null terminates the output \o/
 void cry_sprintf(char * destination, size_t size, const char* format, ...);
 
@@ -63,20 +54,10 @@ class CCryLogAlwaysOutputHandler : public ITextOutputHandler
 void cry_displayMemInHexAndAscii(const char * startEachLineWith, const void * data, int size, ITextOutputHandler & output, const int bytesPerLine = 32);
 #endif
 
-
-//--------------------------------------------------------------------------------
-// Convert a standard string into a wstring, useful.
-// Converting a wstring into a utf8 string is done by the engine stringutils
-void StrToWstr(const char* str, wstring& dstr);
-
 //--------------------------------------------------------------------------------
 // Generates a string in the format X days X hrs X mins X secs, or if useShortForm is set 00:00:00.
 const char * GetTimeString(int secs, bool useShortForm=false, bool includeSeconds=true, bool useSingleLetters=false);
 const char * GetTimeString(float secs, bool useShortForm=false, bool includeSeconds=true, bool useSingleLetters=false);
 
-//--------------------------------------------------------------------------------
-// Generates a wstring in the format X days X hrs X mins X secs, or if useShortForm is set 00:00:00.
-const wchar_t * GetTimeStringW(int secs, bool useShortForm=false, bool includeSeconds=true, bool useSingleLetters=false);
-const wchar_t * GetTimeStringW(float secs, bool useShortForm=false, bool includeSeconds=true, bool useSingleLetters=false);
 
 #endif // __STRING_UTILS_H__

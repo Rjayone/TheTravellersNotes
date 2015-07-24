@@ -84,9 +84,9 @@ public:
 	CVehicleSeat();
 	~CVehicleSeat();
 
-	VIRTUAL bool Init(IVehicle* pVehicle, TVehicleSeatId seatId, const CVehicleParams& seatTable);
-	VIRTUAL void PostInit(IVehicle* pVehicle);
-	VIRTUAL void Reset();
+	virtual bool Init(IVehicle* pVehicle, TVehicleSeatId seatId, const CVehicleParams& seatTable);
+	virtual void PostInit(IVehicle* pVehicle);
+	virtual void Reset();
 	virtual void Release() { delete this; }
 
 	void GetMemoryUsage(ICrySizer * s) const;
@@ -98,40 +98,40 @@ public:
 	void OnSpawnComplete();
 
 	// IVehicleSeat
-	VIRTUAL bool Enter(EntityId actorId, bool isTransitionEnabled = true);
-	VIRTUAL bool Exit(bool isTransitionEnabled, bool force=false, Vec3 exitPos=ZERO);
+	virtual bool Enter(EntityId actorId, bool isTransitionEnabled = true);
+	virtual bool Exit(bool isTransitionEnabled, bool force=false, Vec3 exitPos=ZERO);
 
-	VIRTUAL void SetLocked(EVehicleSeatLockStatus lock) { m_lockStatus = lock; }
-	VIRTUAL EVehicleSeatLockStatus GetLockedStatus() const { return m_lockStatus; }
+	virtual void SetLocked(EVehicleSeatLockStatus lock) { m_lockStatus = lock; }
+	virtual EVehicleSeatLockStatus GetLockedStatus() const { return m_lockStatus; }
 
-	VIRTUAL bool IsDriver() const { return m_isDriver; }
-	VIRTUAL bool IsGunner() const;
-	VIRTUAL bool IsRemoteControlled() const { return IsRemoteControlledInternal(); }
-	VIRTUAL bool IsLocked(IActor* pActor) const;
+	virtual bool IsDriver() const { return m_isDriver; }
+	virtual bool IsGunner() const;
+	virtual bool IsRemoteControlled() const { return IsRemoteControlledInternal(); }
+	virtual bool IsLocked(IActor* pActor) const;
 	bool IsRotatable() const { return m_pTurretAction != NULL; }
 
-	VIRTUAL bool IsPassengerHidden() const { return m_isPassengerHidden; }
-	VIRTUAL bool IsPassengerExposed() const { return m_isPassengerExposed; }
-	VIRTUAL const SSeatSoundParams& GetSoundParams() const { return m_soundParams; }
+	virtual bool IsPassengerHidden() const { return m_isPassengerHidden; }
+	virtual bool IsPassengerExposed() const { return m_isPassengerExposed; }
+	virtual const SSeatSoundParams& GetSoundParams() const { return m_soundParams; }
 	SSeatSoundParams& GetSoundParams() { return m_soundParams; }
 
-	VIRTUAL bool ProcessPassengerMovementRequest(const CMovementRequest& movementRequest);
+	virtual bool ProcessPassengerMovementRequest(const CMovementRequest& movementRequest);
 
-	VIRTUAL TVehicleViewId GetCurrentView() const { return m_currentView; }
-	VIRTUAL IVehicleView* GetView(TVehicleViewId viewId) const;
-	VIRTUAL bool SetView(TVehicleViewId viewId);
-	VIRTUAL TVehicleViewId GetNextView(TVehicleViewId viewId) const;
+	virtual TVehicleViewId GetCurrentView() const { return m_currentView; }
+	virtual IVehicleView* GetView(TVehicleViewId viewId) const;
+	virtual bool SetView(TVehicleViewId viewId);
+	virtual TVehicleViewId GetNextView(TVehicleViewId viewId) const;
 
-	VIRTUAL const char* GetActionMap() const { return m_actionMap.c_str(); }
+	virtual const char* GetActionMap() const { return m_actionMap.c_str(); }
 
-	VIRTUAL bool IsAutoAimEnabled();
+	virtual bool IsAutoAimEnabled();
 
-	VIRTUAL IVehicleSeatAction* GetISeatActionWeapons();
-	VIRTUAL const IVehicleSeatAction* GetISeatActionWeapons() const;
+	virtual IVehicleSeatAction* GetISeatActionWeapons();
+	virtual const IVehicleSeatAction* GetISeatActionWeapons() const;
 
-	VIRTUAL void PrePhysUpdate(const float dt);
+	virtual void PrePhysUpdate(const float dt);
 
-	VIRTUAL void OffsetPosition(const Vec3 &delta);
+	virtual void OffsetPosition(const Vec3 &delta);
 	// ~IVehicleSeat
 
 	bool EnterRemotely(EntityId actorId);
@@ -163,15 +163,15 @@ public:
 	CVehicleSeatSerializer *GetSerializer();
 	void SetSerializer(CVehicleSeatSerializer *pSerializer);
 
-	VIRTUAL IVehicle* GetVehicle() const { return (IVehicle*)m_pVehicle; }
-	VIRTUAL IVehiclePart* GetAimPart() const { return (IVehiclePart*)m_pAimPart; }
+	virtual IVehicle* GetVehicle() const { return (IVehicle*)m_pVehicle; }
+	virtual IVehiclePart* GetAimPart() const { return (IVehiclePart*)m_pAimPart; }
 
 	float ProcessPassengerDamage(float actorHealth, float damage, int hitTypeId, bool explosion);
 
-	VIRTUAL void OnPassengerDeath();
-	VIRTUAL void UnlinkPassenger(bool ragdoll);
+	virtual void OnPassengerDeath();
+	virtual void UnlinkPassenger(bool ragdoll);
 	void OnVehicleEvent(EVehicleEvent event, const SVehicleEventParams& params);
-	VIRTUAL void OnCameraShake(float& angleAmount, float& shiftAmount, const Vec3& pos, const char* source) const;
+	virtual void OnCameraShake(float& angleAmount, float& shiftAmount, const Vec3& pos, const char* source) const;
 
 	// network
 	EntityId NetGetPassengerId() const;
@@ -188,7 +188,7 @@ public:
 	virtual void UpdateTargetPosAI(const Vec3 &pos);
 	// ~IFireController
 
-	VIRTUAL void ForceFinishExiting() { }
+	virtual void ForceFinishExiting() { }
 
 	const TVehicleSeatActionVector& GetSeatActions() const { return m_seatActions; }
 	TVehicleSeatActionVector& GetSeatActions() { return m_seatActions; }
@@ -197,19 +197,19 @@ public:
 
 	int GetSeatActionId(IVehicleSeatAction *pAction) const;
 	const IVehicleSeatAction *GetSeatActionById(int id) const;
-	VIRTUAL void ChangedNetworkState(NetworkAspectType aspects);
+	virtual void ChangedNetworkState(NetworkAspectType aspects);
 
 	const string& GetName() const { return m_name; }
 	TVehicleSeatId GetSeatId() const { return m_seatId; }
 
 	CGameChannel *GetGameChannel(EntityId actorId);
 
-	VIRTUAL IVehicleHelper* GetSitHelper() const { return m_pSitHelper; }
-	VIRTUAL IVehicleHelper* GetAIVisionHelper() const { return m_pAIVisionHelper; }
+	virtual IVehicleHelper* GetSitHelper() const { return m_pSitHelper; }
+	virtual IVehicleHelper* GetAIVisionHelper() const { return m_pAIVisionHelper; }
 	IVehicleHelper* GetEnterHelper() const { return m_pEnterHelper; }
 	IVehicleHelper* GetExitHelper() const { return m_pExitHelper ? m_pExitHelper : m_pEnterHelper; }
 
-	VIRTUAL int GetCurrentTransition() const { return m_transitionType; }
+	virtual int GetCurrentTransition() const { return m_transitionType; }
 
 	void SetSeatGroup(CVehicleSeatGroup *pSeatGroup) { m_pSeatGroup = pSeatGroup; }
 	const CVehicleSeatGroup* GetSeatGroup() const { return m_pSeatGroup; }

@@ -73,14 +73,12 @@ Vec3 CLightningRenderNode::CSegment::GetPoint(const SLightningParams& desc, cons
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-SPU_INDIRECT(RenderContent(ML),InvokeShadowMapRenderJobs(ML))
 void CLightningRenderNode::FillBBox(AABB &aabb) 
 { 
 	aabb = CLightningRenderNode::GetBBox();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-SPU_INDIRECT(RenderContent(M),InvokeShadowMapRenderJobs(M))
 EERType CLightningRenderNode::GetRenderNodeType()
 {
 	return eERType_GameEffect;

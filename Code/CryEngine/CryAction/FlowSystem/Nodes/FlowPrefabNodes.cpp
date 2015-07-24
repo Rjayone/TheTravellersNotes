@@ -27,7 +27,7 @@
 //////////////////////////////////////////////////////////////////////////
 CFlowNode_PrefabEventSource::~CFlowNode_PrefabEventSource()
 {
-	if ( m_eventId != CUSTOMEVENTID_INVALID )
+	if ( m_eventId != CUSTOMEVENTID_INVALID && m_customEventListenerRegistered )
 	{
 		ICustomEventManager* pCustomEventManager = gEnv->pGame->GetIGameFramework()->GetICustomEventManager();
 		CRY_ASSERT( pCustomEventManager != NULL );
@@ -84,7 +84,7 @@ void CFlowNode_PrefabEventSource::ProcessEvent( EFlowEvent event, SActivationInf
 		const TCustomEventId eventId = (TCustomEventId)GetPortInt( pActInfo, EIP_EventId );
 		if ( eventId != CUSTOMEVENTID_INVALID )
 		{
-			pCustomEventManager->RegisterEventListener( this, eventId );
+			m_customEventListenerRegistered = pCustomEventManager->RegisterEventListener( this, eventId );
 		}
 		m_eventId = eventId;
 	}
@@ -104,6 +104,7 @@ void CFlowNode_PrefabEventSource::OnCustomEvent( const TCustomEventId eventId )
 //////////////////////////////////////////////////////////////////////////
 CFlowNode_PrefabInstance::CFlowNode_PrefabInstance( SActivationInfo * pActInfo )
 {
+	m_customEventListenerRegistered = false;
 	for ( int i = 0; i < CUSTOMEVENTS_PREFABS_MAXNPERINSTANCE; i++ )
 	{
 		m_eventIds.push_back( CUSTOMEVENTID_INVALID );
@@ -118,7 +119,7 @@ CFlowNode_PrefabInstance::~CFlowNode_PrefabInstance()
 	for ( int i = 0; i < CUSTOMEVENTS_PREFABS_MAXNPERINSTANCE; i++ )
 	{
 		TCustomEventId& eventId = m_eventIds[i];
-		if ( eventId != CUSTOMEVENTID_INVALID )
+		if ( eventId != CUSTOMEVENTID_INVALID && m_customEventListenerRegistered)
 		{
 			pCustomEventManager->UnregisterEventListener( this, eventId );
 			eventId = CUSTOMEVENTID_INVALID;
@@ -206,7 +207,7 @@ void CFlowNode_PrefabInstance::ProcessEvent( EFlowEvent event, SActivationInfo *
 			if ( eventId != CUSTOMEVENTID_INVALID )
 			{
 				m_eventIds[i] = eventId;
-				pCustomEventManager->RegisterEventListener( this, eventId );
+				m_customEventListenerRegistered = pCustomEventManager->RegisterEventListener( this, eventId );
 			}
 
 			iCurPort += PREFAB_EVENTS_INSTANCE_NUMINPUTPORTSPEREVENT;

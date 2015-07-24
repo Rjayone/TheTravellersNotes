@@ -50,7 +50,7 @@ enum DirtyFlags
 //		but only what really need to be restored correctly.
 struct IStreamPersist
 {
-
+	// <interfuscator:shuffle>
 	// Description:
 	//		Serializes the object to a bitstream(network)
 	// Arguments:	
@@ -93,7 +93,7 @@ struct IStreamPersist
 	// See also:
 	//		CStream
 	virtual bool Load(CStream &stm,IScriptObject *pStream=NULL) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // GAME_ISTREAMPERSIST_H

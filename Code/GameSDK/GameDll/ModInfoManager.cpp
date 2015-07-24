@@ -142,7 +142,7 @@ static bool ModInfo_LoadFromFile(ModInfo* pMod, const char* pFilename)
 	}
 	pCryPak->FClose(f);
 	
-	std::auto_ptr<IXmlParser> pParser(GetISystem()->GetXmlUtils()->CreateXmlParser());
+	std::unique_ptr<IXmlParser> pParser(GetISystem()->GetXmlUtils()->CreateXmlParser());
 	XmlNodeRef pRoot = pParser->ParseBuffer(&buffer[0], buffer.size(), true);
 	if (!pRoot)
 		return false;

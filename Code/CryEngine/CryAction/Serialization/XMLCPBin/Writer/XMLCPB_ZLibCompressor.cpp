@@ -134,9 +134,7 @@ public:
 	{
 		SetName("ZLibCompressor");
 
-#ifdef XENON
-		XSetThreadProcessor(GetHandle(), 2);
-#elif defined (DURANGO)
+#if defined (DURANGO)
 		SetThreadAffinityMask(GetCurrentThread(), BIT(3));
 #endif
 
@@ -241,23 +239,14 @@ public:
 		m_bufferAvailableLock.Unlock();
 	}
 
-	// Ensure that the blocks get their own pages on PS3
 	static uint8* AllocateBlock()
 	{
-#if defined(PS3)
-		return (uint8*)NMemCont::ExternAllocate(XMLCPB_ZLIB_BUFFER_SIZE, 0);
-#else
 		return new uint8[ XMLCPB_ZLIB_BUFFER_SIZE ];
-#endif
 	}
 
 	static void FreeBlock(uint8 *pBlock)
 	{
-#if defined(PS3)
-		NMemCont::ExternFree(pBlock);
-#else
 		delete[] pBlock;
-#endif
 	}
 
 private:
@@ -287,11 +276,6 @@ bool InitializeCompressorThread()
 #elif defined(DURANGO)
 	s_pCompressorThread->Start(0, "ZLibCompressor");
 	SetThreadPriority(s_pCompressorThread->GetHandle(), THREAD_PRIORITY_ABOVE_NORMAL);
-#elif defined(XENON)
-	s_pCompressorThread->Start(0, "ZLibCompressor");
-	SetThreadPriority(s_pCompressorThread->GetHandle(), THREAD_PRIORITY_ABOVE_NORMAL);
-#elif defined(PS3)
-	s_pCompressorThread->Start(0, "ZLibCompressor", THREAD_PRIORITY_ABOVE_NORMAL);
 #else
 	//Platform not supported
 	COMPILE_TIME_ASSERT(0);

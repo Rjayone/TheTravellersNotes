@@ -32,7 +32,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if defined(PS3) || defined(APPLE) || defined(LINUX)
+#if defined(APPLE) || defined(LINUX)
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/socket.h>
@@ -40,11 +40,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#if defined(PS3)
-#include <netex/errno.h>
-#else
 #include <errno.h>
-#endif
 #include <netdb.h>
 typedef socklen_t				CRYSOCKLEN;
 #elif defined(ORBIS)
@@ -59,10 +55,6 @@ typedef socklen_t				CRYSOCKLEN;
 #define WSAGetLastError GetLastError
 #elif defined(WIN32) || defined(WIN64) || defined(DURANGO)
 #include <WinSock2.h>
-typedef int							CRYSOCKLEN;
-#elif defined(XENON)
-#include <winsockx.h>
-#pragma comment(lib,"xnet.lib") 
 typedef int							CRYSOCKLEN;
 #endif
 
@@ -92,7 +84,7 @@ namespace CrySock
 		eCSE_EACCES						= -1,		// Tried to establish a connection to an invalid address (such as a broadcast address)
 		eCSE_EADDRINUSE				= -2,		// Specified address already in use
 		eCSE_EADDRNOTAVAIL		= -3,		// Invalid address was specified
-		eCSE_EAFNOSUPPORT			= -4,		// Invalid socket type (or invalid protocol family - PS3)
+		eCSE_EAFNOSUPPORT			= -4,		// Invalid socket type (or invalid protocol family)
 		eCSE_EALREADY					= -5,		// Connection is being established (if the function is called again in non-blocking state)
 		eCSE_EBADF						= -6,		// Invalid socket number specified
 		eCSE_ECONNABORTED			= -7,		// Connection was aborted
@@ -105,7 +97,7 @@ namespace CrySock
 		eCSE_EINVAL						= -14,	// Invalid argument or function call
 		eCSE_EISCONN					= -15,	// Specified connection is already established
 		eCSE_EMFILE						= -16,	// No more socket descriptors available
-		eCSE_EMSGSIZE					= -17,	// Message size is too large (for PS3: 9216 bytes for UDP/UDPP2P, 8192 bytes for RAW socket)
+		eCSE_EMSGSIZE					= -17,	// Message size is too large
 		eCSE_ENETUNREACH			= -18,	// Destination is unreachable
 		eCSE_ENOBUFS					= -19,	// Insufficient working memory
 		eCSE_ENOPROTOOPT			= -20,	// Invalid combination of 'level' and 'optname'
@@ -155,9 +147,7 @@ namespace CrySock
 
 	static int closesocket(CRYSOCKET s)
 	{
-#if defined(PS3) 
-		return HandleSocketError(::socketclose(s));
-#elif defined(ORBIS)
+#if defined(ORBIS)
 		return HandleSocketError(::close(s));
 #else
 		return HandleSocketError(::closesocket(s));
@@ -183,7 +173,7 @@ namespace CrySock
 	static int connect(CRYSOCKET s, const CRYSOCKADDR* addr, CRYSOCKLEN addrlen)
 	{
 		int err = HandleSocketError(::connect(s, addr, addrlen));
-#if defined(PS3) || defined(ORBIS) || defined(APPLE) || defined(LINUX)	// PS3/Orbis would have to be different
+#if defined(ORBIS) || defined(APPLE) || defined(LINUX)	// Orbis would have to be different
 		if (err == eCSE_EINPROGRESS)
 #else
 		if (err == eCSE_EWOULDBLOCK)
@@ -287,11 +277,9 @@ namespace CrySock
 		FD_ZERO(&readSet);
 		FD_SET(s, &readSet);
 
-#if defined(PS3)
-		int ret = HandleSocketError(::socketselect(s+1, &readSet, &emptySet, &emptySet, timeout));
-#elif defined(ORBIS)
+#if defined(ORBIS)
 		int ret = HandleSocketError(::select(s+1, &readSet, &emptySet, &emptySet, timeout));
-#elif defined(WIN32) || defined(XENON)
+#elif defined(WIN32)
 		int ret = HandleSocketError(::select(static_cast<int>(s)+1, &readSet, &emptySet, &emptySet, timeout));
 #else
 		int ret = HandleSocketError(::select(s+1, &readSet, &emptySet, &emptySet, timeout));
@@ -327,11 +315,9 @@ namespace CrySock
 		FD_ZERO(&writeSet);
 		FD_SET(s, &writeSet);
 
-#if defined(PS3)
-		int ret = HandleSocketError(::socketselect(s+1, &emptySet, &writeSet, &emptySet, timeout));
-#elif defined(ORBIS)
+#if defined(ORBIS)
 		int ret = HandleSocketError(::select(s+1, &emptySet, &writeSet, &emptySet, timeout));
-#elif defined(WIN32) || defined(XENON)
+#elif defined(WIN32)
 		int ret = HandleSocketError(::select(static_cast<int>(s)+1, &emptySet, &writeSet, &emptySet, timeout));
 #else
 		int ret = HandleSocketError(::select(s+1, &emptySet, &writeSet, &emptySet, timeout));
@@ -368,9 +354,7 @@ namespace CrySock
 	}
 #endif
 
-#if defined(PS3)
-		return HandleSocketError(::socketselect(nfds, readfds, writefds, exceptfds, timeout));
-#elif defined(ORBIS)
+#if defined(ORBIS)
 		return HandleSocketError(::select(nfds, readfds, writefds, exceptfds, timeout));
 #else
 		return HandleSocketError(::select(nfds, readfds, writefds, exceptfds, timeout));
@@ -388,13 +372,13 @@ namespace CrySock
 
 	static bool MakeSocketNonBlocking(CRYSOCKET sock)
 	{
-	#if defined(WIN32) || defined(XENON) || defined(DURANGO)
+	#if defined(WIN32) || defined(DURANGO)
 		unsigned long nTrue = 1;
 		if (::ioctlsocket(sock, FIONBIO, &nTrue) == SOCKET_ERROR)
 		{
 			return false;
 		}
-	#elif defined(PS3) || defined(ORBIS)
+	#elif defined(ORBIS)
 		int nonblocking = 1;
 		if (::setsockopt(sock, SOL_SOCKET, SO_NBIO, &nonblocking, sizeof(int)) < 0)
 		{
@@ -414,13 +398,13 @@ namespace CrySock
 
 	static bool MakeSocketBlocking(CRYSOCKET sock)
 	{
-#if defined(WIN32) || defined(XENON) || defined(DURANGO)
+#if defined(WIN32) || defined(DURANGO)
 		unsigned long nTrue = 0;
 		if (::ioctlsocket(sock, FIONBIO, &nTrue) == SOCKET_ERROR)
 		{
 			return false;
 		}
-#elif defined(PS3) || defined(ORBIS)
+#elif defined(ORBIS)
 		int nonblocking = 0;
 		if (::setsockopt(sock, SOL_SOCKET, SO_NBIO, &nonblocking, sizeof(int)) < 0)
 		{
@@ -442,7 +426,7 @@ namespace CrySock
   {
     uint32 ret = 0;
 
-#if defined(WIN32) || defined(WIN64) || defined(PS3) || defined(DURANGO)
+#if defined(WIN32) || defined(WIN64) || defined(DURANGO)
 		hostent *pHost = gethostbyname(hostname);
 		if (pHost)
 		{
@@ -481,26 +465,6 @@ namespace CrySock
 			ret = sceaddr.s_addr;
 		else
 			ret = ::inet_addr(hostname);
-#elif defined (XENON)
-    ret = inet_addr(hostname);
-    if (ret == INADDR_NONE || ret == INADDR_ANY)
-    {
-      WSAEVENT wsaEvent = WSACreateEvent();
-      XNDNS *pXndns = NULL;
-      int err = XNetDnsLookup( hostname, wsaEvent, &pXndns );
-      if(pXndns)
-      {
-        WaitForSingleObject( wsaEvent, timeoutMilliseconds == 0 ? INFINITE : timeoutMilliseconds );
-        if (pXndns->iStatus == 0 && pXndns->cina >= 1)
-        {
-          ret = pXndns->aina[0].S_un.S_addr;
-        }
-      }
-      WSACloseEvent(wsaEvent);
-      
-      if(pXndns)
-        XNetDnsRelease( pXndns );
-    }
 #elif defined(ORBIS)
     ret = inet_addr(hostname);
     if (ret == 0)
@@ -546,8 +510,8 @@ namespace CrySock
         return 0;
       }
 
-      strcpy(host, hostname);
-      strcat(host, LOCAL_DOMAIN);
+      cry_strcpy(host, hostname);
+      cry_strcat(host, LOCAL_DOMAIN);
       
       host[hostlen+domainlen-1] = 0;
 
@@ -562,7 +526,7 @@ namespace CrySock
 	static CRYSOCKET HandleInvalidSocket(SOCKET s)
 	{
 		CRYSOCKET cs = static_cast<CRYSOCKET>(s);
-#if defined(PS3) || defined(ORBIS) 
+#if defined(ORBIS) 
 		if (s < 0)
 		{
 			cs = TranslateOSError(sys_net_errno);
@@ -581,7 +545,7 @@ namespace CrySock
 
 	static int HandleSocketError(int r)
 	{
-#if defined(PS3) || defined(ORBIS)
+#if defined(ORBIS)
 		if (r < 0)
 		{
 			r = TranslateOSError(sys_net_errno);
@@ -607,35 +571,7 @@ namespace CrySock
 		{
 			TRANSLATE(0, eCSE_NO_ERROR);
 
-#if defined(PS3) 
-			TRANSLATE(SYS_NET_EACCES, eCSE_EACCES);
-			TRANSLATE(SYS_NET_EADDRINUSE, eCSE_EADDRINUSE);
-			TRANSLATE(SYS_NET_EADDRNOTAVAIL, eCSE_EADDRNOTAVAIL);
-			TRANSLATE(SYS_NET_EAFNOSUPPORT, eCSE_EAFNOSUPPORT);
-			TRANSLATE(SYS_NET_EALREADY, eCSE_EALREADY);
-			TRANSLATE(SYS_NET_EBADF, eCSE_EBADF);
-			TRANSLATE(SYS_NET_ECONNABORTED, eCSE_ECONNABORTED);
-			TRANSLATE(SYS_NET_ECONNREFUSED, eCSE_ECONNREFUSED);
-			TRANSLATE(SYS_NET_ECONNRESET, eCSE_ECONNRESET);
-			TRANSLATE(SYS_NET_EFAULT, eCSE_EFAULT);
-			TRANSLATE(SYS_NET_EHOSTDOWN, eCSE_EHOSTDOWN);
-			TRANSLATE(SYS_NET_EINPROGRESS, eCSE_EINPROGRESS);
-			TRANSLATE(SYS_NET_EINTR, eCSE_EINTR);
-			TRANSLATE(SYS_NET_EINVAL, eCSE_EINVAL);
-			TRANSLATE(SYS_NET_EISCONN, eCSE_EISCONN);
-			TRANSLATE(SYS_NET_EMFILE, eCSE_EMFILE);
-			TRANSLATE(SYS_NET_EMSGSIZE, eCSE_EMSGSIZE);
-			TRANSLATE(SYS_NET_ENETUNREACH, eCSE_ENETUNREACH);
-			TRANSLATE(SYS_NET_ENOBUFS, eCSE_ENOBUFS);
-			TRANSLATE(SYS_NET_ENOPROTOOPT, eCSE_ENOPROTOOPT);
-			TRANSLATE(SYS_NET_ENOTCONN, eCSE_ENOTCONN);
-			TRANSLATE(SYS_NET_EOPNOTSUPP, eCSE_EOPNOTSUPP);
-			TRANSLATE(SYS_NET_EPIPE, eCSE_EPIPE);
-			TRANSLATE(SYS_NET_EPROTONOSUPPORT, eCSE_EPROTONOSUPPORT);
-			TRANSLATE(SYS_NET_ETIMEDOUT, eCSE_ETIMEDOUT);
-			TRANSLATE(SYS_NET_ETOOMANYREFS, eCSE_ETOOMANYREFS);
-			TRANSLATE(SYS_NET_EWOULDBLOCK, eCSE_EWOULDBLOCK);
-#elif defined(ORBIS)
+#if defined(ORBIS)
 			TRANSLATE(EACCES, eCSE_EACCES);
 			TRANSLATE(EADDRINUSE, eCSE_EADDRINUSE);
 			TRANSLATE(EADDRNOTAVAIL, eCSE_EADDRNOTAVAIL);

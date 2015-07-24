@@ -130,14 +130,14 @@ protected:
 	// --------------------------------------------------------------------------
 
 	// overrides ----------------------------------------------------------------
-	virtual void OnAnimationEvent( ICharacterInstance* pCharacter, const AnimEventInstance& event ) OVERRIDE;
-	virtual void OnSequenceFinished( int layer, uint32 scopeID ) OVERRIDE;
-	virtual EStatus Update( float timePassed ) OVERRIDE;
-	virtual void Enter() OVERRIDE;
-	virtual void Exit() OVERRIDE;
-	virtual void Install() OVERRIDE;
-	virtual void OnRequestBlendOut( EPriorityComparison priorityComp ) OVERRIDE;
-	virtual void OnInitialise() OVERRIDE;
+	virtual void OnAnimationEvent( ICharacterInstance* pCharacter, const AnimEventInstance& event ) override;
+	virtual void OnSequenceFinished( int layer, uint32 scopeID ) override;
+	virtual EStatus Update( float timePassed ) override;
+	virtual void Enter() override;
+	virtual void Exit() override;
+	virtual void Install() override;
+	virtual void OnRequestBlendOut( EPriorityComparison priorityComp ) override;
+	virtual void OnInitialise() override;
 	// ~overrides ----------------------------------------------------------------
 
 protected:

@@ -126,7 +126,7 @@ struct SDebugNodeSizeDesc
 	Vec2 m_importance;
 };
 
-UNIQUE_IFACE struct IDebugNode
+struct IDebugNode
 {
 	virtual	~IDebugNode(){}
 	virtual const SDebugNodeSizeDesc& GetSizeDesc() const = 0;
@@ -658,14 +658,27 @@ void RunExtractCombineTest(bool flat)
 	for (int i = 0; i < 1000; i++)
 	{
 		QuatT qt1;
-		qt1.t = Vec3(0.0f); //Random(Vec3(-100, -100, -10), Vec3(100, 100, 10));
-		Vec3 rgt0(1, 0, 0), fwd0(0, 1, 0), up0(0, 0, 1);
-		fwd0 = Random(Vec3(-100, -100, 0), Vec3(100, 100, 0)).GetNormalizedSafe(fwd0);
+		qt1.t = Vec3(0.0f);
+
+		Vec3 rgt0 = Vec3(1, 0, 0);
+		Vec3 fwd0 = Vec3(0, 1, 0);
+		Vec3 up0 = Vec3(0, 0, 1);
+
+		Vec3 r(
+			cry_random(-100.0f, 100.0f),
+			cry_random(-100.0f, 100.0f),
+			0.0f);
+		fwd0 = r.GetNormalizedSafe( fwd0 );
 
 		if (!flat)
-			up0 = Random(Vec3(-10, -10, 100), Vec3(10, 10, 100)).GetNormalizedSafe(up0);
+		{
+			r.Set(
+				cry_random(-10.0f, 10.0f),
+				cry_random(-10.0f, 10.0f),
+				100.0f);
+			up0 = r.GetNormalizedSafe( up0 );
+		}
 
-		up0 = Vec3(0, 0, 1);
 		rgt0 = (fwd0 % up0).GetNormalizedSafe(rgt0);
 		up0 = (rgt0 % fwd0).GetNormalizedSafe(up0);
 		qt1.q = Quat(Matrix33::CreateFromVectors(rgt0, fwd0, up0));
@@ -744,15 +757,27 @@ void RunQuatConcatTest()
 
 			Quat q;
 /*
-			Vec3 rgt(1, 0, 0), fwd(0, 1, 0), up(0, 0, 1);
-			fwd = Random(Vec3(-100, -100, -100), Vec3(100, 100, 100)).GetNormalizedSafe(fwd);
-			up = Random(Vec3(-100, -100, 100), Vec3(100, 100, 100)).GetNormalizedSafe(up);
+			Vec3 rgt(1, 0, 0);
+			Vec3 fwd(0, 1, 0);
+			Vec3 up(0, 0, 1);
+			Vec3 r(
+				cry_random(-1.0f, 1.0f),
+				cry_random(-1.0f, 1.0f),
+				cry_random(-1.0f, 1.0f));
+			fwd = r.GetNormalizedSafe(fwd);
+			r.Set(
+				cry_random(-1.0f, 1.0f),
+				cry_random(-1.0f, 1.0f),
+				cry_random(-1.0f, 1.0f));
+			up = r.GetNormalizedSafe(up);
 			rgt = (fwd % up).GetNormalizedSafe(rgt);
 			up = (rgt % fwd).GetNormalizedSafe(up);
 			q = Quat(Matrix33::CreateFromVectors(rgt, fwd, up));
 */
-			q.v = Random(Vec3(-1, -1, -1), Vec3(1, 1, 1));
-			q.w = Random(-1, 1);
+			q.v.x = cry_random(-1.0f, 1.0f);
+			q.v.y = cry_random(-1.0f, 1.0f);
+			q.v.z = cry_random(-1.0f, 1.0f);
+			q.w = cry_random(-1.0f, 1.0f);
 			q.Normalize();
 			CRY_ASSERT(q.IsValid());
 
@@ -778,8 +803,8 @@ void RunQuatPredicateTest()
 	for (int i = 0; i < 1000; i++)
 	{
 		Quat q;
-		q.v = Vec3(0.0f, 0.0f, Random());
-		q.w = Random();
+		q.v = Vec3(0.0f, 0.0f, cry_random(0.0f, 1.0f));
+		q.w = cry_random(0.0f, 1.0f);
 			
 		q.Normalize();
 

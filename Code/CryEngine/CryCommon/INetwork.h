@@ -12,10 +12,6 @@
  - 09/08/2004   : Craig Tiller, Refactored
  - 17/09/2004   : Craig Tiller, Introduced contexts
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(INetwork.h)
-
-#ifndef __INETWORK_H__
-#define __INETWORK_H__
 
 #pragma once
 
@@ -398,47 +394,47 @@ struct SNetProtocolDef
 	SNetMessageDef * vMessages;
 };
 
-UNIQUE_IFACE struct INetBreakagePlayback : public CMultiThreadRefCount
+struct INetBreakagePlayback : public CMultiThreadRefCount
 {
-
+	// <interfuscator:shuffle>
 	virtual void SpawnedEntity( int idx, EntityId id ) = 0;
 	virtual EntityId GetEntityIdForIndex( int idx ) = 0;
-
+	// </interfuscator:shuffle>
 };
 typedef _smart_ptr<INetBreakagePlayback> INetBreakagePlaybackPtr;
 
 // Experimental, alternative break-system
-UNIQUE_IFACE struct INetBreakageSimplePlayback : public CMultiThreadRefCount
+struct INetBreakageSimplePlayback : public CMultiThreadRefCount
 {
-
+	// <interfuscator:shuffle>
 	virtual void BeginBreakage() = 0;                                  // Used to tell the network that breakage replication has started
 	virtual void FinishedBreakage() = 0;                               // Used to tell the network that breakage replication has finished
 	virtual void BindSpawnedEntity(EntityId id, int spawnIdx) = 0;     // Use to net bind the "collected" entities from the break
-
+	// </interfuscator:shuffle>
 };
 typedef _smart_ptr<INetBreakageSimplePlayback> INetBreakageSimplePlaybackPtr;
 
 struct ISerializableInfo : public CMultiThreadRefCount, public ISerializable {};
 typedef _smart_ptr<ISerializableInfo> ISerializableInfoPtr;
 
-UNIQUE_IFACE struct INetSendableSink
+struct INetSendableSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INetSendableSink(){}
 	virtual void NextRequiresEntityEnabled( EntityId id ) = 0;
 	virtual void SendMsg( INetSendable * pSendable ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IBreakDescriptionInfo : public CMultiThreadRefCount
 {
-
+	// <interfuscator:shuffle>
 	virtual void GetAffectedRegion(AABB& aabb) = 0;
 	virtual void AddSendables( INetSendableSink * pSink, int32 brkId ) = 0;
 	
 	// Experimental, alternative break-system
 	virtual void SerialiseSimpleBreakage( TSerialize ser ) {}
-
+	// </interfuscator:shuffle>
 };
 typedef _smart_ptr<IBreakDescriptionInfo> IBreakDescriptionInfoPtr;
 
@@ -586,6 +582,7 @@ struct IHostMigrationEventListener
 		Listener_Terminate
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IHostMigrationEventListener(){}
 	virtual EHostMigrationReturn OnInitiate(SHostMigrationInfo& hostMigrationInfo, HMStateType& state) = 0;
 	virtual EHostMigrationReturn OnDisconnectClient(SHostMigrationInfo& hostMigrationInfo, HMStateType& state) = 0;
@@ -596,7 +593,7 @@ struct IHostMigrationEventListener
 	virtual EHostMigrationReturn OnTerminate(SHostMigrationInfo& hostMigrationInfo, HMStateType& state) = 0;
 	virtual void OnComplete(SHostMigrationInfo& hostMigrationInfo) = 0;
 	virtual EHostMigrationReturn OnReset(SHostMigrationInfo& hostMigrationInfo, HMStateType& state) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Must be at least the same as CMessageQueue::MAX_ACCOUNTING_GROUPS
@@ -812,7 +809,7 @@ enum EListenerPriorityType
 
 // Description:
 //    Main access point for creating Network objects.
-UNIQUE_IFACE struct INetwork
+struct INetwork
 {
 	enum ENetwork_Multithreading_Mode
 	{
@@ -826,6 +823,7 @@ UNIQUE_IFACE struct INetwork
 		eNCCF_Multiplayer = BIT(0)
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~INetwork(){}
 
 	virtual bool IsPbInstalled() = 0;
@@ -980,7 +978,7 @@ UNIQUE_IFACE struct INetwork
 	virtual void Encrypt(TCipher cipher, uint8* pOutput, const uint8* pInput, uint32 bufferLength) = 0;
 	virtual void Decrypt(TCipher cipher, uint8* pOutput, const uint8* pInput, uint32 bufferLength) = 0;
 	virtual void EndCipher(TCipher cipher) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
@@ -991,55 +989,54 @@ UNIQUE_IFACE struct INetwork
 //	 INetMessageSink::DefineProtocol
 struct IProtocolBuilder
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IProtocolBuilder(){}
 	virtual void AddMessageSink( INetMessageSink * pSink, const SNetProtocolDef& protocolSending, const SNetProtocolDef& protocolReceiving ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //	 This interface must be implemented by anyone who wants to receive CTP messages.
 struct INetMessageSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INetMessageSink(){}
 	// Description:
 	//	 Called on setting up an endpoint to figure out what kind of messages can be sent
 	//	 and received.
 	virtual void DefineProtocol( IProtocolBuilder * pBuilder ) = 0;
 	virtual bool HasDef( const SNetMessageDef * pDef ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #ifndef OLD_VOICE_SYSTEM_DEPRECATED
 
 struct IVoiceGroup
 {
-
+	// <interfuscator:shuffle>
 	virtual void AddEntity( const EntityId id ) = 0;
 	virtual void RemoveEntity( const EntityId id ) = 0;
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //    An IVoiceReader provides voice samples to be sent over network.
 struct IVoiceDataReader
 {
-
+	// <interfuscator:shuffle>
 	virtual bool Update() = 0;
 	virtual uint32 GetSampleCount() = 0;
 	virtual int16* GetSamples() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //	 An IVoiceContext provides interface for network voice data manipulation.
-/*UNIQUE_IFACE*/					// Commented out until de-virtualiser can cope with #ifdef
 struct IVoiceContext
 {
-
+	// <interfuscator:shuffle>
 	//Description:
 	//    Sets voice data reader for entity, voice context requests it when it needs new data.
 	virtual void SetVoiceDataReader(EntityId id,IVoiceDataReader*) = 0;
@@ -1068,16 +1065,16 @@ struct IVoiceContext
 	// Description:
 	//	 Forces recreation of routing table (when players change voice group, for instance).
 	virtual void InvalidateRoutingTable() = 0;
-
+	// </interfuscator:shuffle>
 };
 #endif
 
 // Description:
 //    An INetContext manages the list of objects synchronized over the network
 //    ONLY to be implemented in CryNetwork.
-UNIQUE_IFACE struct INetContext
+struct INetContext
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INetContext(){}
 	// Description:
 	//    Releases this context.
@@ -1264,7 +1261,7 @@ UNIQUE_IFACE struct INetContext
 	// Description:
 	//    Get a mask of all aspects declared with the eAF_Delegatable flag
 	virtual NetworkAspectType DelegatableAspects() const = 0;
-
+	// </interfuscator:shuffle>
 
 	// Description:
 	//    Updates the location of an object.
@@ -1288,13 +1285,13 @@ struct INetSender
 		this->nBasisSeq = nBasisSeq;
 		this->isServer = isServer;
 	}
-
+	// <interfuscator:shuffle>
 	virtual ~INetSender(){}
 	virtual void BeginMessage( const SNetMessageDef * pDef ) = 0;
 	virtual void BeginUpdateMessage( SNetObjectID ) = 0;
 	virtual void EndUpdateMessage() = 0;
 	virtual uint32 GetStreamSize()=0;	
-
+	// </interfuscator:shuffle>
 	TSerialize ser;
 	bool isServer;
 	uint32 nCurrentSeq;
@@ -1304,7 +1301,7 @@ struct INetSender
 struct INetBaseSendable
 {
 	INetBaseSendable() : m_cnt(0) {}
-
+	// <interfuscator:shuffle>
 	virtual ~INetBaseSendable() {}
 
 	virtual size_t GetSize() = 0;
@@ -1312,7 +1309,7 @@ struct INetBaseSendable
 	// Summary:
 	//	 Callback for when we know what happened to a packet
 	virtual void UpdateState( uint32 nFromSeq, ENetSendableStateUpdate update ) = 0;
-
+	// </interfuscator:shuffle>
 
 	void AddRef()
 	{
@@ -1411,10 +1408,10 @@ const bool operator < (const SMessageTag& left,const SMessageTag& right);
 class IMessageMapper
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IMessageMapper() {};
 	virtual uint32 GetMsgId(const SNetMessageDef*) const =0;
-
+	// </interfuscator:shuffle>
 };
 #endif
 
@@ -1423,9 +1420,10 @@ struct INetSendable : public INetBaseSendable
 public:
 	INetSendable( uint32 flags, ENetReliabilityType reliability ) : m_flags(flags), m_group(0), m_priorityDelta(0.0f), m_reliability(reliability) {}
 
+	// <interfuscator:shuffle>
 	virtual const char * GetDescription() = 0;
 	virtual void GetPositionInfo( SMessagePositionInfo& pos ) = 0;
-
+	// </interfuscator:shuffle>
 #if ENABLE_RMI_BENCHMARK || ENABLE_URGENT_RMIS
 	virtual IRMIMessageBody* GetRMIMessageBody() { return NULL; }
 #endif
@@ -1485,9 +1483,9 @@ enum ESynchObjectResult
 // Description:
 //    Interface for a channel to call in order to create/destroy objects, and when changing
 //    context, to properly configure that context.
-UNIQUE_IFACE struct IGameContext
+struct IGameContext
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameContext(){}
 	// Description:
 	//    Initializes global tasks that we need to perform to establish the game context.
@@ -1550,7 +1548,7 @@ UNIQUE_IFACE struct IGameContext
 	virtual void CompleteUnbind( EntityId id ) = 0;
 
 	virtual void GetMemoryStatistics(ICrySizer* pSizer) {};
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -1566,7 +1564,7 @@ struct SCreateChannelResult
 
 struct IGameNub
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameNub(){}
 	virtual void Release() = 0;
 	// Description:
@@ -1588,12 +1586,12 @@ struct IGameNub
 	// Note:
 	//		The GameNub should be prepared to be destroyed shortly after this call is finished
 	virtual void FailedActiveConnect( EDisconnectionCause cause, const char * description ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IGameChannel : public INetMessageSink
+struct IGameChannel : public INetMessageSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameChannel(){}
 	// Description:
 	//    Network engine will no longer use this object; it should be deleted.
@@ -1603,10 +1601,10 @@ UNIQUE_IFACE struct IGameChannel : public INetMessageSink
 	// Arguments:
 	//    cause - Why the disconnection occurred.
 	virtual void OnDisconnect( EDisconnectionCause cause, const char * description ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct INetNub
+struct INetNub
 {
 	struct SStatistics
 	{
@@ -1615,6 +1613,7 @@ UNIQUE_IFACE struct INetNub
 		float bandwidthDown;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~INetNub(){}
 	// Description:
 	//    Game will no longer use this object; it should be deleted.
@@ -1643,7 +1642,7 @@ UNIQUE_IFACE struct INetNub
 	virtual int GetNumChannels() = 0;
 
 	virtual bool HasPendingConnections() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #if ENABLE_RMI_BENCHMARK
@@ -1792,6 +1791,7 @@ struct INetChannel : public INetMessageSink
 		float bandwidthDown;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ChannelMaskType GetChannelMask() = 0;
 	virtual void SetChannelMask(ChannelMaskType newMask) = 0;
 	virtual void SetClient(INetContext* pNetContext, bool cheatProtection) = 0;
@@ -1912,7 +1912,7 @@ struct INetChannel : public INetMessageSink
 
 	virtual void SetMigratingChannel(bool bIsMigrating) = 0;
 	virtual bool IsMigratingChannel() const = 0;
-
+	// </interfuscator:shuffle>
 
 #ifndef OLD_VOICE_SYSTEM_DEPRECATED
 	virtual CTimeValue TimeSinceVoiceTransmission() = 0;
@@ -1957,9 +1957,9 @@ template<> inline const SRMIBenchmarkParams* NetGetRMIBenchmarkParams< SRMIBench
 
 #endif
 
-UNIQUE_IFACE struct IGameSecurity
+struct IGameSecurity
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameSecurity(){}
 	// Description:
 	//    Callback for making sure we're not communicating with a banned IP address.
@@ -1967,7 +1967,7 @@ UNIQUE_IFACE struct IGameSecurity
 	// Description:
 	//    Called when a cheater is detected.
 	virtual void OnPunkDetected( const char * addr, EPunkType punkType ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
@@ -1980,6 +1980,7 @@ public:
 	//	 Gets the message definition - a static structure describing this message.
 	inline const SNetMessageDef * GetDef() const { return m_pDef; }
 
+	// <interfuscator:shuffle>
 	// Summary:
 	//	 Writes the packets payload to a stream (possibly using the pSerialize helper).
 	virtual EMessageSendResult WritePayload( TSerialize ser, uint32 nCurrentSeq, uint32 nBasisSeq ) = 0;
@@ -1989,7 +1990,7 @@ public:
 	virtual ENetReliabilityType GetReliability() { return m_pDef->reliability; }
 
 	virtual void GetPositionInfo( SMessagePositionInfo& pos ) {}
-
+	// </interfuscator:shuffle>
 
 	// Summary:
 	//	 Auto-implementation of INetSendable.
@@ -2017,32 +2018,32 @@ private:
 
 struct INetAtSyncItem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INetAtSyncItem(){}
 	virtual bool Sync() = 0;
 	virtual bool SyncWithError(EDisconnectionCause &disconnectCause, string &disconnectMessage) = 0;
 	virtual void DeleteThis() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IRMIListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IRMIListener(){}
 	virtual void OnSend( INetChannel * pChannel, int userId, uint32 nSeq ) = 0;
 	virtual void OnAck( INetChannel * pChannel, int userId, uint32 nSeq, bool bAck ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
 //	 Kludgy, record C++ RMI's for the demo recorder.
 struct IRMICppLogger
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IRMICppLogger(){}
 	virtual const char * GetName() = 0;
 	virtual void SerializeParams( TSerialize ser ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
@@ -2087,11 +2088,11 @@ struct IRMIMessageBody
 		pListener(pListener_)
 	{
 	}
-
+	// <interfuscator:shuffle>
 	virtual ~IRMIMessageBody() {}
 	virtual void SerializeWith( TSerialize ser ) = 0;
 	virtual size_t GetSize() = 0;
-
+	// </interfuscator:shuffle>
 #if ENABLE_RMI_BENCHMARK
 	virtual const SRMIBenchmarkParams* GetRMIBenchmarkParams() = 0;
 #endif
@@ -2129,12 +2130,12 @@ private:
 // Summary:
 //	 This class provides a mechanism for the network library to obtain information
 //	 about the game being played.
-UNIQUE_IFACE struct IGameQuery
+struct IGameQuery
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameQuery(){}
 	virtual XmlNodeRef GetGameState() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
@@ -2142,10 +2143,10 @@ UNIQUE_IFACE struct IGameQuery
 //	 for an IGameQueryListener... releasing this will release the game query listener.
 struct INetQueryListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INetQueryListener(){}
 	virtual void DeleteNetQueryListener() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SServerData
@@ -2160,9 +2161,9 @@ struct SServerData
 // Summary:
 //	 This interface should be implemented by the game to receive asynchronous game
 //	 query results.
-UNIQUE_IFACE struct IGameQueryListener
+struct IGameQueryListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameQueryListener(){}
 	// Summary:
 	//	 Adds a server to intern list if not already existing, else just update data.
@@ -2197,12 +2198,12 @@ UNIQUE_IFACE struct IGameQueryListener
 	//	 Retrieves infos from the data string.
 	virtual void GetValuesFromData(char *strData,SServerData *pServerData) = 0;
 	virtual void GetMemoryStatistics(ICrySizer* pSizer) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct ILanQueryListener : public INetQueryListener
+struct ILanQueryListener : public INetQueryListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ILanQueryListener(){}
 	// Summary:
 	//	 Sends a ping to the specified server.
@@ -2211,7 +2212,7 @@ UNIQUE_IFACE struct ILanQueryListener : public INetQueryListener
 	//	 Returns a pointer to the game query listener (game-side code of the listener).
 	virtual IGameQueryListener* GetGameQueryListener() = 0;
 	virtual void GetMemoryStatistics(ICrySizer * pSizer) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SContextEstablishState
@@ -2234,22 +2235,22 @@ enum EContextEstablishTaskResult
 
 struct IContextEstablishTask
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IContextEstablishTask(){}
 	virtual void Release() = 0;
 	virtual EContextEstablishTaskResult OnStep( SContextEstablishState& ) = 0;
 	virtual void OnFailLoading( bool hasEntered ) = 0;
 	virtual const char * GetName() = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IContextEstablisher
+struct IContextEstablisher
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IContextEstablisher(){}
 	virtual void GetMemoryStatistics(ICrySizer* pSizer) = 0;
 	virtual void AddTask( EContextViewState state, IContextEstablishTask * pTask ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -2595,5 +2596,3 @@ private:
 	#define NET_PROFILE_SCOPE_RMI(string, read)
 	#define NET_PROFILE_SCOPE_BUDGET(string, read, budget)
 #endif
-
-#endif //_INETWORK_H_

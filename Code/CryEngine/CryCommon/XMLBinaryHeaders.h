@@ -32,9 +32,8 @@ namespace XMLBinary
 	template<int size> struct Pad { char pad[size]; };
 	template<> struct Pad<0> { };
 
-	class Node
+	struct Node
 	{
-	public:
 		uint32 nTagStringOffset;         // offset in CBinaryXmlData::pStringData
 		uint32 nContentStringOffset;     // offset in CBinaryXmlData::pStringData
 		uint16 nAttributeCount;
@@ -45,17 +44,14 @@ namespace XMLBinary
 		Pad<sizeof(uint32) - sizeof(NodeIndex)> reserved_for_alignment;
 	};
 
-	class Attribute
+	struct Attribute
 	{
-	public:
 		uint32 nKeyStringOffset;         // offset in CBinaryXmlData::pStringData
 		uint32 nValueStringOffset;       // offset in CBinaryXmlData::pStringData
 	};
 
-	class BinaryFileHeader
+	struct BinaryFileHeader
 	{
-	public:
-		static const char* sk_szCorrectSignature;
 		char szSignature[8];
 		uint32 nXMLSize;
 		uint32 nNodeTablePosition;

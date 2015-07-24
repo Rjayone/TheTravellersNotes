@@ -23,11 +23,18 @@ template <class Enum>
 CEnumDescription& getEnumDescription();
 bool serializeEnum(const CEnumDescription& desc, IArchive& ar, int& value, const char* name, const char* label);
 
+// SContextLink should not be used directly. See SContext<> below.
 struct SContextLink 
 {
 	SContextLink* outer;
 	TypeID type;
 	void* contextObject;
+
+	SContextLink()
+	: outer()
+	, contextObject()
+	{
+	}
 };
 
 struct SBlackBox;
@@ -78,7 +85,6 @@ public:
 		return (filter_ & flags) != 0;
 	}
 
-	virtual void InPlacePointer(void** pointer, size_t offset) { YASLI_ASSERT(0 && "Not implemented"); }
 	virtual bool operator()(bool& value, const char* name = "", const char* label = 0)           { notImplemented(); return false; }
 	virtual bool operator()(char& value, const char* name = "", const char* label = 0) { notImplemented(); return false; }
 	virtual bool operator()(uint8& value, const char* name = "", const char* label = 0) { notImplemented(); return false; }
@@ -155,12 +161,12 @@ protected:
 // IArchive::SContext can be used to establish access to outer objects in serialization stack.
 //
 // Example:
-//   Scene::Serialize(...) {
-//     IArchive::SContext context(ar, this);
+//   void Scene::Serialize(...) {
+//     IArchive::SContext<Scene> context(ar, this);
 //     ar(rootNode, ...);
 //   }
 //
-//   Node::Serialize(...) {
+//   void Node::Serialize(...) {
 //     Scene* scene = ar.FindContext<Scene>();
 //   }
 template<class T>

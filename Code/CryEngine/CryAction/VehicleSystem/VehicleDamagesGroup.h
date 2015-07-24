@@ -28,7 +28,7 @@ public:
 	void Reset();
 	void Serialize(TSerialize ser, EEntityAspects aspects);
 
-	VIRTUAL bool ParseDamagesGroup(const CVehicleParams& table);
+	virtual bool ParseDamagesGroup(const CVehicleParams& table);
 
 	const string& GetName() { return m_name; }
 	bool IsPotentiallyFatal();

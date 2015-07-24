@@ -293,68 +293,6 @@ public:
 	}
 };
 
-class CFlowNode_InventoryHasAmmo : public CFlowBaseNode<eNCT_Singleton>
-{
-public:
-	CFlowNode_InventoryHasAmmo( SActivationInfo * pActInfo )
-	{
-	}
-
-	void GetConfiguration( SFlowNodeConfig& config )
-	{
-		static const SInputPortConfig in_ports[] = 
-		{
-			InputPortConfig_Void( "check", _HELP("Connect event here to check the inventory for the ammo" ), _HELP("Check") ),
-			InputPortConfig<string>( "AmmoType", _HELP("Select from which ammo to choose")),
-			{0}
-		};
-
-		static const SOutputPortConfig out_ports[] = 
-		{
-			OutputPortConfig<bool>("out", _HELP("True if the player has the ammo, false otherwise" ), _HELP("Out") ),
-			OutputPortConfig_Void("False", _HELP("Triggered if player does not have the ammo" )),
-			OutputPortConfig_Void("True",  _HELP("Triggered if player has the ammo" )),
-			OutputPortConfig<int>("Ammo count", _HELP("Outputs the current ammo count" )),
-			{0}
-		};
-
-		config.sDescription = _HELP("Checks if ammo type exists in inventory and outputs ammo count.");
-		config.nFlags |= EFLN_TARGET_ENTITY;
-		config.pInputPorts = in_ports;
-		config.pOutputPorts = out_ports;
-		config.SetCategory(EFLN_APPROVED);
-	}
-
-	void ProcessEvent( EFlowEvent event, SActivationInfo *pActInfo )
-	{
-		if (event == eFE_Activate && IsPortActive(pActInfo,0))
-		{
-			IActor* pActor = GetInputActor( pActInfo );
-			if (!pActor)
-				return;
-
-			IInventory *pInventory = pActor->GetInventory();
-			if (!pInventory)
-				return;
-
-			IEntityClass* pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(GetPortString(pActInfo,1));
-			int count = 0;
-			if (pClass)
-			  count = pInventory->GetAmmoCount(pClass);
-
-			ActivateOutput(pActInfo, 0, count !=0 ? true : false);
-			ActivateOutput(pActInfo, count != 0 ? 2 : 1, true);
-			ActivateOutput(pActInfo, 3, count);
-
-		}
-	}
-
-	virtual void GetMemoryUsage(ICrySizer * s) const
-	{
-		s->Add(*this);
-	}
-};
-
 class CFlowNode_InventorySelectItem : public CFlowBaseNode<eNCT_Singleton>
 {
 public:
@@ -596,135 +534,6 @@ protected:
 	SActivationInfo m_actInfo;
 	IGameFramework *m_pGF;
 };
-
-
-class CFlowNode_InventoryAddAmmo : public CFlowBaseNode<eNCT_Singleton>
-{
-public:
-	CFlowNode_InventoryAddAmmo( SActivationInfo * pActInfo )
-	{
-	}
-
-	void GetConfiguration( SFlowNodeConfig& config )
-	{
-		static const SInputPortConfig in_ports[] = 
-		{
-			InputPortConfig_Void( "Add", _HELP("Connect event here to add the ammo" )),
-			InputPortConfig<string>( "Ammo", _HELP("The type of ammo to add to the inventory" ), _HELP("Ammo"), _UICONFIG("enum_global:ammos")),
-			InputPortConfig<int>( "Amount", _HELP("The amount of ammo to add to the inventory" ), _HELP("Amount")),
-			{0}
-		};
-
-		static const SOutputPortConfig out_ports[] = 
-		{
-			OutputPortConfig<bool>("Out", _HELP("true if the ammo was actually added, false otherwise" )),
-			{0}
-		};
-
-		config.sDescription = _HELP("Add a specified amount of ammo, of a specified ammo type to the inventory.");
-		config.nFlags |= EFLN_TARGET_ENTITY;
-		config.pInputPorts = in_ports;
-		config.pOutputPorts = out_ports;
-		config.SetCategory(EFLN_APPROVED);
-	}
-
-	void ProcessEvent( EFlowEvent event, SActivationInfo *pActInfo )
-	{
-		if (event == eFE_Activate && IsPortActive(pActInfo,0))
-		{
-			IActor* pActor = GetInputActor( pActInfo );
-			if (!pActor)
-				return;
-
-			IInventory *pInventory = pActor->GetInventory();
-			bool bAdded = false;
-			if (pInventory)
-			{
-				const string& ammo = GetPortString(pActInfo, 1);
-				int amount = GetPortInt(pActInfo, 2);
-	      IEntityClass* pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass( ammo.c_str());
-	      if (pClass)
-	      {
-	        bAdded = true;
-	        pInventory->SetAmmoCount( pClass, amount + pInventory->GetAmmoCount( pClass ) );
-	      }
-			}
-
-			ActivateOutput(pActInfo, 0, bAdded);
-		}
-	}
-
-	virtual void GetMemoryUsage(ICrySizer * s) const
-	{
-		s->Add(*this);
-	}
-};
-
-
-
-class CFlowNode_InventorySetAmmo : public CFlowBaseNode<eNCT_Singleton>
-{
-public:
-	CFlowNode_InventorySetAmmo( SActivationInfo * pActInfo )
-	{
-	}
-
-	void GetConfiguration( SFlowNodeConfig& config )
-	{
-		static const SInputPortConfig in_ports[] = 
-		{
-			InputPortConfig_Void( "Set", _HELP("Connect event here to set the ammo" )),
-			InputPortConfig<string>( "Ammo", _HELP("The type of ammo to set on the inventory" ), _HELP("Ammo"), _UICONFIG("enum_global:ammos")),
-			InputPortConfig<int>( "Amount", _HELP("The amount of ammo to set on the inventory" ), _HELP("Amount")),
-			{0}
-		};
-
-		static const SOutputPortConfig out_ports[] = 
-		{
-			OutputPortConfig<bool>("Out", _HELP("true if the ammo was actually set, false otherwise." )),
-			{0}
-		};
-
-		config.sDescription = _HELP("Set the amount of ammo for a specified ammo type in the inventory.");
-		config.nFlags |= EFLN_TARGET_ENTITY;
-		config.pInputPorts = in_ports;
-		config.pOutputPorts = out_ports;
-		config.SetCategory(EFLN_APPROVED);
-	}
-
-	void ProcessEvent( EFlowEvent event, SActivationInfo *pActInfo )
-	{
-		if (event == eFE_Activate && IsPortActive(pActInfo,0))
-		{
-			IActor* pActor = GetInputActor( pActInfo );
-			if (!pActor)
-				return;
-
-			IInventory *pInventory = pActor->GetInventory();
-			bool bSet = false;
-			if (pInventory)
-			{
-				const string& ammo = GetPortString(pActInfo, 1);
-				int amount = GetPortInt(pActInfo, 2);
-	      IEntityClass* pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass( ammo.c_str());
-	      if (pClass)
-	      {
-	        bSet = true;
-	        pInventory->SetAmmoCount( pClass, amount );
-	      }
-			}
-
-			ActivateOutput(pActInfo, 0, bSet);
-		}
-	}
-
-	virtual void GetMemoryUsage(ICrySizer * s) const
-	{
-		s->Add(*this);
-	}
-};
-
-
 
 class CFlowNode_InventoryRemoveAllAmmo : public CFlowBaseNode<eNCT_Singleton>
 {
@@ -990,12 +799,9 @@ REGISTER_FLOW_NODE("Inventory:AddItem",		CFlowNode_InventoryAddItem);
 REGISTER_FLOW_NODE("Inventory:RemoveItem",CFlowNode_InventoryRemoveItem);
 REGISTER_FLOW_NODE("Inventory:RemoveAllItems",CFlowNode_InventoryRemoveAllItems);
 REGISTER_FLOW_NODE("Inventory:HasItem",		CFlowNode_InventoryHasItem);
-REGISTER_FLOW_NODE("Inventory:HasAmmo",  CFlowNode_InventoryHasAmmo);
 REGISTER_FLOW_NODE("Inventory:HolsterItem",		CFlowNode_InventoryHolsterItem);
 REGISTER_FLOW_NODE("Inventory:SelectItem",	CFlowNode_InventorySelectItem);
 REGISTER_FLOW_NODE("Inventory:ItemSelected",	CFlowNode_InventoryItemSelected);
-REGISTER_FLOW_NODE("Inventory:AddAmmo",		CFlowNode_InventoryAddAmmo);
-REGISTER_FLOW_NODE("Inventory:SetAmmo",	CFlowNode_InventorySetAmmo);
 REGISTER_FLOW_NODE("Inventory:RemoveAllAmmo",	CFlowNode_InventoryRemoveAllAmmo);
 REGISTER_FLOW_NODE("Inventory:AddEquipPack",	CFlowNode_AddEquipmentPack);
 REGISTER_FLOW_NODE("Inventory:StorePlayerInventory",	CFlowNode_StorePlayerInventory);

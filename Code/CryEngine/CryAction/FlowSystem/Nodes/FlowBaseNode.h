@@ -254,7 +254,7 @@ class CFlowBaseNode<eNCT_Singleton> : public CFlowBaseNodeInternal
 public:
 	CFlowBaseNode<eNCT_Singleton>() : CFlowBaseNodeInternal()	{}
 
-	virtual IFlowNodePtr Clone( SActivationInfo *pActInfo ) FINAL { return this; }
+	virtual IFlowNodePtr Clone( SActivationInfo *pActInfo ) final { return this; }
 
 	static const int myCloneType = eNCT_Singleton;
 };

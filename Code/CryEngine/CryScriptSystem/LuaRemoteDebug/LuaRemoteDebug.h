@@ -24,7 +24,7 @@ struct lua_State;
 struct lua_Debug;
 class CScriptSystem;
 
-#define LUA_REMOTE_DEBUG_HOST_VERSION 6
+#define LUA_REMOTE_DEBUG_HOST_VERSION 7
 #define LUA_REMOTE_DEBUG_CHANNEL "LuaDebug"
 
 struct LuaBreakPoint
@@ -63,7 +63,6 @@ public:
 		ePT_FileMD5,
 		ePT_FileContents,
 		ePT_EnableCppCallstack,
-		ePT_ModulesInformation,
 		ePT_ScriptError,
 	};
 
@@ -96,7 +95,6 @@ private:
 	void SendVariables();
 	void SendBinaryFileDetected();
 	void SendGameFolder();
-	void SendLoadedModulesInformation();
 	void SendScriptError(const char* errorStr);
 	void SendBuffer();
 	void BreakOnNextLuaCall();

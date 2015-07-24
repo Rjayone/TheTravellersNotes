@@ -25,8 +25,6 @@ void CFlashUIPlatformNode::GetConfiguration( SFlowNodeConfig &config )
 
 	static const SOutputPortConfig out_config[] = {
 		OutputPortConfig_Void( "IsPc",   _HELP("Triggered on PC")),
-		OutputPortConfig_Void( "IsX360", _HELP("Triggered on X360"), "IsX360"),
-		OutputPortConfig_Void( "IsPS3",  _HELP("Triggered on PS3")),
 		OutputPortConfig_Void( "IsXBoxOne",  _HELP("Triggered on XBox One")),
 		OutputPortConfig_Void( "IsPS4",  _HELP("Triggered on PS4")),
 		OutputPortConfig_Void( "IsConsole", _HELP("Triggered on Consoles") ),
@@ -53,20 +51,12 @@ void CFlashUIPlatformNode::ProcessEvent( EFlowEvent event,SActivationInfo *pActI
 				case IFlashUI::ePUI_PC:
 					ActivateOutput(pActInfo, eO_IsPc, true);
 					break;
-				case IFlashUI::ePUI_X360:
-					ActivateOutput(pActInfo, eO_IsX360, true);
-					ActivateOutput(pActInfo, eO_IsConsole, true);
-					break;
-				case IFlashUI::ePUI_PS3:
-					ActivateOutput(pActInfo, eO_IsPS3, true);
+				case IFlashUI::ePUI_Orbis:
+					ActivateOutput(pActInfo, eO_IsOrbis, true);
 					ActivateOutput(pActInfo, eO_IsConsole, true);
 					break;
 				case IFlashUI::ePUI_Durango:
 					ActivateOutput(pActInfo, eO_IsDurango, true);
-					ActivateOutput(pActInfo, eO_IsConsole, true);
-					break;
-				case IFlashUI::ePUI_Orbis:
-					ActivateOutput(pActInfo, eO_IsOrbis, true);
 					ActivateOutput(pActInfo, eO_IsConsole, true);
 					break;
 				}
@@ -74,13 +64,7 @@ void CFlashUIPlatformNode::ProcessEvent( EFlowEvent event,SActivationInfo *pActI
 		}
 		else
 		{
-#if defined(XENON)
-			ActivateOutput(pActInfo, eO_IsX360, true);
-			ActivateOutput(pActInfo, eO_IsConsole, true);
-#elif  defined(PS3)
-			ActivateOutput(pActInfo, eO_IsPS3, true);
-			ActivateOutput(pActInfo, eO_IsConsole, true);
-#elif  defined(DURANGO)
+#if defined(DURANGO)
 			ActivateOutput(pActInfo, eO_IsDurango, true);
 			ActivateOutput(pActInfo, eO_IsConsole, true);
 #elif  defined(ORBIS)

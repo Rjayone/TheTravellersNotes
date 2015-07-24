@@ -63,12 +63,16 @@ public:
 	}
 
 	// overrides ----------------------------------------------------------------
-	EPriorityComparison ComparePriority( const IAction &actionCurrent ) const OVERRIDE
+	EPriorityComparison ComparePriority( const IAction &actionCurrent ) const override
 	{
 		if (m_isUrgent)
-			return Higher;
+		{
+			return (IAction::Installed == actionCurrent.GetStatus() && IAction::Installing & ~actionCurrent.GetFlags()) ? Higher : TBase::ComparePriority(actionCurrent);
+		}
 		else
+		{
 			return TBase::ComparePriority( actionCurrent );
+		}
 	}
 	// ~overrides ---------------------------------------------------------------
 
@@ -156,12 +160,16 @@ public:
 		SET_ON_SERILIAZE,
 	};
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	bool SetCharacter(const char* character, ESetFlags setFlags = SET_IMMEDIATE);
+#endif
 	void SetBehavior(const char* szBehavior, const IAISignalExtraData* pData = 0, ESetFlags setFlags = SET_IMMEDIATE);
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	const char* GetCharacter();
 
 	void CallCharacterConstructor();
+#endif
 	void CallBehaviorConstructor(const IAISignalExtraData* pData);
 
 	void ResendTargetSignalsNextFrame();
@@ -175,20 +183,26 @@ public:
 protected:
 	class CAnimActionExactPositioning* CreateExactPositioningAction(bool isOneShot, float loopDuration, const char* szFragmentID, bool isNavigationalSO, const QuatT& exactStartLocation);
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	const char* GetInitialCharacterName();
+#endif
 	const char* GetInitialBehaviorName();
 	const char* GetBehaviorFileName(const char* szBehaviorName);
 
 	IActor* GetActor() const;
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	void ResetCharacter();
+#endif
 	void ResetBehavior();
 	void ResetAnimationData();
 
 	void SetInitialBehaviorAndCharacter();
 
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	const char* CheckAndGetBehaviorTransition(const char* szSignalText) const;
+#endif
 	bool CallScript(IScriptTable* scriptTable, const char* funcName, float* pValue = NULL, IEntity* pSender = NULL, const IAISignalExtraData* pData = NULL);
 	bool GetMostLikelyTable(IScriptTable* table, SmartScriptTable& dest);
 	bool FindOrLoadTable(IScriptTable* pGlobalTable, const char* szTableName, SmartScriptTable& tableOut);
@@ -214,12 +228,16 @@ protected:
 
 	bool m_bSoundFinished;
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	SmartScriptTable m_pCharacter;
+#endif
 	SmartScriptTable m_pBehavior;
 	SmartScriptTable m_pPreviousBehavior;
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	SmartScriptTable m_pDefaultBehavior;
 
 	SmartScriptTable m_pDefaultCharacter;
+#endif
 	SmartScriptTable m_pDEFAULTDefaultBehavior;
 	SmartScriptTable m_pBehaviorTable;
 	SmartScriptTable m_pBehaviorTableAVAILABLE;
@@ -228,15 +246,19 @@ protected:
 	int	m_CurrentAlertness;
 	bool m_CurrentExclusive;
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	bool	m_bDelayedCharacterConstructor;
+#endif
 	bool	m_bDelayedBehaviorConstructor;
 
 	string m_sBehaviorName;
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	string m_sDefaultBehaviorName;
 	string m_sCharacterName;
 	string m_sPrevCharacterName;
 
 	string m_sFirstCharacterName;
+#endif
 	string m_sFirstBehaviorName;
 
 	IAnimationGraphState* m_pAGState;

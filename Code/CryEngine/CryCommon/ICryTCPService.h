@@ -114,7 +114,7 @@ struct STCPServiceData : public CMultiThreadRefCount
 
 struct ICryTCPService
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICryTCPService(){}
 
 	// Description:
@@ -192,7 +192,7 @@ struct ICryTCPService
 	// Return:
 	//	 Server path.
 	virtual const char* GetURLPrefix() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 typedef _smart_ptr<ICryTCPService>	ICryTCPServicePtr;

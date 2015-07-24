@@ -102,9 +102,7 @@ struct ICrysis3Lobby;
 
 #define XBOX_RELEASE_USE_SECURE_SOCKETS 1
 
-#if defined(PS3) 
-#	define USE_PSN					1
-#elif defined(ORBIS)
+#if defined(ORBIS)
 #	define USE_PSN					1
 #else
 #	define USE_PSN					0
@@ -128,12 +126,12 @@ typedef uint16 CryPing;
 #define CRYSESSIONID_STRINGLEN 48
 struct SCrySessionID : public CMultiThreadRefCount
 {
-
+	// <interfuscator:shuffle>
 	virtual bool operator == (const SCrySessionID &other) = 0;
 	virtual bool operator < (const SCrySessionID &other)  = 0;
 	virtual bool IsFromInvite() const = 0;
 	virtual void AsCStr( char* pOutString, int inBufferSize ) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 typedef _smart_ptr<SCrySessionID>	CrySessionID;
@@ -185,7 +183,7 @@ enum ECryLobbyError
 	eCLE_InternetDisabled=41,			// PSN: No access to Internet
 	eCLE_NoOnlineAccount=42,			// PSN: No online account.
 	eCLE_NotConnected=43,					// PSN: Not connected
-	eCLE_CyclingForInvite=44,			// PSN: Currently handling a PS3 invite.
+	eCLE_CyclingForInvite=44,			// PSN: Currently handling a invite.
 	eCLE_CableNotConnected = 45,	// Ethernet cable is not connected
 	eCLE_SessionNotMigratable = 46,	// An attempt to migrate a non-migratable session was detected
 	eCLE_SuccessInvalidSession = 47,	// If SessionEnd or SessionDelete is called for an invalid session, return this as a successful failure.
@@ -730,7 +728,7 @@ struct SCrySystemTime
 struct ICryLobbyService
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~ICryLobbyService(){}
 	virtual ICryMatchMaking*				GetMatchMaking() = 0;
 	virtual ICryVoice*							GetVoice() = 0;
@@ -799,7 +797,7 @@ public:
 	// GetCrysis3Lobby
 	// Returns a pointer to an ICrysis3Lobby if this lobby service implements the interface
 	virtual ICrysis3Lobby *GetCrysis3Lobby() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #include "CryLobbyEvent.h"		// Separated out for readability
@@ -831,7 +829,7 @@ struct SCryLobbyParameters
 struct ICryLobby
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~ICryLobby(){}
 	// Initialise
 	// Initialise a lobby service
@@ -971,7 +969,7 @@ public:
 	virtual void AddHostMigrationEventListener(IHostMigrationEventListener* pListener, const char* pWho, uint32 priority) = 0;
 	virtual void RemoveHostMigrationEventListener(IHostMigrationEventListener* pListener) = 0;
 	/////////////////////////////////////////////////////////////////////////////
-
+	// </interfuscator:shuffle>
 };
 
 

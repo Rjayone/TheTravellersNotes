@@ -271,18 +271,18 @@ public:
 	~CForceFeedBackSystem();
 
 	//IForceFeedbackSystem
-	VIRTUAL void PlayForceFeedbackEffect(ForceFeedbackFxId id, const SForceFeedbackRuntimeParams& runtimeParams);
-	VIRTUAL void StopForceFeedbackEffect(ForceFeedbackFxId id);
-	VIRTUAL void StopAllEffects();
+	virtual void PlayForceFeedbackEffect(ForceFeedbackFxId id, const SForceFeedbackRuntimeParams& runtimeParams);
+	virtual void StopForceFeedbackEffect(ForceFeedbackFxId id);
+	virtual void StopAllEffects();
 
-	VIRTUAL ForceFeedbackFxId GetEffectIdByName(const char* effectName) const;
+	virtual ForceFeedbackFxId GetEffectIdByName(const char* effectName) const;
 
-	VIRTUAL void AddFrameCustomForceFeedback(const float amplifierA, const float amplifierB);
-	VIRTUAL void AddCustomTriggerForceFeedback(const SFFTriggerOutputData & triggersData);
+	virtual void AddFrameCustomForceFeedback(const float amplifierA, const float amplifierB);
+	virtual void AddCustomTriggerForceFeedback(const SFFTriggerOutputData & triggersData);
 
-	VIRTUAL void EnumerateEffects( IFFSPopulateCallBack* pCallBack );  // intended to be used only from the editor
-	VIRTUAL int GetEffectNamesCount() const;
-	VIRTUAL void SuppressEffects(bool bSuppressEffects);
+	virtual void EnumerateEffects( IFFSPopulateCallBack* pCallBack );  // intended to be used only from the editor
+	virtual int GetEffectNamesCount() const;
+	virtual void SuppressEffects(bool bSuppressEffects);
 	//~IForceFeedbackSystem
 
 	void Initialize();

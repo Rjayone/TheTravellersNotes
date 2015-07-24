@@ -629,10 +629,10 @@ void CGameRulesSimpleEntityBasedObjective::SvDoRandomSelectionAvoidingInitialSpa
 
 	//We now have a list of kNumObjectivesToSelectFrom objective positions to randomly select from.
 	//We also need to handle the potential for the level to have fewer than kNumObjectivesToSelectFrom positions
-	int randomIdx = Random(kNumObjectivesToSelectFrom);
+	int randomIdx = cry_random(0, kNumObjectivesToSelectFrom - 1);
 	
 	while(objectiveSelectionInfo[randomIdx].idx == -1)
-		randomIdx = Random(kNumObjectivesToSelectFrom);
+		randomIdx = cry_random(0, kNumObjectivesToSelectFrom - 1);
 
 	EntityId chosenObjectiveId = pEntityDetails->m_availableEntities[objectiveSelectionInfo[randomIdx].idx];
 

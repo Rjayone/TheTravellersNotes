@@ -170,11 +170,11 @@ public:
 	void Reset();
 
 	// IEntitySystemSink
-	VIRTUAL bool OnBeforeSpawn( SEntitySpawnParams &params ) { return true; }
-	VIRTUAL void OnSpawn( IEntity *pEntity,SEntitySpawnParams &params ) { }
-	VIRTUAL bool OnRemove( IEntity *pEntity ) { return true; }
-	VIRTUAL void OnReused( IEntity *pEntity, SEntitySpawnParams &params );
-	VIRTUAL void OnEvent( IEntity *pEntity, SEntityEvent &event ) { }
+	virtual bool OnBeforeSpawn( SEntitySpawnParams &params ) { return true; }
+	virtual void OnSpawn( IEntity *pEntity,SEntitySpawnParams &params ) { }
+	virtual bool OnRemove( IEntity *pEntity ) { return true; }
+	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params );
+	virtual void OnEvent( IEntity *pEntity, SEntityEvent &event ) { }
 	//~IEntitySystemSink
 
 	const TObjectives& GetObjectives() const

@@ -24,7 +24,6 @@
 
 #include "CryLibrary.h"
 
-#ifndef XENON
 #define DLL_ENTRY_CRYMALLOC "CryMalloc"
 #define DLL_ENTRY_CRYFREE "CryFree"
 #define DLL_ENTRY_CRYREALLOC "CryRealloc"
@@ -33,16 +32,6 @@
 #define DLL_ENTRY_CRYCRTFREE "CrySystemCrtFree"
 #define DLL_ENTRY_CRYCRTSIZE "CrySystemCrtSize"
 #define DLL_ENTRY_GETMEMMANAGER "CryGetIMemoryManagerInterface"
-#else
-#define DLL_ENTRY_CRYMALLOC      (LPCSTR)2
-#define DLL_ENTRY_CRYFREE        (LPCSTR)3
-#define DLL_ENTRY_CRYREALLOC     (LPCSTR)4
-#define DLL_ENTRY_CRYGETMEMSIZE  (LPCSTR)5
-#define DLL_ENTRY_CRYCRTMALLOC 	 (LPCSTR)13
-#define DLL_ENTRY_CRYCRTFREE		 (LPCSTR)14
-#define DLL_ENTRY_CRYCRTSIZE		 (LPCSTR)16
-#define DLL_ENTRY_GETMEMMANAGER	 (LPCSTR)17
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 // _PoolHelper definition.
@@ -80,12 +69,6 @@ struct _CryMemoryManagerPoolHelper
 
 	static int m_bInitialized;
 
-#if defined PS3_PRX
-	// For a PRX build, the Init() method must be visible for the *_PRX.o, so it
-	// may not be inlined.  With 'noinline', GCC will place the Init() method
-	// into a linkonce section, which is OK.
-	__attribute__ ((noinline))
-#endif
 	static void Init()
 	{
 		if (m_bInitialized)
@@ -123,35 +106,28 @@ struct _CryMemoryManagerPoolHelper
 			if ((_CryMalloc && _CryRealloc && _CryFree && _CryGetMemSize && _CryCrtMalloc && _CryCrtFree && _CryCrtSize && _CryGetIMemoryManagerInterface) || iter==1)
 				break;
 
-#if defined(LINUX) || defined(APPLE)
-#define CRYSYSTEM_NAME_PREFIX "lib"
-#else
-#define CRYSYSTEM_NAME_PREFIX
-#endif
-#define CRYSYSTEM_NAME CRYSYSTEM_NAME_PREFIX "CrySystem" CrySharedLibrayExtension
-
-			hMod = CryLoadLibrary(CRYSYSTEM_NAME);
+			hMod = CryLoadLibraryDefName("CrySystem");
 			if (!hMod) break;
 		}
 		if (!hMod || !_CryMalloc || !_CryRealloc || !_CryFree || !_CryGetMemSize ||! _CryCrtMalloc || !_CryCrtFree || !_CryCrtSize || !_CryGetIMemoryManagerInterface)
 		{
 #ifdef WIN32
-			MessageBox(NULL, "Could not access " CRYSYSTEM_NAME " (check working directory)", "Memory Manager", MB_OK);
+			MessageBox(NULL, "Could not access " CryLibraryDefName("CrySystem") " (check working directory)", "Memory Manager", MB_OK);
 #else
 			if (!hMod)
 			{
 #if defined(DURANGO)
-				OutputDebugStringA("Could not access " CRYSYSTEM_NAME " (check working directory)");
+				OutputDebugStringA("Could not access " CryLibraryDefName("CrySystem") " (check working directory)");
 #else
-				OutputDebugString("Could not access " CRYSYSTEM_NAME " (check working directory)");
+				OutputDebugString("Could not access " CryLibraryDefName("CrySystem") " (check working directory)");
 #endif
 			}
 			else
 			{
 #if defined(DURANGO)
-				OutputDebugStringA("Could not get Memory Functions in " CRYSYSTEM_NAME);
+				OutputDebugStringA("Could not get Memory Functions in " CryLibraryDefName("CrySystem"));
 #else
-				OutputDebugString("Could not get Memory Functions in " CRYSYSTEM_NAME);
+				OutputDebugString("Could not get Memory Functions in " CryLibraryDefName("CrySystem"));
 #endif
 			}
 #endif
@@ -380,7 +356,7 @@ size_t CryCrtSize(void *p)
 
 // Redefine new & delete for entire module.
 #if !defined(NOT_USE_CRY_MEMORY_MANAGER)
-	#if !defined(_LIB) && !defined(NEW_OVERRIDEN) && !defined(__SPU__)
+	#if !defined(_LIB) && !defined(NEW_OVERRIDEN)
 			PREFAST_SUPPRESS_WARNING(28251)
 			void * __cdecl operator new   (size_t size)
 			{
@@ -406,7 +382,7 @@ size_t CryCrtSize(void *p)
 				return ret;
             }
 
-#if defined(LINUX) && !defined(GCC_NO_CPP11)
+#if defined(LINUX)
 #    if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
 #        define NO_EXCEPTIONS _GLIBCXX_USE_NOEXCEPT
 #    else
@@ -441,7 +417,7 @@ size_t CryCrtSize(void *p)
 
 #undef NO_EXCEPTIONS
 
-	#endif //!defined(_LIB) && !defined(NEW_OVERRIDEN) && !defined(__SPU__)
+	#endif //!defined(_LIB) && !defined(NEW_OVERRIDEN)
 #endif // !defined(NOT_USE_CRY_MEMORY_MANAGER)
 
 //////////////////////////////////////////////////////////////////////////
@@ -453,275 +429,12 @@ IMemoryManager *CryGetIMemoryManager()
 		memMan = _CryMemoryManagerPoolHelper::GetIMemoryManager();
 	return memMan;
 }
-#endif //!defined(_LIB) && !defined(PS3)
-
-#ifdef XENON
-LPVOID WINAPI XMemAlloc(SIZE_T size,DWORD dwAllocAttributes)
-{
-	LPVOID p=XMemAllocDefault(size, dwAllocAttributes);
-#if CAPTURE_REPLAY_LOG
-	MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtMalloc);
-
-	uint32 alignment=1;
-	XALLOC_ATTRIBUTES* attributes=(XALLOC_ATTRIBUTES*)&dwAllocAttributes;
-
-	if (attributes->dwMemoryType == XALLOC_MEMTYPE_HEAP)
-	{
-		switch (attributes->dwAlignment)
-		{
-		case XALLOC_ALIGNMENT_4: alignment = 4; break;
-		case XALLOC_ALIGNMENT_8: alignment = 8; break;
-		case XALLOC_ALIGNMENT_DEFAULT:
-		case XALLOC_ALIGNMENT_16: alignment = 16; break;
-		default: __debugbreak(); break;
-		}
-	}
-	else if (attributes->dwMemoryType == XALLOC_MEMTYPE_PHYSICAL)
-	{
-		switch (attributes->dwAlignment)
-		{ 
-		case XALLOC_PHYSICAL_ALIGNMENT_4:
-			alignment=4; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_8:
-			alignment=8; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_16:
-			alignment=16; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_32:
-			alignment=32; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_64:
-			alignment=64; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_128:
-			alignment=128; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_256:
-			alignment=256; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_512:
-			alignment=512; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_1K:
-			alignment=1024; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_2K:
-			alignment=2*1024; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_DEFAULT:
-		case XALLOC_PHYSICAL_ALIGNMENT_4K:
-			alignment=4*1024; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_8K:
-			alignment=8*1024; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_16K:
-			alignment=16*1024; break;
-		case XALLOC_PHYSICAL_ALIGNMENT_32K:
-			alignment=32*1024; break;
-		default:
-			__debugbreak();
-			break;
-		}
-	}
-	else
-	{
-		__debugbreak();
-	}
-
-	if (attributes->dwMemoryType==XALLOC_MEMTYPE_PHYSICAL && attributes->dwMemoryProtect==XALLOC_MEMPROTECT_WRITECOMBINE_LARGE_PAGES)
-		alignment=64*1024;
-	size=Align(size, alignment);
-
-	MEMREPLAY_SCOPE_ALLOC(p, size, 0);
-#endif
-	return p;
-}
-
-void WINAPI XMemFree(PVOID p,DWORD dwAllocAttributes)
-{
-	MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtMalloc);
-	
-	XMemFreeDefault(p, dwAllocAttributes);
-	
-	MEMREPLAY_SCOPE_FREE(p);
-}
-
-SIZE_T WINAPI XMemSize(PVOID pAddress,DWORD dwAllocAttributes)
-{
-	return XMemSizeDefault(pAddress,dwAllocAttributes);
-}
-
-void XMemTrackFree(LPVOID p)
-{
-	MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtMalloc);
-	MEMREPLAY_SCOPE_FREE(p);	
-}
-
-void XMemTrack(LPVOID p, SIZE_T size)
-{
-	MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtMalloc);
-	MEMREPLAY_SCOPE_ALLOC(p, size, 0);
-}
-
-#pragma push_macro("XPhysicalAlloc")
-#undef XPhysicalAlloc
-#pragma push_macro("XPhysicalAllocEx")
-#undef XPhysicalAllocEx
-#pragma push_macro("XPhysicalFree")
-#undef XPhysicalFree
-#pragma push_macro("XEncryptedAlloc")
-#undef XEncryptedAlloc
-#pragma push_macro("XEncryptedFree")
-#undef XEncryptedFree
-#pragma push_macro("XSetFileCacheSize")
-#undef XSetFileCacheSize
-
-LPVOID XTrackedPhysicalAlloc(SIZE_T dwSize, ULONG_PTR ulPhysicalAddress, ULONG_PTR ulAlignment, DWORD flProtect)
-{
-	LPVOID ptr = XPhysicalAlloc(dwSize, ulPhysicalAddress, ulAlignment, flProtect);
-	DWORD pageSize = (flProtect & MEM_LARGE_PAGES) ? 65536 : ((flProtect & MEM_16MB_PAGES) ? (16 * 1024 * 1024) : 4096);
-
-	XMemTrack(ptr, Align(dwSize, pageSize));
-	return ptr;
-}
-
-LPVOID XTrackedPhysicalAllocEx(SIZE_T dwSize, ULONG_PTR ulLowestAcceptableAddress, ULONG_PTR ulHighestAcceptableAddress, ULONG_PTR ulAlignment, DWORD flProtect)
-{
-	LPVOID ptr = XPhysicalAllocEx(dwSize, ulLowestAcceptableAddress, ulHighestAcceptableAddress, ulAlignment, flProtect);
-	DWORD pageSize = (flProtect & MEM_LARGE_PAGES) ? 65536 : ((flProtect & MEM_16MB_PAGES) ? (16 * 1024 * 1024) : 4096);
-
-	XMemTrack(ptr, Align(dwSize, pageSize));
-	return ptr;
-}
-
-VOID XTrackedPhysicalFree(LPVOID lpAddress)
-{
-	XMemTrackFree(lpAddress);
-	XPhysicalFree(lpAddress);
-}
-
-LPVOID XTrackedEncryptedAlloc(SIZE_T dwSize)
-{
-	LPVOID ptr = XEncryptedAlloc(dwSize);
-	XMemTrack(ptr, dwSize);
-	return ptr;
-}
-
-VOID XTrackedEncryptedFree(LPVOID lpAddress)
-{
-	XMemTrackFree(lpAddress);
-	XEncryptedFree(lpAddress);
-}
-
-VOID XTrackedSetFileCacheSize(SIZE_T dwSize)
-{
-	void *fakeAddress=(void*)0xE8880001;
-	if (XSetFileCacheSize(dwSize))
-		XMemTrack(fakeAddress, dwSize);
-}
-
-#pragma pop_macro("XPhysicalAlloc")
-#pragma pop_macro("XPhysicalAllocEx")
-#pragma pop_macro("XPhysicalFree")
-#pragma pop_macro("XEncryptedAlloc")
-#pragma pop_macro("XEncryptedFree")
-#pragma pop_macro("XSetFileCacheSize")
-
-#endif
+#endif //!defined(_LIB)
 
 // ~memReplay
 
 #if !defined(NOT_USE_CRY_MEMORY_MANAGER)
     #if defined(_LIB) && !defined(NEW_OVERRIDEN)
-        #if defined(PS3) && !defined(JOB_LIB_COMP)
-            void * operator new(_CSTD size_t size) throw (std::bad_alloc)
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNew);
-                void* ret = CryModuleMalloc(size);
-                MEMREPLAY_SCOPE_ALLOC(ret, size, 0);
-                return ret;
-            }
-
-            void* operator new (_CSTD size_t size, const std::nothrow_t &nothrow) throw()
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNew);
-                void* ret = CryModuleMalloc(size);
-                MEMREPLAY_SCOPE_ALLOC(ret, size, 0);
-                return ret;
-            }
-
-            void* operator new[](_CSTD size_t size) throw (std::bad_alloc)
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNewArray);
-                void* ret = CryModuleMalloc(size);
-                MEMREPLAY_SCOPE_ALLOC(ret, size, 0);
-                return ret;
-            }
-
-            void* operator new[] (_CSTD size_t size, const std::nothrow_t &nothrow) throw()
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNewArray);
-                void* ret = CryModuleMalloc(size);
-                MEMREPLAY_SCOPE_ALLOC(ret, size, 0);
-                return ret;
-            }
-
-            void *operator new(_CSTD size_t size, _CSTD size_t cAlignment) throw (std::bad_alloc)
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNew);
-                void* ret = CryModuleMemalign(size, cAlignment);
-                MEMREPLAY_SCOPE_ALLOC(ret, size, cAlignment);
-                return ret;
-            }
-
-            void *operator new(_CSTD size_t size, _CSTD size_t cAlignment, const std::nothrow_t&) throw()
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNew);
-                void* ret = CryModuleMemalign(size, cAlignment);
-                MEMREPLAY_SCOPE_ALLOC(ret, size, cAlignment);
-                return ret;
-            }
-
-            void *operator new[](_CSTD size_t size, _CSTD size_t cAlignment) throw (std::bad_alloc)
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNewArray);
-                void* ret = CryModuleMemalign(size, cAlignment);
-                MEMREPLAY_SCOPE_ALLOC(ret, size, cAlignment);
-                return ret;
-            }
-
-            void *operator new[](_CSTD size_t size, _CSTD size_t cAlignment, const std::nothrow_t&) throw()
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNewArray);
-                void* ret = CryModuleMemalign(size, cAlignment);
-                MEMREPLAY_SCOPE_ALLOC(ret, size, cAlignment);
-                return ret;
-            }
-
-            void operator delete(void *p) throw()
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNew);
-                CryModuleFree(p);
-                MEMREPLAY_SCOPE_FREE(p);
-            }
-
-            void operator delete(void *p, const std::nothrow_t&) throw()
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNew);
-                CryModuleFree(p);
-                MEMREPLAY_SCOPE_FREE(p);
-            }
-
-            void operator delete[](void *p) throw()
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNewArray);
-                CryModuleFree(p);
-                MEMREPLAY_SCOPE_FREE(p);
-            }
-
-            void operator delete[](void *p, const std::nothrow_t&) throw()
-            {
-                MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNewArray);
-                CryModuleFree(p);
-                MEMREPLAY_SCOPE_FREE(p);
-            }
-        #else
-
-            #if !defined(XENON)
-            //ILINE void * __cdecl operator new   (size_t size) throw () { return CryModuleMalloc(size, eCryModule); }
-            #endif // !defined(XENON)
-
             void * __cdecl operator new   (size_t size)
             {
                 MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CrtNew);
@@ -775,7 +488,6 @@ VOID XTrackedSetFileCacheSize(SIZE_T dwSize)
                 MEMREPLAY_SCOPE_FREE(p);
             }
             #endif // defined(ORBIS)
-        #endif // else defined(PS3)
     #endif // defined(_LIB) && !defined(NEW_OVERRIDEN)
 #endif // !defined(NOT_USE_CRY_MEMORY_MANAGER)
 

@@ -13,58 +13,25 @@
 //#include "VectorMap.h"
 #include "CryName.h"
 
-#if !(defined(XENON) || defined(PS3))
-
 #define STORE_CRCNAME_STRINGS (1)
 
-#endif
-
-
-#define MAX_STATIC_CHARS	4096
-
 #if !defined(USE_STATIC_NAME_TABLE)
-	#define USE_STATIC_NAME_TABLE
+#	define USE_STATIC_NAME_TABLE
 #endif
 
-#define _USE_LOWERCASE
-
-#ifdef __SPU__
-	//should not need to access it via CSystem on SPU, CryAnimation defines g_pCrc32Gen
-	extern Crc32Gen* g_pCrc32Gen;
-	#define CRC_GEN g_pCrc32Gen
-#else
-	#define CRC_GEN gEnv->pSystem->GetCrc32Gen() 
-#endif
-
-namespace NameCRCHelper {
-#define __ascii_tolower(c)      ( (((c) >= 'A') && ((c) <= 'Z')) ? ((c) - 'A' + 'a') : (c) )
-ILINE void MakeLowercase(char * dest, const char * name)
+namespace NameCRCHelper
 {
-	char * p = dest;
-
-	for (const char * src = name; *src; ++src)
-	{
-		*(p++) = __ascii_tolower(*src);
-	}
-	*p = 0;
-}
 
 ILINE uint32 GetCRC(const char* name)
 {
 #ifdef _USE_LOWERCASE
-
-	assert (strlen(name) < MAX_STATIC_CHARS);
-	char pStringArray[MAX_STATIC_CHARS];
-
-	NameCRCHelper::MakeLowercase(pStringArray, name);
-
-	return CRC_GEN->GetCRC32(pStringArray);
+	return CCrc32::ComputeLowercase(name);
 #else
-	return CRC_GEN->GetCRC32(name);
+	return CCrc32::Compute(name);
 #endif
 }
 
-}; // namespace NameCRCHelper
+} // namespace NameCRCHelper
 
 struct CNameCRCHelper
 {
@@ -103,11 +70,6 @@ protected:
 		m_CRC32Name = NameCRCHelper::GetCRC(name);
 	}
 
-//	void SetNameLower(const string& name)
-//	{ 
-//		m_Name = name; 
-//		m_CRC32Name = CRC_GEN->GetCRC32(name.c_str()); 
-//	}
 };
 
 
@@ -154,7 +116,7 @@ struct CNameCRCMap
 
 	size_t GetValueLower(const char * name) const
 	{
-		return GetValueCRC(CRC_GEN->GetCRC32(name));
+		return GetValueCRC(CCrc32::Compute(name));
 	}
 
 	//----------------------------------------------------------------------------------
@@ -218,12 +180,7 @@ struct SCRCName
 	}
 	ILINE void SetName(const char *name)
 	{
-		assert (strlen(name) < MAX_STATIC_CHARS);
-		char pStringArray[MAX_STATIC_CHARS];
-
-		NameCRCHelper::MakeLowercase(pStringArray, name);
-
-		m_CRC32 = CRC_GEN->GetCRC32(pStringArray);
+		m_CRC32 = CCrc32::ComputeLowercase(name);
 #if STORE_CRCNAME_STRINGS
 		m_name = name;
 #endif //!STORE_CRCNAME_STRINGS
@@ -233,42 +190,5 @@ struct SCRCName
 	{
 	}
 };
-
-//////////////////////////////////////////////////////////////////////////
-// Class with definition GetAnimName and SetAnimName functions. For convenience 
-//////////////////////////////////////////////////////////////////////////
-/*
-struct CAnimNameHelper : public CNameCRCHelper
-{
-	const char * GetAnimName() const { return GetName(); };
-	const string& GetAnimNameString() const { return GetNameString(); };
-
-	void SetAnimName(const string& name) { SetName(name); };
-
-};
-
-//////////////////////////////////////////////////////////////////////////
-// Class with definition GetAnimName and SetAnimName functions. For convenience 
-//////////////////////////////////////////////////////////////////////////
-struct CPathNameHelper : public CNameCRCHelper
-{
-	const char * GetPathName() const { return GetName(); };
-	const string& GetPathNameString() const { return GetNameString(); };
-
-	void SetPathName(const string& name) { SetName(name); };
-};
-
-//////////////////////////////////////////////////////////////////////////
-// Class with definition GetAnimName and SetAnimName functions. For convenience 
-//////////////////////////////////////////////////////////////////////////
-struct CJointNameHelper : public CNameCRCHelper
-{
-	const char * GetJointName() const { return GetName(); };
-	const string& GetJointNameString() const { return GetNameString(); };
-
-	void SetJointName(const string& name) { SetName(name); };
-};
-*/
-#undef CRC_GEN
 
 #endif

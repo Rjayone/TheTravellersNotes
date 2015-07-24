@@ -53,10 +53,6 @@ struct IMemReplay
 
 	virtual void GetInfo(CryReplayInfo& infoOut) = 0;
 
-#ifdef XENON
-	virtual void LoadedModule(HMODULE hModule) = 0;
-#endif
-
 	// Call to begin a new allocation scope.
 	virtual bool EnterScope(EMemReplayAllocClass::Class cls, uint16 subCls, int moduleId) = 0;
 
@@ -120,10 +116,6 @@ struct IMemReplay
 	void Flush() {}
 
 	void GetInfo(CryReplayInfo& infoOut) {}
-
-#ifdef XENON
-	void LoadedModule(HMODULE hModule) {}
-#endif
 
 	// Call to begin a new allocation scope.
 	bool EnterScope(EMemReplayAllocClass::Class cls, uint16 subCls, int moduleId) { return false; }

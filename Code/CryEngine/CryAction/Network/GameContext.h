@@ -107,30 +107,30 @@ public:
 	void Init( INetContext * pNetContext );
 
 	// IGameContext
-	VIRTUAL bool InitGlobalEstablishmentTasks( IContextEstablisher * pEst, int establishedToken );
-	VIRTUAL bool InitChannelEstablishmentTasks( IContextEstablisher * pEst, INetChannel * pChannel, int establishedToken );
-	VIRTUAL ESynchObjectResult SynchObject( EntityId id, NetworkAspectType nAspect, uint8 currentProfile, TSerialize pSerialize, bool verboseLogging );
-	VIRTUAL INetSendableHookPtr CreateObjectSpawner( EntityId id, INetChannel * pChannel );
-	VIRTUAL void ObjectInitClient( EntityId id, INetChannel * pChannel );
-	VIRTUAL bool SendPostSpawnObject( EntityId id, INetChannel * pChannel );
-	VIRTUAL uint8 GetDefaultProfileForAspect( EntityId id, NetworkAspectType aspectID );
-	VIRTUAL bool SetAspectProfile( EntityId id, NetworkAspectType nAspect, uint8 profile );
-	VIRTUAL void BoundObject( EntityId id, NetworkAspectType nAspects );
-	VIRTUAL void UnboundObject( EntityId id );
-	VIRTUAL INetAtSyncItem * HandleRMI( bool bClient, EntityId objID, uint8 funcID, TSerialize ser, INetChannel * pChannel );
-	VIRTUAL void ControlObject( EntityId id, bool bHaveControl );
-	VIRTUAL void PassDemoPlaybackMappedOriginalServerPlayer(EntityId id);
-	VIRTUAL void OnStartNetworkFrame();
-	VIRTUAL void OnEndNetworkFrame();
+	virtual bool InitGlobalEstablishmentTasks( IContextEstablisher * pEst, int establishedToken );
+	virtual bool InitChannelEstablishmentTasks( IContextEstablisher * pEst, INetChannel * pChannel, int establishedToken );
+	virtual ESynchObjectResult SynchObject( EntityId id, NetworkAspectType nAspect, uint8 currentProfile, TSerialize pSerialize, bool verboseLogging );
+	virtual INetSendableHookPtr CreateObjectSpawner( EntityId id, INetChannel * pChannel );
+	virtual void ObjectInitClient( EntityId id, INetChannel * pChannel );
+	virtual bool SendPostSpawnObject( EntityId id, INetChannel * pChannel );
+	virtual uint8 GetDefaultProfileForAspect( EntityId id, NetworkAspectType aspectID );
+	virtual bool SetAspectProfile( EntityId id, NetworkAspectType nAspect, uint8 profile );
+	virtual void BoundObject( EntityId id, NetworkAspectType nAspects );
+	virtual void UnboundObject( EntityId id );
+	virtual INetAtSyncItem * HandleRMI( bool bClient, EntityId objID, uint8 funcID, TSerialize ser, INetChannel * pChannel );
+	virtual void ControlObject( EntityId id, bool bHaveControl );
+	virtual void PassDemoPlaybackMappedOriginalServerPlayer(EntityId id);
+	virtual void OnStartNetworkFrame();
+	virtual void OnEndNetworkFrame();
 	virtual void ReconfigureGame( INetChannel * pNetChannel );
-	VIRTUAL uint32 HashAspect( EntityId id, NetworkAspectType nAspect );
-	VIRTUAL CTimeValue GetPhysicsTime();
-	VIRTUAL void BeginUpdateObjects( CTimeValue physTime, INetChannel * pChannel );
-	VIRTUAL void EndUpdateObjects();
-	VIRTUAL void PlaybackBreakage( int breakId, INetBreakagePlaybackPtr pBreakage );
-	VIRTUAL void* ReceiveSimpleBreakage( TSerialize ser );
-	VIRTUAL void PlaybackSimpleBreakage( void* userData, INetBreakageSimplePlaybackPtr pBreakage );
-	VIRTUAL void CompleteUnbind( EntityId id );
+	virtual uint32 HashAspect( EntityId id, NetworkAspectType nAspect );
+	virtual CTimeValue GetPhysicsTime();
+	virtual void BeginUpdateObjects( CTimeValue physTime, INetChannel * pChannel );
+	virtual void EndUpdateObjects();
+	virtual void PlaybackBreakage( int breakId, INetBreakagePlaybackPtr pBreakage );
+	virtual void* ReceiveSimpleBreakage( TSerialize ser );
+	virtual void PlaybackSimpleBreakage( void* userData, INetBreakageSimplePlaybackPtr pBreakage );
+	virtual void CompleteUnbind( EntityId id );
 	// ~IGameContext
 
 	// IGameQuery
@@ -326,8 +326,8 @@ private:
 	typedef std::multimap<SDelegateCallbackIndex, HSCRIPTFUNCTION> DelegateCallbacks;
 	DelegateCallbacks m_delegateCallbacks;
 
-	std::auto_ptr<IContextEstablisher> m_pContextEstablisher;
-	std::auto_ptr<CBreakReplicator> m_pBreakReplicator;
+	std::unique_ptr<IContextEstablisher> m_pContextEstablisher;
+	std::unique_ptr<CBreakReplicator> m_pBreakReplicator;
 };
 
 class CScopedRemoveObjectUnlock

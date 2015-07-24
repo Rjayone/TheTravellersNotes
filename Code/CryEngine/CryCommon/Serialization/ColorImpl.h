@@ -15,10 +15,10 @@ struct SerializableColor_tpl : Color_tpl<T>
 
 	void Serialize(Serialization::IArchive& ar)
 	{
-		ar(Serialization::Range(r, ColorRangeMin(r), ColorRangeMax(r)), "r", "^");
-		ar(Serialization::Range(g, ColorRangeMin(g), ColorRangeMax(g)), "g", "^");
-		ar(Serialization::Range(b, ColorRangeMin(b), ColorRangeMax(b)), "b", "^");
-		ar(Serialization::Range(a, ColorRangeMin(a), ColorRangeMax(a)), "a", "^");
+		ar(Serialization::Range(Color_tpl<T>::r, ColorRangeMin(Color_tpl<T>::r), ColorRangeMax(Color_tpl<T>::r)), "r", "^");
+		ar(Serialization::Range(Color_tpl<T>::g, ColorRangeMin(Color_tpl<T>::g), ColorRangeMax(Color_tpl<T>::g)), "g", "^");
+		ar(Serialization::Range(Color_tpl<T>::b, ColorRangeMin(Color_tpl<T>::b), ColorRangeMax(Color_tpl<T>::b)), "b", "^");
+		ar(Serialization::Range(Color_tpl<T>::a, ColorRangeMin(Color_tpl<T>::a), ColorRangeMax(Color_tpl<T>::a)), "a", "^");
 	}
 };
 

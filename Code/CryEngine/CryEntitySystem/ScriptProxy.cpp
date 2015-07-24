@@ -1101,4 +1101,4 @@ void CScriptProxy::GetMemoryUsage( ICrySizer *pSizer ) const
 	pSizer->AddObject(this, sizeof(*this));
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityScriptProxy)
+

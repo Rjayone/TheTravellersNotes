@@ -36,6 +36,7 @@ History:
 #include "VehicleSeat.h"
 #include "VehicleSeatGroup.h"
 #include "VehicleSeatActionWeapons.h"
+#include "VehicleSeatActionRotateTurret.h"
 
 #include "VehiclePartAnimated.h"
 #include "VehiclePartAnimatedJoint.h"
@@ -4369,6 +4370,43 @@ bool CVehicle::GetCurrentWeaponInfo(SVehicleWeaponInfo &outInfo, EntityId passen
 		outInfo.bCanFire = pWeaponAction->CanFireWeapon();
 	}
 
+	// - if there's also a seat-action that can rotate the turret, ensure that the turret is aligned by now
+	// - if it's not aligned yet, we should not be allowed to fire
+	if (const CVehicleSeat* pSeat = static_cast<CVehicleSeat*>(GetSeatForPassenger(passengerId)))
+	{
+		const TVehicleSeatActionVector& seatActions = pSeat->GetSeatActions();
+		for (TVehicleSeatActionVector::const_iterator it = seatActions.begin(); it != seatActions.end(); ++it)
+		{
+			IVehicleSeatAction* pSeatAction = it->pSeatAction;
+
+			if (CVehicleSeatActionRotateTurret* pRotateTurretAction = CAST_VEHICLEOBJECT(CVehicleSeatActionRotateTurret, pSeatAction))
+			{
+				float pitch, yaw;
+
+				if (pRotateTurretAction->GetRemainingAnglesToAimGoalInDegrees(pitch, yaw))
+				{
+					// TODO: allow these thresholds to get passed in from the outside, but that would mean changing the interface of this class
+					static const float pitchThreshold = 1.0f;
+					static const float yawThreshold = 1.0f;
+
+					//  have an aim goal, but are we still not aligned to it?
+					if (fabsf(pitch) > pitchThreshold || fabsf(yaw) > yawThreshold)
+					{
+						// still not aligned
+						outInfo.bCanFire = false;
+					}
+				}
+				else
+				{
+					// have no aim goal, so should not allow to fire
+					outInfo.bCanFire = false;
+				}
+
+				break;
+			}
+		}
+	}
+
 	return (pWeaponAction != NULL);
 }
 
@@ -5942,7 +5980,4 @@ void CVehicle::OffsetPosition(const Vec3 &delta)
 #endif
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IVehicleAnimation)
-#include UNIQUE_VIRTUAL_WRAPPER(IVehicleSystem)
-#include UNIQUE_VIRTUAL_WRAPPER(SEnvironmentParticles)
-#include UNIQUE_VIRTUAL_WRAPPER(IVehicleComponent)
+

@@ -160,13 +160,5 @@ template<> bool inline GetAttr(const XmlNodeRef& node, const char* key, string& 
 	return true;
 }
 
-#ifdef __SPU__
-//should not need to access it via CSystem on SPU, CryAnimation defines g_pCrc32Gen
-extern Crc32Gen* g_pCrc32Gen;
-#define CRC_GEN g_pCrc32Gen
-#else
-#define CRC_GEN gEnv->pSystem->GetCrc32Gen() 
-#endif
-
 
 #endif // !defined(AFX_STDAFX_H__B36C365D_F0EA_4545_B3BC_1E0EAB3B5E42__INCLUDED_)

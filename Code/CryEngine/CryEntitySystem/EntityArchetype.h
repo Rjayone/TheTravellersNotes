@@ -30,7 +30,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IEntityArchetype
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL IEntityClass* GetClass() const { return m_pClass; };
+	virtual IEntityClass* GetClass() const { return m_pClass; };
 	const char* GetName() const { return m_name.c_str(); };
 	IScriptTable* GetProperties() { return m_pProperties; };
 	XmlNodeRef GetObjectVars() { return m_ObjectVars; };

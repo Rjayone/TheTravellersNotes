@@ -46,9 +46,11 @@
 #include "Effects/GameEffects/ExplosionGameEffect.h"
 #include "Effects/GameEffectsSystem.h"
 #include "PersistantStats.h"
+#include "UnicodeFunctions.h"
 
 #include <StlUtils.h>
 #include <StringUtils.h>
+#include <algorithm>
 
 #include "Network/Lobby/GameBrowser.h"
 
@@ -352,7 +354,7 @@ CGameRules::CGameRules()
 
 	m_svLastTeamDiscoCause[0] = m_svLastTeamDiscoCause[1] = eDC_Unknown;
 
-	m_uSecurity = cry_rand32();
+	m_uSecurity = cry_random_uint32();
 
 	if(gEnv->bServer)
 		m_bSecurityInitialized = true;
@@ -2987,8 +2989,8 @@ void CGameRules::OnRevive(IActor *pActor)
 //------------------------------------------------------------------------
 void CGameRules::OnKill(IActor *pActor, const HitInfo &hitInfo, bool winningKill, bool firstKill, bool bulletTimeReplay)
 {
-	char weaponClassName[129]={0};
-	m_pGameFramework->GetNetworkSafeClassName(weaponClassName, 128, hitInfo.weaponClassId);
+	char weaponClassName[128];
+	m_pGameFramework->GetNetworkSafeClassName(weaponClassName, sizeof(weaponClassName), hitInfo.weaponClassId);
 
   if ( gEnv->bServer && winningKill )
     GetVictoryConditionsModule()->SetWinningKillVictimShooter(hitInfo.targetId,hitInfo.shooterId);
@@ -3662,22 +3664,40 @@ void CGameRules::RenamePlayer(IActor *pActor, const char *name)
 //------------------------------------------------------------------------
 string CGameRules::VerifyName(const char *name, IEntity *pEntity)
 {
-	string nameFormatter(name);
+	const size_t cSizeLimit = 26;
+	uint32 nameBuffer32[cSizeLimit];
+	Unicode::ConvertSafe<Unicode::eErrorRecovery_Discard>(nameBuffer32, name);	
 
-	// size limit is 26
-	if (nameFormatter.size()>26)
-		nameFormatter.resize(26);
-
-	// no spaces at start/end
-	nameFormatter.TrimLeft(' ');
-	nameFormatter.TrimRight(' ');
-
+	// trim spaces and newlines at start/end
+	uint32* pName32 = nameBuffer32;
+	while (*pName32 <= ' ')
+	{
+		++pName32;
+	}
+	uint32* pEnd32 = pName32;
+	while (*++pEnd32) {}
+	while (pEnd32 != pName32 && pEnd32[-1] <= ' ')
+	{	
+		*--pEnd32 = 0;
+	}
+	
 	// no empty names
-	if (nameFormatter.empty())
-		nameFormatter="empty";
-
+	if (pName32 == pEnd32)
+	{
+		static const char cEmpty[] = "empty";
+		const char *pEmptyBegin = cEmpty;
+		const char *pEmptyEnd = pEmptyBegin + sizeof(cEmpty); // Range intentionally includes null-terminator
+		
+		pName32 = nameBuffer32;
+		pEnd32 = std::copy(pEmptyBegin, pEmptyEnd, pName32) - 1;
+	}
+	
 	// no @ signs
-	nameFormatter.replace("@", "_");
+	std::replace(pName32, pEnd32, uint32('@'), uint32('_'));
+
+	// convert to UTF-8
+	string nameFormatter;
+	Unicode::Convert(nameFormatter, pName32, pEnd32);
 
 	// search for duplicates
 	if (IsNameTaken(nameFormatter.c_str(), pEntity))
@@ -3772,16 +3792,11 @@ void CGameRules::KillPlayer(IActor* pActor, const bool inDropItem, const bool in
 	}
 
 	
-	const int MaxLength = 128;
-	char projectileClassName[MaxLength+1];
-	bool foundProjectileClassName = m_pGameFramework->GetNetworkSafeClassName(projectileClassName, MaxLength, hitInfo.projectileClassId);
-	if (foundProjectileClassName)
+	char projectileClassName[128];
+	bool foundProjectileClassName = m_pGameFramework->GetNetworkSafeClassName(projectileClassName, sizeof(projectileClassName), hitInfo.projectileClassId);
+	if (!foundProjectileClassName)
 	{
-		projectileClassName[MaxLength] = 0;
-	}
-	else
-	{
-		strncpy(projectileClassName, "unknown projectile", MaxLength);
+		cry_strcpy(projectileClassName, "unknown projectile");
 	}
 
 	IGameRulesAssistScoringModule *assistScoringModule = GetAssistScoringModule();
@@ -3914,14 +3929,10 @@ void CGameRules::KillPlayer(IActor* pActor, const bool inDropItem, const bool in
 	CStatsRecordingMgr		*sr=g_pGame->GetStatsRecorder();
 	if (sr) 
 	{
-		char weaponClassName[MaxLength+1];
-		if (m_pGameFramework->GetNetworkSafeClassName(weaponClassName, MaxLength, hitInfo.weaponClassId))
+		char weaponClassName[128];
+		if (!m_pGameFramework->GetNetworkSafeClassName(weaponClassName, sizeof(weaponClassName), hitInfo.weaponClassId))
 		{
-			weaponClassName[MaxLength] = 0;
-		}
-		else
-		{
-			strncpy(weaponClassName, "unknown weapon", MaxLength);
+			cry_strcpy(weaponClassName, "unknown weapon");
 		}
 
 		if(sr->ShouldRecordEvent(eSE_Death, pActor))
@@ -5297,11 +5308,10 @@ int CGameRules::GetHitTypesCount() const
 //------------------------------------------------------------------------
 int CGameRules::GetHitTypeId( const uint32 crc ) const
 {
-	const Crc32Gen* pCrCGen = gEnv->pSystem->GetCrc32Gen();
 	for ( int i = 0, size = m_hitTypes.size(); i < size; i++)
 	{
 		const char* pHitType = m_hitTypes[i].m_name.c_str();
-		const uint32 crcHitType = pCrCGen->GetCRC32Lowercase( pHitType );
+		const uint32 crcHitType = CCrc32::ComputeLowercase( pHitType );
 
 		if (crcHitType == crc)
 			return i;
@@ -5647,7 +5657,7 @@ bool CGameRules::OnCollision(const SGameCollision& event)
 					{
 						char effectName[] = "bullet.hit_flesh.a";
 						// Randomly change the a into either a, b or c to get a different blood effect each time
-						effectName[sizeof(effectName)-2] = 'a' + Random(3);
+						effectName[sizeof(effectName)-2] = cry_random('a', 'c');
 						IParticleEffect *pParticle = gEnv->pParticleManager->FindEffect(effectName);
 						if (pParticle)
 						{
@@ -6182,8 +6192,8 @@ void CGameRules::CreateScriptHitInfo(SmartScriptTable &scriptHitInfo, const HitI
 		hit.SetValue("projectileClassId", hitInfo.projectileClassId);
 		hit.SetValue("weaponClassId", hitInfo.weaponClassId);
 		
-		char projectileClassName[256] = {0};
-		g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileClassName, 255, hitInfo.projectileClassId);
+		char projectileClassName[256];
+		g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileClassName, sizeof(projectileClassName), hitInfo.projectileClassId);
 		hit.SetValue("projectileClass", projectileClassName);
 
 		if (hitInfo.explosion)

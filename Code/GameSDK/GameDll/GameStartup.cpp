@@ -22,12 +22,9 @@ History:
 #include <platform_impl.h>
 #include <INetworkService.h>
 
-#include <LoadSeq.h>
-
 #include "IHardwareMouse.h"
 #include "ICryPak.h"
 #include <ILocalizationManager.h>
-#include "IBasicEventListener.h"
 #include "Editor/GameRealtimeRemoteUpdate.h"
 #include "Utility/StringUtils.h"
 
@@ -183,7 +180,6 @@ bool CCVarsWhiteList::IsWhiteListed(const string& command, bool silent)
 	WHITELIST("r_DeferredShadingAmbientSClear");
 	WHITELIST("g_useHitSoundFeedback");
 	WHITELIST("sys_MaxFps");
-	WHITELIST("sys_languages");
 	WHITELIST("g_language");
 
 	WHITELIST("sys_spec_ObjectDetail");
@@ -436,17 +432,15 @@ void GameStartupErrorObserver::OnFatalError(const char* message)
 
 //////////////////////////////////////////////////////////////////////////
 
-CGameStartup* CGameStartup::Create(IBasicEventListener& basicEventListener)
+CGameStartup* CGameStartup::Create()
 {
 	static char buff[sizeof(CGameStartup)];
-	return new (buff) CGameStartup(basicEventListener);
+	return new (buff) CGameStartup();
 }
 
-CGameStartup::CGameStartup(IBasicEventListener& basicEventListener)
-	:	m_basicEventListener(basicEventListener), 
-		m_pMod(NULL),
+CGameStartup::CGameStartup()
+	:	m_pMod(NULL),
 		m_modRef(&m_pMod),
-		m_initWindow(false), 
 		m_quit(false),
 		m_reqModUnload(false),
 		m_modDll(0), 
@@ -490,8 +484,6 @@ static inline void InlineInitializationProcessing(const char *sDescription)
 IGameRef CGameStartup::Init(SSystemInitParams &startupParams)
 {
 	MEMSTAT_CONTEXT(EMemStatContextTypes::MSC_Other, 0, "Game startup initialisation");
-
-	LOADING("game_startup");
 
 #if defined(CVARS_WHITELIST)
 	startupParams.pCVarsWhitelist = &g_CVarsWhiteList;
@@ -556,8 +548,6 @@ IGameRef CGameStartup::Init(SSystemInitParams &startupParams)
 
 	InlineInitializationProcessing("CGameStartup::Init FrameworkCompleteInit");
 
-	LOADING_DONE;
-
 	// should be after init game (should be executed even if there is no game)
 	if(startupParams.bExecuteCommandLine)
 		pSystem->ExecuteCommandLine();
@@ -573,9 +563,10 @@ IGameRef CGameStartup::Init(SSystemInitParams &startupParams)
 
 	GCOV_FLUSH;
 
-	if (gEnv && GetISystem())
+	if (ISystem *pSystem = gEnv ? GetISystem() : NULL)
 	{
-		GetISystem()->RegisterErrorObserver(&m_errorObsever);
+		pSystem->RegisterErrorObserver(&m_errorObsever);
+		pSystem->RegisterWindowMessageHandler(this);
 	}
 	else
 	{
@@ -706,6 +697,12 @@ void CGameStartup::Shutdown()
 	CStatsAgent::ClosePipe();
 #endif
 
+	if (ISystem *pSystem = GetISystem())
+	{
+		pSystem->UnregisterErrorObserver(&m_errorObsever);
+		pSystem->UnregisterWindowMessageHandler(this);
+	}
+
 	/*delete this;*/
 	this->~CGameStartup();
 }
@@ -717,7 +714,7 @@ int CGameStartup::Update(bool haveFocus, unsigned int updateFlags)
 #if defined(JOBMANAGER_SUPPORT_PROFILING)
 	gEnv->GetJobManager()->SetFrameStartTime(gEnv->pTimer->GetAsyncTime());
 #endif
-	gEnv->pSystem->ResetWatchdogTimer();
+	
 	int returnCode = 0;
 
 	if (gEnv && gEnv->pSystem && gEnv->pConsole)
@@ -806,19 +803,19 @@ bool CGameStartup::GetRestartLevel(char** levelName)
 	return GetISystem()->IsRelaunch();
 }
 
-bool CGameStartup::GetRestartMod(char* pModName, int nameLenMax)
+bool CGameStartup::GetRestartMod(char* pModNameBuffer, int modNameBufferSizeInBytes)
 {
 	if (m_reqModUnload)
 	{
-		if (nameLenMax > 0)
-			pModName[0] = 0;
+		if (modNameBufferSizeInBytes > 0)
+			pModNameBuffer[0] = 0;
 		return true;
 	}
 
 	if (m_reqModName.empty())
 		return false;
 
-	cry_strncpy(pModName, m_reqModName.c_str(), nameLenMax);
+	cry_strcpy(pModNameBuffer, modNameBufferSizeInBytes, m_reqModName.c_str());
 	return true;
 }
 
@@ -974,7 +971,7 @@ int CGameStartup::Run( const char * autoStartLevelName )
 #ifdef WIN32
 	if (!(gEnv && gEnv->pSystem) || (!gEnv->IsEditor() && !gEnv->IsDedicated()))
 	{
-		::ShowCursor(TRUE);
+		::ShowCursor(TRUE); // Make the cursor visible again (it was hidden in InitFramework() )
 		if (gEnv && gEnv->pSystem && gEnv->pSystem->GetIHardwareMouse())
 			gEnv->pSystem->GetIHardwareMouse()->DecrementCounter();
 	}
@@ -983,38 +980,23 @@ int CGameStartup::Run( const char * autoStartLevelName )
 
 	for(;;)
 	{
-		MSG msg;
-
- 		// Must be PeekMessageW for Scaleform IME to function correctly and to ensure WM_CHAR contains
-		// Unicode widechar for languages like Russian
-		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+		ISystem *pSystem = gEnv ? gEnv->pSystem : 0;
+		if (!pSystem)
 		{
-			if (msg.message != WM_QUIT)
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-			else
-			{
- 				break;
-			}
+			break;
 		}
-		else
+		
+		if (pSystem->PumpWindowMessage(false) == -1)
 		{
-			if (!Update(true, 0))
-			{
-				// need to clean the message loop (WM_QUIT might cause problems in the case of a restart)
-				// another message loop might have WM_QUIT already so we cannot rely only on this
+			break;
+		}
 
- 				// Must be PeekMessageW for Scaleform IME to function correctly and to ensure WM_CHAR contains
-				// Unicode widechar for languages like Russian
-				while(PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-				{
-					TranslateMessage(&msg);
-					DispatchMessage(&msg);
-				}
-				break;
-			}
+		if (!Update(true, 0))
+		{
+			// need to clean the message loop (WM_QUIT might cause problems in the case of a restart)
+			// another message loop might have WM_QUIT already so we cannot rely only on this
+			pSystem->PumpWindowMessage(true);
+			break;
 		}
 	}
 #else
@@ -1085,7 +1067,7 @@ void CGameStartup::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR l
 	switch (event)
 	{
 	case ESYSTEM_EVENT_RANDOM_SEED:
-		g_random_generator.Seed(gEnv->bNoRandomSeed?0:(uint32)wparam);
+		cry_random_seed(gEnv->bNoRandomSeed ? 0 : (uint32)wparam);
 		break;
 	case ESYSTEM_EVENT_CHANGE_FOCUS:
 		{
@@ -1157,18 +1139,12 @@ bool CGameStartup::InitFramework(SSystemInitParams &startupParams)
 		return false;
 	}
 
-	if (!startupParams.hWnd)
+#ifdef WIN32
+	if (startupParams.pSystem == NULL || (!startupParams.bEditor && !gEnv->IsDedicated()))
 	{
-		m_initWindow = true;
-
-		if (!InitWindow(startupParams))
-		{
-			// failed to register window class
-			CryFatalError("Failed to register CryENGINE window class!");
-
-			return false;
-		}
+		::ShowCursor(FALSE); // Hide the cursor during loading (it will be shown again in Run())
 	}
+#endif
 
 	// initialize the engine
 	if (!m_pFramework->Init(startupParams))
@@ -1192,201 +1168,64 @@ void CGameStartup::ShutdownFramework()
 		m_pFramework->Shutdown();
 		m_pFramework = 0;
 	}
-
-	ShutdownWindow();
-}
-
-bool CGameStartup::InitWindow(SSystemInitParams &startupParams)
-{
-#ifdef WIN32
-	WNDCLASS wc;
-
-	memset(&wc, 0, sizeof(WNDCLASS));
-
-	wc.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-	wc.lpfnWndProc   = (WNDPROC)CGameStartup::WndProcHndl;
-	wc.cbClsExtra    = 0;
-	wc.cbWndExtra    = 0;
-	wc.hInstance     = GetModuleHandle(0);
-	// FIXME: Very bad way of getting the Icon and Cursor from the Launcher project
-	wc.hIcon         = LoadIcon((HINSTANCE)startupParams.hInstance, MAKEINTRESOURCE(101));
-	wc.hCursor       = LoadCursor((HINSTANCE)startupParams.hInstance, MAKEINTRESOURCE(105));
-	wc.hbrBackground =(HBRUSH)GetStockObject(BLACK_BRUSH);
-	wc.lpszMenuName  = 0;
-	wc.lpszClassName = GAME_WINDOW_CLASSNAME;
-
-	if (!RegisterClass(&wc))
-	{
-		return false;
-	}
-
-	if (startupParams.pSystem == NULL || (!startupParams.bEditor && !gEnv->IsDedicated()))
-		::ShowCursor(FALSE);
-
-#endif // WIN32
-	return true;
-}
-
-void CGameStartup::ShutdownWindow()
-{
-#ifdef WIN32
-	if (m_initWindow)
-	{
-		UnregisterClass(GAME_WINDOW_CLASSNAME, GetModuleHandle(0));
-	}
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
 #ifdef WIN32
 
-LRESULT CALLBACK CGameStartup::WndProcHndl(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+bool CGameStartup::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT *pResult)
 {
-	CGameStartup* self = reinterpret_cast<CGameStartup*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-	return self 
-		? self->WndProc(hWnd, msg, wParam, lParam)
-		: DefWindowProc(hWnd, msg, wParam, lParam);
-}
-
-LRESULT CGameStartup::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	LRESULT result = 0;
-
-	IBasicEventListener::EAction action = m_quit ? IBasicEventListener::eA_Default : ProcessMessage(hWnd, msg, wParam, lParam);
-	switch (action)
-	{
-	case IBasicEventListener::eA_None:
-		result = 0;
-		break;
-	case IBasicEventListener::eA_Default:
-		result = DefWindowProc(hWnd, msg, wParam, lParam);;
-		break;
-	case IBasicEventListener::eA_ActivateAndEat:
-		result = MA_ACTIVATEANDEAT;
-		break;
-	}
-
-	return result;
-}
-
-IBasicEventListener::EAction CGameStartup::ProcessMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	CRY_ASSERT(gEnv && gEnv->pSystem && !m_quit);
-
-	// Let the renderer see the message
-	IRenderer *pRenderer = gEnv->pSystem->GetIRenderer();
-	if (pRenderer) pRenderer->PeekWindowMessage(msg, wParam, lParam);
-
-	IBasicEventListener::EAction result = IBasicEventListener::eA_Default;
 	switch(msg)
 	{
-	case WM_CLOSE:
-		result = m_basicEventListener.OnClose(hWnd);
-		break;
-	case WM_MOUSEACTIVATE:
-		result = m_basicEventListener.OnMouseActivate(hWnd);
-		break;
-	case WM_ENTERSIZEMOVE:
-		result = m_basicEventListener.OnEnterSizeMove(hWnd);
-		break;
-	case WM_EXITSIZEMOVE:
-		result = m_basicEventListener.OnExitSizeMove(hWnd);
-		break;
-	case WM_ENTERMENULOOP:
-		result = m_basicEventListener.OnEnterMenuLoop(hWnd);
-		break;
-	case WM_EXITMENULOOP:
-		result = m_basicEventListener.OnExitMenuLoop(hWnd);
-		break;
-	case WM_HOTKEY:
-		result = m_basicEventListener.OnHotKey(hWnd);
-		break;
-	case WM_SYSCHAR:	// prevent ALT + key combinations from creating 'ding' sounds
-		result = m_basicEventListener.OnSycChar(hWnd);
-		break;
-	case WM_CHAR:
-		result = m_basicEventListener.OnChar(hWnd, wParam);
-		break;
-	case WM_SYSKEYDOWN:	// prevent ALT-key entering menu loop
-		result = m_basicEventListener.OnSysKeyDown(hWnd, wParam, lParam);
-		break;
-	case WM_SETCURSOR:
-		result = m_basicEventListener.OnSetCursor(hWnd);
-		break;
-	case WM_MOUSEMOVE:
-		result = m_basicEventListener.OnMouseMove(hWnd, lParam);
-		break;
-	case WM_LBUTTONDOWN:
-		result = m_basicEventListener.OnLeftButtonDown(hWnd, lParam);
-		break;
-#if (_WIN32_WINNT >= 0x0400) || (_WIN32_WINDOWS > 0x0400)
-	case WM_MOUSEWHEEL:
+	case WM_SYSCHAR: // Prevent ALT + key combinations from creating 'ding' sounds
 		{
-		short wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
-		result = m_basicEventListener.OnMouseWheel(hWnd, lParam, wheelDelta);
-		break;
+			const bool bAlt = (lParam & (1 << 29)) != 0;
+			if (bAlt && wParam == VK_F4)
+			{
+				return false; // Pass though ALT+F4
+			}
+
+			*pResult = 0;
+			return true;
 		}
-#endif
-	case WM_LBUTTONUP:
-		result = m_basicEventListener.OnLeftButtonUp(hWnd, lParam);
 		break;
-	case WM_LBUTTONDBLCLK:
-		result = m_basicEventListener.OnLeftButtonDoubleClick(hWnd, lParam);
-		break;
-	case WM_MOVE:
-		result = m_basicEventListener.OnMove(hWnd, lParam);
-		break;
+
 	case WM_SIZE:
-		result = m_basicEventListener.OnSize(hWnd, lParam);
-
 		HandleResizeForVOIP(wParam);
+		break;
 
-		break;
-	case WM_ACTIVATE:
-		result = m_basicEventListener.OnActivate(hWnd, wParam);
-		break;
 	case WM_SETFOCUS:
-		result = m_basicEventListener.OnSetFocus(hWnd);
 		if (g_pGameCVars)
 		{
-		g_pGameCVars->g_hasWindowFocus = true;
+			g_pGameCVars->g_hasWindowFocus = true;
 		}
 		break;
+
 	case WM_KILLFOCUS:
-		result = m_basicEventListener.OnKillFocus(hWnd);
 		if (g_pGameCVars)
 		{
-		g_pGameCVars->g_hasWindowFocus = false;
+			g_pGameCVars->g_hasWindowFocus = false;
 		}
 		break;
-	case WM_WINDOWPOSCHANGING:
-		result = IBasicEventListener::eA_None;
-		break;
-	case WM_WINDOWPOSCHANGED:
-		result = m_basicEventListener.OnWindowPositionChanged(hWnd);
-		break;
-	case WM_STYLECHANGED:
-		result = m_basicEventListener.OnWindowStyleChanged(hWnd);
-		break;
-	case WM_IME_SETCONTEXT:
-		result = IBasicEventListener::eA_None; // In order to hide the system IME windows
-		break;
-	case WM_INPUTLANGCHANGE:
-		result = m_basicEventListener.OnInputLanguageChanged(hWnd, wParam, lParam);
-		break;
-	case WM_IME_STARTCOMPOSITION:
-	case WM_IME_KEYDOWN:
-	case WM_IME_COMPOSITION:
-	case WM_IME_ENDCOMPOSITION:
-	case WM_IME_NOTIFY:
-	case WM_IME_CHAR:
-		result = IBasicEventListener::eA_None;
-		break;
-	case WM_SYSCOMMAND:
-		result = m_basicEventListener.OnSysCommand(hWnd, wParam);
+
+	case WM_SETCURSOR:
+		{
+			// This is sample code to change the displayed cursor for Windows applications.
+			// Note that this sample loads a texture (ie, .TIF or .DDS), not a .ICO or .CUR resource.
+			const char* const cDefaultCursor = "EngineAssets/Textures/Cursor_Green.tif";
+			IHardwareMouse* const pMouse = gEnv ? gEnv->pHardwareMouse : NULL;
+			assert(pMouse && "HWMouse should be initialized before window is shown, check engine initialization order");
+			const bool bResult = pMouse ? pMouse->SetCursor(cDefaultCursor) : false;
+			if (!bResult)
+			{
+				GameWarning("Unable to load cursor %s, does this file exist?", cDefaultCursor);
+			}
+			*pResult = bResult ? TRUE : FALSE;
+			return bResult;
+		}
 		break;
 	}
-	return result;
+	return false;
 }
 
 

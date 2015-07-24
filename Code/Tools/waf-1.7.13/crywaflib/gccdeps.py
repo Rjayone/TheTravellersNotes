@@ -90,6 +90,9 @@ def post_run(self):
 	if bld.is_option_true('show_preprocessed_file') or bld.is_option_true('show_disassembly'):
 		return Task.Task.post_run(self)
 
+	if self.inputs[0].abspath()[-2:] == '.s':
+		return Task.Task.post_run(self)
+		
 	name = self.outputs[0].abspath()
 	name = re_o.sub('.d', name)	
 	txt = Utils.readf(name)

@@ -32,14 +32,14 @@ struct SColorChartLayer
 struct IColorGradingController
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IColorGradingController(){}
 	virtual int LoadColorChart(const char* pChartFilePath) const = 0;
 	virtual int LoadDefaultColorChart() const = 0;
 	virtual void UnloadColorChart(int texID) const = 0;
 
 	virtual void SetLayers(const SColorChartLayer* pLayers, uint32 numLayers) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 

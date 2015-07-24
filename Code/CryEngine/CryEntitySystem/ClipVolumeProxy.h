@@ -23,28 +23,28 @@ public:
 
 	// IComponent interface implementation.
 	//////////////////////////////////////////////////////////////////////////
-	virtual void Initialize( const SComponentInitializer& init ) OVERRIDE {};
-	virtual	void ProcessEvent( SEntityEvent& event ) OVERRIDE;
+	virtual void Initialize( const SComponentInitializer& init ) override {};
+	virtual	void ProcessEvent( SEntityEvent& event ) override;
 	//////////////////////////////////////////////////////////////////////////
 
 	// IEntityProxy
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL EEntityProxy GetType() { return ENTITY_PROXY_CLIPVOLUME; }
-	VIRTUAL void Release() OVERRIDE;
-	VIRTUAL void Done()  {};
-	VIRTUAL	void Update(SEntityUpdateContext& context) OVERRIDE {};
-	VIRTUAL bool Init(IEntity* pEntity, SEntitySpawnParams& params) OVERRIDE;
-	VIRTUAL void Reload(IEntity* pEntity, SEntitySpawnParams& params) OVERRIDE;
-	VIRTUAL void SerializeXML(XmlNodeRef &entityNodeXML, bool loading) OVERRIDE;
-	VIRTUAL void Serialize(TSerialize serialize) OVERRIDE {};
-	VIRTUAL bool NeedSerialize() { return false; }
-	VIRTUAL bool GetSignature(TSerialize signature) OVERRIDE;
-	VIRTUAL void GetMemoryUsage(ICrySizer* pSizer) const OVERRIDE;
+	virtual EEntityProxy GetType() { return ENTITY_PROXY_CLIPVOLUME; }
+	virtual void Release() override;
+	virtual void Done()  {};
+	virtual void Update(SEntityUpdateContext& context) override {};
+	virtual bool Init(IEntity* pEntity, SEntitySpawnParams& params) override;
+	virtual void Reload(IEntity* pEntity, SEntitySpawnParams& params) override;
+	virtual void SerializeXML(XmlNodeRef &entityNodeXML, bool loading) override;
+	virtual void Serialize(TSerialize serialize) override {};
+	virtual bool NeedSerialize() { return false; }
+	virtual bool GetSignature(TSerialize signature) override;
+	virtual void GetMemoryUsage(ICrySizer* pSizer) const override;
 	//////////////////////////////////////////////////////////////////////////
 
-	VIRTUAL void UpdateRenderMesh(IRenderMesh* pRenderMesh, const DynArray<Vec3>& meshFaces) OVERRIDE;
-	VIRTUAL IClipVolume* GetClipVolume() const OVERRIDE { return m_pClipVolume; }
-	VIRTUAL IBSPTree3D* GetBspTree() const OVERRIDE { return m_pBspTree; }
+	virtual void UpdateRenderMesh(IRenderMesh* pRenderMesh, const DynArray<Vec3>& meshFaces) override;
+	virtual IClipVolume* GetClipVolume() const override { return m_pClipVolume; }
+	virtual IBSPTree3D* GetBspTree() const override { return m_pBspTree; }
 
 private:
 	bool LoadFromFile(const char* szFilePath);

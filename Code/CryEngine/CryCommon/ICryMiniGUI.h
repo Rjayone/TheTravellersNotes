@@ -116,10 +116,10 @@ namespace minigui
 	//////////////////////////////////////////////////////////////////////////
 	struct IMiniGUIEventListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~IMiniGUIEventListener(){}
 		virtual void OnCommand( SCommand &cmd ) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 	// Interface to the GUI
@@ -128,6 +128,7 @@ namespace minigui
 	public:
 		CRYINTERFACE_DECLARE(IMiniGUI, 0xea09d34268814f2a, 0xaf1034e04b076011);
 
+		// <interfuscator:shuffle>
 		virtual void Init() = 0;
 		virtual void Done() = 0;
 		virtual void Draw() = 0;
@@ -155,14 +156,14 @@ namespace minigui
 		virtual IMiniCtrl* GetCtrlFromPoint( float x,float y ) const = 0;
 		
 		virtual void SetMovingCtrl(IMiniCtrl *pCtrl) = 0; 
-
+		// </interfuscator:shuffle>
 	};
 
 	DECLARE_BOOST_POINTERS(IMiniGUI);
 
 	struct IMiniCtrl : public _reference_target_t
 	{
-
+		// <interfuscator:shuffle>
 		virtual void Reset() = 0;
 		
 		virtual void SaveState() = 0;
@@ -224,40 +225,40 @@ namespace minigui
 	
 		//Move control
 		virtual void Move(float x, float y) = 0;
-
+		// </interfuscator:shuffle>
 	};
 	typedef _smart_ptr<IMiniCtrl> IMiniCtrlPtr;
 
 	class IMiniGuiCommon
 	{
 	public:
-
+		// <interfuscator:shuffle>
 		virtual ~IMiniGuiCommon(){}
 		virtual bool IsHidden()=0;
 		virtual void Hide( bool stat )=0;
-
+		// </interfuscator:shuffle>
 	};
 
 	class IMiniTable : public IMiniGuiCommon
 	{
 	public:
-
+		// <interfuscator:shuffle>
 		virtual int AddColumn(const char* name) = 0;
 		virtual void RemoveColumns() = 0;
 		virtual int AddData(int columnIndex, ColorB col, const char *format, ...) = 0;
 		virtual void ClearTable() = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 	class IMiniInfoBox : public IMiniGuiCommon
 	{
 	public:
-
+		// <interfuscator:shuffle>
 		virtual void SetTextIndent( float x ) = 0;
 		virtual void SetTextSize( float sz ) = 0;
 		virtual void ClearEntries() = 0;
 		virtual void AddEntry( const char* str, ColorB col, float textSize ) = 0;
-
+		// </interfuscator:shuffle>
 	};
 }
 

@@ -257,7 +257,6 @@ public:
 			{
 				ActivateOutput(&m_actInfo, EOP_Done, true);
 				ActivateOutput(&m_actInfo, EOP_Finished, true);
-				m_playingState = PS_Stopped;
 				NotifyEntities();
 				SequenceStopped();
 			}
@@ -279,7 +278,6 @@ protected:
 	{
 		ActivateOutput(&m_actInfo, EOP_Done, true);
 		ActivateOutput(&m_actInfo, EOP_Aborted, true);
-		m_playingState = PS_Stopped;
 		NotifyEntities();
 		SequenceStopped();
 	}
@@ -293,6 +291,7 @@ protected:
 		}
 		m_pSequence = 0;
 		m_actInfo.pGraph->SetRegularlyUpdated(m_actInfo.myID, false);
+		m_playingState = PS_Stopped;
 	}
 
 	void PrecacheSequence(SActivationInfo* pActInfo, float startTime = 0.0f)

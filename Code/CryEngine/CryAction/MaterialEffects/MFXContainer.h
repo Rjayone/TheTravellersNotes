@@ -93,7 +93,7 @@ typedef _smart_ptr<CMFXContainer> TMFXContainerPtr;
 class CMFXDummyContainer : public CMFXContainer
 {
 protected:
-	virtual void BuildChildEffects( const XmlNodeRef& paramsNode ) OVERRIDE;
+	virtual void BuildChildEffects( const XmlNodeRef& paramsNode ) override;
 };
 
 #endif // _MFX_CONTAINER_H_

@@ -193,7 +193,7 @@ private:
 	CTimeValue			m_lastPosUpdate;
 	CTimeValue			m_roundStart;
 
-	std::auto_ptr<SRoundStats> m_roundStats;
+	std::unique_ptr<SRoundStats> m_roundStats;
 };
 
 #endif /*__GAMESTATS_H__*/

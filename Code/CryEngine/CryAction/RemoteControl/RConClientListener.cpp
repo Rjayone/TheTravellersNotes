@@ -135,4 +135,4 @@ bool CRConClientListener::IsSessionAuthorized() const
 	return m_sessionAuthorized;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IRemoteControlClientListener)
+

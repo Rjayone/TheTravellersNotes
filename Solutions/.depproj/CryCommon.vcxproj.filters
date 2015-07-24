@@ -1,0 +1,1755 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AABBSV.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AIFormationDescriptor.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AISystemListener.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AgePriorityQueue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AgentParams.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Allocator.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AndroidSpecific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AnimKey.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AnimTime.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AppleSpecific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Base64.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BaseTypes.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Action.h">
+				<Filter>Common_h\Behavior Tree</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Composite.h">
+				<Filter>Common_h\Behavior Tree</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Decorator.h">
+				<Filter>Common_h\Behavior Tree</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\IBehaviorTree.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\IBehaviorTreeGraft.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Node.h">
+				<Filter>Common_h\Behavior Tree</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\NodeFactory.h">
+				<Filter>Common_h\Behavior Tree</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Readme.txt">
+				<Filter>Common_h\Behavior Tree</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\TimestampCollection.h">
+				<Filter>Common_h\Behavior Tree</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\XmlLoader.h">
+				<Filter>Common_h\Behavior Tree</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Bezier.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Bezier_impl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BitFiddling.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BitmapDilation.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BoostHelpers.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BucketAllocator.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BucketAllocatorImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BucketAllocatorPolicy.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CGFContent.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CGFContent_info.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREBaseCloud.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREBreakableGlass.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREBreakableGlassConfig.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREBreakableGlassHelpers.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREFarTreeSprites.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREFogVolume.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREGameEffect.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREGeomCache.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREImposter.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CRELightPropagationVolume.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREMesh.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREOcclusionQuery.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREParticle.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREPostProcess.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CRESky.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREVolumeObject.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREWaterOcean.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREWaterVolume.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CheatProtection.h">
+				<Filter>CheatProtection</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CoherentValue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Common_TypeInfo.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Common_TypeInfo2.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CompileTimeAssert.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CompileTimeUtils.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CopyProtection.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CountedValue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CrtDebugStats.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryArray.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_Android.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_IOS.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_Linux.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_Mac.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_impl.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryBufferedFileReader.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCharAnimationParams.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCharMorphParams.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCommon.cpp">
+				<Filter>Interfaces_h</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCrc32.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCustomTypes.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryDLMalloc.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryEndian.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryEngineDecalInfo.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\CryCreateClassInstance.h">
+				<Filter>CryExtension</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\CryGUID.h">
+				<Filter>CryExtension</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\CryTypeID.h">
+				<Filter>CryExtension</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\ICryFactory.h">
+				<Filter>CryExtension</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\ICryFactoryRegistry.h">
+				<Filter>CryExtension</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\ICryUnknown.h">
+				<Filter>CryExtension</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\ClassWeaver.h">
+				<Filter>CryExtension\Impl</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\Conversion.h">
+				<Filter>CryExtension\Impl</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\CryGUIDHelper.h">
+				<Filter>CryExtension\Impl</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\ICryFactoryRegistryImpl.h">
+				<Filter>CryExtension\Impl</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\RegFactoryNode.h">
+				<Filter>CryExtension\Impl</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\TypeList.h">
+				<Filter>CryExtension\Impl</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryFile.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryFixedArray.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryFixedString.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryFlags.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryHalf.inl">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryHalf_info.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryHeaders.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryHeaders_info.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryLibrary.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryListenerSet.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryLobbyEvent.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryLobbyPacket.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemBlock.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemReplay.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemReplayTrackedPtr.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemoryAllocator.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemoryManager.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemoryManager_impl.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryModuleDefs.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryName.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryParticleSpawnInfo.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPath.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPhysics.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.Darwin.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.Linux.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.Win32.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.Win64.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.fwd.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPodArray.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Allocator.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Container.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Defrag.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Fallback.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Inspector.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\List.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Memory.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\PAUnitTest.cpp">
+				<Filter>CryPool</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\PoolAlloc.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\STLWrapper.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\ThreadSafe.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\example.h">
+				<Filter>CryPool</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryProfileMarker.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryProfileMarker_impl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryProfileMarker_impl.pc.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPtrArray.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryRandomInternal.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CrySizer.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CrySocks.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryString.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryStructPack.cpp">
+				<Filter>Platform_h</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryStructPack.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThread.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadImpl_pthreads.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadImpl_windows.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadSafeRendererContainer.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadSafeWorkerContainer.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThread_dummy.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThread_pthreads.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThread_windows.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryTypeInfo.cpp">
+				<Filter>Common_h</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryTypeInfo.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryUnitTest.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryVersion.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryWindows.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryZlib.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Camera.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Color.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Geo.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_GeoDistance.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_GeoIntersect.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_GeoOverlap.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_HWMatrix.h">
+				<Filter>MathLib\Consoles</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_HWVector3.h">
+				<Filter>MathLib\Consoles</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Math.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Matrix33.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Matrix34.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Matrix44.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_MatrixDiag.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Quat.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_ValidNumber.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Vector2.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Vector3.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Vector4.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_XOptimise.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CustomMemoryHeap.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\DeferredActionQueue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\EntityDesc.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ExtensionDefines.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FinalizingSpline.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FindZeroRanges.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FixedAllocator.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FixedPoint.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Force.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FrameProfiler.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FunctorBaseFunction.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FunctorBaseMember.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\GameUtils.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\GenericParam.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\GeomCacheFileFormat.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\GeomQuery.h">
+				<Filter>MathLib</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HardwareBreakpoint.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HashGrid.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HashedString.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HeapAllocator.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HeapContainer.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HidespotQueryContext.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\I3DEngine.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\I3DEngine_info.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\I3DSampler.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIAction.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIActionSequence.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIActor.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIActorProxy.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIDebugRenderer.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIGroup.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIGroupProxy.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIMannequin.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIObject.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIObjectManager.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIRateOfDeathHandler.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIRecorder.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAISystem.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAVI_Reader.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAgent.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAnimEventPlayer.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAnimationPoseModifier.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAntiCheatManager.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAttachment.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAudioInterfacesCommonData.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAudioSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBitStream.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBlackBoard.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBreakableGlassSystem.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBreakableManager.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBudgetingSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IChunkFile.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IClusterDetector.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICmdLine.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICodeCheckpointMgr.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IColorGradingController.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICommunicationManager.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IComponent.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IConsole.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICoverSystem.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryAnimation.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryFriends.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryFriendsManagement.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryLobby.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryLobbyUI.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryMatchMaking.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryMiniGUI.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryOnlineStorage.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryPak.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryReward.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICrySignIn.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryStats.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryTCPService.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryVoice.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICrysis3Lobby.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICustomActions.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICustomEvents.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDMap.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDataProbe.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDebugHistory.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDeferredCollisionEvent.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDefragAllocator.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDialogSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDiskProfiler.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDynamicResponseAction.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDynamicResponseCondition.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDynamicResponseSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEdgeConnectivityBuilder.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEditorGame.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEngineModule.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntity.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityAttributesProxy.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityClass.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityPoolManager.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityProxy.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityRenderState.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityRenderState_info.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntitySerialize.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntitySystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFaceGen.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFacialAnimation.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFactionMap.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFileChangeMonitor.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlares.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlashPlayer.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlashUI.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlowGraphDebugger.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlowGraphModuleManager.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlowSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFont.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFuncVariable.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFunctorBase.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGame.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameFramework.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameFrameworkExtension.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameRef.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameStartup.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameStatistics.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameTokens.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameVolumes.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGeneralMemoryHeap.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGeomCache.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGoalPipe.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IHMDDevice.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IHMDManager.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IHardwareMouse.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IImage.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IIndexedMesh.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IIndexedMesh_info.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IInput.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IInterestSystem.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IJobManager.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IJobManager_JobDelegator.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IJoystick.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILMSerializationManager.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILZ4Decompressor.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILipSync.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILipSyncProvider.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILiveCreateCommon.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILiveCreateHost.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILiveCreateManager.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILiveCreatePlatform.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILocalMemoryUsage.h">
+				<Filter>STL\Statistics</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILocalizationManager.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILog.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMNM.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMaterial.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMaterialEffects.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMemory.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMeshBaking.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMiniLog.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMovementActor.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMovementSystem.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMovieSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMusicSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INavigation.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INavigationSystem.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INetwork.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INetworkService.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INetworkingState.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INotificationNetwork.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IOffMeshNavigationManager.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IOverloadSceneManager.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IParticles.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPathfinder.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPerceptionHandler.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPerceptionHandlerModifier.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPerfHud.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPhysics.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPhysicsDebugRenderer.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPlatformOS.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IProcess.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IReadWriteXMLSink.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRealtimeRemoteUpdate.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRemoteCommand.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRemoteControl.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRenderAuxGeom.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRenderMesh.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRenderer.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IResourceCollector.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IResourceManager.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IScriptSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISelectionTreeManager.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISerialize.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISerializeHelper.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISerialize_info.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IServiceNetwork.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IShader.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IShaderParamCallback.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IShader_info.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISimpleHttpServer.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISoftCodeMgr.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISplines.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStatObj.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStatoscope.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStereoRenderer.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStreamEngine.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStreamEngineDefs.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStreamPersist.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISurfaceType.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISystemScheduler.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITacticalPointSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITargetTrackManager.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITelemetrySystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITestSystem.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITextModeConsole.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITexture.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IThreadTask.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITimer.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IValidator.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IVertexAnimation.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IVisionMap.h">
+				<Filter>Interfaces_h\AI Interfaces</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IVisualLog.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IWindowMessageHandler.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IXml.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IZLibCompressor.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IZlibDecompressor.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\InplaceFactory.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\InterpolationHelpers.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IntersectionTestQueue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\LCGRandom.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\LevelHeap.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\LineStreamBuffer.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Linux32Specific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Linux64Specific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\LinuxSpecific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Linux_Win32Wrapper.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MSVCspecific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MTPseudoRandom.cpp">
+				<Filter>Common_h</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MTPseudoRandom.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MacSpecific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MemoryAccess.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MetaUtils.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MiniQueue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementBlock.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementRequest.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementRequestID.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementStyle.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementUpdateContext.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MultiThread.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MultiThread_Containers.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\NameCRCHelper.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Name_TypeInfo.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\NetHelpers.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Options.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\PNoise3.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ParseEngineConfig.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ParticleParams.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ParticleParams_TypeInfo.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ParticleParams_info.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Pipe.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\PoolAllocator.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ProfileLog.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ProjectDefines.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ProjectDefinesInclude.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\QTangent.h">
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Random.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Range.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\RayCastQueue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\RendElement.h">
+				<Filter>Common_h\RenderElements</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\RenderObjectDefines.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ResourceCompilerHelper.cpp">
+				<Filter>Common_h</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ResourceCompilerHelper.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SFunctor.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\STLGlobalAllocator.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\STLPoolAllocator.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\STLPoolAllocator_ManyElems.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\STLPortConfig.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ScopedVariableSetter.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ScreenPlotter.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ScriptHelpers.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SerializationTypes.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Assert.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\BitVector.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\BitVectorImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\BlackBox.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\BoostSharedPtr.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CRCRef.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CRCRefImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Callback.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ClassFactory.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ClassFactoryImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Color.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ColorImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryExtension.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryExtensionImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryName.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryNameImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryStrings.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryStringsImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ActionButton.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\BitFlags.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\BitFlagsImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\JointName.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\JointNameImpl.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\LocalFrame.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\LocalFrameImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\OutputFilePath.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\OutputFilePathImpl.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\Range.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\RangeImpl.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceFilePath.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceFilePathImpl.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceFolderPath.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceFolderPathImpl.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceSelector.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\Resources.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourcesAudio.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\Slider.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\SliderImpl.h">
+				<Filter>Serialization\Decorators</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\TagList.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\TagListImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\DynArray.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\DynArrayImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Enum.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\EnumImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\IArchive.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\IArchiveHost.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\IClassFactory.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ITextInputArchive.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ITextOutputArchive.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\IntrusiveFactory.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\KeyValue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Math.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\MathImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Object.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\STL.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\STLImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Serializer.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\SerializerImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\SmartPtr.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\SmartPtrImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\StringList.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\StringListImpl.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Strings.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\TypeID.h">
+				<Filter>Serialization</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\TypeInfo.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\TypeInfoImpl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SerializeBuffer.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SerializeFwd.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SimpleHashLookUp.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SimpleSerialize.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StackContainer.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StaticInstanceList.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StlDbgAlloc.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StlUtils.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StringUtils.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Synchronization.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Tarray.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TelemetryConfig.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TelemetryFormat.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TelemetryParams.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ThreadProfilerSupport.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TimeValue.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TimeValue_info.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Timer.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TypeInfo_decl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TypeInfo_impl.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TypeLibrary.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Typelist.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TypelistUtils.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\UnicodeBinding.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\UnicodeEncoding.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\UnicodeFunctions.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\UnicodeIterator.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VariableCollection.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VariadicParams.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VectorMap.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VectorSet.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Version.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Version_override.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VertexFormats.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VisionMapTypes.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Win32specific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Win64specific.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\WinBase.cpp">
+				<Filter>Platform_h</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\WindowsUtils.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\XMLAttrReader.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\XMLBinaryHeaders.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\branchmask.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\crycommon.waf_files">
+				<Filter>_WAF_</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\functor.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\intrusive_list.hpp">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\physinterface.h">
+				<Filter>Interfaces_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\platform.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\platform_impl.h">
+				<Filter>Platform_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\primitives.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\primitives_info.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\smartptr.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\stl\STLAlignedAlloc.h">
+				<Filter>STL</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\stridedptr.h">
+				<Filter>Common_h</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\wscript">
+				<Filter>_WAF_</Filter>
+			</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+			<Filter Include="STL\Statistics">
+				<UniqueIdentifier>{6565639C-784E-43F8-B082-3B49FB82326C}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="_WAF_">
+				<UniqueIdentifier>{88F32D28-D9A2-467A-82CE-4D592F9E94FE}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="CheatProtection">
+				<UniqueIdentifier>{B40C856F-97E8-43BF-86A8-78482918C0CC}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="MathLib">
+				<UniqueIdentifier>{983C07CD-09EF-4D82-9217-4979E78B4B60}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="MathLib\Consoles">
+				<UniqueIdentifier>{90A80F59-074F-47CD-AECF-0159F2C0ECE4}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Serialization\Decorators">
+				<UniqueIdentifier>{3A8F23EA-0B0D-487F-B795-5828D6E51ABC}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="CryExtension\Impl">
+				<UniqueIdentifier>{8C614DBB-3EB6-4C5E-8B5F-438D038F1A22}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="STL">
+				<UniqueIdentifier>{2523E0C2-72CB-476C-8F59-F97828966F78}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Common_h">
+				<UniqueIdentifier>{D46B3296-DF0F-4879-B1BF-B7FBFFDAC484}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Platform_h">
+				<UniqueIdentifier>{347CA831-288E-4300-AABB-AE4A1497FD8A}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Common_h\RenderElements">
+				<UniqueIdentifier>{E39BA6BE-A16B-49E6-B563-46A8A60AA4CB}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Serialization">
+				<UniqueIdentifier>{1ADB0C1D-BE31-40BF-9FA0-665A823707A0}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Interfaces_h">
+				<UniqueIdentifier>{2A359138-6231-4C53-A733-C3428327ECE2}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="CryExtension">
+				<UniqueIdentifier>{A7550CC7-B4D6-4285-9873-58879B6ED74A}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Interfaces_h\AI Interfaces">
+				<UniqueIdentifier>{04A0B519-4F51-43F9-807D-89D5F9D7545A}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Common_h\Behavior Tree">
+				<UniqueIdentifier>{C1955B87-4F32-4571-96A6-997C2FED0214}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="CryPool">
+				<UniqueIdentifier>{1E293B41-9868-48A3-A695-68023B2A54A4}</UniqueIdentifier>
+			</Filter>
+	</ItemGroup>
+</Project>

@@ -405,7 +405,12 @@ struct SCVars
 	float cl_bobVerticalMultiplier;
 	float cl_bobMaxHeight;
 	float cl_strafeHorzScale;
-
+	float cl_controllerYawSnapEnable;
+	float cl_controllerYawSnapAngle;
+	float cl_controllerYawSnapTime;
+	float cl_controllerYawSnapMax;
+	float cl_controllerYawSnapMin;
+	
 #ifndef _RELEASE
 	int g_interactiveObjectDebugRender; 
 #endif //#ifndef _RELEASE
@@ -749,6 +754,8 @@ struct SCVars
 	int   g_tk_punish;
 	int		g_tk_punish_limit;
 
+	float g_hmdFadeoutNearWallThreshold;
+
 	int   g_debugNetPlayerInput;
 	int   g_debugCollisionDamage;
 	int   g_debugHits;
@@ -783,6 +790,8 @@ struct SCVars
 	int		g_preloadUIAssets;
 
 	int   g_gameRules_skipStartTimer;
+	
+	int		g_skipStartupSignIn;	
 #endif
 
 #if !defined(_RELEASE) || defined(PERFORMANCE_BUILD)
@@ -920,7 +929,6 @@ struct SCVars
 	float pl_jump_baseTimeAddedPerJump;
 	float pl_jump_currentTimeMultiplierOnJump;
 
-	float pl_jump_quickPressThresh;
 	int		pl_boostedMelee_allowInMP;
 
 	float pl_velocityInterpAirControlScale;
@@ -1464,15 +1472,6 @@ struct SCVars
 	
 	void InitAIPerceptionCVars(IConsole *pConsole);
 	void ReleaseAIPerceptionCVars(IConsole* pConsole);
-
-	//Sovereign CVars
-	//Некоторая спецификация:
-	//t - обозначает что консольная команда пренадлежит проекту Traveller Notes
-	//d - дебаг-команда
-
-	//Описание:
-	//Команда предназначена для отрисовки вспомогательных хэлперов
-	int td_draw;
 };
 
 #endif //__GAMECVARS_H__

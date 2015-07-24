@@ -417,4 +417,4 @@ void CFlowInspectorDefault::GetMemoryUsage(ICrySizer * s) const
 	AddFlowRecordsTo(m_contRecords, s);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IFlowGraphInspector)
+

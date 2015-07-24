@@ -17,14 +17,14 @@
 //////////////////////////////////////////////////////////////////////////
 enum EAudioRequestStatus ATL_ENUM_TYPE
 {
-	eARS_NONE														= 0,
-	eARS_SUCCESS												= 1,
-	eARS_PARTIAL_SUCCESS								= 2,
-	eARS_FAILURE												= 3,
-	eARS_PENDING												= 4,
-	eARS_FAILURE_INVALID_OBJECT_ID			= 5,
-	eARS_FAILURE_INVLAID_CONTROL_ID			= 6,
-	eARS_FAILURE_INVLAID_REQUEST				= 7,
+	eARS_NONE												= 0,
+	eARS_SUCCESS										= 1,
+	eARS_PARTIAL_SUCCESS						= 2,
+	eARS_FAILURE										= 3,
+	eARS_PENDING										= 4,
+	eARS_FAILURE_INVALID_OBJECT_ID	= 5,
+	eARS_FAILURE_INVALID_CONTROL_ID	= 6,
+	eARS_FAILURE_INVALID_REQUEST		= 7,
 };
 
 //////////////////////////////////////////////////////////////////////////

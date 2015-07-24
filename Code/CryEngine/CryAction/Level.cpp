@@ -24,4 +24,4 @@ ILevelInfo *CLevel::GetLevelInfo()
 	return &m_levelInfo;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(ILevel)
+

@@ -275,7 +275,7 @@ void CMatchMakingHandler::OnSearchResult( SCrySessionSearchResult* pSession )
 
 			SessionDetails newSession;
 			newSession.m_id = pSession->m_id;
-			cry_strncpy( newSession.m_name, pSession->m_data.m_name, sizeof( newSession.m_name ) );
+			cry_strcpy( newSession.m_name, pSession->m_data.m_name );
 
 			//capture the session ID in a map
 			std::pair< TSessionIdMap::iterator, bool > insertResult = m_sessionIdMap.insert( std::make_pair( m_sessionIdIndex++, newSession ) );

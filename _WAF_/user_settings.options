@@ -1,0 +1,46 @@
+[Incredibuild Options]
+use_incredibuild = False
+use_incredibuild_win = False
+use_incredibuild_durango = False
+use_incredibuild_orbis = False
+incredibuild_max_cores = 128
+
+[Visual Studio Project Generator]
+generate_vs_projects_automatically = True
+visual_studio_solution_name = CRYENGINE
+visual_studio_solution_folder = Solutions
+specs_to_include_in_project_generation = gamesdk,gamesdk_server
+
+[Build Options]
+version = 3.7.0.0
+generate_debug_info = True
+generate_map_file = False
+use_precompiled_header = True
+use_uber_files = True
+use_static_code_analyzer = False
+
+[Bootstrap Support]
+auto_run_bootstrap = False
+bootstrap_dat_file = 
+
+[Misc Options]
+max_cores = 8
+support_recode = True
+
+[Compiler Detection]
+auto_detect_compiler = True
+minimum_msvc_compiler = 11
+
+[Output Folder]
+out_folder_win32 = Bin32
+out_folder_win64 = Bin64
+out_folder_durango = BinDurango
+out_folder_orbis = BinOrbis
+out_folder_linux32_gcc = BinLinux32gcc
+out_folder_linux64_gcc = BinLinux64gcc
+out_folder_linux32_clang = BinLinux32clang
+out_folder_linux64_clang = BinLinux64clang
+out_folder_darwin32 = BinDarwin32
+out_folder_darwin64 = BinDarwin64
+out_folder_android = BinAndroid
+

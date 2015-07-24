@@ -345,8 +345,8 @@ void CRadio::OnRadioMessage(int id, EntityId fromId)
 		string sound = pSoundName;
 		if(variations > 1)
 		{
-			int rand = Random(variations);
-			sound += string().Format("_0%1d", rand+1);
+			int r = cry_random(0, variations - 1);
+			sound += string().Format("_0%1d", r + 1);
 		}
 
 		PlayVoice(sound.c_str());

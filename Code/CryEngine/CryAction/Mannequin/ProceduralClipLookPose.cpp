@@ -26,7 +26,7 @@ struct SLookPoseParams : public IProceduralParams
 		ar(scopeLayer, "ScopeLayer", "Scope Layer");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = animRef.c_str();
 	}
@@ -51,7 +51,7 @@ public:
 		IF (m_charInstance == NULL, false)
 			return;
 
-		m_paramTargetCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "LookTarget" );
+		m_paramTargetCrc = CCrc32::ComputeLowercase( "LookTarget" );
 		m_token = kInvalidToken;
 
 		Vec3 lookAtTarget;

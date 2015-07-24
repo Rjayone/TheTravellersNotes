@@ -56,10 +56,6 @@ struct SMannequinItemParams;
 
 class CTagDefinition;
 
-
-class CHolding;
-class CCombatStance;
-
 enum EItemUpdateSlots
 {
   eIUS_General = 0,
@@ -906,19 +902,6 @@ public:
 
 	static SItemFragmentTagCRCs sFragmentTagCRCs;
 	static SItemActionParamCRCs  sActionParamCRCs;
-
-	//Traveller Notes virtual functions defenition
-	//Description:
-	//Functions is used only for custom weapon
-	virtual CHolding* GetHoldingStatus(){ return NULL; }
-	virtual CCombatStance* GetCombatStance(){ return NULL; }
-
-	//Description:
-	//Functions return a type of weapon
-	//Used in CBow, CSword and others
-	virtual int GetWeaponType(){ return -1; }
-	//~
-
 };
 
 

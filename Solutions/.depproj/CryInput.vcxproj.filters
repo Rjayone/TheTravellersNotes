@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\BinTemp\uber_files\CryInput\CryInput_Uber_0.cpp">
+				<Filter>Uber Files</Filter>
+			</ClCompile>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\BaseInput.cpp">
+				<Filter>Shared</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\BaseInput.h">
+				<Filter>Shared</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\CryInput.cpp">
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\CryInput.h">
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\DXInput.cpp">
+				<Filter>DX</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\DXInput.h">
+				<Filter>DX</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\DXInputDevice.cpp">
+				<Filter>DX</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\DXInputDevice.h">
+				<Filter>DX</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Filters\JointFilter.cpp">
+				<Filter>Kinect\Filters</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Filters\JointFilter.h">
+				<Filter>Kinect\Filters</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\InputCVars.cpp">
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\InputCVars.h">
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\InputDevice.cpp">
+				<Filter>Shared</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\InputDevice.h">
+				<Filter>Shared</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Keyboard.cpp">
+				<Filter>DX</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Keyboard.h">
+				<Filter>DX</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\KinectInput.cpp">
+				<Filter>Kinect</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\KinectInput.h">
+				<Filter>Kinect</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\KinectInputNULL.h">
+				<Filter>Kinect</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\KinectXboxSyncThread.cpp">
+				<Filter>Kinect</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\KinectXboxSyncThread.h">
+				<Filter>Kinect</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\LinuxInput.cpp">
+				<Filter>Linux</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\LinuxInput.h">
+				<Filter>Linux</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Mouse.cpp">
+				<Filter>DX</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Mouse.h">
+				<Filter>DX</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\NaturalPointInputNULL.h">
+				<Filter>TrackIR</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\OrbisPadWin.h">
+				<Filter>Orbis</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\SDLKeyboard.cpp">
+				<Filter>SDL</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\SDLKeyboard.h">
+				<Filter>SDL</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\SDLMouse.cpp">
+				<Filter>SDL</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\SDLMouse.h">
+				<Filter>SDL</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\SDLPad.cpp">
+				<Filter>SDL</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\SDLPad.h">
+				<Filter>SDL</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\StdAfx.cpp">
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\StdAfx.h">
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Synergy\SynergyContext.cpp">
+				<Filter>Synergy</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Synergy\SynergyContext.h">
+				<Filter>Synergy</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Synergy\SynergyKeyboard.cpp">
+				<Filter>Synergy</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Synergy\SynergyKeyboard.h">
+				<Filter>Synergy</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Synergy\SynergyMouse.cpp">
+				<Filter>Synergy</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\Synergy\SynergyMouse.h">
+				<Filter>Synergy</Filter>
+			</ClInclude>
+			<ClCompile Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\XInputDevice.cpp">
+				<Filter>Shared</Filter>
+			</ClCompile>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\XInputDevice.h">
+				<Filter>Shared</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\cryinput.waf_files">
+				<Filter>_WAF_</Filter>
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\resource.h">
+			</ClInclude>
+			<ClInclude Include="g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryInput\wscript">
+				<Filter>_WAF_</Filter>
+			</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+			<Filter Include="Kinect\Filters">
+				<UniqueIdentifier>{67EEA466-AAA8-4677-8B88-DBF92DE05F89}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="_WAF_">
+				<UniqueIdentifier>{88F32D28-D9A2-467A-82CE-4D592F9E94FE}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Orbis">
+				<UniqueIdentifier>{2B0CE4C9-D519-485F-A9A6-A40FABBFCA50}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Uber Files">
+				<UniqueIdentifier>{1A8E5137-C0CF-4A7A-8E7E-EE0B26E0BD8E}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Kinect">
+				<UniqueIdentifier>{B66BDD21-EFA7-4976-A3DC-28AD2CADC6A5}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Synergy">
+				<UniqueIdentifier>{B657A86D-D93F-4CC3-953D-34C28B3F330A}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="DX">
+				<UniqueIdentifier>{72A530B2-4332-44CE-B373-D8FCCA5662C1}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Linux">
+				<UniqueIdentifier>{EDC9F0A5-A5D5-4797-BF68-E37364743831}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="SDL">
+				<UniqueIdentifier>{A203D5F2-C811-4853-81BE-D32623F5BDF6}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="Shared">
+				<UniqueIdentifier>{A6156EA9-D66F-4F24-A87E-841FBABF7CCA}</UniqueIdentifier>
+			</Filter>
+			<Filter Include="TrackIR">
+				<UniqueIdentifier>{69E8DC68-A3D7-49A3-A108-C3BBD202A4BB}</UniqueIdentifier>
+			</Filter>
+	</ItemGroup>
+</Project>

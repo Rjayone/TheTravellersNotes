@@ -24,6 +24,12 @@ struct SStaticWeaponPoseParams
 		EPT_Zoom=1,
 	};
 
+	SStaticWeaponPoseParams()
+		: pose_type(0)
+		, zoom_transition_angle(0)
+	{
+	}
+
 	void Serialize(Serialization::IArchive& ar)
 	{
 		ar(pose_type, "poseType", "Pose Type");
@@ -175,6 +181,13 @@ REGISTER_PROCEDURAL_CLIP(CWeaponRecoilOffset, "WeaponRecoil");
 
 struct SStaticBumpParams
 {
+	SStaticBumpParams()
+		: time(0.0f)
+		, shift(0.0f)
+		, rotation(0.0f)
+	{
+	}
+
 	void Serialize(Serialization::IArchive& ar)
 	{
 		ar(time, "Time", "Time");
@@ -221,6 +234,12 @@ REGISTER_PROCEDURAL_CLIP(CWeaponBumpOffset, "WeaponBump");
 
 struct SStaticWiggleParams
 {
+	SStaticWiggleParams()
+		: frequency(0)
+		, intensity(0)
+	{
+	}
+
 	void Serialize(Serialization::IArchive& ar)
 	{
 		ar(frequency, "Frequency", "Frequency");

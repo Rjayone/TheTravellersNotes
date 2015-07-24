@@ -1,0 +1,408 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Enable for all projects to avoid NVIDIA TEGRA auto updater dialog -->
+  <PropertyGroup Label="NsightTegraProject">
+    <NsightTegraProjectRevisionNumber>9</NsightTegraProjectRevisionNumber>
+  </PropertyGroup>
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="[GameSDK] Debug|Win32">
+			<Configuration>[GameSDK] Debug</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Debug|x64">
+			<Configuration>[GameSDK] Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Profile|Win32">
+			<Configuration>[GameSDK] Profile</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Profile|x64">
+			<Configuration>[GameSDK] Profile</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Performance|Win32">
+			<Configuration>[GameSDK] Performance</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Performance|x64">
+			<Configuration>[GameSDK] Performance</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Release|Win32">
+			<Configuration>[GameSDK] Release</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Release|x64">
+			<Configuration>[GameSDK] Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Debug|Win32">
+			<Configuration>[GameSDK Server] Debug</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Debug|x64">
+			<Configuration>[GameSDK Server] Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Profile|Win32">
+			<Configuration>[GameSDK Server] Profile</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Profile|x64">
+			<Configuration>[GameSDK Server] Profile</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Performance|Win32">
+			<Configuration>[GameSDK Server] Performance</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Performance|x64">
+			<Configuration>[GameSDK Server] Performance</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Release|Win32">
+			<Configuration>[GameSDK Server] Release</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Release|x64">
+			<Configuration>[GameSDK Server] Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>{9DC72049-68E0-49E0-AD34-8ECE8CFCA3FC}</ProjectGuid>
+		<Keyword>MakeFileProj</Keyword>
+		<ProjectName>CryAudioImplWwise</ProjectName>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="ExtensionSettings">
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug build_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>_WIN32;CODE_BASE_FOLDER=&quot;g:/CRYENGINE_pc_eaascode/Code/&quot;;_DEBUG;_MT;_DLL;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</IncludePath>
+		<NMakeOutput>g:\CRYENGINE_pc_eaascode\Bin32\CryAudioImplWwise.dll</NMakeOutput>
+		<ExecutablePath>g:\CRYENGINE_pc_eaascode\Bin32\CryAudioImplWwise.dll</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug build_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>_WIN32;_WIN64;CODE_BASE_FOLDER=&quot;g:/CRYENGINE_pc_eaascode/Code/&quot;;_DEBUG;_MT;_DLL;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</IncludePath>
+		<NMakeOutput>g:\CRYENGINE_pc_eaascode\Bin64\CryAudioImplWwise.dll</NMakeOutput>
+		<ExecutablePath>g:\CRYENGINE_pc_eaascode\Bin64\CryAudioImplWwise.dll</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile build_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>_WIN32;CODE_BASE_FOLDER=&quot;g:/CRYENGINE_pc_eaascode/Code/&quot;;_PROFILE;PROFILE;_MT;_DLL;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</IncludePath>
+		<NMakeOutput>g:\CRYENGINE_pc_eaascode\Bin32\CryAudioImplWwise.dll</NMakeOutput>
+		<ExecutablePath>g:\CRYENGINE_pc_eaascode\Bin32\CryAudioImplWwise.dll</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile build_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>_WIN32;_WIN64;CODE_BASE_FOLDER=&quot;g:/CRYENGINE_pc_eaascode/Code/&quot;;_PROFILE;PROFILE;_MT;_DLL;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</IncludePath>
+		<NMakeOutput>g:\CRYENGINE_pc_eaascode\Bin64\CryAudioImplWwise.dll</NMakeOutput>
+		<ExecutablePath>g:\CRYENGINE_pc_eaascode\Bin64\CryAudioImplWwise.dll</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance build_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>_WIN32;CODE_BASE_FOLDER=&quot;g:/CRYENGINE_pc_eaascode/Code/&quot;;_RELEASE;PERFORMANCE_BUILD;_MT;_DLL;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</IncludePath>
+		<NMakeOutput>g:\CRYENGINE_pc_eaascode\Bin32\CryAudioImplWwise.dll</NMakeOutput>
+		<ExecutablePath>g:\CRYENGINE_pc_eaascode\Bin32\CryAudioImplWwise.dll</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance build_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>_WIN32;_WIN64;CODE_BASE_FOLDER=&quot;g:/CRYENGINE_pc_eaascode/Code/&quot;;_RELEASE;PERFORMANCE_BUILD;_MT;_DLL;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</IncludePath>
+		<NMakeOutput>g:\CRYENGINE_pc_eaascode\Bin64\CryAudioImplWwise.dll</NMakeOutput>
+		<ExecutablePath>g:\CRYENGINE_pc_eaascode\Bin64\CryAudioImplWwise.dll</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release build_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>_WIN32;CODE_BASE_FOLDER=&quot;g:/CRYENGINE_pc_eaascode/Code/&quot;;_RELEASE;_MT;_DLL;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</IncludePath>
+		<NMakeOutput>g:\CRYENGINE_pc_eaascode\Bin32\CryAudioImplWwise.dll</NMakeOutput>
+		<ExecutablePath>g:\CRYENGINE_pc_eaascode\Bin32\CryAudioImplWwise.dll</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release build_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>_WIN32;_WIN64;CODE_BASE_FOLDER=&quot;g:/CRYENGINE_pc_eaascode/Code/&quot;;_RELEASE;_MT;_DLL;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath>E:\Programms\MSVS2012\VC\INCLUDE;E:\Programms\MSVS2012\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Windows Kits\8.0\include\shared;C:\Program Files (x86)\Windows Kits\8.0\include\um;C:\Program Files (x86)\Windows Kits\8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\SDKs\GPA\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Visual Studio Compiler\include;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\shared;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\um;g:\CRYENGINE_pc_eaascode\Code\SDKs\Microsoft Windows SDK\V8.0\include\winrt;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise;g:\CRYENGINE_pc_eaascode\Code\SDKs\boost;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon;g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common;g:\CRYENGINE_pc_eaascode\Code\SDKs\Audio</IncludePath>
+		<NMakeOutput>g:\CRYENGINE_pc_eaascode\Bin64\CryAudioImplWwise.dll</NMakeOutput>
+		<ExecutablePath>g:\CRYENGINE_pc_eaascode\Bin64\CryAudioImplWwise.dll</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug build_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Debug__</NMakeOutput>
+		<ExecutablePath>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Debug__</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug build_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Debug__</NMakeOutput>
+		<ExecutablePath>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Debug__</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile build_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Profile__</NMakeOutput>
+		<ExecutablePath>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Profile__</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile build_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Profile__</NMakeOutput>
+		<ExecutablePath>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Profile__</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance build_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Performance__</NMakeOutput>
+		<ExecutablePath>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Performance__</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance build_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Performance__</NMakeOutput>
+		<ExecutablePath>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Performance__</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release build_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Release__</NMakeOutput>
+		<ExecutablePath>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Release__</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release build_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioImplWwise</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Release__</NMakeOutput>
+		<ExecutablePath>Error__Invalid_startup_project__CryAudioImplWwise__Selected_project_not_supported_for_configuration___GameSDK_Server__Release__</ExecutablePath>
+	</PropertyGroup>
+	<ItemGroup>
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\BinTemp\uber_files\CryAudioImplWwise\CryAudioImplWwise_uber_0.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\ATLEntities_wwise.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\AudioSystemImplCVars.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\AudioSystemImplCVars.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\AudioSystemImpl_wwise.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\AudioSystemImpl_wwise.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\Common_wwise.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\Common_wwise.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\CryAudioImplWwise.cpp' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\FileIOHandler_wwise.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\FileIOHandler_wwise.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\audioimplwwise.waf_files' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\resource.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\stdafx.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\stdafx.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\implementations\CryAudioImplWwise\wscript' />
+	</ItemGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+	<Import Project="$(MSBuildProjectDirectory)\..\..\_WAF_\msbuild\waf_build.targets" />
+	<ImportGroup Label="ExtensionTargets">
+	</ImportGroup>
+</Project>

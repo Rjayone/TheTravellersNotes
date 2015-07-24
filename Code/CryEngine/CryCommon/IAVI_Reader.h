@@ -12,7 +12,6 @@
 //  Created:     28/02/2007 by MarcoC.
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IAVI_Reader.h)
 
 #ifndef __IAVI_Reader_h__
 #define __IAVI_Reader_h__

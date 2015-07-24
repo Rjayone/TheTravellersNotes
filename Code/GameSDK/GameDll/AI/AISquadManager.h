@@ -21,7 +21,7 @@ public:
 #ifdef CRYAISYSTEM_DEBUG
 		m_debugName = name;
 #endif
-		m_nameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(name);
+		m_nameCRC = CCrc32::ComputeLowercase(name);
 	}
 
 	bool operator == (const SquadScopeID& rhs) const

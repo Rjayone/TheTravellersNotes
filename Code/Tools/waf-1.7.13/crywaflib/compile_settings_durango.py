@@ -19,10 +19,10 @@ def load_durango_common_settings(conf):
 	Setup all compiler and linker settings shared over all durango configurations
 	"""
 	v = conf.env	
-	
+		
 	# Since Durango is only build in a single configuration on windows, we can specify the compile tools here
 	if not conf.is_option_true('auto_detect_compiler'):
-		durango_sdk_dir = conf.CreateRootRelativePath('Code/SDKs/DurangoSDK/')
+		durango_sdk_dir = conf.CreateRootRelativePath('Code/SDKs/DurangoSDK/')		
 		durango_sdk_xdk_dir = durango_sdk_dir
 	else:
 			# try to read the path from the registry
@@ -35,6 +35,9 @@ def load_durango_common_settings(conf):
 			except:
 				conf.fatal('[ERROR] Cannot find Durango XDK Registry Entry. Please verify your Durango XDK installation')
 			
+	# Same for both
+	durango_sdk_xdk_wrl_dir = conf.CreateRootRelativePath('Code/SDKs/DurangoSDK_WRL/')
+	
 	v['DURANGO_XDK_DIR'] = durango_sdk_xdk_dir
 	# Setup common defines for durango
 	v['DEFINES'] += [ '_WIN32', '_WIN64', '_DURANGO', 'DURANGO', '_XBOX_ONE' ]
@@ -129,10 +132,10 @@ def load_durango_common_settings(conf):
 			
 	# Default Include path
 	v['INCLUDES'] += [
-		durango_sdk_xdk_dir + '/INCLUDE',
+		durango_sdk_xdk_wrl_dir + '/INCLUDE/winrt',  # WRL headers need to be included before originals
 		durango_sdk_xdk_dir + '/INCLUDE/um',
 		durango_sdk_xdk_dir + '/INCLUDE/shared',
-		durango_sdk_xdk_dir + '/Include/winrt',
+		durango_sdk_xdk_dir + '/INCLUDE/winrt',		
 		durango_sdk_xdk_dir + '/crt/INCLUDE',
 		durango_sdk_xdk_dir + '/VC/ATLMFC/INCLUDE',
 		]		

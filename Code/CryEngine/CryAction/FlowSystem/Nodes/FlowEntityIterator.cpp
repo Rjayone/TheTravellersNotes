@@ -1,7 +1,6 @@
 // CryEngine Source File.
 // Copyright (C), Crytek, 1999-2014.
 
-
 #include "StdAfx.h"
 #include "FlowBaseNode.h"
 #include <IEntitySystem.h>
@@ -9,18 +8,19 @@
 #include <IVehicleSystem.h>
 #include <IItemSystem.h>
 
-
 #define ADD_BASE_INPUTS_ENTITY_ITER() \
 	InputPortConfig_Void("Start", _HELP("Call to start iterating through all entities inside the defined sphere")), \
 	InputPortConfig_Void("Next", _HELP("Call to get next entity found")), \
 	InputPortConfig<int>("Limit", 0, _HELP("Limit how many entities are returned. Use 0 to get all entities")), \
-	InputPortConfig<bool>("Immediate", false, _HELP("TRUE to iterate immediately through results, without having to call Next"))
+	InputPortConfig<bool>("Immediate", false, _HELP("TRUE to iterate immediately through results, without having to call Next")), \
+	InputPortConfig<int>("Type", 0, _HELP("Type of entity to iterate"), 0, _UICONFIG(ENTITY_TYPE_ENUM))
 
 #define ADD_BASE_OUTPUTS_ENTITY_ITER() \
-	OutputPortConfig<EntityId>("Entity", _HELP("Called each time an entity is found, with the Id of the entity returned")), \
+	OutputPortConfig<EntityId>("EntityId", _HELP("Called each time an entity is found, with the Id of the entity returned")), \
 	OutputPortConfig<int>("Count", _HELP("Called each time an entity is found, with the current count returned")), \
-	OutputPortConfig<int>("Done", _HELP("Called when all entities have been found, with the total count returned"))
+	OutputPortConfig_Void("Done", _HELP("Called when all entities have been found, false if none"))
 
+#define ENTITY_TYPE_ENUM ("enum_int:All=0,AI=1,Actor=2,Vehicle=3,Item=4,Other=5")
 
 enum EEntityType
 {
@@ -32,7 +32,6 @@ enum EEntityType
 	eET_Item = 0x10,
 };
 
-#define ENTITY_TYPE_ENUM ("enum_int:All=0,AI=1,Actor=2,Vehicle=3,Item=4,Other=5")
 bool IsValidType(int requested, const EEntityType &type)
 {
 	bool bValid = false;
@@ -121,11 +120,10 @@ EEntityType GetEntityType(EntityId id)
 			}
 		}
 	}
-
 	return (EEntityType)type;
 }
 
-
+//-------------------------------------------------------------------------------------
 class CFlowBaseIteratorNode : public CFlowBaseNode<eNCT_Instanced>
 {
 protected:
@@ -135,7 +133,7 @@ protected:
 		EIP_Next,
 		EIP_Limit,
 		EIP_Immediate,
-
+		EIP_Type,
 		EIP_CustomStart,
 	};
 
@@ -144,37 +142,64 @@ protected:
 		EOP_EntityId,
 		EOP_Count,
 		EOP_Done,
-
 		EOP_CustomStart,
 	};
 
 	typedef std::list<EntityId> IterList;
-	IterList m_List;
 	IterList::iterator m_ListIter;
+	IterList m_List;
+
+	SActivationInfo* m_pActInfo;
+	bool m_bImmediate;
+	bool m_bRestart;
 	int m_Count;
+	int m_limit;
 	int m_Iter;
+	int m_type;
+	Vec3 m_min;
+	Vec3 m_max;
 
-public:
-	virtual bool GetCustomConfiguration(SFlowNodeConfig& config) { return false; }
-	virtual void OnIterStart(SActivationInfo *pActInfo) {}
-	virtual void OnIterNext(SActivationInfo *pActInfo) {}
-
-public:
-
-	CFlowBaseIteratorNode(SActivationInfo *pActInfo)
+	void Reset()
 	{
-		m_Count = 0;
 		m_Iter = 0;
+		m_Count = 0;
+		m_min.zero();
+		m_max.zero();
+		m_List.clear();
+		m_bRestart = false;
+		m_type = GetPortInt(m_pActInfo, EIP_Type);
+		m_limit = GetPortInt(m_pActInfo, EIP_Limit);
+		m_bImmediate = GetPortBool(m_pActInfo, EIP_Immediate);
 	}
 
-	virtual ~CFlowBaseIteratorNode()
+	void Output()
 	{
+		if (m_Count > 0)
+		{
+			const int outputCount = m_bImmediate ? m_Count : m_Iter+1;
+			while (m_Iter < outputCount)
+			{
+				if (m_limit == 0 || m_Iter <= m_limit)
+				{
+					ActivateOutput(m_pActInfo, EOP_EntityId, *m_ListIter++);
+					ActivateOutput(m_pActInfo, EOP_Count, ++m_Iter);
+				}
+			}
+		}
+
+		if (m_Iter == m_Count || m_Iter == m_limit)
+		{
+			ActivateOutput(m_pActInfo, EOP_Done, 1);
+			m_bRestart = true;
+		}
 	}
 
-	virtual void Serialize(SActivationInfo *pActInfo, TSerialize ser)
-	{
-	}
-
+public:
+	CFlowBaseIteratorNode(SActivationInfo* pActInfo) : m_pActInfo(pActInfo) {};
+	virtual ~CFlowBaseIteratorNode() {};
+	virtual bool GetCustomConfiguration(SFlowNodeConfig& config) { return false; };
+	virtual void CalculateMinMax() {};
+	virtual void Serialize(SActivationInfo *pActInfo, TSerialize ser) {};
 	virtual void GetConfiguration(SFlowNodeConfig& config)
 	{
 		// Define input ports here, in same order as EInputPorts
@@ -184,14 +209,13 @@ public:
 			{0}
 		};
 
-		// Define output ports here, in same oreder as EOutputPorts
+		// Define output ports here, in same order as EOutputPorts
 		static const SOutputPortConfig outputs[] =
 		{
 			ADD_BASE_OUTPUTS_ENTITY_ITER(),
 			{0}
 		};
 
-		// Fill in configuration
 		if (!GetCustomConfiguration(config))
 		{
 			config.pInputPorts = inputs;
@@ -201,57 +225,47 @@ public:
 		}
 	}
 
+	virtual void GetEntities()
+	{
+		IPhysicalEntity** ppList = NULL;
+		IPhysicalWorld* pWorld = gEnv->pPhysicalWorld;
+
+		const int	entityCount = pWorld->GetEntitiesInBox(m_min, m_max, ppList, ent_all);
+
+		for (int i = 0; i < entityCount; ++i)
+		{
+			const int id = pWorld->GetPhysicalEntityId(ppList[i]);
+			if (id > 0)
+			{
+				const EntityId entityId = (EntityId)id;
+				const EEntityType entityType = GetEntityType((EntityId)id);
+				if (IsValidType(m_type, GetEntityType(entityId)))
+				{
+					m_List.push_back(entityId);
+					++m_Count;
+				}
+			}
+		}
+		m_ListIter = m_List.begin();
+	}
+
 	virtual void ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 	{
+		m_pActInfo = pActInfo;
+
 		switch (event)
 		{
 			case eFE_Activate:
 			{
-				if (IsPortActive(pActInfo, EIP_Start))
+				if (IsPortActive(m_pActInfo, EIP_Start) || m_bRestart)
 				{
-					m_List.clear();
-					m_ListIter = m_List.end();
-					m_Iter = 0;
-					m_Count = 0;
-
-					OnIterStart(pActInfo);
-					m_ListIter = m_List.begin();
-
-					if (m_Count <= 0)
-					{
-						// None found
-						ActivateOutput(pActInfo, EOP_Done, 0);
-					}
-					else
-					{
-						const bool bImmediate = GetPortBool(pActInfo, EIP_Immediate);
-						const bool bFirstResult = SendNext(pActInfo);
-						if (bImmediate && bFirstResult)
-						{
-							pActInfo->pGraph->SetRegularlyUpdated(pActInfo->myID, true);
-						}
-					}
+					Reset();
+					CalculateMinMax();
+					GetEntities();
 				}
-				else if (IsPortActive(pActInfo, EIP_Next))
-				{
-					const bool bImmediate = GetPortBool(pActInfo, EIP_Immediate);
-					if (!bImmediate)
-					{
-						SendNext(pActInfo);
-					}
-				}
+				Output();
+				break;
 			}
-			break;
-
-			case eFE_Update:
-			{
-				if (!SendNext(pActInfo))
-				{
-					pActInfo->pGraph->SetRegularlyUpdated(pActInfo->myID, false);
-				}
-
-			}
-			break;
 		}
 	}
 
@@ -264,72 +278,26 @@ public:
 	{
 		s->Add(*this);
 	}
-
-	void AddEntity(EntityId id)
-	{
-		m_List.push_back(id);
-		++m_Count;
-	}
-
-	bool SendNext(SActivationInfo *pActInfo)
-	{
-		bool bResult = false;
-
-		if (m_Count > 0)
-		{
-			if (m_Iter < m_Count)
-			{
-				const int limit = GetPortInt(pActInfo, EIP_Limit);
-				if (limit == 0 || m_Iter <= limit)
-				{
-					OnIterNext(pActInfo);
-
-					EntityId id = *m_ListIter;
-					ActivateOutput(pActInfo, EOP_EntityId, id);
-					ActivateOutput(pActInfo, EOP_Count, m_Iter);
-
-					++m_Iter;
-					++m_ListIter;
-
-					bResult = true;
-				}
-			}
-		}
-
-		if (!bResult)
-		{
-			ActivateOutput(pActInfo, EOP_Done, m_Iter);
-		}
-
-		return bResult;
-	}
 };
 
-
+//-------------------------------------------------------------------------------------
 class CFlowNode_GetEntitiesInSphere : public CFlowBaseIteratorNode
 {
 	enum ECustomInputPorts
 	{
-		EIP_Type = EIP_CustomStart,
-		EIP_Pos,
+		EIP_Pos = EIP_CustomStart,
 		EIP_Range,
 	};
 
 public:
-	CFlowNode_GetEntitiesInSphere(SActivationInfo *pActInfo) : CFlowBaseIteratorNode(pActInfo)
-	{
-	}
-
-	virtual ~CFlowNode_GetEntitiesInSphere()
-	{
-	}
+	CFlowNode_GetEntitiesInSphere(SActivationInfo *pActInfo) : CFlowBaseIteratorNode(pActInfo) {}
+	virtual ~CFlowNode_GetEntitiesInSphere() {}
 
 	virtual bool GetCustomConfiguration(SFlowNodeConfig& config)
 	{
 		static const SInputPortConfig inputs[] =
 		{
 			ADD_BASE_INPUTS_ENTITY_ITER(),
-			InputPortConfig<int>("Type", 0, _HELP("Type of entity to iterate"), 0, _UICONFIG(ENTITY_TYPE_ENUM)),
 			InputPortConfig<Vec3>("Center", _HELP("Center point of sphere")),
 			InputPortConfig<float>("Range", 0.f, _HELP("Range i.e., radius of sphere - Distance from center to check for entities")),
 			{0}
@@ -341,7 +309,6 @@ public:
 			{0}
 		};
 
-		// Fill in configuration
 		config.pInputPorts = inputs;
 		config.pOutputPorts = outputs;
 		config.sDescription = _HELP("Finds and returns all entities that are inside the defined sphere");
@@ -350,32 +317,14 @@ public:
 		return true;
 	}
 
-	virtual void OnIterStart(SActivationInfo *pActInfo)
+	virtual void CalculateMinMax()
 	{
-		const int type = GetPortInt(pActInfo, EIP_Type);
-		const Vec3& center(GetPortVec3(pActInfo, EIP_Pos));
-		const float range = GetPortFloat(pActInfo, EIP_Range);
+		const Vec3& center(GetPortVec3(m_pActInfo, EIP_Pos));
+		const float range = GetPortFloat(m_pActInfo, EIP_Range);
 		const float rangeSq = range * range;
 
-		const Vec3 min(center.x-range, center.y-range, center.z-range);
-		const Vec3 max(center.x+range, center.y+range, center.z+range);
-
-		IPhysicalWorld *pWorld = gEnv->pPhysicalWorld;
-		IPhysicalEntity **ppList = NULL;
-		int	numEnts = pWorld->GetEntitiesInBox(min,max,ppList,ent_all);
-		for (int i = 0; i < numEnts; ++i)
-		{
-			const EntityId id = pWorld->GetPhysicalEntityId(ppList[i]);
-			const EEntityType entityType = GetEntityType(id);
-			if (IsValidType(type, entityType))
-			{
-				AddEntity(id);
-			}
-		}
-	}
-
-	virtual void OnIterNext(SActivationInfo *pActInfo)
-	{
+		m_min(center.x-range, center.y-range, center.z-range);
+		m_max(center.x+range, center.y+range, center.z+range);
 	}
 
 	virtual IFlowNodePtr Clone(SActivationInfo *pActInfo)
@@ -384,30 +333,25 @@ public:
 	}
 };
 
+//-------------------------------------------------------------------------------------
 class CFlowNode_GetEntitiesInBox : public CFlowBaseIteratorNode
 {
 	enum ECustomInputPorts
 	{
-		EIP_Type = EIP_CustomStart,
-		EIP_Min,
+		EIP_Min = EIP_CustomStart,
 		EIP_Max,
 	};
 
 public:
-	CFlowNode_GetEntitiesInBox(SActivationInfo *pActInfo) : CFlowBaseIteratorNode(pActInfo)
-	{
-	}
+	CFlowNode_GetEntitiesInBox(SActivationInfo *pActInfo) : CFlowBaseIteratorNode(pActInfo) {}
 
-	virtual ~CFlowNode_GetEntitiesInBox()
-	{
-	}
+	virtual ~CFlowNode_GetEntitiesInBox() {}
 
 	virtual bool GetCustomConfiguration(SFlowNodeConfig& config)
 	{
 		static const SInputPortConfig inputs[] =
 		{
 			ADD_BASE_INPUTS_ENTITY_ITER(),
-			InputPortConfig<int>("Type", 0, _HELP("Type of entity to iterate"), 0, _UICONFIG(ENTITY_TYPE_ENUM)),
 			InputPortConfig<Vec3>("Min", _HELP("AABB min")),
 			InputPortConfig<Vec3>("Max", _HELP("AABB max")),
 			{0}
@@ -419,7 +363,6 @@ public:
 			{0}
 		};
 
-		// Fill in configuration
 		config.pInputPorts = inputs;
 		config.pOutputPorts = outputs;
 		config.sDescription = _HELP("Finds and returns all entities that are inside the defined AABB");
@@ -428,28 +371,10 @@ public:
 		return true;
 	}
 
-	virtual void OnIterStart(SActivationInfo *pActInfo)
+	virtual void CalculateMinMax()
 	{
-		const int type = GetPortInt(pActInfo, EIP_Type);
-		const Vec3& min(GetPortVec3(pActInfo, EIP_Min));
-		const Vec3& max(GetPortVec3(pActInfo, EIP_Max));
-
-		IPhysicalWorld *pWorld = gEnv->pPhysicalWorld;
-		IPhysicalEntity **ppList = NULL;
-		int	numEnts = pWorld->GetEntitiesInBox(min,max,ppList,ent_all);
-		for (int i = 0; i < numEnts; ++i)
-		{
-			const EntityId id = pWorld->GetPhysicalEntityId(ppList[i]);
-			const EEntityType entityType = GetEntityType(id);
-			if (IsValidType(type, entityType))
-			{
-				AddEntity(id);
-			}
-		}
-	}
-
-	virtual void OnIterNext(SActivationInfo *pActInfo)
-	{
+		m_min = GetPortVec3(m_pActInfo, EIP_Min);
+		m_max = GetPortVec3(m_pActInfo, EIP_Max);
 	}
 
 	virtual IFlowNodePtr Clone(SActivationInfo *pActInfo)
@@ -458,30 +383,23 @@ public:
 	}
 };
 
-
+//-------------------------------------------------------------------------------------
 class CFlowNode_GetEntitiesInArea : public CFlowBaseIteratorNode
 {
 	enum ECustomInputPorts
 	{
-		EIP_Type = EIP_CustomStart,
-		EIP_Area,
+		EIP_Area = EIP_CustomStart,
 	};
 
 public:
-	CFlowNode_GetEntitiesInArea(SActivationInfo *pActInfo) : CFlowBaseIteratorNode(pActInfo)
-	{
-	}
-
-	virtual ~CFlowNode_GetEntitiesInArea()
-	{
-	}
+	CFlowNode_GetEntitiesInArea(SActivationInfo *pActInfo) : CFlowBaseIteratorNode(pActInfo) {}
+	virtual ~CFlowNode_GetEntitiesInArea() {}
 
 	virtual bool GetCustomConfiguration(SFlowNodeConfig& config)
 	{
 		static const SInputPortConfig inputs[] =
 		{
 			ADD_BASE_INPUTS_ENTITY_ITER(),
-			InputPortConfig<int>("Type", 0, _HELP("Type of entity to iterate"), 0, _UICONFIG(ENTITY_TYPE_ENUM)),
 			InputPortConfig<string>("Area", _HELP("Name of area shape"), 0, 0),
 			{0}
 		};
@@ -492,7 +410,6 @@ public:
 			{0}
 		};
 
-		// Fill in configuration
 		config.pInputPorts = inputs;
 		config.pOutputPorts = outputs;
 		config.sDescription = _HELP("Finds and returns all entities that are inside the area shape with the given name");
@@ -501,12 +418,10 @@ public:
 		return true;
 	}
 
-	virtual void OnIterStart(SActivationInfo *pActInfo)
+	virtual void CalculateMinMax()
 	{
-		const int type = GetPortInt(pActInfo, EIP_Type);
-		const char* area = GetPortString(pActInfo, EIP_Area);
+		const char* area = GetPortString(m_pActInfo, EIP_Area);
 
-		// Find the entity
 		IEntitySystem *pEntitySystem = gEnv->pEntitySystem;
 		if (pEntitySystem)
 		{
@@ -516,79 +431,54 @@ public:
 				IEntityAreaProxy *pAreaProxy = (IEntityAreaProxy*)pArea->GetProxy(ENTITY_PROXY_AREA);
 				if (pAreaProxy)
 				{
-					Vec3 min, max, worldPos(pArea->GetWorldPos());
-					min.Set(0.f,0.f,0.f);
-					max.Set(0.f,0.f,0.f);
+					Vec3 worldPos(pArea->GetWorldPos());
 					EEntityAreaType areaType = pAreaProxy->GetAreaType();
 
-					// Construct bounding space around area
 					switch (areaType)
 					{
-						case ENTITY_AREA_TYPE_BOX:
+					case ENTITY_AREA_TYPE_BOX:
 						{
-							pAreaProxy->GetBox(min, max);
-							min += worldPos;
-							max += worldPos;
+							pAreaProxy->GetBox(m_min, m_max);
+							m_min += worldPos;
+							m_max += worldPos;
+							break;
 						}
-						break;
-						case ENTITY_AREA_TYPE_SPHERE:
+					case ENTITY_AREA_TYPE_SPHERE:
 						{
 							Vec3 center;
 							float radius = 0.f;
 							pAreaProxy->GetSphere(center, radius);
-							
-							min.Set(center.x-radius, center.y-radius, center.z-radius);
-							max.Set(center.x+radius, center.y+radius, center.z+radius);
+
+							m_min.Set(center.x-radius, center.y-radius, center.z-radius);
+							m_max.Set(center.x+radius, center.y+radius, center.z+radius);
+							break;
 						}
-						break;
-						case ENTITY_AREA_TYPE_SHAPE:
+					case ENTITY_AREA_TYPE_SHAPE:
 						{
-							const Vec3 *points = pAreaProxy->GetPoints();
+							const Vec3* points = pAreaProxy->GetPoints();
 							const int count = pAreaProxy->GetPointsCount();
 							if (count > 0)
 							{
 								Vec3 p = worldPos + points[0];
-								min = p;
-								max = p;
+								m_min = p;
+								m_max = p;
 								for (int i = 1; i < count; ++i)
 								{
 									p = worldPos + points[i];
-									if (p.x < min.x) min.x = p.x;
-									if (p.y < min.y) min.y = p.y;
-									if (p.z < min.z) min.z = p.z;
-									if (p.x > max.x) max.x = p.x;
-									if (p.y > max.y) max.y = p.y;
-									if (p.z > max.z) max.z = p.z;
+									if (p.x < m_min.x) m_min.x = p.x;
+									if (p.y < m_min.y) m_min.y = p.y;
+									if (p.z < m_min.z) m_min.z = p.z;
+									if (p.x > m_max.x) m_max.x = p.x;
+									if (p.y > m_max.y) m_max.y = p.y;
+									if (p.z > m_max.z) m_max.z = p.z;
 								}
 							}
-						}
-						break;
-					}
-
-					IPhysicalWorld *pWorld = gEnv->pPhysicalWorld;
-					IPhysicalEntity **ppList = NULL;
-					int	numEnts = pWorld->GetEntitiesInBox(min,max,ppList,ent_all);
-					for (int i = 0; i < numEnts; ++i)
-					{
-						const EntityId id = pWorld->GetPhysicalEntityId(ppList[i]);
-						const EEntityType entityType = GetEntityType(id);
-						if (IsValidType(type, entityType))
-						{
-							// Sanity check - Test entity's position
-							IEntity *pEntity = pEntitySystem->GetEntity(id);
-							if (pEntity && pAreaProxy->CalcPointWithin(id, pEntity->GetWorldPos(), pAreaProxy->GetHeight()==0))
-							{
-								AddEntity(id);
-							}
+							break;
 						}
 					}
 				}
 			}
 		}
-	}
-
-	virtual void OnIterNext(SActivationInfo *pActInfo)
-	{
 	}
 
 	virtual IFlowNodePtr Clone(SActivationInfo *pActInfo)
@@ -597,29 +487,19 @@ public:
 	}
 };
 
-
+//-------------------------------------------------------------------------------------
 class CFlowNode_GetEntities : public CFlowBaseIteratorNode
 {
-	enum ECustomInputPorts
-	{
-		EIP_Type = EIP_CustomStart,
-	};
 
 public:
-	CFlowNode_GetEntities(SActivationInfo *pActInfo) : CFlowBaseIteratorNode(pActInfo)
-	{
-	}
-
-	virtual ~CFlowNode_GetEntities()
-	{
-	}
+	CFlowNode_GetEntities(SActivationInfo *pActInfo) : CFlowBaseIteratorNode(pActInfo) {}
+	virtual ~CFlowNode_GetEntities() {}
 
 	virtual bool GetCustomConfiguration(SFlowNodeConfig& config)
 	{
 		static const SInputPortConfig inputs[] =
 		{
 			ADD_BASE_INPUTS_ENTITY_ITER(),
-			InputPortConfig<int>("Type", 0, _HELP("Type of entity to iterate"), 0, _UICONFIG(ENTITY_TYPE_ENUM)),
 			{0}
 		};
 
@@ -629,7 +509,6 @@ public:
 			{0}
 		};
 
-		// Fill in configuration
 		config.pInputPorts = inputs;
 		config.pOutputPorts = outputs;
 		config.sDescription = _HELP("Finds and returns all entities in the world");
@@ -638,10 +517,8 @@ public:
 		return true;
 	}
 
-	virtual void OnIterStart(SActivationInfo *pActInfo)
+	virtual void GetEntities()
 	{
-		const int type = GetPortInt(pActInfo, EIP_Type);
-
 		IEntitySystem *pEntitySystem = gEnv->pEntitySystem;
 		if (pEntitySystem)
 		{
@@ -657,18 +534,16 @@ public:
 					{
 						const EntityId id = pEntity->GetId();
 						const EEntityType entityType = GetEntityType(id);
-						if (IsValidType(type, entityType))
+						if (IsValidType(m_type, entityType))
 						{
-							AddEntity(id);
+							m_List.push_back(id);
+							++m_Count;
 						}
 					}
 				}
 			}
 		}
-	}
-
-	virtual void OnIterNext(SActivationInfo *pActInfo)
-	{
+		m_ListIter = m_List.begin();
 	}
 
 	virtual IFlowNodePtr Clone(SActivationInfo *pActInfo)

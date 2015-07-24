@@ -70,15 +70,17 @@ public:
 	{
 		eI_Trigger = 0,
 		eI_Min,
-		eI_Max
+		eI_Max,
+		eI_NextCascadeScale
 	};
 
 	virtual void GetConfiguration(SFlowNodeConfig& config)
 	{
 		static const SInputPortConfig inputs[] = {
-			InputPortConfig_Void("Trigger", _HELP("Trigger this to recompute the static shadow map")),
+			InputPortConfig_Void("Trigger", _HELP("Trigger this to recompute all cached shadows")),
 			InputPortConfig<Vec3>("Min", Vec3(ZERO), _HELP("Minimum position of shadowed area")),
 			InputPortConfig<Vec3>("Max", Vec3(ZERO), _HELP("Maximum position of shadowed area")),
+			InputPortConfig<float>("NextCascadesScale", 2.f, _HELP("Scale factor for subsequent cached shadow cascades")),
 			{0}
 		};
 		static const SOutputPortConfig outputs[] = {
@@ -86,7 +88,7 @@ public:
 		};    
 		config.pInputPorts = inputs;
 		config.pOutputPorts = outputs;
-		config.sDescription = _HELP("Triggers recalculation of the static shadow map");
+		config.sDescription = _HELP("Triggers recalculation of cached shadow maps");
 		config.SetCategory(EFLN_APPROVED);
 	}
 
@@ -110,8 +112,9 @@ public:
 			{
 				Vec3 minCorner = GetPortVec3(pActInfo, eI_Min);
 				Vec3 maxCorner = GetPortVec3(pActInfo, eI_Max);
+				float nextCascadeScale = GetPortFloat(pActInfo, eI_NextCascadeScale);
 
-				gEnv->p3DEngine->SetStaticShadowBounds(AABB(minCorner, maxCorner));
+				gEnv->p3DEngine->SetCachedShadowBounds(AABB(minCorner, maxCorner), nextCascadeScale);
 				break;
 			}
 		}

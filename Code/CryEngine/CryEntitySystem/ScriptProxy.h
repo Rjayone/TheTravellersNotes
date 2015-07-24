@@ -74,23 +74,23 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IEntityScriptProxy implementation.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetScriptUpdateRate( float fUpdateEveryNSeconds ) { m_fScriptUpdateRate = fUpdateEveryNSeconds; };
-	VIRTUAL IScriptTable* GetScriptTable() { return m_pThis; };
+	virtual void SetScriptUpdateRate( float fUpdateEveryNSeconds ) { m_fScriptUpdateRate = fUpdateEveryNSeconds; };
+	virtual IScriptTable* GetScriptTable() { return m_pThis; };
 	
-	VIRTUAL void CallEvent( const char *sEvent );
-	VIRTUAL void CallEvent( const char *sEvent,float fValue );
-	VIRTUAL void CallEvent( const char *sEvent,bool bValue );
-	VIRTUAL void CallEvent( const char *sEvent,const char *sValue );
-	VIRTUAL void CallEvent( const char *sEvent,EntityId nEntityId );
-	VIRTUAL void CallEvent( const char *sEvent,const Vec3 &vValue );
+	virtual void CallEvent( const char *sEvent );
+	virtual void CallEvent( const char *sEvent,float fValue );
+	virtual void CallEvent( const char *sEvent,bool bValue );
+	virtual void CallEvent( const char *sEvent,const char *sValue );
+	virtual void CallEvent( const char *sEvent,EntityId nEntityId );
+	virtual void CallEvent( const char *sEvent,const Vec3 &vValue );
 
 	void CallInitEvent( bool bFromReload );
 
-	VIRTUAL void SendScriptEvent( int Event, IScriptTable *pParamters, bool *pRet=NULL);
-	VIRTUAL void SendScriptEvent( int Event, const char *str, bool *pRet=NULL );
-	VIRTUAL void SendScriptEvent( int Event, int nParam, bool *pRet=NULL );
+	virtual void SendScriptEvent( int Event, IScriptTable *pParamters, bool *pRet=NULL);
+	virtual void SendScriptEvent( int Event, const char *str, bool *pRet=NULL );
+	virtual void SendScriptEvent( int Event, int nParam, bool *pRet=NULL );
 
-	VIRTUAL void ChangeScript( IEntityScript* pScript, SEntitySpawnParams *params );
+	virtual void ChangeScript( IEntityScript* pScript, SEntitySpawnParams *params );
 	//////////////////////////////////////////////////////////////////////////
 
 	virtual void OnCollision(CEntity *pTarget, int matId, const Vec3 &pt, const Vec3 &n, const Vec3 &vel, const Vec3 &targetVel, int partId, float mass);
@@ -99,8 +99,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// State Management public interface.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL bool GotoState( const char *sStateName );
-	VIRTUAL bool GotoStateId( int nState ) { return GotoState(nState); };
+	virtual bool GotoState( const char *sStateName );
+	virtual bool GotoStateId( int nState ) { return GotoState(nState); };
 	bool GotoState( int nState );
 	bool IsInState( const char *sStateName );
 	bool IsInState( int nState );

@@ -21,6 +21,12 @@ History:
 
 struct SRagdollParams : public IProceduralParams
 {
+	SRagdollParams()
+		: sleep(0.0f)
+		, stiffness(500.0f)
+	{
+	}
+
 	virtual void Serialize(Serialization::IArchive& ar)
 	{
 		ar(sleep, "Sleep", "Sleep");
@@ -43,7 +49,7 @@ public:
 protected:
 	virtual void OnEnter(float blendTime, float duration, const SRagdollParams &params)
 	{
-		m_randomTriggerTime = Random( blendTime );
+		m_randomTriggerTime = cry_random(0.0f, blendTime);
 		m_ragdollSleep = bool(params.sleep>0.0f);
 		m_stiffness = params.stiffness;
 	}

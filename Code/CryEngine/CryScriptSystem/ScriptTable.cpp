@@ -771,4 +771,4 @@ void CScriptTable::operator delete( void *ptr )
 	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IScriptTable)
+

@@ -861,5 +861,4 @@ void CForceFeedBackSystem::SuppressEffects(bool bSuppressEffects)
 	CryLog("[FFB] ForceFeedback EffectLock now: %d was %d", m_effectLock, bSuppressEffects ? m_effectLock - 1 : m_effectLock + 1);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IForceFeedbackSystem) 
 

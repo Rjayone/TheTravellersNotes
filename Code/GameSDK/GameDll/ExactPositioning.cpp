@@ -53,14 +53,14 @@ TExactPositioningQueryID CExactPositioning::s_lastQueryID = TExactPositioningQue
 CExactPositioning::CExactPositioning( IAnimatedCharacter* pAnimatedCharacter )
 	:
 	m_pAnimatedCharacter( pAnimatedCharacter ),
-	m_pExactPositioningListener( NULL ),
-	m_pPendingRequest( NULL ),
+	m_pExactPositioningListener( nullptr ),
+	m_pPendingRequest( nullptr ),
 	m_triggerQueryStart( 0 ),
 	m_triggerQueryEnd( 0 ),
 	m_changingState( false ),
 	m_initializingState( false)
 {
-	CRY_ASSERT( m_pAnimatedCharacter != NULL );
+	CRY_ASSERT( m_pAnimatedCharacter );
 
 	StateMachine_Initialize( eTS_Disabled );
 }

@@ -41,14 +41,13 @@ CScriptBindings::~CScriptBindings()
 //////////////////////////////////////////////////////////////////////////
 void CScriptBindings::Init( ISystem *pSystem,IScriptSystem *pSS )
 {
-	m_binds.push_back(std::auto_ptr<CScriptableBase>(new CScriptBind_System(pSS,pSystem)));
-	m_binds.push_back(std::auto_ptr<CScriptableBase>(new CScriptBind_Particle(pSS,pSystem)));
-	m_binds.push_back(std::auto_ptr<CScriptableBase>(new CScriptBind_Sound(pSS,pSystem)));
-	m_binds.push_back(std::auto_ptr<CScriptableBase>(new CScriptBind_MusicLogic(pSS,pSystem)));
-	m_binds.push_back(std::auto_ptr<CScriptableBase>(new CScriptBind_Movie(pSS,pSystem)));
-	m_binds.push_back(std::auto_ptr<CScriptableBase>(new CScriptBind_Script(pSS,pSystem)));
-	m_binds.push_back(std::auto_ptr<CScriptableBase>(new CScriptBind_Physics(pSS,pSystem)));
-
+	m_binds.push_back(std::unique_ptr<CScriptableBase>(new CScriptBind_System(pSS,pSystem)));
+	m_binds.push_back(std::unique_ptr<CScriptableBase>(new CScriptBind_Particle(pSS,pSystem)));
+	m_binds.push_back(std::unique_ptr<CScriptableBase>(new CScriptBind_Sound(pSS,pSystem)));
+	m_binds.push_back(std::unique_ptr<CScriptableBase>(new CScriptBind_MusicLogic(pSS,pSystem)));
+	m_binds.push_back(std::unique_ptr<CScriptableBase>(new CScriptBind_Movie(pSS,pSystem)));
+	m_binds.push_back(std::unique_ptr<CScriptableBase>(new CScriptBind_Script(pSS,pSystem)));
+	m_binds.push_back(std::unique_ptr<CScriptableBase>(new CScriptBind_Physics(pSS,pSystem)));
 	
 	//////////////////////////////////////////////////////////////////////////
 	// Enumerate script surface types.
@@ -64,7 +63,7 @@ void CScriptBindings::Done()
 	m_pScriptSurfaceTypes = NULL;
 
 	// Done script bindings.
-	m_binds.resize(0);
+	m_binds.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////

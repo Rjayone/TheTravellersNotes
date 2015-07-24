@@ -133,22 +133,3 @@ inline IEntityProxy* GetOrMakeProxy(IEntity *pEntity, EEntityProxy proxyType)
 
 #endif // !defined(AFX_STDAFX_H__B36C365D_F0EA_4545_B3BC_1E0EAB3B5E43__INCLUDED_)
 
-
-#ifndef __TDEBUG__ 
-//S- спецификатор Sovereign
-//Константа для включение/отключения дебага. Под этим тегом можно выводить всякую информацию в лог.
-//Закомментить при релизной компиляции.
-#define __TDEBUG__
-#endif
-
-#ifndef __ITEMS_FOLDER__
-#define __ITEMS_FOLDER__ "/Libs/Items/Library/ItemsDescription.xml"
-#endif
-
-
-
-#ifndef _RECIPE_MAX_REG_COUNT_
-//Отвечает за максимальное количество реагентов каждого рецепта
-//То есть рецепт может иметь от 1 до 6 видов реагентов для крафта
-#define _RECIPE_MAX_REG_COUNT_ 6
-#endif

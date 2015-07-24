@@ -28,142 +28,142 @@ class CFlashUIElement
 {
 public:
 	CFlashUIElement(CFlashUI* pFlashUI, CFlashUIElement* pBaseInstance = NULL, uint instanceId = 0);
-	VIRTUAL ~CFlashUIElement();
+	virtual ~CFlashUIElement();
 
-	VIRTUAL void AddRef();
-	VIRTUAL void Release();
+	virtual void AddRef();
+	virtual void Release();
 
-	VIRTUAL uint GetInstanceID() const { return m_iInstanceID; }
-	VIRTUAL IUIElement* GetInstance( uint instanceID );
-	VIRTUAL IUIElementIteratorPtr GetInstances() const;
-	VIRTUAL bool DestroyInstance( uint instanceID );
-	VIRTUAL bool DestroyThis() { return DestroyInstance(m_iInstanceID); }
+	virtual uint GetInstanceID() const { return m_iInstanceID; }
+	virtual IUIElement* GetInstance( uint instanceID );
+	virtual IUIElementIteratorPtr GetInstances() const;
+	virtual bool DestroyInstance( uint instanceID );
+	virtual bool DestroyThis() { return DestroyInstance(m_iInstanceID); }
 
-	VIRTUAL void SetName( const char* sName ) { m_sName = sName; }
-	VIRTUAL const char* GetName() const { return m_sName.c_str(); }
+	virtual void SetName( const char* sName ) { m_sName = sName; }
+	virtual const char* GetName() const { return m_sName.c_str(); }
 
-	VIRTUAL void SetGroupName( const char* sGroupName ) { m_sGroupName = sGroupName; }
-	VIRTUAL const char* GetGroupName() const { return m_sGroupName.c_str(); }
+	virtual void SetGroupName( const char* sGroupName ) { m_sGroupName = sGroupName; }
+	virtual const char* GetGroupName() const { return m_sGroupName.c_str(); }
 
-	VIRTUAL void SetFlashFile( const char* sFlashFile );
-	VIRTUAL const char* GetFlashFile() const { return m_sFlashFile.c_str(); }
+	virtual void SetFlashFile( const char* sFlashFile );
+	virtual const char* GetFlashFile() const { return m_sFlashFile.c_str(); }
 
-	VIRTUAL bool Init( bool bLoadAsset = true );
-	VIRTUAL void Unload( bool bAllInstances = false );
-	VIRTUAL void Reload( bool bAllInstances = false );
-	VIRTUAL bool IsInit() const { return m_pFlashplayer != NULL; }
+	virtual bool Init( bool bLoadAsset = true );
+	virtual void Unload( bool bAllInstances = false );
+	virtual void Reload( bool bAllInstances = false );
+	virtual bool IsInit() const { return m_pFlashplayer != NULL; }
 
-	VIRTUAL void RequestUnload( bool bAllInstances = false );
+	virtual void RequestUnload( bool bAllInstances = false );
 
-	VIRTUAL bool IsValid() const { return m_pBaseInstance ? m_pBaseInstance->m_bIsValid : m_bIsValid; }
+	virtual bool IsValid() const { return m_pBaseInstance ? m_pBaseInstance->m_bIsValid : m_bIsValid; }
 
-	VIRTUAL void UnloadBootStrapper();
-	VIRTUAL void ReloadBootStrapper();
+	virtual void UnloadBootStrapper();
+	virtual void ReloadBootStrapper();
 
-	VIRTUAL void Update( float fDeltaTime );
-	VIRTUAL void Render();
-	VIRTUAL void RenderLockless();
+	virtual void Update( float fDeltaTime );
+	virtual void Render();
+	virtual void RenderLockless();
 
-	VIRTUAL void RequestHide();
-	VIRTUAL bool IsHiding() const { return m_bIsHideRequest; }
+	virtual void RequestHide();
+	virtual bool IsHiding() const { return m_bIsHideRequest; }
 
-	VIRTUAL void SetVisible( bool bVisible );
-	VIRTUAL inline bool IsVisible() const { return m_bVisible; }
+	virtual void SetVisible( bool bVisible );
+	virtual inline bool IsVisible() const { return m_bVisible; }
 
-	VIRTUAL void SetFlag( EFlashUIFlags flag, bool bSet );
-	VIRTUAL bool HasFlag( EFlashUIFlags flag ) const;
+	virtual void SetFlag( EFlashUIFlags flag, bool bSet );
+	virtual bool HasFlag( EFlashUIFlags flag ) const;
 
-	VIRTUAL float GetAlpha() const { return m_fAlpha; }
-	VIRTUAL void SetAlpha( float fAlpha );
+	virtual float GetAlpha() const { return m_fAlpha; }
+	virtual void SetAlpha( float fAlpha );
 
-	VIRTUAL int GetLayer() const  { return m_iLayer; }
-	VIRTUAL void SetLayer( int iLayer );
+	virtual int GetLayer() const  { return m_iLayer; }
+	virtual void SetLayer( int iLayer );
 
-	VIRTUAL void SetConstraints( const SUIConstraints& newConstraints );
-	VIRTUAL inline const IUIElement::SUIConstraints& GetConstraints() const { return m_constraints; }
+	virtual void SetConstraints( const SUIConstraints& newConstraints );
+	virtual inline const IUIElement::SUIConstraints& GetConstraints() const { return m_constraints; }
 
-	VIRTUAL void ForceLazyUpdate() { ForceLazyUpdateInl(); }
-	VIRTUAL void LazyRendered() { m_bNeedLazyRender = false; }
-	VIRTUAL bool NeedLazyRender() const { return (m_iFlags & (uint) eFUI_LAZY_UPDATE) == 0 || m_bNeedLazyRender; }
+	virtual void ForceLazyUpdate() { ForceLazyUpdateInl(); }
+	virtual void LazyRendered() { m_bNeedLazyRender = false; }
+	virtual bool NeedLazyRender() const { return (m_iFlags & (uint) eFUI_LAZY_UPDATE) == 0 || m_bNeedLazyRender; }
 
-	VIRTUAL IFlashPlayer* GetFlashPlayer();
+	virtual IFlashPlayer* GetFlashPlayer();
 
-	VIRTUAL const SUIParameterDesc* GetVariableDesc( int index ) const { return index < m_variables.size() ? m_variables[index] : NULL; }
-	VIRTUAL const SUIParameterDesc* GetVariableDesc( const char* sVarName ) const { return m_variables(sVarName); }
-	VIRTUAL int GetVariableCount() const { return m_variables.size(); }
+	virtual const SUIParameterDesc* GetVariableDesc( int index ) const { return index < m_variables.size() ? m_variables[index] : NULL; }
+	virtual const SUIParameterDesc* GetVariableDesc( const char* sVarName ) const { return m_variables(sVarName); }
+	virtual int GetVariableCount() const { return m_variables.size(); }
 
-	VIRTUAL const SUIParameterDesc* GetArrayDesc( int index ) const { return index < m_arrays.size() ? m_arrays[index] : NULL; }
-	VIRTUAL const SUIParameterDesc* GetArrayDesc( const char* sArrayName ) const { return  m_arrays(sArrayName); }
-	VIRTUAL int GetArrayCount() const { return m_arrays.size(); }
+	virtual const SUIParameterDesc* GetArrayDesc( int index ) const { return index < m_arrays.size() ? m_arrays[index] : NULL; }
+	virtual const SUIParameterDesc* GetArrayDesc( const char* sArrayName ) const { return  m_arrays(sArrayName); }
+	virtual int GetArrayCount() const { return m_arrays.size(); }
 
-	VIRTUAL const SUIMovieClipDesc* GetMovieClipDesc( int index ) const { return index < m_displayObjects.size() ? m_displayObjects[index] : NULL; }
-	VIRTUAL const SUIMovieClipDesc* GetMovieClipDesc( const char* sMovieClipName ) const { return  m_displayObjects(sMovieClipName); }
-	VIRTUAL int GetMovieClipCount() const { return m_displayObjects.size(); }
+	virtual const SUIMovieClipDesc* GetMovieClipDesc( int index ) const { return index < m_displayObjects.size() ? m_displayObjects[index] : NULL; }
+	virtual const SUIMovieClipDesc* GetMovieClipDesc( const char* sMovieClipName ) const { return  m_displayObjects(sMovieClipName); }
+	virtual int GetMovieClipCount() const { return m_displayObjects.size(); }
 
-	VIRTUAL const SUIMovieClipDesc* GetMovieClipTmplDesc( int index ) const { return index < m_displayObjectsTmpl.size() ? m_displayObjectsTmpl[index] : NULL; }
-	VIRTUAL const SUIMovieClipDesc* GetMovieClipTmplDesc( const char* movieClipTmplName ) const { return  m_displayObjectsTmpl(movieClipTmplName); }
-	VIRTUAL int GetMovieClipTmplCount() const { return m_displayObjectsTmpl.size(); }
+	virtual const SUIMovieClipDesc* GetMovieClipTmplDesc( int index ) const { return index < m_displayObjectsTmpl.size() ? m_displayObjectsTmpl[index] : NULL; }
+	virtual const SUIMovieClipDesc* GetMovieClipTmplDesc( const char* movieClipTmplName ) const { return  m_displayObjectsTmpl(movieClipTmplName); }
+	virtual int GetMovieClipTmplCount() const { return m_displayObjectsTmpl.size(); }
 
-	VIRTUAL const SUIEventDesc* GetEventDesc( int index ) const { return index < m_events.size() ? m_events[index] : NULL; }
-	VIRTUAL const SUIEventDesc* GetEventDesc( const char* sEventName ) const { return  m_events(sEventName); }
-	VIRTUAL int GetEventCount() const { return m_events.size(); }
+	virtual const SUIEventDesc* GetEventDesc( int index ) const { return index < m_events.size() ? m_events[index] : NULL; }
+	virtual const SUIEventDesc* GetEventDesc( const char* sEventName ) const { return  m_events(sEventName); }
+	virtual int GetEventCount() const { return m_events.size(); }
 
-	VIRTUAL const SUIEventDesc* GetFunctionDesc( int index ) const { return index < m_functions.size() ? m_functions[index] : NULL; }
-	VIRTUAL const SUIEventDesc* GetFunctionDesc( const char* sFunctionName ) const { return  m_functions(sFunctionName); }
-	VIRTUAL int GetFunctionCount() const { return m_functions.size(); }
+	virtual const SUIEventDesc* GetFunctionDesc( int index ) const { return index < m_functions.size() ? m_functions[index] : NULL; }
+	virtual const SUIEventDesc* GetFunctionDesc( const char* sFunctionName ) const { return  m_functions(sFunctionName); }
+	virtual int GetFunctionCount() const { return m_functions.size(); }
 
-	VIRTUAL void UpdateViewPort();
-	VIRTUAL void GetViewPort(int &x, int &y, int &width, int &height, float& aspectRatio);
+	virtual void UpdateViewPort();
+	virtual void GetViewPort(int &x, int &y, int &width, int &height, float& aspectRatio);
 
-	VIRTUAL bool Serialize( XmlNodeRef& xmlNode, bool bIsLoading );
+	virtual bool Serialize( XmlNodeRef& xmlNode, bool bIsLoading );
 
-	VIRTUAL void AddEventListener( IUIElementEventListener* pListener, const char* name );
-	VIRTUAL void RemoveEventListener( IUIElementEventListener* pListener );
+	virtual void AddEventListener( IUIElementEventListener* pListener, const char* name );
+	virtual void RemoveEventListener( IUIElementEventListener* pListener );
 
-	VIRTUAL bool CallFunction( const char* fctName, const SUIArguments& args = SUIArguments(), TUIData* pDataRes = NULL, const char* pTmplName = NULL );
-	VIRTUAL bool CallFunction( const SUIEventDesc* pFctDesc, const SUIArguments& args = SUIArguments(), TUIData* pDataRes = NULL, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual bool CallFunction( const char* fctName, const SUIArguments& args = SUIArguments(), TUIData* pDataRes = NULL, const char* pTmplName = NULL );
+	virtual bool CallFunction( const SUIEventDesc* pFctDesc, const SUIArguments& args = SUIArguments(), TUIData* pDataRes = NULL, const SUIMovieClipDesc* pTmplDesc = NULL );
 
-	VIRTUAL IFlashVariableObject* GetMovieClip( const char* movieClipName, const char* pTmplName = NULL );
-	VIRTUAL IFlashVariableObject* GetMovieClip( const SUIMovieClipDesc* pMovieClipDesc, const SUIMovieClipDesc* pTmplDesc = NULL );
-	VIRTUAL IFlashVariableObject* CreateMovieClip( const SUIMovieClipDesc*& pNewInstanceDesc, const char* movieClipTemplate, const char* mcParentName = NULL, const char* mcInstanceName = NULL );
-	VIRTUAL IFlashVariableObject* CreateMovieClip( const SUIMovieClipDesc*& pNewInstanceDesc, const SUIMovieClipDesc* pMovieClipTemplateDesc, const SUIMovieClipDesc* pParentMC = NULL, const char* mcInstanceName = NULL );
-	VIRTUAL void RemoveMovieClip( const char* movieClipName );
-	VIRTUAL void RemoveMovieClip( const SUIParameterDesc* pMovieClipDesc );
-	VIRTUAL void RemoveMovieClip( IFlashVariableObject* pVarObject );
+	virtual IFlashVariableObject* GetMovieClip( const char* movieClipName, const char* pTmplName = NULL );
+	virtual IFlashVariableObject* GetMovieClip( const SUIMovieClipDesc* pMovieClipDesc, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual IFlashVariableObject* CreateMovieClip( const SUIMovieClipDesc*& pNewInstanceDesc, const char* movieClipTemplate, const char* mcParentName = NULL, const char* mcInstanceName = NULL );
+	virtual IFlashVariableObject* CreateMovieClip( const SUIMovieClipDesc*& pNewInstanceDesc, const SUIMovieClipDesc* pMovieClipTemplateDesc, const SUIMovieClipDesc* pParentMC = NULL, const char* mcInstanceName = NULL );
+	virtual void RemoveMovieClip( const char* movieClipName );
+	virtual void RemoveMovieClip( const SUIParameterDesc* pMovieClipDesc );
+	virtual void RemoveMovieClip( IFlashVariableObject* pVarObject );
 
-	VIRTUAL bool SetVariable( const char* varName, const TUIData& value, const char* pTmplName = NULL );
-	VIRTUAL bool SetVariable( const SUIParameterDesc* pVarDesc, const TUIData& value, const SUIMovieClipDesc* pTmplDesc = NULL );
-	VIRTUAL bool GetVariable( const char* varName, TUIData& valueOut, const char* pTmplName = NULL );
-	VIRTUAL bool GetVariable( const SUIParameterDesc* pVarDesc, TUIData& valueOut, const SUIMovieClipDesc* pTmplDesc = NULL );
-	VIRTUAL bool CreateVariable( const SUIParameterDesc*& pNewDesc, const char* varName, const TUIData& value, const char* pTmplName = NULL );
-	VIRTUAL bool CreateVariable( const SUIParameterDesc*& pNewDesc, const char* varName, const TUIData& value, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual bool SetVariable( const char* varName, const TUIData& value, const char* pTmplName = NULL );
+	virtual bool SetVariable( const SUIParameterDesc* pVarDesc, const TUIData& value, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual bool GetVariable( const char* varName, TUIData& valueOut, const char* pTmplName = NULL );
+	virtual bool GetVariable( const SUIParameterDesc* pVarDesc, TUIData& valueOut, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual bool CreateVariable( const SUIParameterDesc*& pNewDesc, const char* varName, const TUIData& value, const char* pTmplName = NULL );
+	virtual bool CreateVariable( const SUIParameterDesc*& pNewDesc, const char* varName, const TUIData& value, const SUIMovieClipDesc* pTmplDesc = NULL );
 
-	VIRTUAL bool SetArray( const char* arrayName, const SUIArguments& values, const char* pTmplName = NULL );
-	VIRTUAL bool SetArray( const SUIParameterDesc* pArrayDesc, const SUIArguments& values, const SUIMovieClipDesc* pTmplDesc = NULL );
-	VIRTUAL bool GetArray( const char* arrayName, SUIArguments& valuesOut, const char* pTmplName = NULL );
-	VIRTUAL bool GetArray( const SUIParameterDesc* pArrayDesc, SUIArguments& valuesOut, const SUIMovieClipDesc* pTmplDesc = NULL );
-	VIRTUAL bool CreateArray(  const SUIParameterDesc*& pNewDesc, const char* arrayName, const SUIArguments& values, const char* pTmplName = NULL );
-	VIRTUAL bool CreateArray(  const SUIParameterDesc*& pNewDesc, const char* arrayName, const SUIArguments& values, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual bool SetArray( const char* arrayName, const SUIArguments& values, const char* pTmplName = NULL );
+	virtual bool SetArray( const SUIParameterDesc* pArrayDesc, const SUIArguments& values, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual bool GetArray( const char* arrayName, SUIArguments& valuesOut, const char* pTmplName = NULL );
+	virtual bool GetArray( const SUIParameterDesc* pArrayDesc, SUIArguments& valuesOut, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual bool CreateArray(  const SUIParameterDesc*& pNewDesc, const char* arrayName, const SUIArguments& values, const char* pTmplName = NULL );
+	virtual bool CreateArray(  const SUIParameterDesc*& pNewDesc, const char* arrayName, const SUIArguments& values, const SUIMovieClipDesc* pTmplDesc = NULL );
 
-	VIRTUAL void ScreenToFlash(const float& px, const float& py, float& rx, float & ry, bool bStageScaleMode = false) const;
-	VIRTUAL void WorldToFlash(const Matrix34& camMat, const Vec3& worldpos, Vec3& flashpos, Vec2& borders, float& scale, bool bStageScaleMode = false) const;
+	virtual void ScreenToFlash(const float& px, const float& py, float& rx, float & ry, bool bStageScaleMode = false) const;
+	virtual void WorldToFlash(const Matrix34& camMat, const Vec3& worldpos, Vec3& flashpos, Vec2& borders, float& scale, bool bStageScaleMode = false) const;
 
-	VIRTUAL void LoadTexIntoMc( const char* movieClip, ITexture* pTexture, const char* pTmplName = NULL  );
-	VIRTUAL void LoadTexIntoMc( const SUIParameterDesc* pMovieClipDesc, ITexture* pTexture, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual void LoadTexIntoMc( const char* movieClip, ITexture* pTexture, const char* pTmplName = NULL  );
+	virtual void LoadTexIntoMc( const SUIParameterDesc* pMovieClipDesc, ITexture* pTexture, const SUIMovieClipDesc* pTmplDesc = NULL );
 
-	VIRTUAL void UnloadTexFromMc( const char* movieClip, ITexture* pTexture, const char* pTmplName = NULL  );
-	VIRTUAL void UnloadTexFromMc( const SUIParameterDesc* pMovieClipDesc, ITexture* pTexture, const SUIMovieClipDesc* pTmplDesc = NULL );
+	virtual void UnloadTexFromMc( const char* movieClip, ITexture* pTexture, const char* pTmplName = NULL  );
+	virtual void UnloadTexFromMc( const SUIParameterDesc* pMovieClipDesc, ITexture* pTexture, const SUIMovieClipDesc* pTmplDesc = NULL );
 
-	VIRTUAL void AddTexture( IDynTextureSource* pDynTexture );
-	VIRTUAL void RemoveTexture( IDynTextureSource* pDynTexture );
-	VIRTUAL int GetNumExtTextures() const { return m_textures.GetCount(); }
-	VIRTUAL bool GetDynTexSize( int& width, int& height ) const { width = m_constraints.iWidth; height = m_constraints.iHeight; return m_constraints.eType == SUIConstraints::ePT_FixedDynTexSize; }
+	virtual void AddTexture( IDynTextureSource* pDynTexture );
+	virtual void RemoveTexture( IDynTextureSource* pDynTexture );
+	virtual int GetNumExtTextures() const { return m_textures.GetCount(); }
+	virtual bool GetDynTexSize( int& width, int& height ) const { width = m_constraints.iWidth; height = m_constraints.iHeight; return m_constraints.eType == SUIConstraints::ePT_FixedDynTexSize; }
 
-	VIRTUAL void SendCursorEvent( SFlashCursorEvent::ECursorState evt, int iX, int iY, int iButton = 0, float fWheel = 0.f );
-	VIRTUAL void SendKeyEvent( const SFlashKeyEvent& evt );
-	VIRTUAL void SendCharEvent( const SFlashCharEvent& charEvent );
-	VIRTUAL void SendControllerEvent( EControllerInputEvent event, EControllerInputState state, float value );
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+	virtual void SendCursorEvent( SFlashCursorEvent::ECursorState evt, int iX, int iY, int iButton = 0, float fWheel = 0.f );
+	virtual void SendKeyEvent( const SFlashKeyEvent& evt );
+	virtual void SendCharEvent( const SFlashCharEvent& charEvent );
+	virtual void SendControllerEvent( EControllerInputEvent event, EControllerInputState state, float value );
+	virtual void GetMemoryUsage(ICrySizer * s) const;
 
 	// IFSCommandHandler
 	void HandleFSCommand( const char* pCommand, const char* pArgs, void* pUserData = 0 );
@@ -171,7 +171,7 @@ public:
 
 	// IVirtualKeyboardEvents
 	virtual void KeyboardCancelled();
-	virtual void KeyboardFinished(const wchar_t *pInString);
+	virtual void KeyboardFinished(const char *pInString);
 	// ~IVirtualKeyboardEvents
 
 
@@ -326,10 +326,10 @@ private:
 struct CUIElementIterator : public IUIElementIterator
 {
 	CUIElementIterator(const CFlashUIElement* pElement);
-	VIRTUAL void AddRef();
-	VIRTUAL void Release();
-	VIRTUAL IUIElement* Next();
-	VIRTUAL int GetCount() const { return m_pElement->m_instances.size(); }
+	virtual void AddRef();
+	virtual void Release();
+	virtual IUIElement* Next();
+	virtual int GetCount() const { return m_pElement->m_instances.size(); }
 
 private:
 	int m_iRefs;

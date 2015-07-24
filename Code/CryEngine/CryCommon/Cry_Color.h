@@ -296,7 +296,7 @@ template <class T> struct Color_tpl
     {
       T & c = (*this)[i];
 
-      if( c <= 0.040448643f )  // PS3 Spec suggests 0.03928, but this is actually for a 12.92321 slope
+      if( c <= 0.040448643f ) 
       { 
         c = c/12.92f; 
       } 

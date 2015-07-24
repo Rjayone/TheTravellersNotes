@@ -1,12 +1,10 @@
-#include DEVIRTUALIZE_HEADER_FIX(IBudgetingSystem.h)
-
 #ifndef _I_BUDGETING_SYSTEM_
 #define _I_BUDGETING_SYSTEM_
 
 
-UNIQUE_IFACE struct IBudgetingSystem
+struct IBudgetingSystem
 {
-
+	// <interfuscator:shuffle>
 	// set budget
 	virtual void SetSysMemLimit( int sysMemLimitInMB ) = 0;
 	virtual void SetVideoMemLimit( int videoMemLimitInMB ) = 0;
@@ -25,12 +23,9 @@ UNIQUE_IFACE struct IBudgetingSystem
 	virtual int GetSoundChannelsPlayingLimit() const = 0;
 	virtual int GetSoundMemLimit() const = 0;
 	virtual int GetSoundCPULimit() const = 0;
-	VIRTUAL int GetNumDrawCallsLimit() const = 0;
-	VIRTUAL float GetStreamingThroughputLimit() const = 0;
+	virtual int GetNumDrawCallsLimit() const = 0;
+	virtual float GetStreamingThroughputLimit() const = 0;
 	virtual void GetBudget( int& sysMemLimitInMB, int& videoMemLimitInMB, float& frameTimeLimitInMS, int& soundChannelsPlayingLimit, int& SoundMemLimitInMB, int& SoundCPULimitInPercent, int& numDrawCallsLimit ) const = 0;
-
-	// Return estimated memory that level will be use on Xbox360 (running on PC)
-	virtual void GetXbox360MemoryEstimation( int &systemMemInMB,int &videoMemTextureInMB,int &videoMemMeshInMB ) = 0;
 
 	// monitoring
 	virtual void MonitorBudget() = 0;
@@ -38,7 +33,7 @@ UNIQUE_IFACE struct IBudgetingSystem
 
 	// destruction
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 
 protected:
 	virtual ~IBudgetingSystem() {}

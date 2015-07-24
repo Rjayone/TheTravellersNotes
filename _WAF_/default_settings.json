@@ -1,0 +1,247 @@
+{
+    "Output Folder": [
+        {
+            "attribute": "out_folder_win32",
+            "long_form": "--output-folder-win32",
+            "default_value": "Bin32",
+            "description": "Absolute or relative Win32 build output path"
+        },
+        {
+            "attribute": "out_folder_win64",
+            "long_form": "--output-folder-win64",
+            "default_value": "Bin64",
+            "description": "Absolute or relative Win64 build output path"
+        },
+        {
+            "attribute": "out_folder_durango",
+            "long_form": "--output-folder-durango",
+            "default_value": "BinDurango",
+            "description": "Absolute or relative Durango build output path"
+        },
+        {
+            "attribute": "out_folder_orbis",
+            "long_form": "--output-folder-orbis",
+            "default_value": "BinOrbis",
+            "description": "Absolute or relative Orbis build output path"
+        },
+        {
+            "attribute": "out_folder_linux32_gcc",
+            "long_form": "--output-folder-linux32-gcc",
+            "default_value": "BinLinux32gcc",
+            "description": "Absolute or relative Linux32 gcc build output path"
+        },
+        {
+            "attribute": "out_folder_linux64_gcc",
+            "long_form": "--output-folder-linux64-gcc",
+            "default_value": "BinLinux64gcc",
+            "description": "Absolute or relative Linux64 gcc build output path"
+        },
+        {
+            "attribute": "out_folder_linux32_clang",
+            "long_form": "--output-folder-linux32-clang",
+            "default_value": "BinLinux32clang",
+            "description": "Absolute or relative Linux32 clang build output path"
+        },
+        {
+            "attribute": "out_folder_linux64_clang",
+            "long_form": "--output-folder-linux64-clang",
+            "default_value": "BinLinux64clang",
+            "description": "Absolute or relative Linux64 clang build output path"
+        },
+        {
+            "attribute": "out_folder_darwin32",
+            "long_form": "--output-folder-darwin32",
+            "default_value": "BinDarwin32",
+            "description": "Absolute or relative Darwin32 build output path"
+        },
+        {
+            "attribute": "out_folder_darwin64",
+            "long_form": "--output-folder-darwin64",
+            "default_value": "BinDarwin64",
+            "description": "Absolute or relative Darwin64 build output path"
+        },
+        {
+            "attribute": "out_folder_android",
+            "long_form": "--output-folder-android",
+            "default_value": "BinAndroid",
+            "description": "Absolute or relative Android build output path"
+        }
+    ],
+    "Compiler Detection": [
+        {
+            "attribute": "auto_detect_compiler",
+            "long_form": "--auto-detect-compiler",
+            "default_value": "True",
+            "description": "Automatically detected and use installed compiler instead of bootstraped version"
+        },
+        {
+            "attribute": "minimum_msvc_compiler",
+            "long_form": "--minimum-msvc-compiler",
+            "default_value": "11",
+            "description": "Minimum version of the MSVC compiler to search for and to support"
+        }
+    ],
+    "Incredibuild Options": [
+        {
+            "attribute": "use_incredibuild",
+            "long_form": "--use-incredibuild",
+            "short_form": "-i",
+            "default_value": "True",
+            "description": "Use Incredibuild"
+        },
+        {
+            "attribute": "use_incredibuild_win",
+            "long_form": "--use-incredibuild-win",
+            "default_value": "True",
+            "description": "Use Incredibuild for PC Builds"
+        },
+        {
+            "attribute": "use_incredibuild_durango",
+            "long_form": "--use-incredibuild-durango",
+            "default_value": "True",
+            "description": "Use Incredibuild for Durango Builds"
+        },
+        {
+            "attribute": "use_incredibuild_orbis",
+            "long_form": "--use-incredibuild-orbis",
+            "default_value": "True",
+            "description": "Use Incredibuild for Orbis Builds"
+        },
+        {
+            "attribute": "incredibuild_max_cores",
+            "long_form": "--incredibuild-max-cores",
+            "default_value": "128",
+            "description": "Control number of processes spawned by Incredibuild"
+        }
+    ],
+    "Misc Options": [
+        {
+            "attribute": "max_cores",
+            "long_form": "--max-cores",
+            "default_value": "8",
+            "description": "Number of parallel processes for local builds"
+        },
+        {
+            "attribute": "support_recode",
+            "long_form": "--support-recode",
+            "default_value": "True",
+            "description": "Enable support for Recode"
+        }
+    ],
+    "Visual Studio Project Generator": [
+        {
+            "attribute": "generate_vs_projects_automatically",
+            "long_form": "--generate-vs-projects-automatically",
+            "default_value": "True",
+            "description": "Automatically generate Visual Studio Projects/Solutions"
+        },
+        {
+            "attribute": "visual_studio_solution_name",
+            "long_form": "--visual-studio-solution-name",
+            "default_value": "CRYENGINE",
+            "description": "Name of the generated solution"
+        },
+        {
+            "attribute": "visual_studio_solution_folder",
+            "long_form": "--visual-studio-solution-folder",
+            "default_value": "Solutions",
+            "description": "Name of the folder in which the generated solution should be stored"
+        },
+        {
+            "attribute": "specs_to_include_in_project_generation",
+            "long_form": "--specs-to-include-in-project-generation",
+            "default_value": "gamesdk,gamesdk_server",
+            "description": "List of specs to include in solution generation"
+        }
+    ],
+    "Build Options": [
+        {
+            "attribute": "version",
+            "long_form": "--force-version",
+            "default_value": "3.7.0.0",
+            "description": "Version to embed in final build outputs"
+        },
+        {
+            "attribute": "generate_debug_info",
+            "long_form": "--generate-debug-info",
+            "default_value": "True",
+            "description": "Generate a Build containing Debug Info"
+        },
+        {
+            "attribute": "generate_map_file",
+            "long_form": "--generate-map-file",
+            "default_value": "False",
+            "description": "Generate a Map file during linking if the platform supports it"
+        },
+        {
+            "attribute": "use_precompiled_header",
+            "long_form": "--use-precompiled-header",
+            "default_value": "True",
+            "description": "Use Precompiled Header for compilation"
+        },
+        {
+            "attribute": "use_uber_files",
+            "long_form": "--use-uber-files",
+            "default_value": "True",
+            "description": "Use UberFiles for compilation"
+        },
+        {
+            "attribute": "use_static_code_analyzer",
+            "long_form": "--use-static-code-analyzer",
+            "default_value": "False",
+            "description": "Use static code analyzer if supported by compiler (potentially slows down compilation)"
+        }
+    ],
+    "Bootstrap Support": [
+        {
+            "attribute": "auto_run_bootstrap",
+            "long_form": "--run-bootstrap-automatically",
+            "default_value": "False",
+            "description": "Should Bootstrap be executed by WAF (based on a timestamp file)"
+        },
+        {
+            "attribute": "bootstrap_dat_file",
+            "long_form": "--bootstrap_dat",
+            "default_value": "bootstrap.dat",
+            "description": "Name of the bootstrap.dat file to use for bootstrapping"
+        },
+        {
+            "attribute": "p4host",
+            "long_form": "--p4host",
+            "default_value": "perforce:1666",
+            "description": "Perforce Server name for Workspace"
+        },
+        {
+            "attribute": "p4user",
+            "long_form": "--p4user",
+            "description": "Perforce User name for Workspace"
+        },
+        {
+            "attribute": "p4client",
+            "long_form": "--p4client",
+            "description": "Perforce Workspace name"
+        },
+        {
+            "attribute": "third_party_p4host",
+            "long_form": "--3rdparty-p4host",
+            "default_value": "perforce:1666",
+            "description": "Perforce Server name for 3rdParty Workspace"
+        },
+        {
+            "attribute": "third_party_p4user",
+            "long_form": "--3rdparty-p4user",
+            "description": "Perforce User name for 3rdParty Workspace"
+        },
+        {
+            "attribute": "third_party_p4client",
+            "long_form": "--3rdparty-p4client",
+            "description": "Perforce 3rdParty Workspace name"
+        },
+        {
+            "attribute": "third_party_rootfolder",
+            "long_form": "--3rdparty-rootfolder",
+            "default_value": "",
+            "description": "Root folder for 3rdParty workspace"
+        }
+    ]
+}

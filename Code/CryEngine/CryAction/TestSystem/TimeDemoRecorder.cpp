@@ -23,6 +23,7 @@
 #include <IMovieSystem.h>
 #include "IMovementController.h"
 #include "IStatoscope.h"
+#include <ITimeDemoRecorder.h>
 
 #if defined(WIN32)
 #include <CryWindows.h>
@@ -187,20 +188,9 @@ struct SRecordedGameEvent
 		value = event.value;
 		extra = event.extra;
 		
-		int descLength = event.entityName.length();
-		int length = min(descLength, TIMEDEMO_MAX_DESCRIPTION_LENGTH-1);
-		strncpy(entityName,event.entityName.c_str(),length+1);
-		entityName[length]=0;
-
-		descLength = event.description.length();
-		length = min(descLength, TIMEDEMO_MAX_DESCRIPTION_LENGTH-1);
-		strncpy(description,event.description.c_str(),length+1);
-		description[length]=0;
-
-		descLength = event.description2.length();
-		length = min(descLength, TIMEDEMO_MAX_DESCRIPTION_LENGTH-1);
-		strncpy(description2,event.description2.c_str(),length+1);
-		description2[length]=0;
+		cry_strcpy(entityName, event.entityName.c_str());
+		cry_strcpy(description, event.description.c_str());
+		cry_strcpy(description2, event.description2.c_str());
 	}
 
 	void SwapEndianThis()
@@ -387,6 +377,7 @@ static void OnChange_demo_num_orientations(ICVar *pCVar)
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 CTimeDemoRecorder::CTimeDemoRecorder()
+: m_listeners(1)
 {
 	s_pTimeDemoRecorder = this;
 
@@ -609,6 +600,8 @@ void CTimeDemoRecorder::Record( bool bEnable )
 	}
 	m_currentFrame = 0;
 	m_totalDemoTime.SetMilliSeconds(0);
+
+	SignalRecording(bEnable);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -705,6 +698,7 @@ void CTimeDemoRecorder::Play( bool bEnable )
 	m_nMaxPolys = INT_MIN;
 	m_nMinPolys = INT_MAX;
 
+	SignalPlayback(bEnable);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -725,8 +719,7 @@ void CTimeDemoRecorder::Save( const char *filename )
 
 	memset( &hdr,0,sizeof(hdr) );
 
-	strncpy( hdr.levelname,GetCurrentLevelPath(),sizeof(hdr.levelname) );
-	hdr.levelname[sizeof(hdr.levelname)-1] = 0;
+	cry_strcpy(hdr.levelname, GetCurrentLevelPath());
 	hdr.nDataOffset = sizeof(hdr);
 	//hdr.nFrameSize = sizeof(STimeDemoFrame_3);
 	
@@ -941,7 +934,7 @@ bool CTimeDemoRecorder::Load(  const char *filename )
 	if (!file.Open( filename,"rb",ICryPak::FOPEN_ONDISK ))
 	{
 		char str[256];
-		CryGetCurrentDirectory(256, str);
+		CryGetCurrentDirectory(sizeof(str), str);
 
 		GetISystem()->Warning( VALIDATOR_MODULE_GAME,VALIDATOR_WARNING,0,filename,"Cannot open time demo file %s (%s)",filename,str);
 		return false;
@@ -2002,11 +1995,7 @@ void CTimeDemoRecorder::LogEndOfLoop()
 	if (GetISystem()->GetIMemoryManager()->GetProcessMemInfo( meminfo ))
 	{
 		int MB = 1024*1024;
-#ifdef PS3
-		LogInfo( "    Memory Usage: WorkingSet=%dMb",(int)meminfo.WorkingSetSize/MB);
-#else
 		LogInfo( "    Memory Usage: WorkingSet=%" PRIu64 "Mb, PageFile=%" PRIu64 "Mb, PageFaults=%" PRIu64 "",meminfo.WorkingSetSize/MB,meminfo.PagefileUsage/MB,meminfo.PageFaultCount );
-#endif
 	}
 }
 
@@ -2419,14 +2408,8 @@ void CTimeDemoRecorder::SaveChainloadingJUnitResults()
 		}
 	}
 
-#if defined(PS3)
-	gEnv->pCryPak->MakeDir( "a:/TestResults" );
-	testsuit->saveToFile( "a:/TestResults/ChainLoadingJUnit.xml" );
-#else
 	gEnv->pCryPak->MakeDir( "./TestResults" );
 	testsuit->saveToFile( "./TestResults/ChainLoadingJUnit.xml");
-#endif
-
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2456,28 +2439,7 @@ void CTimeDemoRecorder::QuitGame()
 	CryLogAlways( "Testing Successfully Finished, Quiting..." );
 
 	m_bDemoFinished = true;
-#if defined(XENON)
-	CryLogAlways( "Save AutoTestFinished.log" );
-	string sFile = "./AutoTestFinished.log"; 
-	FILE * f = fxopen(sFile, "wb");
-	fputs("Done\n", f);
-	fclose(f);
-#elif defined(PS3) // for ps3 store test finished signal directly into app_home					
-	{
-		char file[MAX_PATH];
-		PS3_ConvertFileName("AutoTestFinished.log", file);
-		CryLogAlways( "Save AutoTestFinished.log" );
-		int fd;
-		cellFsOpen(file, CELL_FS_O_CREAT, &fd, NULL, 0 );
-		cellFsClose(fd);
-	}
-#endif
-
-#if defined(XENON) && (!defined (_RELEASE) || defined(ENABLE_PROFILING_CODE))
-	DmReboot(DMBOOT_COLD);
-#else
 	GetISystem()->Quit();
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2587,4 +2549,34 @@ void CTimeDemoRecorder::StartDemoDelayed( int nFrames )
 {
 	EraseLogFile();
 	m_countDownPlay = nFrames;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CTimeDemoRecorder::RegisterListener(ITimeDemoListener* pListener)
+{
+	m_listeners.Add(pListener);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CTimeDemoRecorder::UnregisterListener(ITimeDemoListener* pListener)
+{
+	m_listeners.Remove(pListener);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CTimeDemoRecorder::SignalPlayback(bool bEnable)
+{
+	for (TTimeDemoListeners::Notifier notifier(m_listeners); notifier.IsValid(); notifier.Next())
+	{
+		notifier->OnPlayback(bEnable);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CTimeDemoRecorder::SignalRecording(bool bEnable)
+{
+	for (TTimeDemoListeners::Notifier notifier(m_listeners); notifier.IsValid(); notifier.Next())
+	{
+		notifier->OnRecord(bEnable);
+	}
 }

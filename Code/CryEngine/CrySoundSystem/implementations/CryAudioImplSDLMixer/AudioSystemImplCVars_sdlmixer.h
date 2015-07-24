@@ -22,6 +22,6 @@ private:
 	CAudioSystemImplCVars& operator=(CAudioSystemImplCVars const&);	// Copy protection
 };
 
-extern CAudioSystemImplCVars g_AudioSystemImplCVars;
+extern CAudioSystemImplCVars g_SDLMixerImplCVars;
 
 #endif // AUDIOSYSTEMIMPLSDLMIXERCVARS_H_INCLUDED

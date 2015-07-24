@@ -47,7 +47,7 @@ STagDefinitionImportsInfo& mannequin::GetDefaultImportsInfo( const char* const f
 	assert( filename );
 	assert( filename[ 0 ] );
 
-	const uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( filename );
+	const uint32 crc = CCrc32::ComputeLowercase( filename );
 	STagDefinitionImportsInfo& importsInfo = impl::g_defaultImportInfo[ crc ];
 	importsInfo.SetFilename( filename );
 	return importsInfo;

@@ -26,10 +26,10 @@ namespace NFlowCompositeHelpers
 		CHook( CFlowSystem*, CFlowCompositeNodeFactoryPtr );
 		virtual void AddRef();
 		virtual void Release();
-		VIRTUAL IFlowNodePtr CreateNode( IFlowNode::SActivationInfo*, TFlowNodeTypeId typeId );
-		VIRTUAL bool CreatedNode( TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode );
-		VIRTUAL void CancelCreatedNode( TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode );
-		VIRTUAL IFlowGraphHook::EActivation PerformActivation( IFlowGraphPtr pFlowgraph, TFlowNodeId srcNode, TFlowPortId srcPort, TFlowNodeId toNode, TFlowPortId toPort, const TFlowInputData* value){return eFGH_Pass;};
+		virtual IFlowNodePtr CreateNode( IFlowNode::SActivationInfo*, TFlowNodeTypeId typeId );
+		virtual bool CreatedNode( TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode );
+		virtual void CancelCreatedNode( TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode );
+		virtual IFlowGraphHook::EActivation PerformActivation( IFlowGraphPtr pFlowgraph, TFlowNodeId srcNode, TFlowPortId srcPort, TFlowNodeId toNode, TFlowPortId toPort, const TFlowInputData* value){return eFGH_Pass;};
 		TFlowNodeId GetID() const { return m_bFail? InvalidFlowNodeId : m_id; }
 
 	private:
@@ -145,7 +145,7 @@ private:
 
 	const string& AddString( const char * str );
 	typedef std::pair<SInputPortConfig, SOutputPortConfig> TPortPair;
-	typedef std::auto_ptr<TPortPair> TPortPairPtr;
+	typedef std::unique_ptr<TPortPair> TPortPairPtr;
 	TPortPairPtr GeneratePortsFromXML( XmlNodeRef port );
 
 	std::vector<string> m_stringPool;

@@ -82,11 +82,11 @@ T abs( Vec3_tpl<T> v )
 //////////////////////////////////////////////////////////////////////////
 struct ISplineBackup
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISplineBackup(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -97,6 +97,7 @@ struct ISplineInterpolator
 	typedef float ElemType;
 	typedef ElemType ValueType[4];
 
+	// <interfuscator:shuffle>
 	virtual ~ISplineInterpolator(){}
 
 	// Dimension of the spline from 0 to 3, number of parameters used in ValueType.
@@ -131,7 +132,7 @@ struct ISplineInterpolator
 
 	virtual ISplineBackup* Backup() = 0;
 	virtual void Restore(ISplineBackup* pBackup) = 0;
-
+	// </interfuscator:shuffle>
 
 	//////////////////////////////////////////////////////////////////////////
 	// Helper functions.

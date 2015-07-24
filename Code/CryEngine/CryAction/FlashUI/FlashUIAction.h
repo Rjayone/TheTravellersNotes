@@ -22,26 +22,26 @@ class CFlashUIAction : public IUIAction
 {
 public:
 	CFlashUIAction(EUIActionType type);
-	VIRTUAL ~CFlashUIAction();
+	virtual ~CFlashUIAction();
 
-	VIRTUAL EUIActionType GetType() const { return m_type; }
+	virtual EUIActionType GetType() const { return m_type; }
 
-	VIRTUAL const char* GetName() const { return m_sName.c_str(); }
-	VIRTUAL void SetName( const char* sName ) { m_sName = sName; }
+	virtual const char* GetName() const { return m_sName.c_str(); }
+	virtual void SetName( const char* sName ) { m_sName = sName; }
 
-	VIRTUAL bool Init();
-	VIRTUAL bool IsValid() const { return m_bIsValid; }
+	virtual bool Init();
+	virtual bool IsValid() const { return m_bIsValid; }
 
-	VIRTUAL void SetEnabled(bool bEnabled);
-	VIRTUAL bool IsEnabled() const { return m_bEnabled && m_bIsValid; }
+	virtual void SetEnabled(bool bEnabled);
+	virtual bool IsEnabled() const { return m_bEnabled && m_bIsValid; }
 
-	VIRTUAL IFlowGraphPtr GetFlowGraph() const { CRY_ASSERT_MESSAGE(m_type == eUIAT_FlowGraph, "Try to access Flowgraph of Lua UI Action"); return m_pFlowGraph; }
-	VIRTUAL SmartScriptTable GetScript() const { CRY_ASSERT_MESSAGE(m_type == eUIAT_LuaScript, "Try to access ScriptTable of FG UI Action"); return m_pScript; }
+	virtual IFlowGraphPtr GetFlowGraph() const { CRY_ASSERT_MESSAGE(m_type == eUIAT_FlowGraph, "Try to access Flowgraph of Lua UI Action"); return m_pFlowGraph; }
+	virtual SmartScriptTable GetScript() const { CRY_ASSERT_MESSAGE(m_type == eUIAT_LuaScript, "Try to access ScriptTable of FG UI Action"); return m_pScript; }
 
-	VIRTUAL bool Serialize( XmlNodeRef& xmlNode, bool bIsLoading );
-	VIRTUAL bool Serialize( const char* scriptFile, bool bIsLoading );
+	virtual bool Serialize( XmlNodeRef& xmlNode, bool bIsLoading );
+	virtual bool Serialize( const char* scriptFile, bool bIsLoading );
 
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+	virtual void GetMemoryUsage(ICrySizer * s) const;
 
 	bool ReloadScript();
 
@@ -79,15 +79,15 @@ public:
 	CUIActionManager() : m_listener(32), m_bAcceptRequests(true) {}
 	void Init();
 
-	VIRTUAL void StartAction( IUIAction* pAction, const SUIArguments& args );
-	VIRTUAL void EndAction( IUIAction* pAction, const SUIArguments& args );
+	virtual void StartAction( IUIAction* pAction, const SUIArguments& args );
+	virtual void EndAction( IUIAction* pAction, const SUIArguments& args );
 
-	VIRTUAL void EnableAction( IUIAction* pAction, bool bEnable );
+	virtual void EnableAction( IUIAction* pAction, bool bEnable );
 
-	VIRTUAL void AddListener( IUIActionListener* pListener, const char* name );
-	VIRTUAL void RemoveListener( IUIActionListener* pListener );
+	virtual void AddListener( IUIActionListener* pListener, const char* name );
+	virtual void RemoveListener( IUIActionListener* pListener );
 
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+	virtual void GetMemoryUsage(ICrySizer * s) const;
 
 	void Update();
 

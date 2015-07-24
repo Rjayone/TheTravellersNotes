@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "winres.h"
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -51,7 +51,7 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,53,74,50,14
-    LTEXT           "Lua Debugger Version 1.0\n(c) 2015 Crytek\n\nWritten by\nAlberto Demichelis\nTim Schrцder",IDC_STATIC,7,7,96,53
+    LTEXT           "Lua Debugger Version 1.0\n(C) 2002 Crytek\n\nWritten by\nAlberto Demichelis\nTim Schrцder",IDC_STATIC,7,7,96,53
 END
 
 
@@ -68,7 +68,7 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""winres.h""\r\n"
+    "#include ""afxres.h""\r\n"
     "\0"
 END
 

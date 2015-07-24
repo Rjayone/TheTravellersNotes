@@ -17,6 +17,12 @@ static const int INVALID_LAYER_INDEX = -1;
 struct SProceduralParamsCopyNormalizedTime
 	: public IProceduralParams
 {
+	SProceduralParamsCopyNormalizedTime()
+		: sourceLayer(0)
+		, layer(0)
+	{
+	}
+
 	virtual void Serialize(Serialization::IArchive& ar)
 	{
 		ar(sourceLayer, "SourceLayer", "Source Layer");

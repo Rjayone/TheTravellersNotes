@@ -11,10 +11,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IVisualLog.h)
 
-#ifndef __IVISUAL_LOG_H_
-#define __IVISUAL_LOG_H_
 #pragma once
 
 struct SVisualLogParams
@@ -55,15 +52,13 @@ private:
 	}
 };
 
-UNIQUE_IFACE struct IVisualLog
+struct IVisualLog
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IVisualLog(){}
 	virtual void Log ( const char *format, ... )  PRINTF_PARAMS(2, 3) = 0;
 	virtual void Log ( const SVisualLogParams& params, const char *format, ... )  PRINTF_PARAMS(3, 4) = 0;
 
 	virtual void Reset() = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif // __IVISUAL_LOG_H_

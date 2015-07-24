@@ -429,14 +429,14 @@ CGameLobby::CGameLobby( CGameLobbyManager* pMgr )
 #endif //!defined(_RELEASE)
 
 #if ENABLE_CHAT_MESSAGES
-	gEnv->pConsole->AddCommand("gl_say", CmdChatMessage, 0, CVARHELP("Send a chat message"));
-	gEnv->pConsole->AddCommand("gl_teamsay", CmdChatMessageTeam, 0, CVARHELP("Send a chat message to team"));
+	gEnv->pConsole->AddCommand("gl_say", CmdChatMessage, 0, "Send a chat message");
+	gEnv->pConsole->AddCommand("gl_teamsay", CmdChatMessageTeam, 0, "Send a chat message to team");
 #endif
 
-	gEnv->pConsole->AddCommand("gl_StartGame", CmdStartGame, 0, CVARHELP("force start a game"));
-	gEnv->pConsole->AddCommand("gl_Map", CmdSetMap, 0, CVARHELP("Set map for the lobby"));
-	gEnv->pConsole->AddCommand("gl_GameRules", CmdSetGameRules, 0, CVARHELP("Set the game rules for the lobby"));
-	gEnv->pConsole->AddCommand("gl_Vote", CmdVote, 0, CVARHELP("Vote for next map in lobby (left or right)"));
+	gEnv->pConsole->AddCommand("gl_StartGame", CmdStartGame, 0, "force start a game");
+	gEnv->pConsole->AddCommand("gl_Map", CmdSetMap, 0, "Set map for the lobby");
+	gEnv->pConsole->AddCommand("gl_GameRules", CmdSetGameRules, 0, "Set the game rules for the lobby");
+	gEnv->pConsole->AddCommand("gl_Vote", CmdVote, 0, "Vote for next map in lobby (left or right)");
 	gEnv->pConsole->RegisterAutoComplete("gl_Map", &gl_LevelNameAutoComplete);
 
 	m_isTeamGame = false;
@@ -2756,7 +2756,7 @@ void CGameLobby::SvCloseVotingAndDecideWinner()
 		}
 		else
 		{
-			m_leftWinsVotes = (cry_frand() >= 0.5f);
+			m_leftWinsVotes = (cry_random(0, 1) == 0);
 			CryLog(".... neither choice was ever winning (there were probably no votes), so picking at random... chose [%s]", (m_leftWinsVotes ? "left" : "right"));
 		}
 	}
@@ -3025,7 +3025,7 @@ void CGameLobby::SetupSessionData()
 	{
 		if (pServerNameCVar->GetFlags() & VF_MODIFIED)
 		{
-			cry_strncpy(m_sessionData.m_name, pServerNameCVar->GetString(), MAX_SESSION_NAME_LENGTH);
+			cry_strcpy(m_sessionData.m_name, pServerNameCVar->GetString());
 		}
 		else
 		{
@@ -3043,12 +3043,12 @@ void CGameLobby::SetupSessionData()
 				}
 			}
 
-			cry_strncpy(m_sessionData.m_name, userName.c_str(), MAX_SESSION_NAME_LENGTH);
+			cry_strcpy(m_sessionData.m_name, userName.c_str());
 		}
 	}
 	else
 	{
-		cry_strncpy(m_sessionData.m_name, "default servername", MAX_SESSION_NAME_LENGTH);
+		cry_strcpy(m_sessionData.m_name, "default servername");
 	}
 
 	m_sessionData.m_ranked = false;
@@ -3619,8 +3619,8 @@ void CGameLobby::MatchmakingSessionCreateCallback(CryLobbyTaskID taskID, ECryLob
 					pPlaylistManager->SetModeOptions();
 				}
 #endif
-				cry_strncpy(pLobby->m_detailedServerInfo.m_motd, g_pGameCVars->g_messageOfTheDay->GetString(), DETAILED_SESSION_INFO_MOTD_SIZE);
-				cry_strncpy(pLobby->m_detailedServerInfo.m_url, g_pGameCVars->g_serverImageUrl->GetString(), DETAILED_SESSION_INFO_URL_SIZE);
+				cry_strcpy(pLobby->m_detailedServerInfo.m_motd, g_pGameCVars->g_messageOfTheDay->GetString());
+				cry_strcpy(pLobby->m_detailedServerInfo.m_url, g_pGameCVars->g_serverImageUrl->GetString());
 
 #if defined (TRACK_MATCHMAKING)
 				//we have made a session, record this successful decison
@@ -4403,7 +4403,11 @@ void CGameLobby::MatchmakingSessionQueryCallback(CryLobbyTaskID taskID, ECryLobb
 			for (int i = 0; i < eLDI_Num; ++ i)
 			{
 				SCryLobbyUserData &userData = pLobby->m_userData[i];
+#if USE_STEAM
+				CryLog("  i=%i, id=%s, data=%i Lobby: %p", i, userData.m_id.c_str(), userData.m_int32, pLobby);
+#else
 				CryLog("  i=%i, id=%i, data=%i Lobby: %p", i, userData.m_id, userData.m_int32, pLobby);
+#endif
 			}
 
 			pLobby->m_sessionData.m_data = pLobby->m_userData;
@@ -9167,14 +9171,11 @@ void CGameLobby::MatchmakingSessionDetailedInfoRequestCallback(UCryLobbyEventDat
 
 				if (packet.CreateWriteBuffer(bufferSize))
 				{
-					char motd[DETAILED_SESSION_INFO_MOTD_SIZE] = {0};
-					char url[DETAILED_SESSION_INFO_URL_SIZE] = {0};
+					char motd[DETAILED_SESSION_INFO_MOTD_SIZE];
+					char url[DETAILED_SESSION_INFO_URL_SIZE];
 
-					strncpy(motd, g_pGameCVars->g_messageOfTheDay->GetString(), DETAILED_SESSION_INFO_MOTD_SIZE);
-					strncpy(url, g_pGameCVars->g_serverImageUrl->GetString(), DETAILED_SESSION_INFO_URL_SIZE);
-
-					motd[DETAILED_SESSION_INFO_MOTD_SIZE-1] = 0;
-					url[DETAILED_SESSION_INFO_URL_SIZE-1] = 0;
+					cry_strcpy(motd, g_pGameCVars->g_messageOfTheDay->GetString());
+					cry_strcpy(url, g_pGameCVars->g_serverImageUrl->GetString());
 
 					packet.StartWrite(eGUPD_DetailedServerInfoResponse, true);
 					packet.WriteUINT8(flags);

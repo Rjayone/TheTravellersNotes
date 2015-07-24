@@ -119,4 +119,4 @@ int CFunctionHandler::EndFunction()
 	return 0;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IFunctionHandler)
+

@@ -144,28 +144,6 @@ History:
 
 #include "GameCVars.h"
 
-
-//Traveller's notes
-#include "BuildHelper.h"
-#include "FirePlace.h"
-
-//Basic defenition
-#include "BasicObject.h"
-#include "BasicMoney.h"
-#include "BasicRecipe.h"
-#include "BasicFood.h"
-#include "BasicShield.h"
-
-//Props
-#include "Props.h"
-#include "Backpack.h"
-
-//Weapons
-#include "Sword.h"
-#include "Bow.h"
-#include "Torch.h"
-//~
-
 #define HIDE_FROM_EDITOR(className)																																				\
   { IEntityClass *pItemClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(className);\
   pItemClass->SetFlags(pItemClass->GetFlags() | ECLF_INVISIBLE); }																				\
@@ -418,32 +396,6 @@ void InitGameFactory(IGameFramework *pFramework)
 	REGISTER_FACTORY(pGameRulesModulesManager, "Objective_Extraction", CGameRulesObjective_Extraction, false);
 	REGISTER_FACTORY(pGameRulesModulesManager, "Objective_SimpleEntityBased", CGameRulesSimpleEntityBasedObjective, false);
 	REGISTER_FACTORY(pGameRulesModulesManager, "Objective_CTF", CGameRulesObjective_CTF, false);
-
-
-	//Traveller Registration below
-	//Weapons
-	REGISTER_FACTORY(pFramework, "Sword", CSword, false);
-	REGISTER_FACTORY(pFramework, "Bow", CBow, false);
-	REGISTER_FACTORY(pFramework, "Torch", CTorch, false);
-
-	//BuildSystem
-	REGISTER_GAME_OBJECT(pFramework, BuildHelper, "Scripts/Entities/Misc/BuildHelper.lua");
-
-	//Placeable entities
-	REGISTER_GAME_OBJECT(pFramework, FirePlace, "Scripts/Entities/Misc/FirePlace.lua");
-
-	// Inventory GameObjects
-	REGISTER_GAME_OBJECT(pFramework, BasicObject, "Scripts/Entities/InventoryItems/BasicObject.lua");
-	REGISTER_GAME_OBJECT(pFramework, BasicMoney, "Scripts/Entities/InventoryItems/BasicMoney.lua");
-	REGISTER_GAME_OBJECT(pFramework, BasicRecipe, "Scripts/Entities/InventoryItems/BasicRecipe.lua");
-	REGISTER_GAME_OBJECT(pFramework, BasicFood, "Scripts/Entities/InventoryItems/BasicFood.lua");
-	REGISTER_GAME_OBJECT(pFramework, BasicShield, "Scripts/Entities/InventoryItems/BasicShield.lua");
-
-	//Props
-	REGISTER_GAME_OBJECT(pFramework, Props, "Scripts/Entities/Misc/Props.lua");
-	REGISTER_GAME_OBJECT(pFramework, Backpack, "Scripts/Entities/Misc/Backpack.lua");
-	//~Traveller Registration
-
 
 	pGameRulesModulesManager->Init();
 }

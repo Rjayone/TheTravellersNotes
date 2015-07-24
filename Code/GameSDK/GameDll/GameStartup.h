@@ -20,23 +20,17 @@ History:
 
 
 #include <IGameFramework.h>
+#include <IWindowMessageHandler.h>
 #ifdef WIN32
 #include "CryWindows.h"
 #endif
 
 
-#if defined(APPLE)
-    #define GAME_FRAMEWORK_FILENAME	"libCryAction.dylib"
-#elif defined(LINUX)
-    #define GAME_FRAMEWORK_FILENAME	"libCryAction.so"
-#elif defined(_RELEASE) && defined(IS_EAAS)
+#if defined(_RELEASE) && defined(IS_EAAS)
 	#define GAME_FRAMEWORK_FILENAME "CryAction_Release.dll"
 #else
-    #define GAME_FRAMEWORK_FILENAME	"CryAction.dll"
+	#define GAME_FRAMEWORK_FILENAME CryLibraryDefName("CryAction")
 #endif
-#define GAME_WINDOW_CLASSNAME		"CryENGINE"
-
-#include "IBasicEventListener.h"
 
 // implemented in GameDll.cpp
 extern HMODULE GetFrameworkDLL(const char* dllLocalDir);
@@ -64,7 +58,7 @@ class GameStartupErrorObserver : public IErrorObserver
 };
 
 class CGameStartup :
-	public IGameStartup, public ISystemEventListener
+	public IGameStartup, public ISystemEventListener, public IWindowMessageHandler
 {
 	friend class CGameStartupStatic; // to have access to m_pFramework and m_reqModName in RequestLoadMod
 public:
@@ -74,54 +68,46 @@ public:
 	virtual int Update(bool haveFocus, unsigned int updateFlags);
 	virtual bool GetRestartLevel(char** levelName);
 	virtual const char* GetPatch() const;
-	virtual bool GetRestartMod(char* pModName, int nameLenMax);
+	virtual bool GetRestartMod(char* pModNameBuffer, int modNameBufferSizeInBytes);
 	virtual int Run( const char * autoStartLevelName );
 	virtual const uint8* GetRSAKey(uint32 *pKeySize) const;
 
 	virtual void OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam);
 
-	static CGameStartup* Create(IBasicEventListener& basicEventListener);
+	static CGameStartup* Create();
 
 protected:
-	CGameStartup(IBasicEventListener& m_basicEventListener);
+	CGameStartup();
 	virtual ~CGameStartup();
-
 
 private:
 	bool IsModAvailable(const string& modName);
 	void HandleResizeForVOIP(WPARAM wparam);
 
 public:
-	bool InitWindow(SSystemInitParams &startupParams);
-	void ShutdownWindow();
 
 	bool InitFramework(SSystemInitParams &startupParams);
 private:
 	void ShutdownFramework();
 
 	static void FullScreenCVarChanged( ICVar *pVar );
-		
-#ifdef WIN32
-	static LRESULT CALLBACK WndProcHndl(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	IBasicEventListener::EAction ProcessMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	
+#if defined(WIN32)
+	bool HandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *pResult);
 #endif
 
-	IBasicEventListener		&m_basicEventListener;
+	IGame*   m_pMod;
+	IGameRef m_modRef;
+	bool     m_quit;
+	bool     m_fullScreenCVarSetup;
+	int8     m_nVOIPWasActive;
+	HMODULE  m_modDll;
+	HMODULE  m_frameworkDll;
 
-	IGame					*m_pMod;
-	IGameRef				m_modRef;
-	bool					m_initWindow;
-	bool					m_quit;
-	bool					m_fullScreenCVarSetup;
-	int8					m_nVOIPWasActive;
+	string   m_reqModName;
+	bool     m_reqModUnload;
 
-	HMODULE					m_modDll;
-	HMODULE					m_frameworkDll;
-
-	string					m_reqModName;
-	bool					  m_reqModUnload;
-	IGameFramework			*m_pFramework;
+	IGameFramework* m_pFramework;
 	GameStartupErrorObserver m_errorObsever;
 };
 

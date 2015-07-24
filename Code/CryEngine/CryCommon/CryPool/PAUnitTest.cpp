@@ -203,9 +203,8 @@ void TestRealloc(TContainer& rMemory)
 	for(size_t a=0;a<Handles.size();a++)
 		Handles[a]	=	rMemory.Allocate<TPtr>(10,1);
 
-	for(size_t a=0;a<1000000;a++)
-		//rMemory.Resize<TPtr>(&Handles[2],rand(),1);
-		rMemory.Reallocate<TPtr>(&Handles[a%Handles.size()],rand(),1);
+	for(size_t a=0;a<1000000;a++)		
+		rMemory.Reallocate<TPtr>(&Handles[a%Handles.size()], cry_random_uint32(), 1);
 
 	for(size_t a=0;a<Handles.size();a++)
 		rMemory.Free(Handles[a]);

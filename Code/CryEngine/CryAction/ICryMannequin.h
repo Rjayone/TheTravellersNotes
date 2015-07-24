@@ -19,9 +19,10 @@
 #include "ICryMannequinDefs.h"
 #include "ICryMannequinProceduralClipFactory.h"
 
-#define MannGenCRC gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase
+#define MannGenCRC CCrc32::ComputeLowercase
 
 #include "BitFiddling.h"
+#include "MTPseudoRandom.h"
 #include "ICryMannequinTagDefs.h"
 
 struct IMannequinEditorManager;
@@ -985,7 +986,7 @@ public:
 	virtual const char* FindSubADBFilenameForID(FragmentID fragmentID) const = 0;
 	virtual bool RemoveSubADBFragmentFilter ( FragmentID fragmentID ) = 0;
 	virtual bool AddSubADBFragmentFilter ( const string &sADBFileName, FragmentID fragmentID ) = 0;
-	virtual void GetSubADBFragmentFilters( SMiniSubADB::TSubADBArray &outList ) = 0;
+	virtual void GetSubADBFragmentFilters( SMiniSubADB::TSubADBArray &outList ) const = 0;
 
 	virtual bool AddSubADBTagFilter( const string &sParentFilename, const string &sADBFileName, const TagState tag ) = 0;
 	virtual bool MoveSubADBFilter( const string &sADBFileName, const bool bMoveUp) = 0;
@@ -1113,7 +1114,7 @@ public:
 
 	const SMannParameter *FindParam(const char *paramName) const
 	{
-		const uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(paramName);
+		const uint32 crc = CCrc32::ComputeLowercase(paramName);
 		return FindParam(crc);
 	}
 
@@ -1135,7 +1136,7 @@ public:
 	template <typename PODTYPE>
 	bool GetParam(const char *paramName, PODTYPE &value) const
 	{
-		const uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(paramName);
+		const uint32 crc = CCrc32::ComputeLowercase(paramName);
 		return GetParam(crc, value);
 	}
 
@@ -1155,7 +1156,7 @@ public:
 
 	bool RemoveParam(const char *paramName)
 	{
-		const uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(paramName);
+		const uint32 crc = CCrc32::ComputeLowercase(paramName);
 		return RemoveParam(crc);
 	}
 
@@ -1177,7 +1178,7 @@ public:
 	template <typename PODTYPE>
 	void SetParam(const char *paramName, const PODTYPE &value)
 	{
-		const uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(paramName);
+		const uint32 crc = CCrc32::ComputeLowercase(paramName);
 		SetParam(crc, value);
 	}
 

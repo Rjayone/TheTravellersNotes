@@ -296,7 +296,7 @@ bool CReader::ReadBinaryFile( const char* pFileName )
 				pOSSaveReader->TouchFile();
 			}
 		}	
-		// File has to be closed explicitly on PS3
+
 		pOSSaveReader->Close();
 	}
 	

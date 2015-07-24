@@ -50,7 +50,7 @@ public:
 	virtual int mfGet_Flags () const = 0;
 	virtual const ColorF& mfGet_minColor () const = 0;
 	virtual const ColorF& mfGet_maxColor () const = 0;
-
+	virtual int mfGet_ImageSize() const = 0;
 
 protected:
 	virtual ~IImageFile() {}

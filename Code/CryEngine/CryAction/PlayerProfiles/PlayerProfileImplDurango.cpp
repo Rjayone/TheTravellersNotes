@@ -36,6 +36,7 @@ extern "C" {
 #include <TypeInfo_impl.h>
 
 #include "CryActionCVars.h"
+#include "UnicodeFunctions.h"
 
 #include "PlayerProfile.h"
 #include "Serialization/XmlSaveGame.h"
@@ -68,7 +69,10 @@ namespace // anonymous
 		assert(dataLength < kMaxProfileDataBlockSize);
 
 		dataBlockBuffer.resize(dataLength);
-		memcpy_s(&dataBlockBuffer[0], dataBlockBuffer.size(), xmlString.c_str(), dataLength);
+		if (dataLength > 0)
+		{
+			memcpy(&dataBlockBuffer[0], xmlString.c_str(), dataLength);
+		}
 	}
 
 	//------------------------------------------------------------------------
@@ -82,7 +86,7 @@ namespace // anonymous
 		{}
 
 	private:
-		VIRTUAL void OnOnlineStorageOperationComplete(const CryOnlineStorageQueryData& queryData)
+		virtual void OnOnlineStorageOperationComplete(const CryOnlineStorageQueryData& queryData)
 		{
 			m_callback(queryData);
 			delete this;
@@ -648,15 +652,15 @@ class CXMLCPBinSaveGameDurangoConnectedStorage : public CXmlSaveGame
 	public:
 		CSerializeCtx( XMLCPB::CNodeLiveWriterRef node, XMLCPB::CWriterInterface& binWriter )
 		{
-			m_pWriterXMLCPBin = std::auto_ptr<CSerializeWriterXMLCPBin>( new CSerializeWriterXMLCPBin( node, binWriter  ) );
-			m_pWriter = std::auto_ptr<ISerialize>(new CSimpleSerializeWithDefaults<CSerializeWriterXMLCPBin>( *m_pWriterXMLCPBin ));
+			m_pWriterXMLCPBin = std::unique_ptr<CSerializeWriterXMLCPBin>( new CSerializeWriterXMLCPBin( node, binWriter  ) );
+			m_pWriter = std::unique_ptr<ISerialize>(new CSimpleSerializeWithDefaults<CSerializeWriterXMLCPBin>( *m_pWriterXMLCPBin ));
 		}
 
 		TSerialize GetTSerialize() { return TSerialize(m_pWriter.get()); }
 
 	private:
-		std::auto_ptr<ISerialize> m_pWriter;
-		std::auto_ptr<CSerializeWriterXMLCPBin> m_pWriterXMLCPBin;
+		std::unique_ptr<ISerialize> m_pWriter;
+		std::unique_ptr<CSerializeWriterXMLCPBin> m_pWriterXMLCPBin;
 	};
 
 	virtual bool Init(const char* name)
@@ -738,15 +742,15 @@ class CXMLCPBinLoadGameDurangoConnectedStorage : public CXmlLoadGame
 	public:
 		CSerializeCtx( XMLCPB::CNodeLiveReaderRef node, XMLCPB::CReaderInterface& binReader )
 		{
-			m_pReaderXMLCPBin = std::auto_ptr<CSerializeReaderXMLCPBin>( new CSerializeReaderXMLCPBin( node, binReader ) );
-			m_pReader = std::auto_ptr<ISerialize>(new CSimpleSerializeWithDefaults<CSerializeReaderXMLCPBin>( *m_pReaderXMLCPBin ));
+			m_pReaderXMLCPBin = std::unique_ptr<CSerializeReaderXMLCPBin>( new CSerializeReaderXMLCPBin( node, binReader ) );
+			m_pReader = std::unique_ptr<ISerialize>(new CSimpleSerializeWithDefaults<CSerializeReaderXMLCPBin>( *m_pReaderXMLCPBin ));
 		}
 
 		TSerialize GetTSerialize() { return TSerialize(m_pReader.get()); }
 
 	private:
-		std::auto_ptr<ISerialize> m_pReader;
-		std::auto_ptr<CSerializeReaderXMLCPBin> m_pReaderXMLCPBin;
+		std::unique_ptr<ISerialize> m_pReader;
+		std::unique_ptr<CSerializeReaderXMLCPBin> m_pReaderXMLCPBin;
 	};
 
 
@@ -797,14 +801,14 @@ public:
 		return m_metadataNode->HaveAttr( pTag );
 	}
 
-	std::auto_ptr<TSerialize> GetSection( const char* pSection )
+	std::unique_ptr<TSerialize> GetSection( const char* pSection )
 	{
 		XMLCPB::CNodeLiveReaderRef node = m_binXmlReader.GetRoot()->GetChildNode( pSection );
 		if (!node.IsValid())
-			return std::auto_ptr<TSerialize>();
+			return std::unique_ptr<TSerialize>();
 		_smart_ptr<CSerializeCtx> pCtx = new CSerializeCtx(node, m_binXmlReader);
 		m_sections.push_back( pCtx );
-		return std::auto_ptr<TSerialize>( new TSerialize(pCtx->GetTSerialize()) );
+		return std::unique_ptr<TSerialize>( new TSerialize(pCtx->GetTSerialize()) );
 	}
 
 	bool HaveSection( const char* pSection )
@@ -848,12 +852,10 @@ bool CPlayerProfileImplDurango::DeleteSaveGame(SUserEntry* pEntry, const char* n
 	{
 		if (GetISystem()->GetPlatformOS()->UsePlatformSavingAPI())
 		{
-			wchar_t	containerNameW[_MAX_PATH];
+			wstring containerNameW;
+			Unicode::Convert(containerNameW, name);
 
-			size_t numConverted = 0;
-			mbstowcs_s(&numConverted, containerNameW, ARRAY_COUNT(containerNameW), name, _TRUNCATE);
-
-			return GetISystem()->GetPlatformOS()->DeleteStorage(containerNameW);
+			return GetISystem()->GetPlatformOS()->DeleteStorage(containerNameW.c_str());
 		}
 		else
 		{

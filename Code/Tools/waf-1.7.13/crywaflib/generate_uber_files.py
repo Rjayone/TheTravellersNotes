@@ -53,6 +53,7 @@ class uber_file_generator(BuildContext):
 @extension('.csv')
 @extension('.appxmanifest')
 @extension('.hlsl')
+@extension('.java')
 def header_dummy(tgen,node):
 	pass
 	

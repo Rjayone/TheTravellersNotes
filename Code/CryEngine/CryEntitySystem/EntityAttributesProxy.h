@@ -20,28 +20,28 @@ class CEntityAttributesProxy : public IEntityAttributesProxy
 public:
 
 	// IComponent
-	VIRTUAL void ProcessEvent(SEntityEvent& event) OVERRIDE;
-	VIRTUAL void Initialize(SComponentInitializer const& inititializer) OVERRIDE;
+	virtual void ProcessEvent(SEntityEvent& event) override;
+	virtual void Initialize(SComponentInitializer const& inititializer) override;
 	// ~IComponent
 
 	// IEntityProxy
-	VIRTUAL EEntityProxy GetType() OVERRIDE;
-	VIRTUAL void Release() OVERRIDE;
-	VIRTUAL void Done() OVERRIDE;
-	VIRTUAL	void Update(SEntityUpdateContext& context) OVERRIDE;
-	VIRTUAL bool Init(IEntity* pEntity, SEntitySpawnParams& params) OVERRIDE;
-	VIRTUAL void Reload(IEntity* pEntity, SEntitySpawnParams& params) OVERRIDE;
-	VIRTUAL void SerializeXML(XmlNodeRef &entityNodeXML, bool loading) OVERRIDE;
-	VIRTUAL void Serialize(TSerialize serialize) OVERRIDE;
-	VIRTUAL bool NeedSerialize() OVERRIDE;
-	VIRTUAL bool GetSignature(TSerialize signature) OVERRIDE;
-	VIRTUAL void GetMemoryUsage(ICrySizer* pSizer) const OVERRIDE;
+	virtual EEntityProxy GetType() override;
+	virtual void Release() override;
+	virtual void Done() override;
+	virtual void Update(SEntityUpdateContext& context) override;
+	virtual bool Init(IEntity* pEntity, SEntitySpawnParams& params) override;
+	virtual void Reload(IEntity* pEntity, SEntitySpawnParams& params) override;
+	virtual void SerializeXML(XmlNodeRef &entityNodeXML, bool loading) override;
+	virtual void Serialize(TSerialize serialize) override;
+	virtual bool NeedSerialize() override;
+	virtual bool GetSignature(TSerialize signature) override;
+	virtual void GetMemoryUsage(ICrySizer* pSizer) const override;
 	// ~IEntityProxy
 
 	// IEntityAttributesProxy
-	VIRTUAL void SetAttributes(const TEntityAttributeArray& attributes) OVERRIDE;
-	VIRTUAL TEntityAttributeArray& GetAttributes() OVERRIDE;
-	VIRTUAL const TEntityAttributeArray& GetAttributes() const OVERRIDE;
+	virtual void SetAttributes(const TEntityAttributeArray& attributes) override;
+	virtual TEntityAttributeArray& GetAttributes() override;
+	virtual const TEntityAttributeArray& GetAttributes() const override;
 	// ~IEntityAttributesProxy
 
 private:

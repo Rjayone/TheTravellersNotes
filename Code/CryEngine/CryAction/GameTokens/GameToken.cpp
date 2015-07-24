@@ -113,4 +113,4 @@ void CGameToken::GetMemoryStatistics(ICrySizer * s)
 	s->AddObject(m_listeners);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IGameToken)
+

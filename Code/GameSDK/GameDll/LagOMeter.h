@@ -58,7 +58,6 @@ public:
 	
 	// IInputEventListener
 	bool OnInputEvent( const SInputEvent &event );
-	bool OnInputEventUI( const SInputEvent &event );
 
 protected:
 	struct SHitRequestHistory

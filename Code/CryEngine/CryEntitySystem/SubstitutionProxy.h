@@ -52,8 +52,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IEntitySubstitutionProxy interface.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetSubstitute(IRenderNode *pSubstitute);
-	VIRTUAL IRenderNode *GetSubstitute() { return m_pSubstitute; }
+	virtual void SetSubstitute(IRenderNode *pSubstitute);
+	virtual IRenderNode *GetSubstitute() { return m_pSubstitute; }
 	//////////////////////////////////////////////////////////////////////////
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer )const

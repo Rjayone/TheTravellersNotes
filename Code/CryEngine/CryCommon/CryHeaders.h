@@ -525,13 +525,13 @@ struct MTL_NAME_CHUNK_DESC_0802
 {
 	enum {VERSION = 0x0802};
 
-	char name[128]; //material/shader name
+	char name[128];  //material/shader name
 	int nSubMaterials;
 
-	// Data starts here at the end of the chunk..
-	// if nSubMaterials is 0, this is a single material and nPhysicalizeType contains one element, the physicalize type of that material.
-	// if nSubMaterials is not 0, this is a multi material and nPhysicalizeType contains one element for each sub-material.
-	// int nPhysicalizeType[];
+	// Data continues from here.
+	// 1) if nSubMaterials is 0, this is a single-material: we store physicalization type of the material (int32).
+	// 2) if nSubMaterials is not 0, this is a multi-material: we store nSubMaterials physicalization types (int32
+	//    value for each sub-material). After the physicalization types we store chain of ASCIIZ names of sub-materials.
 
 	AUTO_STRUCT_INFO
 };
@@ -1088,20 +1088,8 @@ struct SBoneInitPosMatrix
 	float mx[4][3];
 	float* operator [] (int i) {return mx[i];}
 	const float* operator [] (int i)const {return mx[i];}
-
-#if defined(PS3)
-	//do not break strict aliasing rules, treated diff.since union code slows potentially down
-	Vec3 getOrt (int nOrt)const
-	{
-		Vec3 ort;
-		ort.x = mx[nOrt][0];
-		ort.y = mx[nOrt][1];
-		ort.z = mx[nOrt][2];
-		return ort;
-	}
-#else
 	const Vec3& getOrt (int nOrt)const {return *(const Vec3*)(mx[nOrt]);}
-#endif
+
 	AUTO_STRUCT_INFO
 };
 

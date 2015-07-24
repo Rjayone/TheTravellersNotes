@@ -499,6 +499,51 @@ void CVehicleSeatActionRotateTurret::SetAimGoal(Vec3 aimPos, int priority)
 	}
 }
 
+//------------------------------------------------------------------------
+bool CVehicleSeatActionRotateTurret::GetRemainingAnglesToAimGoalInDegrees(float &pitch, float &yaw)
+{
+	// no aim goal set (or it got cleared)?
+	if (m_aimGoal.IsZero())
+	{
+		return false;	// have no aim goal
+	}
+
+	IVehiclePart* pPitchPart = m_rotations[eVTRT_Pitch].m_pPart;
+	IVehiclePart* pYawPart = m_rotations[eVTRT_Yaw].m_pPart;
+
+	if (!pYawPart)
+	{
+		pitch = yaw = 0.0f;
+		return true;	// have an aim goal
+	}
+
+	// aim goal is a world pos. Convert it to vehicle space:
+	Vec3 aimGoalLocal = m_pVehicle->GetEntity()->GetWorldTM().GetInverted() * m_aimGoal;
+
+	// direction from yaw part pivot to aim goal
+	Vec3 yawPartToAimGoal = aimGoalLocal - pYawPart->GetLocalTM(false).GetTranslation();
+
+	// angles from yaw part to aim goal
+	Quat aimDir = Quat::CreateRotationVDir(yawPartToAimGoal.GetNormalizedSafe());
+	Ang3 desiredAngles(aimDir);
+
+	if (pPitchPart)
+	{
+		Ang3 pitchAngles(pPitchPart->GetLocalTM(false));
+		pitch = RAD2DEG(desiredAngles.x - pitchAngles.x);
+		pitch = fmod(pitch, 360.0f);
+	}
+	else
+	{
+		pitch = 0.0f;
+	}
+
+	Ang3 yawAngles(pYawPart->GetLocalTM(false));
+	yaw = RAD2DEG(desiredAngles.z - yawAngles.z);
+	yaw = fmod(yaw, 360.0f);
+
+	return true;	// have an aim goal
+}
 
 //------------------------------------------------------------------------
 float CVehicleSeatActionRotateTurret::GetDamageSpeedMul(CVehiclePartBase* pPart)

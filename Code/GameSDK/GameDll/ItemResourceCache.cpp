@@ -26,7 +26,7 @@ void CItemGeometryCache::CacheGeometry( const char* objectFileName, bool useCgfS
 
 	if (validName)
 	{
-		const uint32 fileNameHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32(objectFileName);
+		const uint32 fileNameHash = CCrc32::Compute(objectFileName);
 		const bool objectAlreadyCached = IsStaticObjectCached(fileNameHash) || IsCharacterCached(fileNameHash);
 		if (objectAlreadyCached)
 			return;
@@ -64,7 +64,7 @@ void CItemGeometryCache::CacheGeometry( const char* objectFileName, bool useCgfS
 			IStatObj *pStatObj = gEnv->p3DEngine->LoadStatObj(objectFileName, 0, 0, useCgfStreaming, nLoadingFlags);
 			if (pStatObj)
 			{
-				m_cachedStaticObjects.insert(TCacheStaticObjectMap::value_type(gEnv->pSystem->GetCrc32Gen()->GetCRC32(objectFileName), TStatObjectPtr(pStatObj)));
+				m_cachedStaticObjects.insert(TCacheStaticObjectMap::value_type(CCrc32::Compute(objectFileName), TStatObjectPtr(pStatObj)));
 				pGeometryMaterial = pStatObj->GetMaterial();
 			}
 		}
@@ -156,14 +156,14 @@ void CItemParticleEffectCache::CacheParticle(const char* particleFileName)
 		IParticleEffect* pParticle = gEnv->pParticleManager->FindEffect(particleFileName, "CItemParticleEffectCache::CacheParticle");
 		if (pParticle)
 		{
-			m_cachedParticles.insert(TCacheParticleMap::value_type(gEnv->pSystem->GetCrc32Gen()->GetCRC32(particleFileName), TParticleEffectPtr(pParticle)));
+			m_cachedParticles.insert(TCacheParticleMap::value_type(CCrc32::Compute(particleFileName), TParticleEffectPtr(pParticle)));
 		}
 	}
 }
 
 IParticleEffect* CItemParticleEffectCache::GetCachedParticle(const char* particleFileName) const
 {
-	uint32 nameHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32(particleFileName);
+	uint32 nameHash = CCrc32::Compute(particleFileName);
 
 	TCacheParticleMap::const_iterator particleCIt = m_cachedParticles.find(nameHash);
 
@@ -195,7 +195,7 @@ void CItemMaterialAndTextureCache::CacheTexture( const char* textureFileName, bo
 		ITexture* pTexture = gEnv->pRenderer->EF_LoadTexture(textureFileName, noStreaming ? FT_DONT_STREAM : 0);
 		if (pTexture)
 		{
-			m_cachedTextures.insert(TCacheTextureMap::value_type(gEnv->pSystem->GetCrc32Gen()->GetCRC32(textureFileName), TTexturePtr(pTexture)));
+			m_cachedTextures.insert(TCacheTextureMap::value_type(CCrc32::Compute(textureFileName), TTexturePtr(pTexture)));
 			
 			// Textures have an initial reference count of 1, so we need to release it here to avoid a leak
 			pTexture->Release();
@@ -205,7 +205,7 @@ void CItemMaterialAndTextureCache::CacheTexture( const char* textureFileName, bo
 
 ITexture* CItemMaterialAndTextureCache::GetCachedTexture( const char* textureFileName ) const
 {
-	const uint32 nameHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32(textureFileName);
+	const uint32 nameHash = CCrc32::Compute(textureFileName);
 
 	TCacheTextureMap::const_iterator textureCIt = m_cachedTextures.find(nameHash);
 
@@ -229,14 +229,14 @@ void CItemMaterialAndTextureCache::CacheMaterial( const char* materialFileName )
 		IMaterial* pMaterial = gEnv->p3DEngine->GetMaterialManager()->LoadMaterial(materialFileName);
 		if (pMaterial)
 		{
-			m_cachedMaterials.insert(TCacheMaterialMap::value_type(gEnv->pSystem->GetCrc32Gen()->GetCRC32(materialFileName), TMaterialPtr(pMaterial)));
+			m_cachedMaterials.insert(TCacheMaterialMap::value_type(CCrc32::Compute(materialFileName), TMaterialPtr(pMaterial)));
 		}
 	}
 }
 
 IMaterial* CItemMaterialAndTextureCache::GetCachedMaterial( const char* materialFileName ) const
 {
-	uint32 nameHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32(materialFileName);
+	uint32 nameHash = CCrc32::Compute(materialFileName);
 
 	TCacheMaterialMap::const_iterator materialCIt = m_cachedMaterials.find(nameHash);
 

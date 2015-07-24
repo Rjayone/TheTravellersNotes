@@ -182,7 +182,7 @@ public:
 	void* ReceiveSimpleBreakage( TSerialize ser );                                          // Serialise a received a stream
 	void* SerialiseBreakage( TSerialize ser, BreakStream* pStream );
 	void PlaybackSimpleBreakage( void* userData, INetBreakageSimplePlaybackPtr pBreakage );  // Callback from low levek to push a stream for pending playback
-	VIRTUAL const EventPhysRemoveEntityParts * GetRemovePartEvents(int & iNumEvents);
+	virtual const EventPhysRemoveEntityParts * GetRemovePartEvents(int & iNumEvents);
 
 	static void SerialisePosition(CBitArray& array, Vec3& pos, float range, int numBits);
 

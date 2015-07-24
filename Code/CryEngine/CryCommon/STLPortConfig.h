@@ -54,8 +54,7 @@
 * in STLport iostreams mode, namespace customization guaranty that you
 * link to the right library.
 */
-#if (defined(_DEBUG) || defined(FORCE_ASSERTS_IN_PROFILE)) && !defined(PS3) && !defined(__SPU__) // PS3_STLPORT_FIX: Don't use DEBUG for PS3
-
+#if (defined(_DEBUG) || defined(FORCE_ASSERTS_IN_PROFILE))
 #if !defined(_STLP_DEBUG)
 # define _STLP_DEBUG 1
 #endif
@@ -110,7 +109,7 @@
 //#undef WINBASEAPI
 
 # endif //_XBOX_VER else _WIN32
-#endif // _DEBUG && !PS3 && !__SPU__
+#endif // _DEBUG 
 
 /*
 * To reduce the famous code bloat trouble due to the use of templates STLport grant

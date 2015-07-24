@@ -1366,7 +1366,7 @@ bool CAnimationDatabase::AddSubADBFragmentFilter ( const string &sADBFileName, F
 }
 
 
-void CAnimationDatabase::FillMiniSubADB(SMiniSubADB &outMiniSub, const SSubADB &inSub)
+void CAnimationDatabase::FillMiniSubADB(SMiniSubADB &outMiniSub, const SSubADB &inSub) const
 {
 	outMiniSub.vSubADBs.push_back( SMiniSubADB() );
 	SMiniSubADB &miniSub = outMiniSub.vSubADBs.back();
@@ -1386,10 +1386,10 @@ void CAnimationDatabase::FillMiniSubADB(SMiniSubADB &outMiniSub, const SSubADB &
 }
 
 
-void CAnimationDatabase::GetSubADBFragmentFilters( SMiniSubADB::TSubADBArray &outList )
+void CAnimationDatabase::GetSubADBFragmentFilters( SMiniSubADB::TSubADBArray &outList ) const
 {
 	outList.clear();
-	for ( TSubADBList::iterator itADB = m_subADBs.begin(); itADB != m_subADBs.end(); ++itADB )
+	for ( TSubADBList::const_iterator itADB = m_subADBs.begin(); itADB != m_subADBs.end(); ++itADB )
 	{
 		outList.push_back( SMiniSubADB() );
 		SMiniSubADB &miniSub = outList.back();
@@ -1402,7 +1402,7 @@ void CAnimationDatabase::GetSubADBFragmentFilters( SMiniSubADB::TSubADBArray &ou
 			miniSub.vFragIDs.push_back(*itFragID);
 		}
 
-		for ( TSubADBList::iterator subitADB = (*itADB).subADBs.begin(); subitADB != (*itADB).subADBs.end(); ++subitADB )
+		for ( TSubADBList::const_iterator subitADB = (*itADB).subADBs.begin(); subitADB != (*itADB).subADBs.end(); ++subitADB )
 		{
 			FillMiniSubADB(miniSub, *subitADB);
 		}
@@ -1759,35 +1759,69 @@ void CAnimationDatabase::FindBestBlends(const SBlendQuery &blendQuery, SBlendQue
 	}
 }
 
+
+void CAnimationDatabase::AdjustSubADBListAfterFragmentIDDeletion(SSubADB::TSubADBList& subADBs, const FragmentID fragmentID)
+{
+	for ( SSubADB::TSubADBList::iterator itSubADB = subADBs.begin(); itSubADB != subADBs.end(); ++itSubADB )
+	{
+		for ( SSubADB::TFragIDList::iterator itFragID = itSubADB->vFragIDs.begin(); itFragID != itSubADB->vFragIDs.end(); )
+		{
+			if (*itFragID == fragmentID)
+			{
+				// Remove direct references to the removed fragmentID.
+				// Note that this does not remove the sub ADB rule, it just leaves a subADB rule with less fragmentIDs.
+				itFragID = itSubADB->vFragIDs.erase(itFragID);
+			}
+			else
+			{
+				// Adjust any references to fragmentIDs above the deleted one
+				if (*itFragID > fragmentID) 
+				{
+					--(*itFragID);
+				}
+				++itFragID;
+			}
+		}
+
+		AdjustSubADBListAfterFragmentIDDeletion(itSubADB->subADBs, fragmentID);
+	}
+}
+
 void CAnimationDatabase::DeleteFragmentID(FragmentID fragmentID)
 {
 	m_fragmentList.erase(m_fragmentList.begin() + fragmentID);
 
-	TFragmentBlendDatabase newBlendDb;
-
-	for (TFragmentBlendDatabase::iterator it = m_fragmentBlendDB.begin(); it != m_fragmentBlendDB.end(); ++it)
+	// Adjust blends
 	{
-		const SFragmentBlendID &blendID = it->first;
-
-		// Drop any blends that refer to the deleted fragmentID
-		if ((blendID.fragFrom != fragmentID) && (blendID.fragTo != fragmentID))
+		TFragmentBlendDatabase newBlendDb;
+	
+		for (TFragmentBlendDatabase::iterator it = m_fragmentBlendDB.begin(); it != m_fragmentBlendDB.end(); ++it)
 		{
-			SFragmentBlendID newBlendID;
-			newBlendID.fragFrom = blendID.fragFrom;
-			newBlendID.fragTo = blendID.fragTo;
-
-			// Adjust any references to fragmentIDs above the deleted one
-			if (newBlendID.fragFrom > fragmentID)
-				newBlendID.fragFrom--;
-			if (newBlendID.fragTo > fragmentID)
-				newBlendID.fragTo--;
-
-			newBlendDb[newBlendID] = it->second;
+			const SFragmentBlendID &blendID = it->first;
+	
+			// Drop any blends that refer to the deleted fragmentID
+			if ((blendID.fragFrom != fragmentID) && (blendID.fragTo != fragmentID))
+			{
+				SFragmentBlendID newBlendID;
+				newBlendID.fragFrom = blendID.fragFrom;
+				newBlendID.fragTo = blendID.fragTo;
+	
+				// Adjust any references to fragmentIDs above the deleted one
+				if (newBlendID.fragFrom > fragmentID)
+					newBlendID.fragFrom--;
+				if (newBlendID.fragTo > fragmentID)
+					newBlendID.fragTo--;
+	
+				newBlendDb[newBlendID] = it->second;
+			}
 		}
+	
+		// Swap the new one for the old one
+		m_fragmentBlendDB = newBlendDb;
 	}
 
-	// Swap the new one for the old one
-	m_fragmentBlendDB = newBlendDb;
+	// Adjust fragmentIDs in subADB definitions
+	AdjustSubADBListAfterFragmentIDDeletion(m_subADBs, fragmentID);
 }
 
 void CAnimationDatabase::QueryUsedTags(const FragmentID fragmentID, const SFragTagState &filter, SFragTagState &usedTags) const

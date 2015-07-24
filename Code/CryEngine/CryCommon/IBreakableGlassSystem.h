@@ -9,7 +9,6 @@
 //  Compilers:   Visual Studio 2010
 //  Description: Interface to the Breakable Glass System
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IBreakableGlassSystem.h)
 
 #ifndef __IBREAKABLEGLASSSYSTEM_H__
 #define __IBREAKABLEGLASSSYSTEM_H__
@@ -17,7 +16,7 @@
 
 struct EventPhysCollision;
 
-UNIQUE_IFACE struct IBreakableGlassSystem 
+struct IBreakableGlassSystem 
 {
 	virtual ~IBreakableGlassSystem() {}
 

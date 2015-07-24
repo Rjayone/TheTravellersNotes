@@ -10,7 +10,6 @@ History:
 - August 5th, 2008: Created by Michelle Martin
 - February 5th, 2009: Moved to CryAction by David Ramos
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(ICooperativeAnimationManager.h)
 
 #ifndef __I_COOPERATIVEANIMATIONMANAGER_H__
 #define __I_COOPERATIVEANIMATIONMANAGER_H__
@@ -27,7 +26,7 @@ struct IAnimatedCharacter;
 typedef DynArray<SCharacterParams> TCharacterParams;
 
 /// Cooperative Animation Manager Common Interface
-UNIQUE_IFACE struct ICooperativeAnimationManager
+struct ICooperativeAnimationManager
 {
 	virtual	~ICooperativeAnimationManager(){}
 	// update function for every frame

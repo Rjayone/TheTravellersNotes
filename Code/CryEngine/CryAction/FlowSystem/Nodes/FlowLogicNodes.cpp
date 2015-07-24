@@ -798,7 +798,7 @@ public:
 				if (maxOut < minOut) 
 					std::swap(minOut, maxOut);
 
-				int n = minOut + Random(maxOut - minOut + 1);
+				int n = cry_random(minOut, maxOut);
 
 				// Collect the outputs to use
 				static int	out[NUM_OUTPUTS];
@@ -818,7 +818,7 @@ public:
 
 				// Shuffle
 				for (int i = 0; i < n; i++)
-					std::swap(out[i], out[Random(nout)]);
+					std::swap(out[i], out[cry_random(0, nout - 1)]);
 
 				// Set outputs.
 				for (int i = 0; i < n; i++)
@@ -889,6 +889,7 @@ public:
 		case eFE_ConnectOutputPort:
 			if (pActInfo->connectPort < NUM_OUTPUTS)
 			{
+				++m_nConnectionCounts[pActInfo->connectPort];
 				// check if already connected
 				for (int i=0; i<m_nOutputCount; ++i)
 				{
@@ -907,10 +908,14 @@ public:
 					// check if really connected
 					if (m_nConnectedPorts[i] == pActInfo->connectPort)
 					{
-						m_nConnectedPorts[i] = m_nPorts[m_nOutputCount]; // copy last value to here
-						m_nConnectedPorts[m_nOutputCount] = -1;
-						--m_nOutputCount;
-						Reset();
+						if (m_nConnectionCounts[pActInfo->connectPort] == 1)
+						{
+							m_nConnectedPorts[i] = m_nPorts[m_nOutputCount - 1]; // copy last value to here
+							m_nConnectedPorts[m_nOutputCount - 1] = -1;
+							--m_nOutputCount;
+							Reset();
+						}
+						--m_nConnectionCounts[pActInfo->connectPort];
 						return;
 					}
 				}
@@ -930,7 +935,7 @@ public:
 				int numCandidates = m_nOutputCount - m_nTriggered;
 				if (numCandidates <= 0)
 					return;
-				const int cand = Random(numCandidates);
+				const int cand = cry_random(0, numCandidates - 1);
 				const int whichPort = m_nPorts[cand];
 				m_nPorts[cand] = m_nPorts[numCandidates-1];
 				m_nPorts[numCandidates-1] = -1;
@@ -956,6 +961,7 @@ public:
 		for (int i=0; i<NUM_OUTPUTS; ++i)
 		{
 			m_nConnectedPorts[i] = -1;
+			m_nConnectionCounts[i] = 0;
 		}
 	}
 
@@ -977,6 +983,7 @@ public:
 		// because atm. we don't send the  eFE_ConnectOutputPort or eFE_DisconnectOutputPort
 		// to cloned graphs (see CFlowGraphBase::Clone)
 		memcpy(pClone->m_nConnectedPorts, m_nConnectedPorts, sizeof(m_nConnectedPorts));
+		memcpy(pClone->m_nConnectionCounts, m_nConnectionCounts, sizeof(m_nConnectionCounts));
 		pClone->Reset();
 		return pClone;
 	}
@@ -1013,6 +1020,7 @@ public:
 
 	int m_nConnectedPorts[NUM_OUTPUTS]; // array with port-numbers which are connected.
 	int m_nPorts[NUM_OUTPUTS]; // permutation of m_nConnectedPorts array with m_nOutputCount valid entries
+	int m_nConnectionCounts[NUM_OUTPUTS]; // number of connections on each port
 	int m_nTriggered;
 	int m_nOutputCount;
 };

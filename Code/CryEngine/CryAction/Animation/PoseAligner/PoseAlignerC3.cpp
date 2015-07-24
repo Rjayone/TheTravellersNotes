@@ -166,7 +166,7 @@ ILINE bool InitializePoseAlignerBipedHuman(PoseAligner::CPose& pose, IEntity& en
 	PoseAligner::SChainDesc chainDesc;
 	chainDesc.name = "Left";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "LftLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("LftLeg01");
 	chainDesc.contactJointIndex = jointIndexFrontLeft;
 	chainDesc.targetBlendJointIndex = jointIndexLeftBlend;
 	chainDesc.bBlendProcedural = true;
@@ -183,7 +183,7 @@ ILINE bool InitializePoseAlignerBipedHuman(PoseAligner::CPose& pose, IEntity& en
 
 	chainDesc.name = "Right";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "RgtLeg01";	
+	chainDesc.solver = CCrc32::ComputeLowercase("RgtLeg01");	
 	chainDesc.contactJointIndex = jointIndexFrontRight;
 	chainDesc.targetBlendJointIndex = jointIndexRightBlend;
 	chainDesc.bBlendProcedural = true;
@@ -223,7 +223,7 @@ ILINE bool InitializePoseAlignerBipedAlien(PoseAligner::CPose& pose, IEntity& en
 	PoseAligner::SChainDesc chainDesc;
 	chainDesc.name = "Left";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "LftLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("LftLeg01");
 	chainDesc.contactJointIndex = jointIndexFrontLeft;
 	chainDesc.bBlendProcedural = true;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -0.1f);
@@ -238,7 +238,7 @@ ILINE bool InitializePoseAlignerBipedAlien(PoseAligner::CPose& pose, IEntity& en
 
 	chainDesc.name = "Right";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "RgtLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("RgtLeg01");
 	chainDesc.contactJointIndex = jointIndexFrontRight;
 	chainDesc.bBlendProcedural = true;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -0.1f);
@@ -309,7 +309,7 @@ ILINE bool InitializePoseAlignerPinger(PoseAligner::CPose& pose, IEntity& entity
 	PoseAligner::SChainDesc chainDesc;
 	chainDesc.name = "Left";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "LftLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("LftLeg01");
 	chainDesc.contactJointIndex = jointIndexFrontLeft;
 	chainDesc.targetBlendJointIndex = jointIndexFrontLeftBlend;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, bIsMP?-1.8f:-1.8f);
@@ -326,7 +326,7 @@ ILINE bool InitializePoseAlignerPinger(PoseAligner::CPose& pose, IEntity& entity
 
 	chainDesc.name = "Right";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "RgtLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("RgtLeg01");
 	chainDesc.contactJointIndex = jointIndexFrontRight;
 	chainDesc.targetBlendJointIndex = jointIndexFrontRightBlend;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, bIsMP?-1.8f:-1.8f);
@@ -343,7 +343,7 @@ ILINE bool InitializePoseAlignerPinger(PoseAligner::CPose& pose, IEntity& entity
 
 	chainDesc.name = "Center";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "CtrLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("CtrLeg01");
 	chainDesc.contactJointIndex = jointIndexFrontCenter;
 	chainDesc.targetBlendJointIndex = jointIndexFrontCenterBlend;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, bIsMP?-2.f:-2.f);
@@ -403,7 +403,7 @@ ILINE bool InitializePoseAlignerScorcher(PoseAligner::CPose& pose, IEntity& enti
 	PoseAligner::SChainDesc chainDesc;
 	chainDesc.name = "Left";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "LftLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("LftLeg01");
 	chainDesc.contactJointIndex = jointIndexBackLeft;
 	chainDesc.targetBlendJointIndex = jointIndexBackLeftBlend;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -1.0f);
@@ -417,9 +417,9 @@ ILINE bool InitializePoseAlignerScorcher(PoseAligner::CPose& pose, IEntity& enti
 	if (!pose.CreateChain(chainDesc))
 		return false;
 
-	chainDesc.name = "Left";
+	chainDesc.name = "Right";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "RgtLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("RgtLeg01");
 	chainDesc.contactJointIndex = jointIndexBackRight;
 	chainDesc.targetBlendJointIndex = jointIndexBackRightBlend;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -1.0f);
@@ -435,7 +435,7 @@ ILINE bool InitializePoseAlignerScorcher(PoseAligner::CPose& pose, IEntity& enti
 
 	chainDesc.name = "FrontLeft";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "LftArm01";
+	chainDesc.solver = CCrc32::ComputeLowercase("LftArm01");
 	chainDesc.contactJointIndex = jointIndexFrontLeft;
 	chainDesc.targetBlendJointIndex = jointIndexFrontLeftBlend;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -1.0f);
@@ -451,7 +451,7 @@ ILINE bool InitializePoseAlignerScorcher(PoseAligner::CPose& pose, IEntity& enti
 
 	chainDesc.name = "FrontRight";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "RgtArm01";
+	chainDesc.solver = CCrc32::ComputeLowercase("RgtArm01");
 	chainDesc.contactJointIndex = jointIndexFrontRight;
 	chainDesc.targetBlendJointIndex = jointIndexFrontRightBlend;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -1.0f);
@@ -495,7 +495,7 @@ ILINE bool InitializePoseAlignerDeer(PoseAligner::CPose& pose, IEntity& entity, 
 	PoseAligner::SChainDesc chainDesc;
 	chainDesc.name = "Left";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "LftLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("LftLeg01");
 	chainDesc.contactJointIndex = jointIndexBackLeft;
 	chainDesc.bBlendProcedural = true;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -0.05f);
@@ -509,9 +509,9 @@ ILINE bool InitializePoseAlignerDeer(PoseAligner::CPose& pose, IEntity& entity, 
 	if (!pose.CreateChain(chainDesc))
 		return false;
 
-	chainDesc.name = "Left";
+	chainDesc.name = "Right";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "RgtLeg01";
+	chainDesc.solver = CCrc32::ComputeLowercase("RgtLeg01");
 	chainDesc.contactJointIndex = jointIndexBackRight;
 	chainDesc.bBlendProcedural = true;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -0.05f);
@@ -527,7 +527,7 @@ ILINE bool InitializePoseAlignerDeer(PoseAligner::CPose& pose, IEntity& entity, 
 
 	chainDesc.name = "FrontLeft";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "LftArm01";
+	chainDesc.solver = CCrc32::ComputeLowercase("LftArm01");
 	chainDesc.contactJointIndex = jointIndexFrontLeft;
 	chainDesc.bBlendProcedural = true;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -0.05f);
@@ -543,7 +543,7 @@ ILINE bool InitializePoseAlignerDeer(PoseAligner::CPose& pose, IEntity& entity, 
 
 	chainDesc.name = "FrontRight";
 	chainDesc.eType = IAnimationPoseAlignerChain::eType_Limb;
-	chainDesc.solver = "RgtArm01";
+	chainDesc.solver = CCrc32::ComputeLowercase("RgtArm01");
 	chainDesc.contactJointIndex = jointIndexFrontRight;
 	chainDesc.bBlendProcedural = true;
 	chainDesc.offsetMin = Vec3(0.0f, 0.0f, -0.05f);

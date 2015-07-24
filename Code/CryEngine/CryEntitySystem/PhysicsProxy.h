@@ -70,28 +70,28 @@ public:
 	virtual void SerializeXML( XmlNodeRef &entityNode,bool bLoading );
 	virtual void Serialize( TSerialize ser );
 	virtual bool NeedSerialize();
-	VIRTUAL void SerializeTyped( TSerialize ser, int type, int flags );
+	virtual void SerializeTyped( TSerialize ser, int type, int flags );
 	virtual bool GetSignature( TSerialize signature );
-	VIRTUAL void EnableNetworkSerialization(bool enable);
+	virtual void EnableNetworkSerialization(bool enable);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
 	// IEntityPhysicalProxy interface.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void GetLocalBounds( AABB &bbox );
-	VIRTUAL void GetWorldBounds( AABB &bbox );
+	virtual void GetLocalBounds( AABB &bbox );
+	virtual void GetWorldBounds( AABB &bbox );
 		
-	VIRTUAL void Physicalize( SEntityPhysicalizeParams &params );
-	VIRTUAL IPhysicalEntity* GetPhysicalEntity() const { return m_pPhysicalEntity; }
-	VIRTUAL void EnablePhysics( bool bEnable );
-	VIRTUAL bool IsPhysicsEnabled() const;
-	VIRTUAL void AddImpulse( int ipart, const Vec3 &pos,const Vec3 &impulse,bool bPos,float fAuxScale, float fPushScale = 1.0f );
+	virtual void Physicalize( SEntityPhysicalizeParams &params );
+	virtual IPhysicalEntity* GetPhysicalEntity() const { return m_pPhysicalEntity; }
+	virtual void EnablePhysics( bool bEnable );
+	virtual bool IsPhysicsEnabled() const;
+	virtual void AddImpulse( int ipart, const Vec3 &pos,const Vec3 &impulse,bool bPos,float fAuxScale, float fPushScale = 1.0f );
 
-	VIRTUAL void SetTriggerBounds( const AABB &bbox );
-	VIRTUAL void GetTriggerBounds( AABB &bbox );
+	virtual void SetTriggerBounds( const AABB &bbox );
+	virtual void GetTriggerBounds( AABB &bbox );
 
-  VIRTUAL int GetPartId0() { return m_partId0; }
-	VIRTUAL void IgnoreXFormEvent(bool ignore) { SetFlags( ignore ? (m_nFlags|FLAG_IGNORE_XFORM_EVENT) : (m_nFlags&(~FLAG_IGNORE_XFORM_EVENT))); }
+  virtual int GetPartId0() { return m_partId0; }
+	virtual void IgnoreXFormEvent(bool ignore) { SetFlags( ignore ? (m_nFlags|FLAG_IGNORE_XFORM_EVENT) : (m_nFlags&(~FLAG_IGNORE_XFORM_EVENT))); }
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -111,9 +111,9 @@ public:
 	void UpdateSlotGeometry(int nSlot,IStatObj *pStatObjNew=0,float mass=-1.0f,int bNoSubslots=1);
 	void AssignPhysicalEntity( IPhysicalEntity *pPhysEntity, int nSlot=-1 );
 
-	VIRTUAL bool PhysicalizeFoliage( int iSlot );
-	VIRTUAL void DephysicalizeFoliage( int iSlot );
-	VIRTUAL IFoliage *GetFoliage( int iSlot );
+	virtual bool PhysicalizeFoliage( int iSlot );
+	virtual void DephysicalizeFoliage( int iSlot );
+	virtual IFoliage *GetFoliage( int iSlot );
 
 	int AddSlotGeometry( int nSlot,SEntityPhysicalizeParams &params, int bNoSubslots=1 );
 	void RemoveSlotGeometry( int nSlot );

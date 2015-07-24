@@ -64,10 +64,10 @@ struct INavigationSystem
 
 	struct INavigationSystemListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~INavigationSystemListener(){}
 		virtual void OnNavigationEvent(const ENavigationEvent event) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 	enum WorkingState
@@ -117,6 +117,7 @@ struct INavigationSystem
 		uint32 tileCount;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~INavigationSystem() {}
 	virtual NavigationAgentTypeID CreateAgentType(const char* name, const CreateAgentTypeParams& params) = 0;
 	virtual NavigationAgentTypeID GetAgentTypeID(const char* name) const = 0;
@@ -241,7 +242,7 @@ struct INavigationSystem
 
 	virtual const IOffMeshNavigationManager& GetIOffMeshNavigationManager() const = 0;
 	virtual IOffMeshNavigationManager& GetIOffMeshNavigationManager() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 

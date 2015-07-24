@@ -49,7 +49,7 @@ public:
 
 	void Reset();
 
-	virtual bool AllowOverride() const OVERRIDE {return true;}
+	virtual bool AllowOverride() const override {return true;}
 
 private:
 	friend class CFlowModuleStartNode;
@@ -127,7 +127,7 @@ public:
 	
 	void Reset();
 
-	virtual bool AllowOverride() const OVERRIDE {return true;}
+	virtual bool AllowOverride() const override {return true;}
 
 private:
 	friend class CFlowModuleReturnNode;
@@ -205,7 +205,7 @@ public:
 
 	void Reset();
 
-	virtual bool AllowOverride() const OVERRIDE {return true;}
+	virtual bool AllowOverride() const override {return true;}
 
 private:
 	friend class CFlowModuleCallNode;

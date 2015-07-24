@@ -37,7 +37,7 @@ protected:
 
 private:
 	struct Impl;
-	std::auto_ptr<Impl> m_pImpl;
+	std::unique_ptr<Impl> m_pImpl;
 	ESaveGameReason	m_eReason;
 
 };

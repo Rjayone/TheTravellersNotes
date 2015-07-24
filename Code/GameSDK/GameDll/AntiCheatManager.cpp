@@ -34,10 +34,6 @@ History:
 #define SIGNING_SALT															"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 // SECRET
 
-#if defined(USE_CRISP_THINKING)
-#include <CrispWrapper.h>
-#endif
-
 static AUTOENUM_BUILDNAMEARRAY(s_cheatTypeNames, CheatTypeList);
 static AUTOENUM_BUILDNAMEARRAY(s_cheatOperatorNames, CheatOperatorList);
 static AUTOENUM_BUILDNAMEARRAY(s_cheatActionNames, CheatActionList);
@@ -53,10 +49,6 @@ CAntiCheatManager::CAntiCheatManager()
 , m_enableLogUploads(true)
 , m_uChatMsgsSent(0)
 , m_uIncidents(0)
-#if defined(USE_CRISP_THINKING)
-, m_CrispLibrary(NULL)
-, m_pCrispWrapper(NULL)
-#endif
 {
 	ResetAntiCheatVars();
 
@@ -77,32 +69,6 @@ CAntiCheatManager::CAntiCheatManager()
 	if (res)
 	{
 		res->AddDataListener(this);
-	}
-#endif
-
-#if defined(USE_CRISP_THINKING)
-
-#if defined(LINUX)
-    m_CrispLibrary = CryLoadLibrary("CryCrispWrapper.so");
-#elif defined(APPLE)
-    m_CrispLibrary = CryLoadLibrary("CryCrispWrapper.dylib");
-#else
-	m_CrispLibrary = CryLoadLibrary("CryCrispWrapper.dll");
-#endif
-    if (m_CrispLibrary)
-	{
-		TCryCrispGet pGetCrisp = (TCryCrispGet)CryGetProcAddress((HMODULE)m_CrispLibrary, "CryCrispGet");
-        if (pGetCrisp)
-		{
-			m_pCrispWrapper = (*pGetCrisp)();
-			m_pCrispWrapper->Initialize();
-		}
-		else
-		{
-#if !defined(_RELEASE)
-			CryFatalError("CryCrispWrapper.dll needs to be present in the Dedicated Server exe directory");
-#endif
-		}
 	}
 #endif
 
@@ -128,16 +94,6 @@ CAntiCheatManager::~CAntiCheatManager()
 	{
 		res->RemoveDataListener(this);
 	}
-
-
-#if defined(USE_CRISP_THINKING)
-	if(m_pCrispWrapper)
-	{
-		m_pCrispWrapper->Shutdown();
-		m_pCrispWrapper = NULL;
-		CryFreeLibrary(m_CrispLibrary);
-	}
-#endif
 }
 
 void CAntiCheatManager::ResetAntiCheatVars()
@@ -282,7 +238,7 @@ TCheatAssetGroup CAntiCheatManager::FindAssetTypeByExtension(const char * ext)
 
 TCheatAssetGroup CAntiCheatManager::FindAssetTypeByWeight()
 {
-  int weightedValue = cry_rand32()%m_totalAssetWeighting;
+  int weightedValue = cry_random_uint32()%m_totalAssetWeighting;
   int size = m_assetGroupWeights.size();
   for (TCheatAssetGroup idx = 0; idx < size; ++idx)
   {
@@ -902,71 +858,9 @@ void CAntiCheatManager::ProcessFlagActivity(TCheatType type, uint16 channelId, c
 
 	if(incidentXML)
 	{
-#if defined(USE_CRISP_THINKING)
-		if(m_pCrispWrapper && bDoRemoteLog)
-		{
-			HandleCrispThinkingOutput(type, channelId, incidentXML, nMaxConfidence);
-		}
-#endif
-
 		CheatLogInternalXml(incidentXML);
 	}
 }
-
-#if defined(USE_CRISP_THINKING)
-
-CryStackStringT<char, 256> keyString;
-
-void CAntiCheatManager::OutputXMLToCrispThinking(XmlNodeRef xml)
-{	
-	for(int i = 0, count = xml->getChildCount(); i < count; i++)
-	{
-		OutputXMLToCrispThinking(xml->getChild(i));
-	}
-}
-
-void CAntiCheatManager::HandleCrispThinkingOutput(TCheatType type, uint16 channelId, XmlNodeRef incidentXML, int nMaxConfidence)
-{
-	if(CGameLobby * pGameLobby = g_pGame->GetGameLobby())
-	{
-		CryUserID userId = pGameLobby->GetUserIDFromChannelID(channelId);
-
-		CryFixedStringT<CRYLOBBY_USER_GUID_STRING_LENGTH> userGUID("<unknown>");
-		
-		if(userId.IsValid())
-		 userGUID = userId.get()->GetGUIDAsString().c_str();
-		else
-		{
-			CryLog("Failed to get GUID for user on channel %u", channelId);
-		}
-
-		if(ITelemetryCollector * pTelemetryCollector = g_pGame->GetITelemetryCollector())
-		{
-			const char * pTelemetrySessionName = pTelemetryCollector->GetSessionId().c_str();
-
-			CryHashStringId sessionHash(pTelemetrySessionName);
-
-			CryFixedStringT<128> eventUID;
-			eventUID.Format("%X-%s-%u", sessionHash.id, userGUID.c_str(), m_uIncidents++);
-
-			CryStackStringT<char, 128> cheatName;
-			int nConfidenceBucket = nMaxConfidence / 10;
-			cheatName.FormatFast("%s_%d", s_cheatTypeNames[type], nConfidenceBucket);
-
-			CryLog("[ANTICHEAT] %s, %s", eventUID.c_str(), userGUID.c_str());
-			CryLog("[ANTICHEAT]   %s, %s", pTelemetrySessionName, cheatName.c_str());
-			m_pCrispWrapper->StartEvent(eventUID.c_str(), userGUID.c_str(), pTelemetrySessionName, cheatName.c_str());
-
-			OutputXMLToCrispThinking(incidentXML);
-
-			bool bQueued = m_pCrispWrapper->EndEvent();
-
-			if(!bQueued)
-				CryLogAlways("[ERROR] Failed to queue Crisp Thinking event");
-		}			
-	}
-}
-#endif
 
 EDisconnectionCause CAntiCheatManager::GetBanKickType(uint16 channelId)
 {
@@ -1022,30 +916,6 @@ void CAntiCheatManager::DumpPlayerRecords()
 	}
 
 	CheatLogInternalXml(playerRecords);
-
-#if defined(USE_CRISP_THINKING)
-	if(GetAntiCheatVar(eAV_3P_StatsUpload, 1) > 0)
-	{
-		if(ITelemetryCollector * pTelemetryCollector = g_pGame->GetITelemetryCollector())
-		{
-			if(const char * pTelemetrySessionName = pTelemetryCollector->GetSessionId().c_str())
-			{
-				CryHashStringId sessionHash(pTelemetrySessionName);
-
-				CryFixedStringT<128> eventUID;
-
-				eventUID.Format("%X-%s-%u", sessionHash.id, "SessionStats", m_uIncidents++);
-
-				CryLog("[ANTICHEAT] %s, %s, %s", eventUID.c_str(), pTelemetrySessionName, "SessionStats");
-				m_pCrispWrapper->StartEvent(eventUID.c_str(), pTelemetrySessionName, pTelemetrySessionName, "SessionStats");
-
-				OutputXMLToCrispThinking(playerRecords);
-
-				bool bQueued = m_pCrispWrapper->EndEvent();
-			}
-		}
-	}
-#endif
 
 	m_PlayerSessionData.clear();
 }
@@ -1341,7 +1211,7 @@ void CAntiCheatManager::KickPlayerDelayed(uint16 channelId, EDisconnectionCause 
 
 		SDelayedKickData kickData;
 		const float fMinDelay = GetAntiCheatVar(eAV_KD_Min, 5.0f);
-		kickData.fKickCountdown = (cry_frand() * (GetAntiCheatVar(eAV_KD_Max, 25.0f) - fMinDelay)) + fMinDelay;	
+		kickData.fKickCountdown = (cry_random(0.0f, 1.0f) * (GetAntiCheatVar(eAV_KD_Max, 25.0f) - fMinDelay)) + fMinDelay;	
 		kickData.userId = userId;
 		kickData.channelId = channelId;
 		kickData.reason = reason;
@@ -1431,43 +1301,6 @@ void CAntiCheatManager::CheatLogInternalXml(XmlNodeRef xmlNode)
 	}
 
 	pXMLStringData->Release();
-}
-
-void CAntiCheatManager::ChatMessage(uint16 channelId, const char * pString)
-{
-#if defined(USE_CRISP_THINKING)
-	if(m_pCrispWrapper)
-	{
-		const char * pTelemetrySessionName = NULL;
-
-		if(ITelemetryCollector * pTelemetryCollector = g_pGame->GetITelemetryCollector())
-		{
-			pTelemetrySessionName = pTelemetryCollector->GetSessionId().c_str();
-		}
-
-		CryFixedStringT<CRYLOBBY_USER_GUID_STRING_LENGTH> userGUID;
-		if (CGameLobby* pGameLobby = g_pGame->GetGameLobby())
-		{
-			CryUserID cryUserId = pGameLobby->GetUserIDFromChannelID(channelId);
-			if (cryUserId.IsValid())
-			{
-				userGUID = cryUserId.get()->GetGUIDAsString();
-			}
-		}
-
-		if(pTelemetrySessionName && userGUID.length() > 0)
-		{
-			CryHashStringId sessionHash(pTelemetrySessionName);
-			CryHashStringId chatHash(pString);
-
-			CryFixedStringT<128> chatUID;
-			chatUID.Format("%X-%X-%u", sessionHash.id, chatHash.id, m_uChatMsgsSent++);
-
-			CryLog("CrispWrapper::ChatMessage( %s, %s, %s, %s)", chatUID.c_str(), userGUID.c_str(), pTelemetrySessionName, pString);
-			m_pCrispWrapper->ChatMessage(chatUID.c_str(), userGUID.c_str(), pTelemetrySessionName, pString);
-		}
-	}
-#endif
 }
 
 void CAntiCheatManager::InsertedUser(CryUserID userId, const char *userName)

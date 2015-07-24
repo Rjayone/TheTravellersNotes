@@ -302,11 +302,6 @@ void CFlashUI::Update(float fDeltaTime)
 			if (!m_bHudVisible && iter->second->HasFlag(IUIElement::eFUI_IS_HUD))
 				continue;
 
-#if defined(ENABLE_FLASH_LOCKLESS_RENDERING_API)
-			if (iter->second->HasFlag(IUIElement::eFUI_RENDER_LOCKLESS))
-				iter->second->RenderLockless();
-			else
-#endif
 				iter->second->Render();
 		}
 	}
@@ -800,26 +795,23 @@ bool CFlashUI::OnInputEvent( const SInputEvent &event )
 }
 
 //------------------------------------------------------------------------------------
-bool CFlashUI::OnInputEventUI( const SInputEvent &event )
+bool CFlashUI::OnInputEventUI( const SUnicodeEvent &event )
 {
 	FUNCTION_PROFILER(GetISystem(), PROFILE_ACTION);
 
 	if ( gEnv->pConsole->GetStatus() ) // disable UI inputs when console is open
 		return false;
 
-	if ( event.state == eIS_UI )
-	{
-		SFlashCharEvent charEvent(event.inputChar);
-		const TSortedElementList& sortedElements = GetSortedElements();
+	SFlashCharEvent charEvent(event.inputChar);
+	const TSortedElementList& sortedElements = GetSortedElements();
 
-		for (TSortedElementList::const_reverse_iterator iter = sortedElements.rbegin(); iter != sortedElements.rend(); ++iter)
+	for (TSortedElementList::const_reverse_iterator iter = sortedElements.rbegin(); iter != sortedElements.rend(); ++iter)
+	{
+		if ( iter->second->HasFlag( IUIElement::eFUI_KEYEVENTS ) )
 		{
-			if ( iter->second->HasFlag( IUIElement::eFUI_KEYEVENTS ) )
-			{
-				iter->second->SendCharEvent( charEvent );
-				if ( iter->second->HasFlag( IUIElement::eFUI_EVENTS_EXCLUSIVE) )
-					return false;
-			}
+			iter->second->SendCharEvent( charEvent );
+			if ( iter->second->HasFlag( IUIElement::eFUI_EVENTS_EXCLUSIVE) )
+				return false;
 		}
 	}
 	return false;
@@ -891,7 +883,7 @@ void CFlashUI::SendFlashMouseEvent( SFlashCursorEvent::ECursorState evt, int iX,
 	for (TSortedElementList::const_reverse_iterator iter = sortedElements.rbegin(); iter != sortedElements.rend(); ++iter)
 	{
 		if (iter->second->HasFlag( IUIElement::eFUI_MOUSEEVENTS ) && (!bFromController || !iter->second->HasFlag( IUIElement::eFUI_CONTROLLER_INPUT ))
-#if defined(XENON) || defined(PS3) || defined(DURANGO)
+#if defined(CONSOLE)
 			&& iter->second->HasFlag( IUIElement::eFUI_CONSOLE_MOUSE )
 #elif !defined(_RELEASE)
 			&& ( !gEnv->IsEditor() || GetCurrentPlatform() == IFlashUI::ePUI_PC || iter->second->HasFlag( IUIElement::eFUI_CONSOLE_MOUSE ) )
@@ -906,7 +898,7 @@ void CFlashUI::SendFlashMouseEvent( SFlashCursorEvent::ECursorState evt, int iX,
 }
 
 //-------------------------------------------------------------------
-bool CFlashUI::DisplayVirtualKeyboard( unsigned int flags, const wchar_t* title, const wchar_t* initialInput, int maxInputLength, IVirtualKeyboardEvents *pInCallback )
+bool CFlashUI::DisplayVirtualKeyboard( unsigned int flags, const char* title, const char* initialInput, int maxInputLength, IVirtualKeyboardEvents *pInCallback )
 {
 	IPlatformOS *pPlatformOS = gEnv->pSystem->GetPlatformOS();
 	if (pPlatformOS && gEnv->pGame && gEnv->pGame->GetIGameFramework())
@@ -1243,9 +1235,9 @@ void CFlashUI::LoadFromFile(const char* pFolderName, const char* pSearch, bool (
 		int res = 0;
 		do 
 		{
-			strcpy( filename, pFolderName );
-			strcat( filename, "/" );
-			strcat( filename, fd.name );
+			cry_strcpy( filename, pFolderName );
+			cry_strcat( filename, "/" );
+			cry_strcat( filename, fd.name );
 
 			(this->*fhFileLoader)( filename );
 
@@ -1316,10 +1308,10 @@ bool CFlashUI::PreloadTexture(const char* pFileName)
 
 	stack_string sFile = pFileName;
 
-#if defined(XENON) || defined(PS3) || defined(DURANGO) || defined(ORBIS)
+//#if defined (CONSOLE)
 	if ( sFile.find(".0") != string::npos )
 		sFile = sFile.substr(0, sFile.find(".0") );
-#endif
+//#endif
 
 	if ( sFile.find(".dds") == sFile.length() - 4
 		|| sFile.find(".tif") == sFile.length() - 4)
@@ -1460,7 +1452,7 @@ TUIEventSystemMap* CFlashUI::GetEventSystemMap( IUIEventSystem::EEventSystemType
 //------------------------------------------------------------------------------------
 void CFlashUI::StartRenderThread()
 {
-#if defined(_RELEASE) && (defined(XENON) || defined(PS3) || defined(DURANGO))
+#if defined(_RELEASE) && (defined(CONSOLE))
 	const bool bMultiThreaded = true;
 #else
 	static ICVar* pMT = gEnv->pConsole->GetCVar("r_MultiThreaded");
@@ -1589,10 +1581,7 @@ SFlashKeyEvent CFlashUI::MapToFlashKeyEvent(const SInputEvent &inputEvent)
 	specialKeyState |= ((inputEvent.modifiers & eMM_NumLock) != 0) ? SFlashKeyEvent::eNumToggled : 0;
 	specialKeyState |= ((inputEvent.modifiers & eMM_ScrollLock) != 0) ? SFlashKeyEvent::eScrollToggled : 0;
 
-	unsigned char asciiCode = (inputEvent.state != eIS_UI) ? 0 : inputEvent.keyName.c_str()[0];
-	unsigned int wcharCode = (inputEvent.state != eIS_UI) ? 0 : inputEvent.inputChar;
-	
-	return SFlashKeyEvent(inputEvent.state == eIS_Pressed ? SFlashKeyEvent::eKeyDown : SFlashKeyEvent::eKeyUp, keyCode, specialKeyState, asciiCode, wcharCode);
+	return SFlashKeyEvent(inputEvent.state == eIS_Pressed ? SFlashKeyEvent::eKeyDown : SFlashKeyEvent::eKeyUp, keyCode, specialKeyState, 0, 0);
 }
 
 //------------------------------------------------------------------------------------
@@ -1634,7 +1623,6 @@ void CFlashUI::CheckResolutionChange()
 		for ( TSortedElementList::const_iterator iter = sortedElements.begin(); iter != sortedElements.end(); ++iter )
 			iter->second->UpdateViewPort();
 
-#if (!defined(PS3) && !defined(XENON))
 		// fix for mouse cursor trapped in old resolution on switch to FS
 		std::map<IUIElement*, bool> bCursorMap;
 		for ( TSortedElementList::const_iterator iter = sortedElements.begin(); iter != sortedElements.end(); ++iter )
@@ -1646,7 +1634,6 @@ void CFlashUI::CheckResolutionChange()
 		{
 			iter->second->SetFlag(IUIElement::eFUI_HARDWARECURSOR, bCursorMap[iter->second]);
 		}
-#endif
 	}
 }
 
@@ -2180,6 +2167,3 @@ void RenderStackDebugInfo(bool render, const char* label, int loop)
 }
 #endif
 //------------------------------------------------------------------------------------
-
-#include UNIQUE_VIRTUAL_WRAPPER(IFlashUI)
-DEVIRTUALIZATION_VTABLE_FIX_IMPL(IFlashUI);

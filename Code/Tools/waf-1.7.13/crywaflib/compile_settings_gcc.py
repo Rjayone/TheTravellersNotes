@@ -7,6 +7,7 @@
 ## Description: WAF  based build system
 #############################################################################
 from waflib.Configure import conf
+import traceback
 
 @conf
 def load_gcc_common_settings(conf):
@@ -34,7 +35,7 @@ def load_gcc_common_settings(conf):
 	
 	v['CPPPATH_ST'] 	= '-I%s'
 	v['DEFINES_ST'] 	= '-D%s'
-
+	
 	# Linker
 	v['CCLNK_SRC_F'] = v['CXXLNK_SRC_F'] = []
 	v['CCLNK_TGT_F'] = v['CXXLNK_TGT_F'] = '-o'
@@ -52,8 +53,8 @@ def load_gcc_common_settings(conf):
 	v['LINKFLAGS_cxxshlib'] = ['-shared']
 	
 	# static library settings	
-	v['CFLAGS_cstlib'] = v['CFLAGS_cxxstlib']	= []	 
-	v['CXXFLAGS_cstlib'] = v['CXXFLAGS_cxxstlib']	= []
+	v['CFLAGS_cstlib'] = v['CFLAGS_cxxstlib']	= ['-fpic']	 
+	v['CXXFLAGS_cstlib'] = v['CXXFLAGS_cxxstlib']	= ['-fpic']
 	
 	v['LINKFLAGS_cxxstlib']	= ['-Wl,-Bstatic']
 	v['LINKFLAGS_cxxshtib'] = ['-Wl,-Bstatic']
@@ -90,6 +91,7 @@ def load_gcc_common_settings(conf):
 		'-Wno-strict-overflow',
 		'-Wno-uninitialized',				
 		'-Wno-unused-local-typedefs',
+		'-Wno-deprecated',
 		]
 
 	if conf.env.CC_VERSION[0] >= '4' and conf.env.CC_VERSION[1] >= '8' and conf.env.CC_VERSION[2] >= '0':
@@ -107,16 +109,14 @@ def load_gcc_common_settings(conf):
 		'-fno-rtti',				# Disable RTTI
 		'-fno-exceptions',			# Disable Exceptions	
 		'-fvisibility-inlines-hidden',
+		'-std=c++11',				# Enable c++11 features
 		
 		# Disable some C++ specific warnings	
 		'-Wno-invalid-offsetof',
 		'-Wno-reorder',		
 		'-Wno-conversion-null',
 		'-Wno-overloaded-virtual',		
-		'-Wno-c++0x-compat',
 	]
-	
-	v['DEFINES'] += ['GCC_NO_CPP11']	
 	
 	# Linker Flags
 	v['LINKFLAGS'] += []	
@@ -129,7 +129,7 @@ def load_gcc_common_settings(conf):
 	v['COMPILER_FLAGS_DisableOptimization'] = [ '-O0' ]	
 	
 	# Compile options appended if debug symbols are generated	
-	v['COMPILER_FLAGS_DebugSymbols'] = [ '-g' ]	
+	v['COMPILER_FLAGS_DebugSymbols'] = [ '-g2', '-gdwarf-2' ]	
 	
 	# Linker flags when building with debug symbols
 	v['LINKFLAGS_DebugSymbols'] = []

@@ -721,7 +721,7 @@ public:
 
 	void Prologue( const char * function, const char * format )
 	{
-		strcpy_s( m_function, function );
+		cry_strcpy(m_function, function);
 		m_format = format;
 	}
 
@@ -820,7 +820,7 @@ INetAtSyncItem * CScriptRMI::HandleRMI( bool bClient, EntityId objID, uint8 func
 		}
 
 	private:
-		std::auto_ptr<CScriptRMISerialize> m_pSer;
+		std::unique_ptr<CScriptRMISerialize> m_pSer;
 		bool m_bClient;
 		CGameContext * m_pContext;
 		EntityId m_objID;

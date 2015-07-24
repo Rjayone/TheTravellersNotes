@@ -302,7 +302,7 @@ void CPlaylistActivityTracker::DataDownloaded( CDownloadableResourcePtr inResour
 					const char* playlistName = NULL;
 					if( playlistNode->getAttr( "name", &playlistName ) )
 					{
-						cry_strncpy( currentPlaylist.name, playlistName, sizeof( currentPlaylist.name ) );
+						cry_strcpy( currentPlaylist.name, playlistName );
 					}
 
 					int id = 0;
@@ -330,7 +330,7 @@ void CPlaylistActivityTracker::DataDownloaded( CDownloadableResourcePtr inResour
 							const char* variantName = NULL;
 							if( variantNode->getAttr( "name", &variantName ) )
 							{
-								cry_strncpy( currentVariant.name, variantName, sizeof(currentVariant.name ) );
+								cry_strcpy( currentVariant.name, variantName );
 							}
 
 							int variantId = 0;

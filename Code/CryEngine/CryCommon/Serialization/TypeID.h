@@ -12,8 +12,8 @@ namespace Serialization{
 
 class IArchive;
 struct TypeInfo;
-class TypeID{
-	friend class TypesFactory;
+class TypeID
+{
 public:
 	TypeID() : typeInfo_(0), module_(0) {}
 
@@ -31,7 +31,6 @@ public:
 	static TypeID get();
 	std::size_t sizeOf() const;
 	const char* name() const;
-	bool registered() const;
 
 	bool operator==(const TypeID& rhs) const;
 	bool operator!=(const TypeID& rhs) const;
@@ -199,7 +198,7 @@ inline bool TypeID::operator!=(const TypeID& rhs) const{
 
 inline bool TypeID::operator<(const TypeID& rhs) const{
 	if (!typeInfo_)
-		return rhs.typeInfo_ ? false : true;
+		return rhs.typeInfo_ != 0;
 	else if (!rhs.typeInfo_)
 		return false;
 	else

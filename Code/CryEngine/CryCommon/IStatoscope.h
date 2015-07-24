@@ -12,8 +12,6 @@
 #define __IStatoscope_h__
 #pragma once
 
-#include DEVIRTUALIZE_HEADER_FIX(IStatoscope.h)
-
 #if ENABLE_STATOSCOPE
 
 struct STexturePoolAllocation;
@@ -78,7 +76,7 @@ private:
 };
 
 // Statoscope interface, access through gEnv->pStatoscope
-UNIQUE_IFACE struct IStatoscope
+struct IStatoscope
 {
 	virtual ~IStatoscope(){}
 private:

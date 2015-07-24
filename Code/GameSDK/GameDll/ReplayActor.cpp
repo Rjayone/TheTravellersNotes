@@ -540,9 +540,6 @@ void SBasicReplayMovementParams::SetDesiredLocalLocation2( ISkeletonAnim* pSkele
 	const float thresholdDistMax = 0.15f;
 	f32 uniform_scale = 1.0f;//m_pInstance->CCharInstance::GetUniformScale();
 
-	float travelDistScale = CLAMP((deltaDist - thresholdDistMin) / (thresholdDistMax - thresholdDistMin), 0.0f, 1.0f);
-	pSkeletonAnim->SetDesiredMotionParam(eMotionParamID_TravelDistScale, travelDistScale/uniform_scale, fDeltaTime);
-
 	Vec2 deltaDir = (deltaDist > 0.0f) ? (deltaVector / deltaDist) : Vec2(0,0);
 	float deltaAngle = (deltaDir.x == 0.0f && deltaDir.y == 0.0f  ? 0.0f : RAD2DEG(atan2f(-deltaDir.x, deltaDir.y)) );
 	float travelAngle = DEG2RAD(deltaAngle);
@@ -601,7 +598,6 @@ void SBasicReplayMovementParams::SetDesiredLocalLocation2( ISkeletonAnim* pSkele
 	SmoothCD(m_fDesiredMoveSpeedSmoothQTX, m_fDesiredMoveSpeedSmoothRateQTX, fDeltaTime, travelSpeed, 0.04f);
 	pSkeletonAnim->SetDesiredMotionParam(eMotionParamID_TravelSpeed, m_fDesiredMoveSpeedSmoothQTX, fDeltaTime);
 	pSkeletonAnim->SetDesiredMotionParam(eMotionParamID_TravelDist, travelDist, fDeltaTime);
-	pSkeletonAnim->SetDesiredMotionParam(eMotionParamID_Scale, uniform_scale, fDeltaTime);
 }
 
 void CReplayActor::GunRemovalListener::OnEntityEvent( IEntity *pEntity,SEntityEvent &event )

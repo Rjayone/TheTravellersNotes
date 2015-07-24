@@ -8,9 +8,6 @@
 
 #include <IPlatformOS.h>
 
-//#define XML_SAVEGAME_USE_COMPRESSION		// must be in sync with XmlLoadGame.cpp
-//#undef  XML_SAVEGAME_USE_COMPRESSION   // undef because does NOT work with aliases yet
-
 static const int XML_SAVEGAME_MAX_CHUNK_SIZE = 32767/2;
 
 struct CXmlSaveGame::Impl
@@ -127,22 +124,10 @@ bool CXmlSaveGame::Write( const char * filename, XmlNodeRef data )
 		}
 	}
 
-	#ifdef XML_SAVEGAME_USE_COMPRESSION
-		#error Savegame compression not supported with IPlatformOS
-		CRY_ASSERT("SAVEGAME compression not supported because it's allocating 6MB chunks of memory.");
-		#if defined(XENON) || defined(PS3)
-				CryWarning(VALIDATOR_MODULE_GAME,VALIDATOR_ERROR, "CXmlSaveGame::Write not supported yet, strings cannot grow beyond 32767 chars\n");
-				return true;//otherwise stopping
-		#endif
+	const bool bSavedToFile = data->saveToFile(filename, XML_SAVEGAME_MAX_CHUNK_SIZE, pFile);
+	if (pFile)
+	{
 		gEnv->pCryPak->FClose(pFile);
-		_smart_ptr<IXmlStringData> pXmlStrData = data->getXMLData( 6000000 );
-		return GetISystem()->WriteCompressedFile( filename,(void*)pXmlStrData->GetString(),8*pXmlStrData->GetStringLength() ); // Length is in bits (so mult by 8)
-	#else
-		const bool bSavedToFile = data->saveToFile(filename, XML_SAVEGAME_MAX_CHUNK_SIZE, pFile);
-		if (pFile)
-		{
-			gEnv->pCryPak->FClose(pFile);
-		}
-		return bSavedToFile;
-	#endif
+	}
+	return bSavedToFile;
 }

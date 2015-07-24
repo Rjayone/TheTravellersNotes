@@ -4,7 +4,7 @@
 #pragma once
 
 // Debugging (This should *always* be committed disabled...)
-#if !defined(RELEASE) && !defined(IS_FREESDK)
+#if !defined(RELEASE)
 //#define GLASS_DEBUG_MODE
 #endif
 
@@ -183,7 +183,7 @@ private:
 	bool	GenerateGeomFromFragment(const Vec2* pFragPts, const uint numPts);
 	void	GenerateVertFromPoint(const Vec3& pt, const Vec2& uvOffset, SVF_P3F_C4B_T2F& vert, const bool impactDistInAlpha = false);
 	void	GenerateTriangleTangent(const Vec3& triPt0, const Vec3& triPt1, const Vec3& triPt2, SPipTangents& tangent);
-	void	PackTriangleTangent(const Vec3& tangent, const Vec3& binormal, SPipTangents& tanBin);
+	void	PackTriangleTangent(const Vec3& tangent, const Vec3& bitangent, SPipTangents& tanBitan);
 	
 	// Drawing
 	void	UpdateImpactShaderConstants();

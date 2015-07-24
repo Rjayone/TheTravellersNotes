@@ -17,7 +17,7 @@ History:
 #include "AIDebugRenderer.h"
 
 
-#include MATH_H
+#include <math.h>
 #include <IRenderer.h>
 #include <Cry_Vector3.h>
 

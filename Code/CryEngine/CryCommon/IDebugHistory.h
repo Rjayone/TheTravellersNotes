@@ -10,19 +10,12 @@ History:
 - 12/15/2006   : Stas Spivakov, Created
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IDebugHistory.h)
 
-#ifndef __IDEBUGHISTORY_H__
-#define __IDEBUGHISTORY_H__
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
-
-UNIQUE_IFACE struct IDebugHistory
+struct IDebugHistory
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IDebugHistory(){}
 	virtual void SetVisibility(bool show) = 0;
 
@@ -40,12 +33,12 @@ UNIQUE_IFACE struct IDebugHistory
 	virtual void ClearHistory() = 0;
 	// if i don't get a value in a frame, then i'll automatically add this value
 	virtual void SetDefaultValue( float x ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IDebugHistoryManager
+struct IDebugHistoryManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IDebugHistoryManager(){}
 	virtual IDebugHistory* CreateHistory(const char* id, const char* name=0) = 0;
 	virtual void RemoveHistory(const char* name) = 0;
@@ -55,7 +48,5 @@ UNIQUE_IFACE struct IDebugHistoryManager
 	virtual void Release() = 0;
 
 	virtual void LayoutHelper(const char* id, const char* name, bool visible, float minout, float maxout, float minin, float maxin, float x, float y, float w=1.0f, float h=1.0f) = 0;	
-
+	// </interfuscator:shuffle>
 };
-
-#endif /*__IDEBUGHISTORY_H__*/

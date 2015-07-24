@@ -45,7 +45,6 @@ bool CLookAtSimple::Prepare(const SAnimationPoseModifierParams& params)
 	return true;
 }
 
-SPU_INDIRECT(CommandBufferExecute(ML))
 bool CLookAtSimple::Execute(const SAnimationPoseModifierParams& params)
 {
 	const IDefaultSkeleton& rIDefaultSkeleton = params.GetIDefaultSkeleton();

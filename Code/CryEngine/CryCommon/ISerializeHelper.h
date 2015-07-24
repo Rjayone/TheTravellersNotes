@@ -17,7 +17,7 @@
 
 struct ISerializedObject
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISerializedObject() {}
 	virtual uint32 GetGUID() const = 0;
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const = 0;
@@ -38,13 +38,14 @@ struct ISerializedObject
 	// Arguments:
 	//	TSerialize &serialize - The TSerialize object to use
 	virtual void Serialize(TSerialize &serialize) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct ISerializeHelper
 {
 	typedef bool (*TSerializeFunc)(TSerialize serialize, void *pArgument);
 
+	// <interfuscator:shuffle>
 	virtual ~ISerializeHelper() {}
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const = 0;
 
@@ -76,7 +77,7 @@ struct ISerializeHelper
 	// Returns:
 	//	True if writing occurred with given serialization object
 	virtual bool Read(ISerializedObject *pObject, TSerializeFunc serializeFunc, void *pArgument = NULL) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__ISERIALIZEHELPER_H__

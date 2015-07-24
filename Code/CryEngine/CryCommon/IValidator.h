@@ -13,21 +13,10 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IValidator.h)
 
-#ifndef __ivalidator_h__
-#define __ivalidator_h__
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
-#if defined(WIN32) || defined(WIN64) || defined(LINUX) || defined(MAC)
 #	define MAX_WARNING_LENGTH	4096
-#else
-#	define MAX_WARNING_LENGTH	512
-// reduce max warning length for consoles (e.g. to prevent overflows on PS3 where thread stack are rather small)
-#endif
 
 #if MAX_WARNING_LENGTH<33
 #error "MAX_WARNING_LENGTH should be bigger than 32"
@@ -62,6 +51,7 @@ enum EValidatorModule
 	VALIDATOR_MODULE_PHYSICS,
 	VALIDATOR_MODULE_FLOWGRAPH,
 	VALIDATOR_MODULE_ONLINE,
+	VALIDATOR_MODULE_DRS,
 };
 
 enum EValidatorFlags
@@ -110,10 +100,8 @@ struct SValidatorRecord
  */
 struct IValidator
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IValidator(){}
 	virtual void Report( SValidatorRecord &record ) = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif // __ivalidator_h__

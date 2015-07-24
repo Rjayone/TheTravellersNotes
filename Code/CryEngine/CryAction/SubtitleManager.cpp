@@ -15,61 +15,97 @@
 
 #include "StdAfx.h"
 #include "SubtitleManager.h"
+#include "ISubtitleManager.h"
+#include "DialogSystem/DialogActorContext.h"
 
+CSubtitleManager* CSubtitleManager::s_Instance = NULL;
 
-
+//////////////////////////////////////////////////////////////////////////
 CSubtitleManager::CSubtitleManager()
 {
 	m_bEnabled = false;
 	m_bAutoMode = true;
 	m_pHandler = NULL;
+
+	s_Instance = this;
 }
 
+//////////////////////////////////////////////////////////////////////////
 CSubtitleManager::~CSubtitleManager()
 {
-	/*if (m_bEnabled)
-		gEnv->pAudioSystem->RemoveEventListener(this);*/
-
+	SetEnabled(false);
+	s_Instance = NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////
 void CSubtitleManager::SetEnabled(bool bEnabled)
 {
 	if (bEnabled != m_bEnabled)
 	{
 		m_bEnabled = bEnabled;
-		/*if (m_bEnabled)
-			gEnv->pAudioSystem->AddEventListener(this, true);
-		else
-			gEnv->pAudioSystem->RemoveEventListener(this);*/
+
+		if (m_bAutoMode)
+		{
+			if (bEnabled)
+			{
+				gEnv->pAudioSystem->AddRequestListener(&CSubtitleManager::OnAudioTriggerStarted, 0, eART_AUDIO_OBJECT_REQUEST, eAORT_EXECUTE_TRIGGER);
+				gEnv->pAudioSystem->AddRequestListener(&CSubtitleManager::OnAudioTriggerFinished, 0, eART_AUDIO_CALLBACK_MANAGER_REQUEST, eACMRT_REPORT_FINISHED_TRIGGER_INSTANCE);
+			}
+			else
+			{
+				gEnv->pAudioSystem->RemoveRequestListener(&CSubtitleManager::OnAudioTriggerStarted, 0);
+				gEnv->pAudioSystem->RemoveRequestListener(&CSubtitleManager::OnAudioTriggerFinished, 0);
+			}
+		}
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
 void CSubtitleManager::SetAutoMode(bool bOn)
 {
-	m_bAutoMode = bOn;	
+	if (bOn != m_bAutoMode)
+	{
+		if (m_bEnabled)  
+		{
+			SetEnabled(false);  //force refresh for add/remove as audio listener
+			m_bAutoMode = bOn;
+			SetEnabled(true);
+		}
+		else
+		{
+			m_bAutoMode = bOn;
+		}
+	}
 }
 
-//void CSubtitleManager::OnSoundSystemEvent(ESoundSystemCallbackEvent event, ISound *pSound)
-//{
-//	const bool bStart = event == SOUNDSYSTEM_EVENT_ON_PLAYBACK_STARTED;
-//	const bool bStop  = event == SOUNDSYSTEM_EVENT_ON_PLAYBACK_STOPPED;
-//	if (bStart || bStop)
-//	{
-//		if (m_bAutoMode && m_bEnabled && m_pHandler)
-//			m_pHandler->ShowSubtitle(pSound, bStart);
-//	}
-//}
-
-//void CSubtitleManager::ShowSubtitle(ISound* pSound, bool bShow)
-//{
-//	if (m_bEnabled && m_pHandler)
-//		m_pHandler->ShowSubtitle(pSound, bShow);
-//}
-
+//////////////////////////////////////////////////////////////////////////
 void CSubtitleManager::ShowSubtitle(const char* subtitleLabel, bool bShow)
 {
 	if (m_bEnabled && m_pHandler)
+	{
 		m_pHandler->ShowSubtitle(subtitleLabel, bShow);
+	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(ISubtitleManager)
+//////////////////////////////////////////////////////////////////////////
+void CSubtitleManager::ShowSubtitle(const SAudioRequestInfo* const pAudioRequestInfo, bool bShow)
+{
+	if (m_bEnabled && m_pHandler)
+	{
+		m_pHandler->ShowSubtitle(pAudioRequestInfo, bShow);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CSubtitleManager::OnAudioTriggerStarted(const SAudioRequestInfo* const pAudioRequestInfo)
+{
+	CSubtitleManager::s_Instance->ShowSubtitle(pAudioRequestInfo, true);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CSubtitleManager::OnAudioTriggerFinished(const SAudioRequestInfo* const pAudioRequestInfo)
+{
+	CSubtitleManager::s_Instance->ShowSubtitle(pAudioRequestInfo, false);
+}
+
+

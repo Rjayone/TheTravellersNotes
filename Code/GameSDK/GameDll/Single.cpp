@@ -1531,16 +1531,16 @@ Vec3 CSingle::ApplySpread(const Vec3 &dir, float spread, int quadrant) const
 	{
 		CCCPOINT(Single_ApplySpreadRandom);
 
-		rx = Random() - 0.5f;
-		rz = Random() - 0.5f;
+		rx = cry_random(-0.5f, 0.5f);
+		rz = cry_random(-0.5f, 0.5f);
 	}
 	else
 	{
 		CCCPOINT(Single_ApplySpreadQuadrant);
 		CRY_ASSERT_MESSAGE(quadrant < 4, "Invalid quadrant provided to apply spread");
 
-		rx = Random(0.5f);
-		rz = Random(0.5f);
+		rx = cry_random(0.0f, 0.5f);
+		rz = cry_random(0.0f, 0.5f);
 
 		if(quadrant > 1)
 		{
@@ -1948,7 +1948,7 @@ void CSingle::ReplayShoot()
 			const STracerParams * tracerParams = &m_fireParams->tracerparams;
 			if (tracerParams->frequency > 0 && (!tracerParams->geometry.empty() || !tracerParams->effect.empty()))
 			{
-				if(Random(tracerParams->frequency) == 0)
+				if(cry_random(0, tracerParams->frequency - 1) == 0)
 				{
 					EmitTracer(pos, hit, tracerParams, NULL);
 				}

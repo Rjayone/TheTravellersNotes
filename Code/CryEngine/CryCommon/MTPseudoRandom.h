@@ -51,8 +51,11 @@
 //*************************************************************************/
 
 
-#ifndef MTRAND_H
-#define MTRAND_H
+#pragma once
+
+#include "BaseTypes.h"  // uint32, uint64
+#include "CryRandomInternal.h"  // CryRandom_Internal::BoundedRandom
+
 
 //////////////////////////////////////////////////////////////////////////
 class CMTRand_int32 
@@ -73,22 +76,60 @@ public:
 	// overloaded operator() to make this a generator (functor)
 	//uint32 operator()() { return rand_int32(); }
 
-	// same as seed(uint32), needed for naming compatibility with CLCGRndGen
-	void Seed(uint32 seed_value) { seed(seed_value); }
-
-	// generates a random unsigned 32-bit number
-	uint32 GenerateUint32() { return rand_int32(); }
-
-	// generates a random unsigned 32-bit number in the closed interval [0, nRange - 1]
-	uint32 GenerateUint32(uint32 nRange) { return uint32((uint64(rand_int32()) * nRange) >> 32); }
-
-	// generates a random unsigned 64-bit number
-	uint64 GenerateUint64() { return (((uint64)rand_int32()) << 32) | ((uint64)rand_int32()); }
-
-	// generates a random floating number in the closed interval [0.0f, 1.0f]
-	float GenerateFloat() { return (float)rand_int32()*(1.0f/4294967295.0f); }
-
 	~CMTRand_int32() {}
+
+	// Functions with PascalCase names were added for
+	// interchangeability with CRndGen (see LCGRandom.h).
+
+	void Seed(uint32 seed_value)
+	{
+		seed(seed_value);
+	}
+
+	uint32 GenerateUint32()
+	{
+		return rand_int32();
+	}
+
+	uint64 GenerateUint64()
+	{
+		const uint32 a = GenerateUint32();
+		const uint32 b = GenerateUint32();
+		return ((uint64)b << 32) | (uint64)a;
+	}
+
+	float GenerateFloat()
+	{
+		return (float)GenerateUint32() * (1.0f / 4294967295.0f);
+	}
+
+	// Ranged function returns random value within the *inclusive* range
+	// between minValue and maxValue.
+	// Any orderings work correctly: minValue <= maxValue and 
+	// minValue >= minValue.
+	template <class T>
+	T GetRandom(const T minValue, const T maxValue)
+	{
+		return CryRandom_Internal::BoundedRandom<CMTRand_int32, T>::Get(*this, minValue, maxValue);
+	}
+
+	// Vector (Vec2, Vec3, Vec4) ranged function returns vector	with 
+	// every component within the *inclusive* ranges between minValue.component
+	// and maxValue.component.
+	// All orderings work correctly: minValue.component <= maxValue.component and
+	// minValue.component >= maxValue.component.
+	template <class T>
+	T GetRandomComponentwise(const T& minValue, const T& maxValue)
+	{
+		return CryRandom_Internal::BoundedRandomComponentwise<CMTRand_int32, T>::Get(*this, minValue, maxValue);
+	}
+
+	// The function returns a random unit vector (Vec2, Vec3, Vec4).
+	template <class T>
+	T GetRandomUnitVector()
+	{
+		return CryRandom_Internal::GetRandomUnitVector<CMTRand_int32, T>(*this);
+	}
 
 protected: // used by derived classes, otherwise not accessible; use the ()-operator
 	// generates 32 bit random int
@@ -103,12 +144,10 @@ protected: // used by derived classes, otherwise not accessible; use the ()-oper
 		x ^= (x << 15) & 0xEFC60000UL;
 		return x ^ (x >> 18);
 	}
+
 private:
-#if defined(__SPU__) // use a smaller state vector on spus(to not init to much)
-	static const int n = 34, m = 17; // compile time constants
-#else
 	static const int n = 624, m = 397; // compile time constants
-#endif
+
 	// the variables below are static (no duplicates can exist)
 	uint32 m_nState[n+1]; // m_nState vector array
 	int p; // position in m_nState array
@@ -124,5 +163,3 @@ private:
 	void operator=(const CMTRand_int32&); // assignment operator not defined
 };
 
-
-#endif

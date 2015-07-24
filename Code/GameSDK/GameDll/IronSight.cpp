@@ -509,7 +509,7 @@ void CIronSight::EnterZoom(float time, bool smooth, int zoomStep)
 
 		if(zoomModeSuffix && zoomModeSuffix[0])
 		{
-			uint32 zoommodeCrC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(zoomModeSuffix);
+			uint32 zoommodeCrC = CCrc32::ComputeLowercase(zoomModeSuffix);
 			pOwner->SetTagByCRC(zoommodeCrC, true);
 		}
 	}
@@ -1241,9 +1241,9 @@ void CIronSight::PostFilterView(SViewParams & viewparams)
 			{
 				float currentRecoil = pFM->GetRecoil();
 				if(currentRecoil>1.5f)
-					currentRecoil = 1.5f + Random(-1.25f,0.65f);
+					currentRecoil = 1.5f + cry_random(-1.25f,0.65f);
 				else if(currentRecoil>0.6f)
-					currentRecoil = currentRecoil + Random(-0.4f,0.3f);
+					currentRecoil = currentRecoil + cry_random(-0.4f,0.3f);
 
 				const float scale = 0.01f * currentRecoil;
 				front *=scale;

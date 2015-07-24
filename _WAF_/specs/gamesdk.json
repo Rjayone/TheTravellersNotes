@@ -1,0 +1,67 @@
+{			
+	"description" 													: "Configuration to build the Engine and the GameSDK Project",	
+	"valid_platforms"												: [ "win", "durango", "orbis", "linux", "darwin", "android" ],
+	"valid_configuration" 									: [ "debug", "profile", "performance", "release" ],
+	"visual_studio_name" 										: "GameSDK",
+
+	"game_projects" 												: "GameSDK",
+		
+	"modules" : 
+	[
+		"CryCommon",
+		"Cry3DEngine", 
+		"CryAISystem", 
+		"CryAnimation", 
+		"CryEntitySystem", 
+		"CryFont", 
+		"CryInput", 
+		"CryLobby", 
+		"CryMovie", 
+		"CryNetwork", 					
+		"CryPhysics",
+		"CryScriptSystem", 
+		"CrySoundSystem",
+		"CryAudioCommon",
+		"CryAudioImplWwise",
+		"CrySystem", 
+		"CryAction",
+		"HWScripts",
+		
+		"zlib",
+		"expat",
+		"lz4",
+		"md5",
+		"lzma",
+		"lzss",
+		"lua",
+		"freetype",
+		"bigdigits",
+		
+		"CryGameSDK"
+	],
+	"defines"														: ["IS_EAAS"],
+	"win_modules" 													: ["WindowsLauncher", "CryRenderD3D11", "CryAudioImplSDLMixer", "oculus" ],
+	"win_debug_modules" 										: ["CryRenderOpenGL",  "CryRenderNULL", "CryLiveCreate", "GameStream"],
+	"win_profile_modules" 									: ["CryRenderOpenGL",  "CryRenderNULL", "CryLiveCreate", "GameStream"],
+	
+	"win_performance_defines" 							: "PURE_CLIENT(deprecated, those defines will be moved to another place and dont have any effect right now)",
+	"win_performance_monolithic_build" 			: "True",
+	"win_release_defines"										: "PURE_CLIENT(deprecated, those defines will be moved to another place and dont have any effect right now)",
+	"win_release_monolithic_build" 					: "True",
+
+	"durango_modules" 											: [ "DurangoLauncher", "CryRenderD3D11" ],
+	"durango_performance_monolithic_build" 	: "True",
+	"durango_release_monolithic_build" 			: "True",
+
+	"orbis_modules" 												: [ "OrbisLauncher", "CryRenderD3D11" ],
+	"orbis_monolithic_build" 								: "True",
+	"orbis_debug_modules" 									: "CryLiveCreate",
+	"orbis_profile_modules" 								: "CryLiveCreate",	
+
+	"linux_modules"													: [ "LinuxLauncher", "CryRenderOpenGL" ],
+
+	"darwin_modules"												: [ "MacLauncher", "CryRenderOpenGL" ],
+	
+	"android_modules"                       : [ "AndroidLauncher", "CryRenderOpenGL" ],
+	"android_monolithic_build"              : "True"
+}

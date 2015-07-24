@@ -324,4 +324,4 @@ void CGameQueryListener::GetMemoryStatistics(ICrySizer * s)
 	s->AddObject(m_astrServers, m_iServers * 256);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IGameQueryListener)
+

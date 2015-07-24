@@ -42,7 +42,8 @@ protected:
 		IMScriptLine() { Reset(); }
 		void Reset()
 		{
-			actor = sound = anim = facial = lookat = "";
+			audioID = INVALID_AUDIO_CONTROL_ID;
+			actor = anim = facial = lookat = "";
 			delay = facialFadeTime = 0.0f;
 			facialWeight = 0.5f;
 		}
@@ -50,7 +51,8 @@ protected:
 		bool IsValid() const { return (actor != 0 && *actor != 0); } 
 
 		const char* actor;
-		const char* sound;
+		//const char* sound;
+		TAudioControlID audioID;
 		const char* anim;
 		const char* lookat;
 		float       delay;

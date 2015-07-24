@@ -218,6 +218,7 @@ public:
 
 	virtual const SPredictedCharacterStates& GetOverriddenMotionParameters() const { return m_moveRequest.prediction; }
 	virtual void SetOverriddenMotionParameters(const SPredictedCharacterStates& motionParameters) { m_moveRequest.prediction = motionParameters; }
+	virtual void SetBlendWeightParam(const EMotionParamID motionParamID, const float value, const uint8 targetFlags = eBWPT_All);
 
 	virtual void SetEntityRotation(const Quat &rot){}
 

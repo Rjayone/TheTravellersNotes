@@ -38,97 +38,6 @@
 #define SAFE_RELEASE_FORCE(p)			{ if(p) { (p)->ReleaseForce();	(p)=NULL; } }
 #endif
 
-// this is an allocator that's allocates 16-byte-aligned blocks,
-// using the normal mem manager. The overhead of allocation is always 16 byte more,
-// to keep the original address in the DWORD before the aligned address
-// NOTE: since this is like a garbage collector (the items are not guaranteed to be
-// freed immediately), the destructors won't be called
-// for simplicity, constructors won't be called either
-//
-// DOES NOT construct / destruct objects, so use with care!
-template <typename T>
-class TAllocator16
-{
-public:
-	typedef size_t    size_type;
-	typedef ptrdiff_t difference_type;
-	typedef T*        pointer;
-	typedef const T*  const_pointer;
-	typedef T&        reference;
-	typedef const T&  const_reference;
-	typedef T         value_type;
-
-	template <class U> 
-	struct rebind { typedef TAllocator16<U> other; };
-
-	size_type max_size() const
-	{	// estimate maximum array size
-		size_type _Count = (size_type)(-1) / sizeof (T);
-		return (0 < _Count ? _Count : 1);
-	}
-
-	TAllocator16 ()
-#if defined(_DEBUG) && defined(_INC_CRTDBG) && !defined(WIN64) && !defined(PS3)
-		: m_szParentObject("TAllocator16"),
-		m_nParentIndex (1)
-#endif
-	{
-	}
-	TAllocator16 (const char* szParentObject, int nParentIndex)
-#if defined(_DEBUG) && defined(_INC_CRTDBG) && !defined(WIN64) && !defined(PS3)
-		: m_szParentObject(szParentObject),
-		m_nParentIndex (nParentIndex)
-#endif
-	{
-	}
-
-	// allocates the aligned memory for the given number of objects;
-	// puts the pointer to the actually allocated block before the aligned memory block
-	pointer allocate (size_type _Count)
-	{
-		pointer p;
-#if defined(_DEBUG) && defined(_INC_CRTDBG) && !defined(WIN64) && !defined(PS3)
-		p = (pointer)_malloc_dbg (0x10+_Count * sizeof(T), _NORMAL_BLOCK, m_szParentObject, m_nParentIndex);
-#else
-		p = (pointer)malloc (0x10+_Count*sizeof(T));
-#endif
-		pointer pResult = (pointer)(((UINT_PTR)p+0x10)&~0xF);
-		// save the offset to the actual allocated address behind the useable aligned address
-		reinterpret_cast<int*>(pResult)[-1] = (char*)p - (char*)pResult;
-		return pResult;
-	}
-
-	pointer allocate_construct (size_type _Count)
-	{
-		pointer p = allocate(_Count);
-		return p;
-	}
-
-	void deallocate_destroy(pointer _Ptr)
-	{
-		if (!_Ptr)
-			return;
-		int nOffset = ((int*)_Ptr)[-1];
-		assert (nOffset >= -16 && nOffset <= -4);
-#if defined(_DEBUG) && defined(_INC_CRTDBG) && !defined(WIN64) && !defined(PS3)
-		_free_dbg (((char*)_Ptr)+nOffset, _NORMAL_BLOCK);
-#else
-		free (((char*)_Ptr)+nOffset);
-#endif
-	}
-
-	void deallocate(pointer _Ptr,size_type _Count) {}
-	void destroy(pointer _Ptr) {}
-	void construct(pointer _Ptr, const T& _Val) {}
-
-protected:
-#if defined(_DEBUG) && defined(_INC_CRTDBG) && !defined(WIN64) && !defined(PS3)
-	// the parent object (on behalf of which to call the new operator)
-	const char* m_szParentObject; // the file name
-	int m_nParentIndex; // the file line number
-#endif
-};
-
 
 // General array class.
 // Can refer to a general (unowned) region of memory (m_nAllocatedCount = 0).
@@ -190,11 +99,7 @@ public:
 		MEMSTAT_USAGE(begin(), MemSize());
 		if (m_nAllocatedCount)
 		{
-#if defined(NOT_USE_CRY_MEMORY_MANAGER) && defined(PS3)
-			free(m_pElements);
-#else
 			CryModuleMemalignFree(m_pElements);
-#endif
 		}
 		m_nAllocatedCount = 0;
 		m_pElements = NULL;
@@ -246,31 +151,7 @@ public:
 		}
 		else
 		{
-#if !defined(NOT_USE_CRY_MEMORY_MANAGER) && defined(PS3) && !defined(__SPU__)
-			//keep alignment requirement of T if memory man is used on PS3
-			m_pElements = (T *)CryModuleReallocAlign(m_pElements, m_nAllocatedCount*sizeof(T), __alignof__(T));
-#else
-#if defined(PS3)
-#if defined(__SPU__) // special case for SPU, where we don't have the previous size for a prober realloc
-			void *pOldElements = m_pElements;
-			m_pElements = (T *)CryModuleMemalign(m_nAllocatedCount*sizeof(T), __alignof__(T));
-			if(pOldElements)
-			{
-				if(m_pElements && nOldAllocatedCount)
-				{
-					assert(pOldElements);
-					int nElementsToCopy = m_nAllocatedCount < nOldAllocatedCount ? m_nAllocatedCount : nOldAllocatedCount;
-					memcpy( SPU_MAIN_PTR(m_pElements), SPU_MAIN_PTR(pOldElements), nElementsToCopy*sizeof(T));
-				}
-				CryModuleMemalignFree(pOldElements);
-			}							
-#else
-			m_pElements = (T *)reallocalign(m_pElements, m_nAllocatedCount*sizeof(T), __alignof__(T));
-#endif
-#else
-			m_pElements = (T*)CryModuleReallocAlign( m_pElements, m_nAllocatedCount*sizeof(T), alignof(T) );
-#endif
-#endif
+			PREFAST_SUPPRESS_WARNING(6308) m_pElements = (T*)CryModuleReallocAlign( m_pElements, m_nAllocatedCount*sizeof(T), alignof(T) );
 			MEMSTAT_BIND_TO_CONTAINER(this, m_pElements);
 			MEMSTAT_USAGE(begin(), MemSize());
 			assert (m_pElements);

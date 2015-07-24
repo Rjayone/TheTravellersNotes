@@ -39,7 +39,6 @@ typedef CryEvent CryEventTimed;
 
 //////////////////////////////////////////////////////////////////////////
 // from winnt.h
-#ifndef XENON
 struct CRY_CRITICAL_SECTION
 {
 	void* DebugInfo;
@@ -49,17 +48,6 @@ struct CRY_CRITICAL_SECTION
 	void* LockSemaphore;
 	unsigned long* SpinCount;        // force size on 64-bit systems when packed
 };
-#else
-struct CRY_CRITICAL_SECTION
-{
-	union {
-		ULONG_PTR RawEvent[4];
-	} Synchronization;
-	LONG LockCount;
-	LONG RecursionCount;
-	HANDLE OwningThread;
-};
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -173,7 +161,7 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-#if !defined(_CRYTHREAD_HAVE_RWLOCK) && !defined(XENON)
+#if !defined(_CRYTHREAD_HAVE_RWLOCK)
 class CryRWLock
 {
 	void* /*SRWLOCK*/ m_Lock;
@@ -241,6 +229,8 @@ public:
 	}
 	const char *GetName() { return m_name; }
 
+	const volatile bool& GetStartedState() const { return m_bIsStarted; }
+
 private:
 	Runnable *m_Runnable;
 	struct
@@ -263,9 +253,6 @@ protected:
 private:
 	static unsigned __stdcall RunRunnable(void *thisPtr)
 	{
-#if CRY_XENON_CRASH_HANDLING
-		SetUnhandledExceptionFilter( handleException );
-#endif
 #ifdef DURANGO
 		CrySetUnhandledExceptionFilter();
 #endif
@@ -285,9 +272,6 @@ private:
 
 	static unsigned __stdcall RunThis(void *thisPtr)
 	{
-#if CRY_XENON_CRASH_HANDLING
-		SetUnhandledExceptionFilter( handleException );
-#endif
 #ifdef DURANGO
 		CrySetUnhandledExceptionFilter();
 #endif

@@ -282,7 +282,7 @@ void CPlayerMindGameBeamEffectLinkedEffect::BetweenPoints(const Vec3& startPos, 
 			gEnv->p3DEngine->GetMaterialManager()->LoadMaterial(m_EffectConfig->m_MaterialName),
 			CLightningGameEffect::STarget(startPos), CLightningGameEffect::STarget(endPos));
 		assert(m_EffectConfig->m_MinRestartDelay <= m_EffectConfig->m_MaxRestartDelay);
-		m_RestartDelay = Random(m_EffectConfig->m_MinRestartDelay, m_EffectConfig->m_MaxRestartDelay);
+		m_RestartDelay = cry_random(m_EffectConfig->m_MinRestartDelay, m_EffectConfig->m_MaxRestartDelay);
 	}
 	else
 	{

@@ -88,25 +88,25 @@ public:
 	void PreLoadAssets();
 
 	// IMaterialEffects
-	VIRTUAL void LoadFXLibraries();
-	VIRTUAL void Reset( bool bCleanup );
-	VIRTUAL void ClearDelayedEffects();
-	VIRTUAL TMFXEffectId GetEffectIdByName(const char* libName, const char* effectName);
-	VIRTUAL TMFXEffectId GetEffectId(int surfaceIndex1, int surfaceIndex2);
-	VIRTUAL TMFXEffectId GetEffectId(const char* customName, int surfaceIndex2);
-	VIRTUAL TMFXEffectId GetEffectId(IEntityClass* pEntityClass, int surfaceIndex2);
-	VIRTUAL SMFXResourceListPtr GetResources(TMFXEffectId effectId) const;
-	VIRTUAL bool ExecuteEffect(TMFXEffectId effectId, SMFXRunTimeEffectParams& runtimeParams);
-	VIRTUAL void StopEffect(TMFXEffectId effectId);
-	VIRTUAL int	GetDefaultSurfaceIndex() { return m_defaultSurfaceId; }
-	VIRTUAL int	GetDefaultCanopyIndex();
-	VIRTUAL bool PlayBreakageEffect(ISurfaceType* pSurfaceType, const char* breakageType, const SMFXBreakageParams& breakageParams);
-	VIRTUAL void SetCustomParameter(TMFXEffectId effectId, const char* customParameter, const SMFXCustomParamValue& customParameterValue);
-	VIRTUAL void CompleteInit();
-	VIRTUAL void ReloadMatFXFlowGraphs();
-	VIRTUAL int GetMatFXFlowGraphCount() const;
-	VIRTUAL IFlowGraphPtr GetMatFXFlowGraph(int index, string* pFileName = NULL) const;
-	VIRTUAL IFlowGraphPtr LoadNewMatFXFlowGraph(const string& filename);
+	virtual void LoadFXLibraries();
+	virtual void Reset( bool bCleanup );
+	virtual void ClearDelayedEffects();
+	virtual TMFXEffectId GetEffectIdByName(const char* libName, const char* effectName);
+	virtual TMFXEffectId GetEffectId(int surfaceIndex1, int surfaceIndex2);
+	virtual TMFXEffectId GetEffectId(const char* customName, int surfaceIndex2);
+	virtual TMFXEffectId GetEffectId(IEntityClass* pEntityClass, int surfaceIndex2);
+	virtual SMFXResourceListPtr GetResources(TMFXEffectId effectId) const;
+	virtual bool ExecuteEffect(TMFXEffectId effectId, SMFXRunTimeEffectParams& runtimeParams);
+	virtual void StopEffect(TMFXEffectId effectId);
+	virtual int	GetDefaultSurfaceIndex() { return m_defaultSurfaceId; }
+	virtual int	GetDefaultCanopyIndex();
+	virtual bool PlayBreakageEffect(ISurfaceType* pSurfaceType, const char* breakageType, const SMFXBreakageParams& breakageParams);
+	virtual void SetCustomParameter(TMFXEffectId effectId, const char* customParameter, const SMFXCustomParamValue& customParameterValue);
+	virtual void CompleteInit();
+	virtual void ReloadMatFXFlowGraphs();
+	virtual int GetMatFXFlowGraphCount() const;
+	virtual IFlowGraphPtr GetMatFXFlowGraph(int index, string* pFileName = NULL) const;
+	virtual IFlowGraphPtr LoadNewMatFXFlowGraph(const string& filename);
 	// ~IMaterialEffects
 
 	void GetMemoryUsage(ICrySizer * s) const;

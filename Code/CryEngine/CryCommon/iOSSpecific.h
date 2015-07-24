@@ -34,8 +34,8 @@
 #define PLATFORM_64BIT
 #endif
 
-#ifndef CRY_MOBILE
-#define CRY_MOBILE
+#ifndef MOBILE
+#define MOBILE
 #endif
 
 // stubs for virtual keys, isn't used on iOS

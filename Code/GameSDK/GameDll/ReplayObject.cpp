@@ -65,7 +65,14 @@ CReplayObjectAction::CReplayObjectAction( FragmentID fragID, const TagState &fra
 
 EPriorityComparison CReplayObjectAction::ComparePriority( const IAction &actionCurrent ) const
 {
-	return m_trumpsPrevious ? Higher : Equal;
+	if (m_trumpsPrevious)
+	{
+		return ((IAction::Installed == actionCurrent.GetStatus() && IAction::Installing & ~actionCurrent.GetFlags()) ? Higher : BaseClass::ComparePriority(actionCurrent));
+	}
+	else
+	{
+		return Equal;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

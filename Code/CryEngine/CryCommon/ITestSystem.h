@@ -1,11 +1,4 @@
-#include DEVIRTUALIZE_HEADER_FIX(ITestSystem.h)
-
-#ifndef __ITESTSYSTEM_H__
-#define __ITESTSYSTEM_H__
-
-#if _MSC_VER > 1000
-#	pragma once
-#endif
+#pragma once
 
 #include "CryUnitTest.h"
 
@@ -53,7 +46,7 @@ struct STimeDemoInfo
 //////////////////////////////////////////////////////////////////////////
 struct ITestSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITestSystem(){}
 	// can be called through console e.g. #System.ApplicationTest("testcase0")
 	// Arguments:
@@ -81,7 +74,5 @@ struct ITestSystem
 	virtual STimeDemoInfo* GetTimeDemoInfo() = 0;
 
 	virtual CryUnitTest::IUnitTestManager* GetIUnitTestManager() = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif //__ITESTSYSTEM_H__

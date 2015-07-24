@@ -32,6 +32,7 @@ struct IEntityPoolListener
 	};
 	enum { COUNT_SUBSCRIPTIONS = 6 };
 
+	// <interfuscator:shuffle>
 	virtual ~IEntityPoolListener() {}
 
 	//! Called when an entity bookmark is created on level load
@@ -51,7 +52,7 @@ struct IEntityPoolListener
 
 	//! Called when serializing a particular entity, either to or from a bookmark
 	virtual void OnBookmarkEntitySerialize(TSerialize serialize, void *pVEntity) {}
-
+	// </interfuscator:shuffle>
 };
 
 struct IEntityPoolManager
@@ -62,6 +63,7 @@ struct IEntityPoolManager
 		tAIObjectID aiObjectId;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IEntityPoolManager() {}
 
 	virtual void Serialize(TSerialize ser) = 0;
@@ -91,7 +93,7 @@ struct IEntityPoolManager
 
 	//! Returns true if the system is currently preparing an entity from the pool (and fills outParams)
 	virtual bool IsPreparingEntity(SPreparingParams& outParams) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__IENTITYPOOLMANAGER_H__

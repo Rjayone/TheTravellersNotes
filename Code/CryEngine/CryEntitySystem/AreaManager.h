@@ -108,13 +108,13 @@ public:
 	~CAreaManager(void);
 
 	//IAreaManager
-	VIRTUAL size_t							GetAreaAmount() const {return m_apAreas.size();}
-	VIRTUAL IArea const* const	GetArea(size_t const nAreaIndex) const;
-  VIRTUAL size_t              GetOverlappingAreas(const AABB& bb, PodArray<IArea*>& list) const;
-	VIRTUAL void								SetAreasDirty();
-	VIRTUAL void								SetAreaDirty(IArea* pArea);
+	virtual size_t							GetAreaAmount() const {return m_apAreas.size();}
+	virtual IArea const* const	GetArea(size_t const nAreaIndex) const;
+  virtual size_t              GetOverlappingAreas(const AABB& bb, PodArray<IArea*>& list) const;
+	virtual void								SetAreasDirty();
+	virtual void								SetAreaDirty(IArea* pArea);
 
-	VIRTUAL void								ExitAllAreas(IEntity const* const pEntity);
+	virtual void								ExitAllAreas(IEntity const* const pEntity);
 	//~IAreaManager
 	
 	// ISystemEventListener
@@ -127,7 +127,7 @@ public:
 	CEntitySystem* GetEntitySystem() const { return m_pEntitySystem; };
 
 	// Puts the passed entity ID into the update list for the next update.
-	VIRTUAL void MarkEntityForUpdate(EntityId const nEntityID);
+	virtual void MarkEntityForUpdate(EntityId const nEntityID);
 
 	// Called every frame.
 	void Update();
@@ -135,10 +135,10 @@ public:
 	bool ProceedExclusiveUpdateByHigherArea(SAreasCache* const pAreaCache, IEntity const* const pEntity, Vec3 const& rEntityPos, CArea* const pArea, Vec3 const& vOnLowerHull);
 	void NotifyAreas(CArea* const __restrict pArea, SAreasCache const* const pAreaCache, IEntity const* const pEntity);
 
-	VIRTUAL void DrawLinkedAreas(EntityId linkedId) const;
+	virtual void DrawLinkedAreas(EntityId linkedId) const;
 	size_t GetLinkedAreas(EntityId linkedId, int areaId, std::vector<CArea *> &areas) const;
 
-	VIRTUAL bool GetLinkedAreas(EntityId linkedId, EntityId* pOutArray, int &outAndMaxResults) const;
+	virtual bool GetLinkedAreas(EntityId linkedId, EntityId* pOutArray, int &outAndMaxResults) const;
 
 	void	DrawAreas(const ISystem * const pSystem);
 	void DrawGrid();
@@ -146,17 +146,17 @@ public:
 	void ResetAreas();
 	void UnloadAreas();
 
-	VIRTUAL bool QueryAreas(EntityId const nEntityID, Vec3 const& rPos, SAreaManagerResult *pResults, int nMaxResults, int& rNumResults);
-	VIRTUAL bool QueryAudioAreas(Vec3 const& rPos, SAudioAreaInfo *pResults, size_t const nMaxResults, size_t& rNumResults);
+	virtual bool QueryAreas(EntityId const nEntityID, Vec3 const& rPos, SAreaManagerResult *pResults, int nMaxResults, int& rNumResults);
+	virtual bool QueryAudioAreas(Vec3 const& rPos, SAudioAreaInfo *pResults, size_t const nMaxResults, size_t& rNumResults);
 
 	// Register EventListener to the AreaManager.
-	VIRTUAL void AddEventListener( IAreaManagerEventListener *pListener );
-	VIRTUAL void RemoveEventListener( IAreaManagerEventListener *pListener );
+	virtual void AddEventListener( IAreaManagerEventListener *pListener );
+	virtual void RemoveEventListener( IAreaManagerEventListener *pListener );
 
 	//! Fires event for all listeners to this sound.
 	void  OnEvent( EEntityEvent event, EntityId TriggerEntityID, IArea *pArea );
 
-	int GetNumberOfPlayersInArea(CArea const* const pArea);
+	int GetNumberOfPlayersNearOrInArea(CArea const* const pArea);
 
 protected:
 
@@ -219,20 +219,6 @@ private:
 	{
 		SIsNotInGrid(IEntity const* const pPassedEntity, std::vector<CArea*> const& rapPassedAreas, size_t const nPassedCountAreas)
 			:	pEntity(pPassedEntity),
-			rapAreas(rapPassedAreas),
-			nCountAreas(nPassedCountAreas){}
-
-		bool operator()(SAreaCacheEntry const& rCacheEntry) const;
-
-		IEntity const* const pEntity;
-		std::vector<CArea*> const& rapAreas;
-		size_t const nCountAreas;
-	};
-
-	struct SRemoveIfIsNearOrInside
-	{
-		SRemoveIfIsNearOrInside(IEntity const* const pPassedEntity, std::vector<CArea*> const& rapPassedAreas, size_t const nPassedCountAreas)
-			: pEntity(pPassedEntity),
 			rapAreas(rapPassedAreas),
 			nCountAreas(nPassedCountAreas){}
 

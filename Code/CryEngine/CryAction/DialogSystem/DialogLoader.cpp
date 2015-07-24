@@ -124,7 +124,7 @@ static const char* sColumnNames[] =
 enum eAttrType { 
 	ATTR_DIALOG = 0,
 	ATTR_ACTOR,
-	ATTR_SOUND,
+	ATTR_AUDIO,
 	ATTR_ANIM,
 	ATTR_FACIAL,
 	ATTR_LOOKAT,
@@ -249,9 +249,14 @@ int CDialogLoader::LoadFromTable(XmlNodeRef tableNode, const string& groupName, 
 				scriptLine.actor = content;
 				bLineValid = true;
 				break;
-			case ATTR_SOUND:
+			case ATTR_AUDIO:
 				if (bLineValid)
-					scriptLine.sound = content;
+				{
+					if(content == 0)
+						scriptLine.audioID = INVALID_AUDIO_CONTROL_ID;
+					else
+						gEnv->pAudioSystem->GetAudioTriggerID(content, scriptLine.audioID);
+				}
 				break;
 			case ATTR_ANIM:
 				if (bLineValid)
@@ -498,7 +503,7 @@ bool CDialogLoader::ProcessScript(IMScript& script, const string& groupName, TDi
 
 		const CDialogScript::TActorID actorID  = static_cast<CDialogScript::TActorID> (actor-1);
 		const CDialogScript::TActorID lookAtID = lookAt <= 0 ? CDialogScript::NO_ACTOR_ID : static_cast<CDialogScript::TActorID> (lookAt-1);
-		const bool bSuccess = pScript->AddLine(actorID, line.sound, animName.c_str(), facialExpression, lookAtID, line.delay, line.facialWeight, line.facialFadeTime, bLookAtSticky, bResetFacial, bResetLookAt, bSoundStopsAnim, bUseAGSignal, bUseAGEP);
+		const bool bSuccess = pScript->AddLine(actorID, line.audioID, animName.c_str(), facialExpression, lookAtID, line.delay, line.facialWeight, line.facialFadeTime, bLookAtSticky, bResetFacial, bResetLookAt, bSoundStopsAnim, bUseAGSignal, bUseAGEP);
 		if (!bSuccess)
 		{
 			bDiscard = true;

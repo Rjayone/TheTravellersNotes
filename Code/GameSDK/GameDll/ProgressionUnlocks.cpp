@@ -83,7 +83,7 @@ SUnlock::SUnlock(XmlNodeRef node, int rank)
 	if (theType && theType[0] != '\0')
 	{
 		m_type = SUnlock::GetUnlockTypeFromName(theType);
-		cry_strncpy(m_name, theName, sizeof(m_name));
+		cry_strcpy(m_name, theName);
 
 		bool expectName = (m_type == eUT_Loadout || m_type == eUT_Weapon || m_type == eUT_Attachment || m_type == eUT_Playlist || m_type == eUT_CreateCustomClass);
 		bool gotName = (theName[0] != '\0');

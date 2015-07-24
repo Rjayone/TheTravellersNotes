@@ -65,9 +65,9 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3, 7, 0, 179
-PRODUCTVERSION 3, 7, 0, 179
-FILEFLAGSMASK 0x17L
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
 #else
@@ -82,10 +82,10 @@ BEGIN
         BLOCK "000904b0"
         BEGIN
             VALUE "CompanyName", "Crytek GmbH"
-            VALUE "FileVersion", "3, 7, 0, 179"
-            VALUE "LegalCopyright", "(c) 2015 Crytek GmbH"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "LegalCopyright", "(c) 2014 Crytek GmbH"
             VALUE "ProductName", "CryEngine"
-            VALUE "FileVersion", "3, 7, 0, 179"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"

@@ -35,32 +35,32 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IGameTokenSystem
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL IGameToken* SetOrCreateToken( const char *sTokenName,const TFlowInputData &defaultValue );
-	VIRTUAL void DeleteToken( IGameToken* pToken );
-	VIRTUAL IGameToken* FindToken( const char *sTokenName );
-	VIRTUAL void RenameToken( IGameToken *pToken,const char *sNewName );
+	virtual IGameToken* SetOrCreateToken( const char *sTokenName,const TFlowInputData &defaultValue );
+	virtual void DeleteToken( IGameToken* pToken );
+	virtual IGameToken* FindToken( const char *sTokenName );
+	virtual void RenameToken( IGameToken *pToken,const char *sNewName );
 
-	VIRTUAL IGameTokenIt *GetGameTokenIterator();
+	virtual IGameTokenIt *GetGameTokenIterator();
 
-	VIRTUAL void RegisterListener( const char *sGameToken,IGameTokenEventListener *pListener,bool bForceCreate,bool bImmediateCallback );
-	VIRTUAL void UnregisterListener( const char *sGameToken,IGameTokenEventListener *pListener );
+	virtual void RegisterListener( const char *sGameToken,IGameTokenEventListener *pListener,bool bForceCreate,bool bImmediateCallback );
+	virtual void UnregisterListener( const char *sGameToken,IGameTokenEventListener *pListener );
 
-	VIRTUAL void RegisterListener( IGameTokenEventListener *pListener );
-	VIRTUAL void UnregisterListener( IGameTokenEventListener *pListener );
+	virtual void RegisterListener( IGameTokenEventListener *pListener );
+	virtual void UnregisterListener( IGameTokenEventListener *pListener );
 
-	VIRTUAL void Reset();
-	VIRTUAL void Unload();
-	VIRTUAL void Serialize( TSerialize ser );
+	virtual void Reset();
+	virtual void Unload();
+	virtual void Serialize( TSerialize ser );
 
-	VIRTUAL void DebugDraw();
+	virtual void DebugDraw();
 
- 	VIRTUAL void LoadLibs( const char *sFileSpec );
-	VIRTUAL void RemoveLibrary( const char *sPrefix); 
+ 	virtual void LoadLibs( const char *sFileSpec );
+	virtual void RemoveLibrary( const char *sPrefix); 
 
-	VIRTUAL void SerializeSaveLevelToLevel( const char** ppGameTokensList, uint32 numTokensToSave );
-	VIRTUAL void SerializeReadLevelToLevel();
+	virtual void SerializeSaveLevelToLevel( const char** ppGameTokensList, uint32 numTokensToSave );
+	virtual void SerializeReadLevelToLevel();
 
-	VIRTUAL void GetMemoryStatistics(ICrySizer * s);
+	virtual void GetMemoryStatistics(ICrySizer * s);
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -113,8 +113,8 @@ private:
 
 	
 public:
-	VIRTUAL void AddTokenToDebugList( const char* pToken );
-	VIRTUAL void RemoveTokenFromDebugList( const char* pToken );
+	virtual void AddTokenToDebugList( const char* pToken );
+	virtual void RemoveTokenFromDebugList( const char* pToken );
 	
 #endif
 

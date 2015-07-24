@@ -87,7 +87,7 @@ void CMFXDecalEffect::Execute(const SMFXRunTimeEffectParams &params)
 {
   FUNCTION_PROFILER(gEnv->pSystem, PROFILE_ACTION);
 
-  const float angle = (params.angle != MFX_INVALID_ANGLE) ? params.angle : Random(0.f, gf_PI2);
+  const float angle = (params.angle != MFX_INVALID_ANGLE) ? params.angle : cry_random(0.f, gf_PI2);
   
 	if (!params.trgRenderNode && !params.trg)
 	{
@@ -113,7 +113,7 @@ void CMFXDecalEffect::Execute(const SMFXRunTimeEffectParams &params)
 		else
       CryWarning(VALIDATOR_MODULE_3DENGINE, VALIDATOR_WARNING, "CMFXDecalEffect::Execute: Decal material name is not specified");
 
-		terrainDecal.fSize = Random(m_decalParams.minscale, m_decalParams.maxscale);
+		terrainDecal.fSize = cry_random(m_decalParams.minscale, m_decalParams.maxscale);
 
 		if(m_decalParams.rotation>=0.f)
 			terrainDecal.fAngle = m_decalParams.rotation;
@@ -159,7 +159,7 @@ void CMFXDecalEffect::Execute(const SMFXRunTimeEffectParams &params)
 		else
       CryWarning(VALIDATOR_MODULE_3DENGINE, VALIDATOR_WARNING, "CMFXDecalEffect::Execute: Decal material name is not specified");
 
-		decal.fSize = Random(m_decalParams.minscale, m_decalParams.maxscale);
+		decal.fSize = cry_random(m_decalParams.minscale, m_decalParams.maxscale);
 		if(m_decalParams.rotation>=0.f)
 			decal.fAngle = m_decalParams.rotation;
 		else

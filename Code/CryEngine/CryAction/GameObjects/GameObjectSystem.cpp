@@ -69,7 +69,7 @@ bool CGameObjectSystem::Init()
 				StringToKey(node->getAttr("own"), p.owned);
 
 #if !defined(_RELEASE)
-			std::map<string, SEntitySchedulingProfiles>::iterator iter = m_schedulingParams.find(CONST_TEMP_STRING(name));
+			TSchedulingProfiles::iterator iter = m_schedulingParams.find(CONST_TEMP_STRING(name));
 			if (iter != m_schedulingParams.end())
 			{
 				GameWarning("Class '%s' has been defined multiple times in EntityScheduler.xml", name.c_str());
@@ -94,8 +94,8 @@ void CGameObjectSystem::Reset()
 	{
 		IEntityClassRegistry * pClassReg = gEnv->pEntitySystem->GetClassRegistry();
 
-		std::map<string, SEntitySchedulingProfiles>::iterator iter = m_schedulingParams.begin();
-		std::map<string, SEntitySchedulingProfiles>::iterator end = m_schedulingParams.end();
+		TSchedulingProfiles::iterator iter = m_schedulingParams.begin();
+		TSchedulingProfiles::iterator end = m_schedulingParams.end();
 		for(; iter != end; ++iter)
 		{
 			string className = iter->first;
@@ -216,6 +216,32 @@ void CGameObjectSystem::RegisterExtension( const char * name, IGameObjectExtensi
 			return;
 		}
 	}
+}
+
+void CGameObjectSystem::RegisterSchedulingProfile( const char* szEntityClassName, const char* szNormalPolicy, const char* szOwnedPolicy )
+{
+#if !defined(_RELEASE)
+	TSchedulingProfiles::iterator iter = m_schedulingParams.find(CONST_TEMP_STRING(szEntityClassName));
+	if (iter != m_schedulingParams.end())
+	{
+		GameWarning("Class '%s' has already a profile assigned", szEntityClassName);
+	}
+#endif //#if !defined(_RELEASE)
+
+	SEntitySchedulingProfiles schedulingProfile = m_defaultProfiles;
+	
+	if (szNormalPolicy)
+	{
+		StringToKey(szNormalPolicy, schedulingProfile.normal);
+		schedulingProfile.owned = schedulingProfile.normal;
+	}
+
+	if (szOwnedPolicy)
+	{
+		StringToKey(szOwnedPolicy, schedulingProfile.owned);
+	}
+
+	m_schedulingParams.insert(TSchedulingProfiles::value_type(szEntityClassName, schedulingProfile));
 }
 
 void CGameObjectSystem::DefineProtocol( bool server, IProtocolBuilder * pBuilder )
@@ -404,7 +430,7 @@ const SEntitySchedulingProfiles * CGameObjectSystem::GetEntitySchedulerProfiles(
 	if (pEnt->GetFlags() & (ENTITY_FLAG_CLIENT_ONLY | ENTITY_FLAG_SERVER_ONLY))
 		return &m_defaultProfiles;
 
-	std::map<string, SEntitySchedulingProfiles>::iterator iter = m_schedulingParams.find(CONST_TEMP_STRING(pEnt->GetClass()->GetName()));
+	TSchedulingProfiles::iterator iter = m_schedulingParams.find(CONST_TEMP_STRING(pEnt->GetClass()->GetName()));
 
 	if (iter == m_schedulingParams.end())
 	{
@@ -478,4 +504,4 @@ void CGameObjectSystem::RemoveSink( IGameObjectSystemSink *pSink )
   m_lstSinks.remove(pSink);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IGameObjectSystem)
+

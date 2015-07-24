@@ -25,7 +25,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-template<typename F> struct __passinreg Matrix33_tpl
+template<typename F> struct Matrix33_tpl
 {
 	F m00,m01,m02;
 	F m10,m11,m12;
@@ -215,9 +215,6 @@ template<typename F> struct __passinreg Matrix33_tpl
 		m10=F(m.m10);	m11=F(m.m11);	m12=F(m.m12);
 		m20=F(m.m20);	m21=F(m.m21);	m22=F(m.m22); 
 	}
-
-
-
 
 	//CONSTRUCTOR for identical float-types. It converts a Quat into a Matrix33. 
 	//Needs to be 'explicit' because we loose fp-precision in the conversion process 
@@ -781,6 +778,15 @@ template<typename F> struct __passinreg Matrix33_tpl
 			);	
 	}
 
+	ILINE bool IsIdentity(F e) const
+	{
+		return  ( 
+			(fabs_tpl((F)1-m00)<=e) && (fabs_tpl(     m01)<=e) && (fabs_tpl(     m02)<=e) && 
+			(fabs_tpl(     m10)<=e) && (fabs_tpl((F)1-m11)<=e) && (fabs_tpl(     m12)<=e) && 
+			(fabs_tpl(     m20)<=e) && (fabs_tpl(     m21)<=e) && (fabs_tpl((F)1-m22)<=e) 
+			);	
+	}
+
 	ILINE bool IsIdentity() const	{
 		return 0 == (fabs_tpl((F)1-m00) + fabs_tpl(m01) + fabs_tpl(m02)+ fabs_tpl(m10) + fabs_tpl((F)1-m11) + fabs_tpl(m12)+ fabs_tpl(m20) + fabs_tpl(m21) + fabs_tpl((F)1-m22));
 	}
@@ -907,27 +913,6 @@ ILINE Matrix33_tpl<F1> operator * (const Matrix33_tpl<F1>& l, const Matrix33_tpl
 */
 template<class F1, class F2> 
 ILINE Matrix34_tpl<F2> operator * (const Matrix33_tpl<F1>& l, const Matrix34_tpl<F2>& r) 
-{
-	assert(l.IsValid());
-	assert(r.IsValid());
-	Matrix34_tpl<F2> m;
-	m.m00 = l.m00*r.m00 + l.m01*r.m10 + l.m02*r.m20;
-	m.m10 = l.m10*r.m00 + l.m11*r.m10 + l.m12*r.m20;
-	m.m20 = l.m20*r.m00 + l.m21*r.m10 + l.m22*r.m20;
-	m.m01 = l.m00*r.m01 + l.m01*r.m11 + l.m02*r.m21;
-	m.m11 = l.m10*r.m01 + l.m11*r.m11 + l.m12*r.m21;
-	m.m21 = l.m20*r.m01 + l.m21*r.m11 + l.m22*r.m21;
-	m.m02 = l.m00*r.m02 + l.m01*r.m12 + l.m02*r.m22;
-	m.m12 = l.m10*r.m02 + l.m11*r.m12 + l.m12*r.m22;
-	m.m22 = l.m20*r.m02 + l.m21*r.m12 + l.m22*r.m22;
-	m.m03 = l.m00*r.m03 + l.m01*r.m13 + l.m02*r.m23;
-	m.m13 = l.m10*r.m03 + l.m11*r.m13 + l.m12*r.m23;
-	m.m23 = l.m20*r.m03 + l.m21*r.m13 + l.m22*r.m23;
-	return m;
-}
-
-template<class F1, class F2> 
-ILINE Matrix34_tpl<F2> operator * (const Matrix33_tpl<F1>& l, const Matrix34A_tpl<F2>& r) 
 {
 	assert(l.IsValid());
 	assert(r.IsValid());

@@ -12,12 +12,8 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IEntitySystem.h)
 
 #pragma once
-
-#ifndef __IEntitySystem_h__
-#define __IEntitySystem_h__
 
 // The following ifdef block is the standard way of creating macros which make exporting 
 // from a DLL simpler. All files within this DLL are compiled with the CRYENTITYDLL_EXPORTS
@@ -142,9 +138,9 @@ enum ESpecType
 
 // Summary:
 //	 Area Manager Interface.
-UNIQUE_IFACE struct IArea
+struct IArea
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IArea(){}
 	virtual size_t GetEntityAmount() const = 0;
 	virtual const EntityId GetEntityByIdx(int index) const = 0;
@@ -152,19 +148,19 @@ UNIQUE_IFACE struct IArea
 	virtual int GetGroup() const = 0;
 	virtual int GetPriority() const = 0;
 	virtual int GetID() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
 //	 EventListener interface for the AreaManager.
-UNIQUE_IFACE struct IAreaManagerEventListener
+struct IAreaManagerEventListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAreaManagerEventListener(){}
 	// Summary:
 	//	 Callback event.
 	virtual void OnAreaManagerEvent( EEntityEvent event, EntityId TriggerEntityID, IArea *pArea ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
@@ -206,7 +202,7 @@ struct SAudioAreaInfo
 	EntityId nEnvProvidingEntityID;
 };
 
-UNIQUE_IFACE struct IBSPTree3D
+struct IBSPTree3D
 {	
 	typedef DynArray<Vec3> CFace;
 	typedef DynArray<CFace> FaceList;
@@ -219,9 +215,9 @@ UNIQUE_IFACE struct IBSPTree3D
 	virtual void ReadFromBuffer(const void* pBuffer) = 0;
 };
 
-UNIQUE_IFACE struct IAreaManager
+struct IAreaManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAreaManager(){}
 	virtual size_t							GetAreaAmount() const = 0;
 	virtual IArea const* const	GetArea(size_t const nAreaIndex) const = 0;
@@ -271,16 +267,16 @@ UNIQUE_IFACE struct IAreaManager
   // Description:
   // Puts the passed entity ID into the update list for the next update.
   virtual void MarkEntityForUpdate(EntityId const nEntityID) = 0;
-
+  // </interfuscator:shuffle>
 };
 
 // Description:
 //	 Entity iterator interface. This interface is used to traverse trough all the entities in an entity system. In a way, 
 //	 this iterator works a lot like a stl iterator.
 
-UNIQUE_IFACE struct IEntityIt
+struct IEntityIt
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IEntityIt(){}
 
 	virtual void AddRef() = 0;
@@ -310,7 +306,7 @@ UNIQUE_IFACE struct IEntityIt
 	// Summary:
 	//	 Positions the iterator at the beginning of the entity list.
 	virtual void MoveFirst() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 typedef _smart_ptr<IEntityIt> IEntityItPtr;
@@ -320,7 +316,7 @@ typedef _smart_ptr<IEntityIt> IEntityItPtr;
 //	 this interface will be called every time a new entity is spawned, removed, or when an entity container is to be spawned.
 struct IEntitySystemSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IEntitySystemSink(){}
 	// Description:
 	//	 This callback is called before this entity is spawned. The entity will be created and added to the list of entities,
@@ -364,14 +360,14 @@ struct IEntitySystemSink
 	// Arguments:
 	//	 pSizer - The Sizer class used to collect the memory informations
 	virtual void GetMemoryUsage(class ICrySizer *pSizer) const{};
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
 //	 Interface to the entity archetype.
-UNIQUE_IFACE struct IEntityArchetype
+struct IEntityArchetype
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IEntityArchetype(){}
 	// Retrieve entity class of the archetype.
 	virtual IEntityClass* GetClass() const = 0;
@@ -379,16 +375,16 @@ UNIQUE_IFACE struct IEntityArchetype
 	virtual IScriptTable* GetProperties() = 0;
 	virtual XmlNodeRef GetObjectVars() = 0;
 	virtual void LoadFromXML( XmlNodeRef &propertiesNode, XmlNodeRef &objectVarsNode ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 struct IEntityEventListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IEntityEventListener(){}
 	virtual void OnEntityEvent( IEntity *pEntity,SEntityEvent &event ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -413,13 +409,6 @@ struct SEntityProximityQuery
 	}
 };
 
-// removed unused ifdef for devirtualization
-// #ifndef _NO_IENTITY
-// UNIQUE_IFACE struct IEntitySystem
-// #else
-// struct IEntitySystemBase
-// #endif
-
 // Description:
 //	 Interface to the system that manages the entities in the game, their creation, deletion and upkeep. The entities are kept in a map
 //	 indexed by their unique entity ID. The entity system updates only unbound entities every frame (bound entities are updated by their
@@ -427,7 +416,7 @@ struct SEntityProximityQuery
 //	 that have to be drawn last and with more zbuffer resolution.
 // Summary:
 //	 Interface to the system that manages the entities in the game.
-UNIQUE_IFACE struct IEntitySystem
+struct IEntitySystem
 {
 	enum SinkEventSubscriptions
 	{
@@ -445,6 +434,7 @@ UNIQUE_IFACE struct IEntitySystem
 		SinkMaxEventSubscriptionCount = 5,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IEntitySystem(){}
 
 	virtual void RegisterCharactersForRendering() = 0;
@@ -847,6 +837,7 @@ UNIQUE_IFACE struct IEntitySystem
 	virtual IBSPTree3D* CreateBSPTree3D( const IBSPTree3D::FaceList& faceList ) = 0;
 	virtual void ReleaseBSPTree3D(IBSPTree3D*& pTree) = 0;
 
+	// </interfuscator:shuffle>
 };
 
 extern "C"
@@ -855,5 +846,3 @@ extern "C"
 }
 
 typedef struct IEntitySystem * (* PFNCREATEENTITYSYSTEM)( ISystem *pISystem );
-
-#endif // __IEntitySystem_h__

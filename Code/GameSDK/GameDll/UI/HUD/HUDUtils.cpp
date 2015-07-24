@@ -69,7 +69,7 @@ const char* GetSubtitleColor(const size_t index)
 
 
 //////////////////////////////////////////////////////////////////////////
-void LocalizeStringW( wstring &out, const char *text, const char *arg1, const char *arg2, const char *arg3, const char *arg4)
+void LocalizeString( string &out, const char *text, const char *arg1, const char *arg2, const char *arg3, const char *arg4)
 {
 #if ENABLE_HUD_EXTRA_DEBUG
 	const int numberOfWs = g_pGame->GetHUD()->GetCVars()->hud_localize_ws_instead;
@@ -80,7 +80,7 @@ void LocalizeStringW( wstring &out, const char *text, const char *arg1, const ch
 		{
 			for(int i=0; i<numberOfWs; i++)
 			{
-				out.append(L"W");
+				out.append("W");
 			}
 
 			lastNumberOfWs = numberOfWs;
@@ -91,24 +91,24 @@ void LocalizeStringW( wstring &out, const char *text, const char *arg1, const ch
 
 	if(!text)
 	{
-		out = L"";
+		out = "";
 		return;
 	}
 
-	wstring localizedString, param1, param2, param3, param4;
+	string localizedString, param1, param2, param3, param4;
 	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
 
 	if(text[0]=='@')
 		pLocMgr->LocalizeString(text, localizedString);
 	else
-		StrToWstr(text,localizedString);
+		localizedString = text;
 
 	if(arg1)
 	{
 		if(arg1[0]=='@')
 			pLocMgr->LocalizeString(arg1, param1);
 		else
-			StrToWstr(arg1,param1);
+			param1 = arg1;
 	}
 
 	if(arg2)
@@ -116,7 +116,7 @@ void LocalizeStringW( wstring &out, const char *text, const char *arg1, const ch
 		if(arg2[0]=='@')
 			pLocMgr->LocalizeString(arg2, param2);
 		else
-			StrToWstr(arg2,param2);
+			param2 = arg2;
 	}
 
 	if(arg3)
@@ -124,7 +124,7 @@ void LocalizeStringW( wstring &out, const char *text, const char *arg1, const ch
 		if(arg3[0]=='@')
 			pLocMgr->LocalizeString(arg3, param3);
 		else
-			StrToWstr(arg3,param3);
+			param3 = arg3;
 	}
 
 	if(arg4)
@@ -132,81 +132,34 @@ void LocalizeStringW( wstring &out, const char *text, const char *arg1, const ch
 		if(arg4[0]=='@')
 			pLocMgr->LocalizeString(arg4, param4);
 		else
-			StrToWstr(arg4,param4);
+			param4 = arg4;
 	}
 
 	out.resize(0);
-	pLocMgr->FormatStringMessage(out, localizedString, param1.empty()?0:param1.c_str(), param2.empty()?0:param2.c_str(), param3.empty()?0:param3.c_str(), param4.empty()?0:param4.c_str());
-}
-//////////////////////////////////////////////////////////////////////////
-const wchar_t * LocalizeStringW( const char *text, const char *arg1, const char *arg2, const char *arg3, const char *arg4 )
-{
-	ScopedSwitchToGlobalHeap globalHeap;
-	static wstring formatted;
-	LocalizeStringW( formatted, text, arg1, arg2, arg3, arg4 );
-
-	return formatted.c_str();
+	pLocMgr->FormatStringMessage(out, localizedString, param1.c_str(), param2.c_str(), param3.c_str(), param4.c_str());
 }
 //////////////////////////////////////////////////////////////////////////
 const char * LocalizeString( const char *text, const char *arg1, const char *arg2, const char *arg3, const char *arg4 )
 {
-	wstring wcharstr;
-	LocalizeStringW( wcharstr, text, arg1, arg2, arg3, arg4 );
-
 	ScopedSwitchToGlobalHeap globalHeap;
 	static string charstr;
-	CryStringUtils::WStrToUTF8(wcharstr, charstr);
+	LocalizeString( charstr, text, arg1, arg2, arg3, arg4 );
 
 	return charstr.c_str();
 }
 //////////////////////////////////////////////////////////////////////////
-void LocalizeString( string &out, const char *text, const char *arg1, const char *arg2, const char *arg3, const char *arg4 )
+void LocalizeStringn( char* dest, size_t bufferSizeInBytes, const char *text, const char *arg1 /*= NULL*/, const char *arg2 /*= NULL*/, const char *arg3 /*= NULL*/, const char *arg4 /*= NULL*/ )
 {
-	wstring wcharstr;
-	LocalizeStringW( wcharstr, text, arg1, arg2, arg3, arg4 );
-
-	out.resize(0);
-	CryStringUtils::WStrToUTF8(wcharstr, out);
-}
-//////////////////////////////////////////////////////////////////////////
-void LocalizeStringWn( wchar_t* dest, size_t bufferLength, const char *text, const char *arg1 /*= NULL*/, const char *arg2 /*= NULL*/, const char *arg3 /*= NULL*/, const char *arg4 /*= NULL*/ )
-{
-	cry_wstrncpy( dest, LocalizeStringW(text, arg1, arg2, arg3, arg4), bufferLength );
-}
-//////////////////////////////////////////////////////////////////////////
-void LocalizeStringn( char* dest, size_t bufferLength, const char *text, const char *arg1 /*= NULL*/, const char *arg2 /*= NULL*/, const char *arg3 /*= NULL*/, const char *arg4 /*= NULL*/ )
-{
-	cry_strncpy( dest, LocalizeString(text, arg1, arg2, arg3, arg4), bufferLength );
-}
-//////////////////////////////////////////////////////////////////////////
-const wchar_t* LocalizeNumberW(const int number)
-{
-	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
-
-	ScopedSwitchToGlobalHeap globalHeap;
-	static wstring formatted;
-	pLocMgr->LocalizeNumber(number, formatted);
-
-	return formatted.c_str();
-
-}
-//////////////////////////////////////////////////////////////////////////
-void LocalizeNumberW(wstring& out, const int number)
-{
-	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
-	pLocMgr->LocalizeNumber(number, out);
+	cry_strcpy( dest, bufferSizeInBytes, LocalizeString(text, arg1, arg2, arg3, arg4) );
 }
 //////////////////////////////////////////////////////////////////////////
 const char* LocalizeNumber(const int number)
 {
 	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
 
-	static wstring wcharstr;
-	pLocMgr->LocalizeNumber(number, wcharstr);
-
 	ScopedSwitchToGlobalHeap globalHeap;
 	static string charstr;
-	CryStringUtils::WStrToUTF8(wcharstr, charstr);
+	pLocMgr->LocalizeNumber(number, charstr);
 
 	return charstr.c_str();
 }
@@ -215,49 +168,21 @@ void LocalizeNumber(string& out, const int number)
 {
 	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
 
-	static wstring wcharstr;
-	pLocMgr->LocalizeNumber(number, wcharstr);
-	CryStringUtils::WStrToUTF8(wcharstr, out);
+	pLocMgr->LocalizeNumber(number, out);
 }
 //////////////////////////////////////////////////////////////////////////
-void LocalizeNumberWn( wchar_t* dest, size_t bufferLength, const int number)
+void LocalizeNumbern(char* dest, size_t bufferSizeInBytes, const int number)
 {
-	cry_wstrncpy( dest, LocalizeNumberW(number), bufferLength);
-}
-//////////////////////////////////////////////////////////////////////////
-void LocalizeNumbern(char* dest, size_t bufferLength, const int number)
-{
-	cry_strncpy( dest, LocalizeNumber(number), bufferLength);
-}
-//////////////////////////////////////////////////////////////////////////
-const wchar_t* LocalizeNumberW(const float number, int decimals)
-{
-	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
-
-	ScopedSwitchToGlobalHeap globalHeap;
-	static wstring formatted;
-	pLocMgr->LocalizeNumber(number, decimals, formatted);
-
-	return formatted.c_str();
-
-}
-//////////////////////////////////////////////////////////////////////////
-void LocalizeNumberW(wstring& out, const float number, int decimals)
-{
-	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
-	pLocMgr->LocalizeNumber(number, decimals, out);
+	cry_strcpy(dest, bufferSizeInBytes, LocalizeNumber(number));
 }
 //////////////////////////////////////////////////////////////////////////
 const char* LocalizeNumber(const float number, int decimals)
 {
 	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
 
-	static wstring wcharstr;
-	pLocMgr->LocalizeNumber(number, decimals, wcharstr);
-
 	ScopedSwitchToGlobalHeap globalHeap;
 	static string charstr;
-	CryStringUtils::WStrToUTF8(wcharstr, charstr);
+	pLocMgr->LocalizeNumber(number, decimals, charstr);
 
 	return charstr.c_str();
 }
@@ -266,19 +191,12 @@ void LocalizeNumber(string& out, const float number, int decimals)
 {
 	ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
 
-	static wstring wcharstr;
-	pLocMgr->LocalizeNumber(number, decimals, wcharstr);
-	CryStringUtils::WStrToUTF8(wcharstr, out);
+	pLocMgr->LocalizeNumber(number, decimals, out);
 }
 //////////////////////////////////////////////////////////////////////////
-void LocalizeNumberWn( wchar_t* dest, size_t bufferLength, const float number, int decimals)
+void LocalizeNumbern(char* dest, size_t bufferSizeInBytes, const float number, int decimals)
 {
-	cry_wstrncpy( dest, LocalizeNumberW(number, decimals), bufferLength);
-}
-//////////////////////////////////////////////////////////////////////////
-void LocalizeNumbern(char* dest, size_t bufferLength, const float number, int decimals)
-{
-	cry_strncpy( dest, LocalizeNumber(number, decimals), bufferLength);
+	cry_strcpy(dest, bufferSizeInBytes, LocalizeNumber(number, decimals));
 }
 //////////////////////////////////////////////////////////////////////////
 

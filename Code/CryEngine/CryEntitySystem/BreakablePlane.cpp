@@ -25,9 +25,6 @@ template<class T> struct triplet {
 	T *pdata;
 };
 
-inline Vec3 UnpVec4sf(const Vec4sf &v) { return Vec3(tPackB2F(v.x),tPackB2F(v.y),tPackB2F(v.z)); }
-inline Vec4sf PakVec4sf(const Vec3 &v,int w) { return Vec4sf(tPackF2B(v.x),tPackF2B(v.y),tPackF2B(v.z),w); }
-
 int CBreakablePlane::g_nPieces = 0;
 float CBreakablePlane::g_maxPieceLifetime = 0;
 
@@ -208,12 +205,12 @@ bool CBreakablePlane::SetGeometry(IStatObj *pStatObj, IMaterial *pRenderMat, int
 		if (m_pGeom) for(idir=0;idir<2;idir++)	
 		{
 			n = pMesh->m_pPositions[pMesh->m_pIndices[ibest[idir]+1]]-pMesh->m_pPositions[pMesh->m_pIndices[ibest[idir]]] ^
-							pMesh->m_pPositions[pMesh->m_pIndices[ibest[idir]+2]]-pMesh->m_pPositions[pMesh->m_pIndices[ibest[idir]]];
-			Matrix33 R = Matrix33::CreateRotationV0V1(n.GetNormalized(), axis*(float)(idir*2-1));
-			for(i=0;i<3;i++) 	
+			    pMesh->m_pPositions[pMesh->m_pIndices[ibest[idir]+2]]-pMesh->m_pPositions[pMesh->m_pIndices[ibest[idir]]];
+
+			Matrix33 R = Matrix33::CreateRotationV0V1(n.GetNormalized(), axis * (float)(idir * 2 - 1));
+			for (i = 0; i < 3; i++) 	
 			{
-				m_TangentRef[idir][i].Tangent = PakVec4sf(R*UnpVec4sf(m_TangentRef[idir][i].Tangent), m_TangentRef[idir][i].Tangent.w);
-				m_TangentRef[idir][i].Binormal = PakVec4sf(R*UnpVec4sf(m_TangentRef[idir][i].Binormal), m_TangentRef[idir][i].Binormal.w);
+				m_TangentRef[idir][i].RotateBy(R);
 			}
 		}
 		m_pMat = pStatObj->GetMaterial();
@@ -239,14 +236,14 @@ void CBreakablePlane::FillVertexData(CMesh *pMesh,int ivtx, const vector2df &pos
 	int i,ncont;
 	float k;
 	Quat qnRot; qnRot.SetIdentity();
-	SMeshTexCoord tex;
-	Vec3 Tangent(ZERO),Binormal(ZERO);
-	tex.s = tex.t = 0;
+	Vec2 Coord(ZERO), uv;
+	Vec3 Tangent(ZERO), Bitangent(ZERO), t, b;
+	int16 r;
 
 	assert(pMesh->m_pPositionsF16 == 0);	
 
-	pMesh->m_pPositions[ivtx] = m_R*Vec3(pos.x,pos.y,m_z[iside])+m_center;
-	pMesh->m_pNorms[ivtx] = m_R*Vec3(0,0,iside*2-1.f);
+	pMesh->m_pPositions[ivtx] = m_R * Vec3(pos.x,pos.y,m_z[iside]) + m_center;
+	pMesh->m_pNorms    [ivtx] = SMeshNormal(m_R * Vec3(0,0,iside*2-1.f));
 	if (m_pGeom)
 	{
 		geom_world_data gwd[2];
@@ -257,27 +254,36 @@ void CBreakablePlane::FillVertexData(CMesh *pMesh,int ivtx, const vector2df &pos
 		if (ncont = m_pGeom->IntersectLocked(m_pSampleRay,gwd,gwd+1,0,pcont,lock)) 
 		{
 			pMesh->m_pPositions[ivtx] += m_R.GetColumn(2)*(m_R.GetColumn(2)*(pcont[ncont-1].pt-pMesh->m_pPositions[ivtx]));
-			qnRot = Quat::CreateRotationV0V1(pMesh->m_pNorms[ivtx], pcont[ncont-1].n);
-			pMesh->m_pNorms[ivtx] = pcont[ncont-1].n;
+
+			Vec3 n = pMesh->m_pNorms[ivtx].GetN();
+			qnRot = Quat::CreateRotationV0V1(n, pcont[ncont-1].n);
+			pMesh->m_pNorms[ivtx] = SMeshNormal(pcont[ncont-1].n);
 		}
 		} // lock
 	}
-	for(i=0;i<3;i++) 
+
+	m_TangentRef[iside][0].GetR(r);
+	for (i = 0; i < 3; i++) 
 	{
-		k = (m_ptRef[iside][inc_mod3[i]]-pos ^ m_ptRef[iside][dec_mod3[i]]-pos)*m_refArea[iside];
-		tex.s += m_texRef[iside][i].s*k; tex.t += m_texRef[iside][i].t*k;
-		Tangent += UnpVec4sf(m_TangentRef[iside][i].Tangent)*k;
-		Binormal += UnpVec4sf(m_TangentRef[iside][i].Binormal)*k;
+		k = (m_ptRef[iside][inc_mod3[i]] - pos ^ m_ptRef[iside][dec_mod3[i]] - pos) * m_refArea[iside];
+
+		m_texRef    [iside][i].GetUV(uv);
+		m_TangentRef[iside][i].GetTB(t, b);
+
+		Coord     += uv * k;
+		Tangent   += t  * k;
+		Bitangent += b  * k;
 	}
-	Tangent.NormalizeSafe(); (Binormal-=Tangent*(Tangent*Binormal)).NormalizeSafe();
-	pMesh->m_pTexCoord[ivtx] = tex;
-	pMesh->m_pTangents[ivtx].Tangent = PakVec4sf(qnRot*Tangent, m_TangentRef[iside][0].Tangent.w);
-	pMesh->m_pTangents[ivtx].Binormal = PakVec4sf(qnRot*Binormal, m_TangentRef[iside][0].Binormal.w);
+
+	Tangent.NormalizeSafe(); (Bitangent -= Tangent * (Tangent * Bitangent)).NormalizeSafe();
+
+	pMesh->m_pTexCoord[ivtx] = SMeshTexCoord(Coord);
+	pMesh->m_pTangents[ivtx] = SMeshTangents(qnRot * Tangent, qnRot * Bitangent, r);
 }
 
 
 IStatObj *CBreakablePlane::CreateFlatStatObj(int *&pIdx, vector2df *pt, vector2df *bounds, const Matrix34 &mtxWorld, 
-																						 IParticleEffect *pEffect, bool bNoPhys, bool bUseEdgeAlpha)
+						IParticleEffect *pEffect, bool bNoPhys, bool bUseEdgeAlpha)
 {
 	int i,j,nVtx,nCntVtx,nTris,itri,itriCnt,nCntVtxTri,bValid,clrmask;
 	int *pVtxMap,*pCntVtxMap,*pCntVtxList;
@@ -330,7 +336,7 @@ IStatObj *CBreakablePlane::CreateFlatStatObj(int *&pIdx, vector2df *pt, vector2d
 	pCntVtxList = new int[nCntVtx];
 	nVtx = nCntVtx = nTris = 0;
 	direff = mtxWorld.TransformVector(m_R*Vec3(0,0,1));
-	bounds[0].set(1E10,1E10);
+	bounds[0].set( 1E10, 1E10);
 	bounds[1].set(-1E10,-1E10);
 
 	for(i=0;pIdx[i]>=0;i+=4)
@@ -345,7 +351,7 @@ IStatObj *CBreakablePlane::CreateFlatStatObj(int *&pIdx, vector2df *pt, vector2d
 				pVtxMap[pIdx[i+j]] = nVtx++;
 			}
 			pMesh->m_pIndices[nTris*3+j] = pVtxMap[pIdx[i+j]];
-			pColor[pVtxMap[pIdx[i+j]] & clrmask].a &= -(pIdx[i+3]>>(j+6) & 1);
+			pColor[pVtxMap[pIdx[i+j]] & clrmask].MaskA(-(pIdx[i+3]>>(j+6) & 1));
 		}
 		for(j=0;j<3;j++) if (!(pIdx[i+3] & 1<<j))
 		{
@@ -379,24 +385,28 @@ IStatObj *CBreakablePlane::CreateFlatStatObj(int *&pIdx, vector2df *pt, vector2d
 
 		for(i=0,n=-axis; i<nCntVtx*2; i++)
 		{	// add the side vertices (split copies of top and bottom contours)
+			Tangent = pVtxEdge[pCntVtxList[i>>1]][i&1];
+
 			pMesh->m_pPositions[nVtx*2+i] = pMesh->m_pPositions[j = pVtxMap[pCntVtxList[i>>1]]];
 			pMesh->m_pTexCoord[nVtx*2+i] = pMesh->m_pTexCoord[j];
-			Tangent = pVtxEdge[pCntVtxList[i>>1]][i&1];
-			pMesh->m_pTangents[(nVtx+nCntVtx)*2+i].Tangent  = pMesh->m_pTangents[nVtx*2+i].Tangent  = PakVec4sf(Tangent,-32768);
-			pMesh->m_pTangents[(nVtx+nCntVtx)*2+i].Binormal = pMesh->m_pTangents[nVtx*2+i].Binormal = PakVec4sf(n,-32768);
-			pMesh->m_pNorms[(nVtx+nCntVtx)*2+i] = pMesh->m_pNorms[nVtx*2+i] = Tangent^n;
+			pMesh->m_pTangents[(nVtx+nCntVtx)*2+i] = pMesh->m_pTangents[nVtx*2+i] = SMeshTangents(Tangent, n, -1);
+			pMesh->m_pNorms[(nVtx+nCntVtx)*2+i] = pMesh->m_pNorms[nVtx*2+i] = SMeshNormal(Tangent.Cross(n));
 			pColor[(nVtx+nCntVtx)*2+i & clrmask] = pColor[nVtx*2+i & clrmask] = pColor[j & clrmask];
 		}
 		for(i=0; i<nCntVtx*2; i++) 
 		{
 			pMesh->m_pPositions[(nVtx+nCntVtx)*2+i] = pMesh->m_pPositions[(j = pVtxMap[pCntVtxList[i>>1]])+nVtx];
 			pos = vector2df((pMesh->m_pPositions[j]-m_center)*m_R) + vector2df(pVtxEdge[pCntVtxList[i>>1]][i&1]*m_R).rot90cw()*(m_z[1]-m_z[0]);
-			for(j=0,tex.s=tex.t=0; j<3; j++) 
+
+			Vec2 Coord(ZERO);
+			for (j = 0; j < 3; j++) 
 			{
 				k = (m_ptRef[1][inc_mod3[j]]-pos ^ m_ptRef[1][dec_mod3[j]]-pos)*m_refArea[1];
-				tex.s += m_texRef[1][j].s*k; tex.t += m_texRef[1][j].t*k;
+				
+				Coord += m_texRef[1][j].GetUV() * k;
 			}
-			pMesh->m_pTexCoord[(nVtx+nCntVtx)*2+i] = tex;//pVtxMap[pCntVtxList[i>>1]]];
+
+			pMesh->m_pTexCoord[(nVtx+nCntVtx)*2+i] = SMeshTexCoord(Coord);//pVtxMap[pCntVtxList[i>>1]]];
 		}
 
 		for(i=0,bValid=1,itri=nTris,itriCnt=nTris*2; pIdx[i]>=0; i+=4,itri++) 
@@ -569,7 +579,7 @@ void CBreakablePlane::ExtractMeshIsland(const SExtractMeshIslandIn& in, SExtract
 	int i,j,idxMin,ichunk,ivtxMin,ivtxMax,queue[64],ihead,itail,nNewTris,imat;
 
 	static volatile int g_lockExtractMeshIsland = 0;
-	JobWriteLock lock(g_lockExtractMeshIsland);
+	WriteLock lock(g_lockExtractMeshIsland);
 	out.islandCenter.zero(); 
 	out.islandSize.zero();
 	out.pIsleStatObj = 0;
@@ -651,7 +661,7 @@ void CBreakablePlane::ExtractMeshIsland(const SExtractMeshIslandIn& in, SExtract
 					break;
 			}
 
-      IGeometry *pIsleGeom = pGeoman->CreateMesh(pmd->pVertices+ivtxMin,pNewIdx,0,0,nNewTris, mesh_AABB_plane_optimise|mesh_AABB_rotated|mesh_multicontact1,0);
+			IGeometry *pIsleGeom = pGeoman->CreateMesh(pmd->pVertices+ivtxMin,pNewIdx,0,0,nNewTris, mesh_AABB_plane_optimise|mesh_AABB_rotated|mesh_multicontact1,0);
 			delete[] pNewIdx;
 
 			TRenderChunkArray &meshChunks = pRndMesh->GetChunks();
@@ -661,21 +671,19 @@ void CBreakablePlane::ExtractMeshIsland(const SExtractMeshIslandIn& in, SExtract
 			pIdxMesh->SetTexCoordCount(ivtxMax-ivtxMin+1);
 			pIdxMesh->SetTangentCount(ivtxMax-ivtxMin+1);
 			strided_pointer<Vec2> pTex;
-			strided_pointer<Vec4sf> pTang,pBinorm; 
+			strided_pointer<SPipTangents> pTangs; 
 			pTex.data    = (Vec2*)pRndMesh->GetUVPtr(pTex.iStride, FSL_READ);
-			pTang.data   = (Vec4sf*)pRndMesh->GetTangentPtr(pTang.iStride, FSL_READ);
-			pBinorm.data = (Vec4sf*)pRndMesh->GetBinormalPtr(pBinorm.iStride, FSL_READ);
-			for(i=0,center*=(1.0f/(nNewTris*3)); i<=ivtxMax-ivtxMin; i++) {
-				pMesh->m_pPositions[i] = pVtx[i+ivtxMin];
-				pMesh->m_pTexCoord[i].s = pTex[i+ivtxMin].x;
-				pMesh->m_pTexCoord[i].t = pTex[i+ivtxMin].y;
-				pMesh->m_pTangents[i].Binormal = pBinorm[i+ivtxMin];
-				pMesh->m_pTangents[i].Tangent = pTang[i+ivtxMin];
-				Vec4 tng=tPackB2F(pMesh->m_pTangents[i].Tangent), bnm=tPackB2F(pMesh->m_pTangents[i].Binormal);
-				Vec3 tng3(tng.x, tng.y, tng.z), bnm3(bnm.x, bnm.y, bnm.z);
-				pMesh->m_pNorms[i] = (tng3^bnm3)*(tng.w*bnm.w); // assumes w 1 or -1
+			pTangs.data  = (SPipTangents*)pRndMesh->GetTangentPtr(pTangs.iStride, FSL_READ);
+
+			for (i = 0, center *= (1.0f / (nNewTris * 3)); i <= ivtxMax - ivtxMin; i++) {
 				r = qmax(r, (pVtx[i+ivtxMin]-center).len2());
+
+				pMesh->m_pPositions[i] = pVtx[i + ivtxMin];
+				pMesh->m_pTexCoord [i] = SMeshTexCoord(pTex[i + ivtxMin]);
+				pMesh->m_pTangents [i] = SMeshTangents(pTangs[i + ivtxMin]);
+				pMesh->m_pNorms    [i] = SMeshNormal(pMesh->m_pTangents[i].GetN());
 			}
+			
 			pIdxMesh->SetSubSetCount(1);
 			pIdxMesh->SetSubSetCount(1);
 			pIdxMesh->SetSubsetIndexVertexRanges(0, 0, j, 0, ivtxMax-ivtxMin+1);
@@ -774,11 +782,7 @@ int CBreakablePlane::ProcessImpact(const SProcessImpactIn& in, SProcessImpactOut
 		out.eventSeed = in.eventSeed;
 	}
 
-	{
-		extern CRndGen g_random_generator;  // defined in platform_impl.h
-																				// used in cry_frand
-		g_random_generator.Seed(gEnv->bNoRandomSeed?0:out.eventSeed);
-	}
+	cry_random_seed(gEnv->bNoRandomSeed?0:out.eventSeed);
 
 	static ICVar *particle_limit=gEnv->pConsole->GetCVar("g_breakage_particles_limit");
 	int nMaxParticles, nCurParticles=gEnv->pPhysicalWorld->GetEntityCount(PE_PARTICLE), icount=0,mask;
@@ -881,7 +885,7 @@ int CBreakablePlane::ProcessImpact(const SProcessImpactIn& in, SProcessImpactOut
 		if (bFractureEffect && strEffectName[0])
 			pEffect = gEnv->pParticleManager->FindEffect(strEffectName);
 		bUseEdgeAlpha = pBreak2DParams->use_edge_alpha != 0;
-		ry = r*(1.0f+cry_frand()*pBreak2DParams->vert_size_spread);
+		ry = r*(1.0f+cry_random(0.0f, pBreak2DParams->vert_size_spread));
 		ry = max(ry,in.hitradius);
 		r = max(r,in.hitradius);
 		out.hitradius = r;

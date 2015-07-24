@@ -17,11 +17,11 @@ enum EBehaviorEvent
 
 struct IActorBehaviorListener
 {
-
+	// <interfuscator:shuffle>
 	virtual void BehaviorEvent(IAIObject* actor, EBehaviorEvent event) = 0;
 	virtual void BehaviorChanged(IAIObject* actor, const char* current, const char* previous) = 0;
 	virtual ~IActorBehaviorListener(){}
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -43,6 +43,7 @@ struct IAIActor : public IAIPathAgent
 		float cloakMaxDistCrouchedAndMoving;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IAIActor() {}
 
 	virtual SOBJECTSTATE & GetState() = 0;
@@ -128,7 +129,7 @@ struct IAIActor : public IAIPathAgent
 	virtual bool IsLowHealthPauseActive() const = 0;
 
 	virtual void SetPathToFollow(const char* pathName) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 

@@ -51,7 +51,7 @@ public:
 
 	virtual void Release() { delete this; };
 
-	VIRTUAL void Reset();
+	virtual void Reset();
 
 	virtual void RegisterFactory(const char *name, IVehicleMovement *(*func)(), bool isAI) { RegisterVehicleMovement(name, func, isAI); };
 	virtual void RegisterFactory(const char *name, IVehicleView *(*func)(), bool isAI) { RegisterVehicleView(name, func, isAI); }
@@ -61,42 +61,42 @@ public:
 	virtual void RegisterFactory(const char *name, IVehicleAction *(*func)(), bool isAI) { RegisterVehicleAction(name, func, isAI); }
 
 	// IVehicleSystem
-	VIRTUAL bool Init();
-	VIRTUAL IVehicle* CreateVehicle(uint16 channelId, const char *name, const char *vehicleClass, const Vec3 &pos, const Quat &rot, const Vec3 &scale, EntityId id = 0);
-	VIRTUAL IVehicle* GetVehicle(EntityId entityId);
-	VIRTUAL IVehicle* GetVehicleByChannelId(uint16 channelId);
-	VIRTUAL bool IsVehicleClass(const char *name) const;
+	virtual bool Init();
+	virtual IVehicle* CreateVehicle(uint16 channelId, const char *name, const char *vehicleClass, const Vec3 &pos, const Quat &rot, const Vec3 &scale, EntityId id = 0);
+	virtual IVehicle* GetVehicle(EntityId entityId);
+	virtual IVehicle* GetVehicleByChannelId(uint16 channelId);
+	virtual bool IsVehicleClass(const char *name) const;
 
-	VIRTUAL IVehicleMovement* CreateVehicleMovement(const string& name);
-	VIRTUAL IVehicleView* CreateVehicleView(const string& name);
-	VIRTUAL IVehiclePart* CreateVehiclePart(const string& name);
-	VIRTUAL IVehicleDamageBehavior* CreateVehicleDamageBehavior(const string& name);
-	VIRTUAL IVehicleSeatAction* CreateVehicleSeatAction(const string& name);
-	VIRTUAL IVehicleAction* CreateVehicleAction(const string& name);
+	virtual IVehicleMovement* CreateVehicleMovement(const string& name);
+	virtual IVehicleView* CreateVehicleView(const string& name);
+	virtual IVehiclePart* CreateVehiclePart(const string& name);
+	virtual IVehicleDamageBehavior* CreateVehicleDamageBehavior(const string& name);
+	virtual IVehicleSeatAction* CreateVehicleSeatAction(const string& name);
+	virtual IVehicleAction* CreateVehicleAction(const string& name);
 
-	VIRTUAL void RegisterVehicles(IGameFramework* gameFramework);
+	virtual void RegisterVehicles(IGameFramework* gameFramework);
 
-	VIRTUAL IVehicleDamagesTemplateRegistry* GetDamagesTemplateRegistry() { return m_pDamagesTemplateRegistry; }
+	virtual IVehicleDamagesTemplateRegistry* GetDamagesTemplateRegistry() { return m_pDamagesTemplateRegistry; }
 
-	VIRTUAL TVehicleObjectId AssignVehicleObjectId();
-	VIRTUAL TVehicleObjectId AssignVehicleObjectId(const string& className);
-	VIRTUAL TVehicleObjectId GetVehicleObjectId(const string& className) const;
+	virtual TVehicleObjectId AssignVehicleObjectId();
+	virtual TVehicleObjectId AssignVehicleObjectId(const string& className);
+	virtual TVehicleObjectId GetVehicleObjectId(const string& className) const;
 
-	VIRTUAL uint32 GetVehicleCount() { return uint32(m_vehicles.size()); }
-	VIRTUAL IVehicleIteratorPtr CreateVehicleIterator();
+	virtual uint32 GetVehicleCount() { return uint32(m_vehicles.size()); }
+	virtual IVehicleIteratorPtr CreateVehicleIterator();
 
-	VIRTUAL IVehicleClient* GetVehicleClient() { return m_pVehicleClient; }
-	VIRTUAL void RegisterVehicleClient(IVehicleClient* pVehicleClient);
+	virtual IVehicleClient* GetVehicleClient() { return m_pVehicleClient; }
+	virtual void RegisterVehicleClient(IVehicleClient* pVehicleClient);
 
-	VIRTUAL void RegisterVehicleUsageEventListener(const EntityId playerId, IVehicleUsageEventListener* pEventListener );
-	VIRTUAL void UnregisterVehicleUsageEventListener(const EntityId playerId, IVehicleUsageEventListener* pEventListener);
-	VIRTUAL void BroadcastVehicleUsageEvent(const EVehicleEvent eventId, const EntityId playerId, IVehicle* pVehicle );
+	virtual void RegisterVehicleUsageEventListener(const EntityId playerId, IVehicleUsageEventListener* pEventListener );
+	virtual void UnregisterVehicleUsageEventListener(const EntityId playerId, IVehicleUsageEventListener* pEventListener);
+	virtual void BroadcastVehicleUsageEvent(const EVehicleEvent eventId, const EntityId playerId, IVehicle* pVehicle );
 
-	VIRTUAL void Update(float deltaTime);
+	virtual void Update(float deltaTime);
 	// ~IVehicleSystem
 
 	//IEntityPoolListener
-	VIRTUAL void OnBookmarkEntitySerialize(TSerialize serialize, void *pVEntity);
+	virtual void OnBookmarkEntitySerialize(TSerialize serialize, void *pVEntity);
 
 	//IEntityPoolListener
 

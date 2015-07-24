@@ -19,6 +19,7 @@
 
 #include <IAgent.h>
 #include <MovementStyle.h>
+#include <MovementBlock.h>
 
 struct MovementRequest;
 struct MovementRequestID;
@@ -165,6 +166,15 @@ struct IMovementSystem
 	//
 
 	virtual void Update(float updateTime) = 0;
+
+	//
+	// When a path constructed by the Navigation System contains a point belonging to the NAV_CUSTOM_NAVIGATION type
+	// this function will be invoked if it is registered.
+	// This should instantiate a movement block able to handle the movement through that type of navigation type that
+	// is usually created in the game code.
+	//
+	virtual void RegisterFunctionToConstructMovementBlockForCustomNavigationType(Movement::CustomNavigationBlockCreatorFunction blockFactoryFunction) = 0;
+
 };
 
 #endif // IMovementSystem_h

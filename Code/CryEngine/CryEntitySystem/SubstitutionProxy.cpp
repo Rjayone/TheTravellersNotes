@@ -104,4 +104,4 @@ void CSubstitutionProxy::Serialize( TSerialize ser )
 	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntitySubstitutionProxy)
+

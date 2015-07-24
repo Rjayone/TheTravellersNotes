@@ -100,10 +100,10 @@ private:
 
 	IExactPositioningListener* m_pExactPositioningListener;
 
-	std::auto_ptr<SActorTargetParams> m_pPendingRequest; // pending requests will be queued by SetActorTarget, and will be consumed in CommitPendingRequest (in Enter of Considering state)
+	std::unique_ptr<SActorTargetParams> m_pPendingRequest; // pending requests will be queued by SetActorTarget, and will be consumed in CommitPendingRequest (in Enter of Considering state)
 
 	// Values that only make sense after the request is committed
-	std::auto_ptr<SExactPositioningTarget> m_pExactPositioningTarget;
+	std::unique_ptr<SExactPositioningTarget> m_pExactPositioningTarget;
 	SActorTargetParams m_actorTargetParams;
 	TExactPositioningQueryID m_triggerQueryStart;
 	TExactPositioningQueryID m_triggerQueryEnd;

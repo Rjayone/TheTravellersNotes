@@ -31,17 +31,17 @@ public:
 	ScriptVarType GetParamType(int nIdx);
 	IScriptSystem* GetIScriptSystem();
 	
-	VIRTUAL void* GetThis();
-	VIRTUAL bool  GetSelfAny( ScriptAnyValue &any );
+	virtual void* GetThis();
+	virtual bool  GetSelfAny( ScriptAnyValue &any );
 
-	VIRTUAL const char* GetFuncName();
+	virtual const char* GetFuncName();
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL bool GetParamAny( int nIdx,ScriptAnyValue &any );
-	VIRTUAL int  EndFunctionAny( const ScriptAnyValue &any );
-	VIRTUAL int  EndFunctionAny( const ScriptAnyValue &any1,const ScriptAnyValue &any2 );
-	VIRTUAL int  EndFunctionAny( const ScriptAnyValue &any1,const ScriptAnyValue &any2,const ScriptAnyValue &any3 );
-	VIRTUAL int  EndFunction();
+	virtual bool GetParamAny( int nIdx,ScriptAnyValue &any );
+	virtual int  EndFunctionAny( const ScriptAnyValue &any );
+	virtual int  EndFunctionAny( const ScriptAnyValue &any1,const ScriptAnyValue &any2 );
+	virtual int  EndFunctionAny( const ScriptAnyValue &any1,const ScriptAnyValue &any2,const ScriptAnyValue &any3 );
+	virtual int  EndFunction();
 	//////////////////////////////////////////////////////////////////////////
 
 private:

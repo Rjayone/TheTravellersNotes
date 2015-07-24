@@ -151,7 +151,7 @@ bool CPrefab::ExtractDesignerLoadParams(XmlNodeRef &objNode, tBrushParams &loadP
 //////////////////////////////////////////////////////////////////////////
 void CPrefab::Load(XmlNodeRef &itemNode)
 {				
-	strcpy_s(m_szName, itemNode->getAttr("Name"));
+	cry_strcpy(m_szName, itemNode->getAttr("Name"));
 	XmlNodeRef objects = itemNode->findChild( "Objects" );
 	if (objects)
 	{		
@@ -478,8 +478,13 @@ void CPrefabManager::SpawnPrefab(const string &sLibraryFilename,const string &sF
 		m_lstRuntimePrefabs[id]=pRuntimePrefab;
 	}
 			
-	if (nSeed>0)	
-		pPrefab=GetRandomPrefab(pLib,i2,nSeed);			
+	if (nSeed > 0)
+	{
+		if (CPrefab* const pTempPrefab = GetRandomPrefab(pLib, i2, nSeed))
+		{
+			pPrefab = pTempPrefab;
+		}
+	}
 
 	pRuntimePrefab->Spawn(*pPrefab);
 }

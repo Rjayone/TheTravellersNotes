@@ -324,4 +324,4 @@ void CVehicleDamagesGroup::GetMemoryUsage(ICrySizer* pSizer) const
 	pSizer->AddObject(m_damageSubGroups);	
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IVehicleDamagesGroup)
+

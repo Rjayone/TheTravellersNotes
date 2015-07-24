@@ -14,7 +14,7 @@
 #define PROFILE_BUCKET_CLEANUP 0
 
 //#define BUCKET_ALLOCATOR_MAP_DOWN
-#if (defined(_WIN32) && !defined(XENON)) || defined(LINUX32)
+#if (defined(_WIN32)) || defined(LINUX32)
 #define BUCKET_ALLOCATOR_4K
 #endif
 
@@ -233,12 +233,6 @@ bool BucketAllocator<TraitsT>::Refill(uint8 bucket)
 	{
 		useForward = false;
 	}
-#ifdef PS3
-	else if ((itemSize % 128) == 0)
-	{
-		useForward = false;
-	}
-#endif
 	else if ((itemSize % 16) == 0)
 	{
 		useForward = true;
@@ -372,24 +366,7 @@ bool BucketAllocator<TraitsT>::Refill(uint8 bucket)
 
 	typename SyncingPolicy::FreeListHeader& freeList = m_freeLists[bucket * NumGenerations + NumGenerations - 1];
 
-#if defined(XENON)
-
-	for (size_t item = 0; item != numItems; ++ item)
-	{
-		AllocHeader* cur = reinterpret_cast<AllocHeader*>(baseAddress + itemSize * item);
-
-#ifdef BUCKET_ALLOCATOR_TRAP_DOUBLE_DELETES
-		cur->magic = FreeListMagic;
-#endif
-
-		BucketAssert(IsInAddressRange(cur));
-
-		PushOnto(freeList, cur);
-	}
-
-#elif defined(PS3) || defined(_WIN32) || defined(LINUX) || defined(APPLE) || defined(ORBIS)
-
-	// On PS3 we can call lwarx and stwcx directly, so the entire new free list can be pushed on in one go
+#if defined(_WIN32) || defined(LINUX) || defined(APPLE) || defined(ORBIS)
 
 	for (size_t item = 0; item != (numItems - 1); ++ item)
 	{
@@ -480,7 +457,7 @@ void BucketAllocator<TraitsT>::CleanupInternal(bool sortFreeLists)
 	for (int i = 0; i < numSegments; ++ i)
 		segmentBases[i] = m_segmentsHot[i].m_baseAddress;
 
-	size_t pageCapacity = this->GetBucketStorageCapacity() / PageLength;
+	size_t pageCapacity = this->GetBucketStoragePages();
 
 	if (pageCapacity == 0)
 		return;
@@ -761,7 +738,7 @@ void BucketAllocator<TraitsT>::CleanupInternal(bool sortFreeLists)
 						baseOffset = sbOffset + itemSize * itemCount - SmallBlockLength;
 					}
 
-					// Need to make sure that the starting edge is 8 byte aligned for PS3
+					// Need to make sure that the starting edge is 8 byte aligned
 					baseOffset = (baseOffset + 7) & ~7;
 
 					fbhStart = reinterpret_cast<UINT_PTR>(&page->smallBlocks[startSbId]) + baseOffset;
@@ -1044,9 +1021,9 @@ size_t BucketAllocator<TraitsT>::GetBucketStorageSize()
 }
 
 template <typename TraitsT>
-size_t BucketAllocator<TraitsT>::GetBucketStorageCapacity()
+size_t BucketAllocator<TraitsT>::GetBucketStoragePages()
 {
-	return m_numSegments * NumPages * PageLength;
+	return (size_t)m_numSegments * NumPages;
 }
 
 template <typename TraitsT>
@@ -1059,7 +1036,7 @@ size_t BucketAllocator<TraitsT>::GetBucketConsumedSize()
 #endif
 }
 
-#if defined(XENON) || defined(_WIN32)
+#if defined(_WIN32)
 
 inline UINT_PTR BucketAllocatorDetail::SystemAllocator::ReserveAddressSpace(size_t numPages, size_t pageLen)
 {

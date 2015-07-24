@@ -142,10 +142,10 @@ public:
 	CMFXAudioEffect();
 
 	// IMFXEffect
-	virtual void Execute( const SMFXRunTimeEffectParams& params ) OVERRIDE;
-	virtual void LoadParamsFromXml( const XmlNodeRef& paramsNode ) OVERRIDE;
-	virtual void GetResources( SMFXResourceList& resourceList ) const OVERRIDE;
-	virtual void GetMemoryUsage( ICrySizer *pSizer ) const OVERRIDE;
+	virtual void Execute( const SMFXRunTimeEffectParams& params ) override;
+	virtual void LoadParamsFromXml( const XmlNodeRef& paramsNode ) override;
+	virtual void GetResources( SMFXResourceList& resourceList ) const override;
+	virtual void GetMemoryUsage( ICrySizer *pSizer ) const override;
 	//~IMFXEffect
 	
 protected:

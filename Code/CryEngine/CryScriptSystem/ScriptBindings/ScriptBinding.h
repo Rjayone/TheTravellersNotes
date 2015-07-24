@@ -33,7 +33,7 @@ public:
 	virtual void GetMemoryStatistics(ICrySizer *pSizer) const;
 
 private:
-	auto_vector<CScriptableBase> m_binds;
+	std::vector<std::unique_ptr<CScriptableBase> > m_binds;
 
 	class CScriptSurfaceTypesLoader *m_pScriptSurfaceTypes;
 };

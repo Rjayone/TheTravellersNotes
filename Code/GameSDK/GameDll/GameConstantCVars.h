@@ -9,9 +9,9 @@
 #define GetGameConstCVar(name) GameConstCVar_##name##_Default
 #else
 	#define DeclareGameConstFloatCVar(name)	float name
-	#define DefineGameConstFloatCVar(name, flags, help) pConsole->Register((#name), &name, GameConstCVar_##name##_Default, flags|CONST_CVAR_FLAGS, CVARHELP(help), 0, false)
+	#define DefineGameConstFloatCVar(name, flags, help) pConsole->Register((#name), &name, GameConstCVar_##name##_Default, flags|CONST_CVAR_FLAGS, help, 0, false)
 	#define DeclareGameConstIntCVar(name) int name
-	#define DefineGameConstIntCVar(name, flags, help) pConsole->Register((#name), &name, GameConstCVar_##name##_Default, flags|CONST_CVAR_FLAGS, CVARHELP(help))
+	#define DefineGameConstIntCVar(name, flags, help) pConsole->Register((#name), &name, GameConstCVar_##name##_Default, flags|CONST_CVAR_FLAGS, help)
 	#define GetGameConstCVar(name) SGameReleaseConstantCVars::Get().name
 #endif
 

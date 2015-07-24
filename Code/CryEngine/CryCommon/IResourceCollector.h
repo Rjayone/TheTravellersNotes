@@ -6,7 +6,7 @@
 // used to collect the assets needed for streaming and to gather statistics
 struct IResourceCollector
 {
-
+	// <interfuscator:shuffle>
 	// Arguments:
 	//   dwMemSize 0xffffffff if size is unknown
 	// Returns:
@@ -26,7 +26,7 @@ struct IResourceCollector
 
 	// Resets the internal data structure for the resource collector.
 	virtual void Reset() = 0;
-
+	// </interfuscator:shuffle>
 protected:
 	virtual ~IResourceCollector() {}
 };

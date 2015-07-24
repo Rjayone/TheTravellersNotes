@@ -38,7 +38,7 @@ public:
 	T start;
 	T end;
 
-	TRange()	{ start = 0; end = 0; };
+	TRange()	{ start = T(0); end = T(0); };
 	TRange( const TRange &r ) { start = r.start; end = r.end; };
 	TRange( T s,T e ) { start = s; end = e; };
 

@@ -9,14 +9,6 @@
 # pragma once
 #endif
 
-#if defined(__SPU__)
-	#define SER_NO_INLINE NO_INLINE // crycg gives loads of warnings if NO_INLINE and inline are used together
-#elif defined(__SNC__)
-	#define SER_NO_INLINE inline // snc assumes no_inline in case no_inline and inline are specified together
-#else
-	#define SER_NO_INLINE NO_INLINE inline // elf/exe will have multiply defined symbol error without inline
-#endif
-
 class CBitArray
 {
 public:
@@ -75,7 +67,7 @@ public:
 */
 
 /* This is a naive implementation */
-SER_NO_INLINE CBitArray::CBitArray(TSerialize* ser)
+NO_INLINE_WEAK CBitArray::CBitArray(TSerialize* ser)
 {
 	m_ser = ser;
 	if (ser->IsReading())
@@ -88,7 +80,7 @@ SER_NO_INLINE CBitArray::CBitArray(TSerialize* ser)
 	}
 }
 
-SER_NO_INLINE void CBitArray::ResetForWrite()
+NO_INLINE_WEAK void CBitArray::ResetForWrite()
 {
 	m_bytePos=-1;
 	m_bitPos=7;
@@ -97,14 +89,14 @@ SER_NO_INLINE void CBitArray::ResetForWrite()
 	m_isReading = false;
 }
 
-SER_NO_INLINE void CBitArray::ResetForRead()
+NO_INLINE_WEAK void CBitArray::ResetForRead()
 {
 	m_bitPos=7;
 	m_bytePos=-1;
 	m_isReading = true;
 }
 
-SER_NO_INLINE void CBitArray::PushBit(int bit)
+NO_INLINE_WEAK void CBitArray::PushBit(int bit)
 {
 #if !defined(_RELEASE)
 	if (m_bytePos>=maxBytes)
@@ -129,12 +121,12 @@ SER_NO_INLINE void CBitArray::PushBit(int bit)
 	m_multiplier = m_multiplier << 1;
 }
 
-SER_NO_INLINE int CBitArray::NumberOfBitsPushed()
+NO_INLINE_WEAK int CBitArray::NumberOfBitsPushed()
 {
 	return m_bytePos*8 + m_bitPos + 1;
 }
 
-SER_NO_INLINE int CBitArray::PopBit()	/* from the front */
+NO_INLINE_WEAK int CBitArray::PopBit()	/* from the front */
 {
 	m_bitPos++;
 	if (m_bitPos==8)
@@ -149,7 +141,7 @@ SER_NO_INLINE int CBitArray::PopBit()	/* from the front */
 	return ret;
 }
 
-SER_NO_INLINE void CBitArray::ReadBits(unsigned char* out, int numBits)
+NO_INLINE_WEAK void CBitArray::ReadBits(unsigned char* out, int numBits)
 {
 	unsigned char byte;
 	while (numBits>=8)
@@ -221,7 +213,7 @@ SER_NO_INLINE void CBitArray::ReadBits(unsigned char* out, int numBits)
 	}
 }
 
-SER_NO_INLINE void CBitArray::WriteBits(const unsigned char* in, int numBits)
+NO_INLINE_WEAK void CBitArray::WriteBits(const unsigned char* in, int numBits)
 {
 	unsigned char v;
 	while (numBits>=8)
@@ -307,7 +299,7 @@ inline uint32 CBitArray::bitsneeded(uint32 v)
 }
 
 template<class INT> 
-SER_NO_INLINE void CBitArray::SerializeInt_T(INT* v, INT min, INT max)
+NO_INLINE_WEAK void CBitArray::SerializeInt_T(INT* v, INT min, INT max)
 {
 	INT range = max-min;
 	INT nbits = bitsneeded(range);
@@ -534,7 +526,7 @@ inline void CBitArray::SerializeEntity(EntityId& entId)
 	}
 }
 	
-SER_NO_INLINE void CBitArray::WriteToSerializer()
+NO_INLINE_WEAK void CBitArray::WriteToSerializer()
 {
 	CRY_ASSERT(IsReading()==0);
 

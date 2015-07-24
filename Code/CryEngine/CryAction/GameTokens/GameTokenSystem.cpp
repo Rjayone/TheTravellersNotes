@@ -877,4 +877,4 @@ void CGameTokenSystem::GetMemoryStatistics(ICrySizer * s)
 	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IGameTokenSystem)
+

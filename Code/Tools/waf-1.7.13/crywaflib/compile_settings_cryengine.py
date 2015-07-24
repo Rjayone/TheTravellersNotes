@@ -96,10 +96,7 @@ def set_editor_flags(self, kw):
 		self.CreateRootRelativePath('Code/CryEngine/CryCommon') ,
 		self.CreateRootRelativePath('Code/SDKs/boost'),
 		self.CreateRootRelativePath('Code/SDKs/XT_13_4/Include'),
-		self.CreateRootRelativePath('Code/Sandbox/SDKs/Python27/x64/include'),
-		self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/include'),
-		self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/include'),
-		self.CreateRootRelativePath('Code/SDKs/Microsoft Windows SDK/V8.0/Include'),
+		self.CreateRootRelativePath('Code/SDKs/Python27/x64/include')
 		] + kw['includes']
 	
 	if 'priority_includes' in kw:
@@ -115,9 +112,8 @@ def set_editor_flags(self, kw):
 		]
 	
 	kw['libpath'] += [	
-		self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/lib/amd64'),
 		self.CreateRootRelativePath('Code/SDKs/XT_13_4/lib_vc9'),
-		self.CreateRootRelativePath('Code/Sandbox/SDKs/Python27/x64/libs'),
+		self.CreateRootRelativePath('Code/SDKs/Python27/x64/libs'),
 		]
 
 ###############################################################################
@@ -129,8 +125,6 @@ def set_rc_flags(self, kw):
 		self.CreateRootRelativePath('Code/CryEngine/CryCommon'),
 		self.CreateRootRelativePath('Code/SDKs/boost'),
 		self.CreateRootRelativePath('Code/Sandbox/Plugins/EditorCommon'),
-		self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/include'),
-		self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/include')
 	] + kw['includes']
 
 	kw['defines'] += [
@@ -141,11 +135,6 @@ def set_rc_flags(self, kw):
 			'_CRT_SECURE_NO_DEPRECATE=1',
 			'_CRT_NONSTDC_NO_DEPRECATE=1'
 			]
-			
-	if self.env['PLATFORM'] == 'win_x86':
-		kw['libpath'] += [ self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/lib') ]
-	else:
-		kw['libpath'] += [ self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/lib/amd64') ]
 
 ###############################################################################
 @conf	
@@ -153,9 +142,7 @@ def set_pipeline_flags(self, kw):
 
 	kw['includes'] = [
 		'.',
-		self.CreateRootRelativePath('Code/CryEngine/CryCommon'),
-		self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/include'),
-		self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/include')
+		self.CreateRootRelativePath('Code/CryEngine/CryCommon')
 	] + kw['includes']
 
 	kw['defines'] += [
@@ -166,11 +153,6 @@ def set_pipeline_flags(self, kw):
 			'_CRT_SECURE_NO_DEPRECATE=1',
 			'_CRT_NONSTDC_NO_DEPRECATE=1'
 			]
-			
-	if self.env['PLATFORM'] == 'win_x86':
-		kw['libpath'] += [ self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/lib') ]
-	else:
-		kw['libpath'] += [ self.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/lib/amd64') ]
 
 ###############################################################################
 @conf

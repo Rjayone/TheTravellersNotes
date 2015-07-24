@@ -33,14 +33,16 @@ struct SFileVersion
 		v[3] = 1;
 	}
 
-	void	Set(const char *s)
+	void Set(const char *s)
 	{
 		v[0] = v[1] = v[2] = v[3] = 0;
 
-		char t[50];	char* p;
-		strncpy(t,s,sizeof(t));
-		t[sizeof(t)-1] = 0; // NULL terminate
+		char t[50];
+		const size_t len = (std::min)(strlen(s), sizeof(t) - 1);
+		memcpy(t, s, len);
+		t[len] = 0;
 
+		char* p;
 		if(!(p = strtok(t,"."))) return;
 		v[3] = atoi(p);
 		if(!(p = strtok(NULL,"."))) return;

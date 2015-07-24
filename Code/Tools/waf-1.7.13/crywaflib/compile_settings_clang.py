@@ -46,8 +46,8 @@ def load_clang_common_settings(v):
 	v['LINKFLAGS_cxxshlib'] = ['-shared']
 	
 	# static library settings	
-	v['CFLAGS_cstlib'] = v['CFLAGS_cxxstlib']	= []	 
-	v['CXXFLAGS_cstlib'] = v['CXXFLAGS_cxxstlib']	= []
+	v['CFLAGS_cstlib'] = v['CFLAGS_cxxstlib']	= ['-fpic']	 
+	v['CXXFLAGS_cstlib'] = v['CXXFLAGS_cxxstlib']	= ['-fpic']
 	
 	v['LINKFLAGS_cxxstlib']	= ['-Wl,-Bstatic']
 	v['LINKFLAGS_cxxshtib'] = ['-Wl,-Bstatic']
@@ -96,14 +96,14 @@ def load_clang_common_settings(v):
 		'-Wno-#pragma-messages',		
 		]
 		
-	v['DEFINES'] += ['GCC_NO_CPP11']	
 	# Copy common flags to prevent modifing references
 	v['CFLAGS'] += COMMON_COMPILER_FLAGS[:]
 	
 	
 	v['CXXFLAGS'] += COMMON_COMPILER_FLAGS[:] + [	
 		'-fno-rtti',				# Disable RTTI
-		'-fno-exceptions',			# Disable Exceptions		
+		'-fno-exceptions',			# Disable Exceptions
+		'-std=c++11',				# Enable c++11 features
 	]
 	
 	# Linker Flags

@@ -946,7 +946,7 @@ void CWeaponSharedParams::ReadReloadMagazineParams(const XmlNodeRef& paramsNode)
 		return;
 
 	const char* magazineEvent = paramsNode->getAttr("magazineEvent");
-	reloadMagazineParams.magazineEventCRC32 = (magazineEvent != NULL) ? gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(magazineEvent) : 0;
+	reloadMagazineParams.magazineEventCRC32 = (magazineEvent != NULL) ? CCrc32::ComputeLowercase(magazineEvent) : 0;
 	reloadMagazineParams.magazineAttachment = paramsNode->getAttr("magazineAttachment");
 }
 
@@ -1645,7 +1645,6 @@ void SZoomParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*= true
 	{
 		suffix = "ironsight";
 		suffixAG = "";
-		transitionAnimation = "";
 		dof = false;
 		dof_focusMin = 1.0f;
 		dof_focusMax = 150.0f;
@@ -1672,7 +1671,6 @@ void SZoomParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*= true
 		ironsightStrafeAnimFactor = 1.0f;
 		ironsightMovementAnimFactor = 1.0f;
 		cameraShakeMultiplier = 1.0f;
-		recoilDamping = 1.0f;
 
 		muzzle_flash_scale = 1.0f;
 
@@ -1697,7 +1695,6 @@ void SZoomParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*= true
 
 		suffix = reader.ReadParamValue("suffix", suffix.c_str());
 		suffixAG = reader.ReadParamValue("suffixAG", suffixAG.c_str());
-		transitionAnimation = reader.ReadParamValue("transitionAnimation", transitionAnimation.c_str());
 		reader.ReadParamValue<bool>("dof", dof);
 		reader.ReadParamValue<float>("dof_focusMin", dof_focusMin);
 		reader.ReadParamValue<float>("dof_focusMax", dof_focusMax);
@@ -1723,7 +1720,6 @@ void SZoomParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*= true
 		reader.ReadParamValue<float>("ironsightStrafeAnimFactor", ironsightStrafeAnimFactor);
 		reader.ReadParamValue<float>("ironsightMovementAnimFactor", ironsightMovementAnimFactor);
 		reader.ReadParamValue<float>("cameraShakeMultiplier", cameraShakeMultiplier);
-		reader.ReadParamValue<float>("recoilDamping", recoilDamping);
 
 		reader.ReadParamValue<float>("muzzle_flash_scale", muzzle_flash_scale);
 
@@ -1788,8 +1784,6 @@ void SZoomSway::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*= true*/
 		stabilizeTime = 3.0f;
 		holdBreathScale = 0.1f;
 		holdBreathTime = 1.0f;
-		coverScale = 0.6f;
-		coverScaleTime = 0.75f;
 		minScale = 0.15f;
 		scaleAfterFiring = 0.5f;
 		crouchScale = 0.8f;
@@ -1804,8 +1798,6 @@ void SZoomSway::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*= true*/
 		reader.ReadParamValue<float>("stabilizeTime", stabilizeTime);
 		reader.ReadParamValue<float>("holdBreathScale", holdBreathScale);
 		reader.ReadParamValue<float>("holdBreathTime", holdBreathTime);
-		reader.ReadParamValue<float>("coverScale", coverScale);
-		reader.ReadParamValue<float>("coverScaleTime", coverScaleTime);
 		reader.ReadParamValue<float>("minScale", minScale);
 		reader.ReadParamValue<float>("scaleAfterFiring", scaleAfterFiring);
 		reader.ReadParamValue<float>("crouchScale", crouchScale);

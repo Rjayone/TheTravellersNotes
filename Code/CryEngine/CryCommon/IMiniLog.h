@@ -18,8 +18,6 @@
 #ifndef _CRY_ENGINE_MINI_LOG_HDR_
 #define _CRY_ENGINE_MINI_LOG_HDR_
 
-#if !defined(__SPU__)
-
 struct IMiniLog
 {
 	enum ELogType
@@ -35,6 +33,7 @@ struct IMiniLog
 		eComment
 	};
 
+	// <interfuscator:shuffle>
 	// Notes:
 	//	 You only have to implement this function.
 	virtual void LogV (const ELogType nType, const char* szFormat, va_list args) PRINTF_PARAMS(3, 0) = 0;
@@ -67,7 +66,7 @@ struct IMiniLog
 	//	 This is the simplest log function for errors
 	//	 with the default implementation.
 	virtual inline void LogError(const char * szFormat,...) PRINTF_PARAMS(2, 3);
-
+	// </interfuscator:shuffle>
 };
 
 inline void IMiniLog::LogWithType( ELogType nType, int flags, const char * szFormat,...)
@@ -124,5 +123,5 @@ struct CNullMiniLog: public IMiniLog
 	//##@}
 };
 
-#endif//__SPU__
+
 #endif //_CRY_ENGINE_MINI_LOG_HDR_

@@ -251,7 +251,6 @@ public:
 	
 	virtual void StartFire();
 	virtual void StartFire(const SProjectileLaunchParams& launchParams);
-	virtual void StartFire(int position){ StartFire(); }
 	virtual void StopFire();
 	virtual bool CanFire() const;
 	virtual bool CanStopFire() const;
@@ -341,7 +340,7 @@ public:
 	virtual bool PredictProjectileHit(IPhysicalEntity *pShooter, const Vec3 &pos, const Vec3 &dir,
 		const Vec3 &velocity, float speed, Vec3& predictedPosOut, float& projectileSpeedOut,
 		Vec3* pTrajectoryPositions = 0, unsigned int* trajectorySizeInOut = 0, float timeStep = 0.24f,
-		Vec3* pTrajectoryVelocities = 0, const bool predictionForAI = false) const OVERRIDE;
+		Vec3* pTrajectoryVelocities = 0, const bool predictionForAI = false) const override;
 
 	virtual const AIWeaponDescriptor& GetAIWeaponDescriptor( ) const;
 
@@ -919,22 +918,6 @@ private:
 	bool RefillInventoryAmmo(IInventory* pInventory, IEntityClass* pAmmoTypeClass, CFireMode* pFireMode);
 
 	void  RegisterActions();
-
-	//Traveller Notes Weapon Input Action Defenition
-	//Description:
-	//Defenition below using for determine rigth-click attack.
-	//For sword that is vertiacl attack.
-	virtual bool OnActionSecondaryAttack(EntityId actorId, const ActionId& actionId, int activationMode, float value);
-
-	//Description:
-	//Additional attack called when player click wheel-button
-	//For sword that is procking attack
-	virtual bool OnActionAdditionalAttack(EntityId actorId, const ActionId& actionId, int activationMode, float value);
-
-	//Description:
-	//Using for determine deselect action for weapon
-	virtual bool OnActionDeselect(EntityId actorId, const ActionId& actionId, int activationMode, float value);
-	//~
 
 	virtual bool OnActionAttackPrimary(EntityId actorId, const ActionId& actionId, int activationMode, float value);
 	virtual bool OnActionAttackSecondary(EntityId actorId, const ActionId& actionId, int activationMode, float value);

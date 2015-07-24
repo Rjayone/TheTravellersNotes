@@ -16,7 +16,7 @@
 #define __TypeInfo_h__
 
 #pragma once
-#if !defined(_SPU_JOB)
+
 //////////////////////////////////////////////////////////////////////////
 // Meta-type support.
 //////////////////////////////////////////////////////////////////////////
@@ -113,5 +113,5 @@ inline const CTypeInfo& TypeInfo(T** t)
 	return PtrTypeInfo();
 }
 
-#endif//_SPU_JOB
+
 #endif // __TypeInfo_h__

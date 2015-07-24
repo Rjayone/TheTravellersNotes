@@ -25,7 +25,6 @@
 #include <CryHalf.inl>
 #include <MetaUtils.h>
 #include <float.h>
-
 ///////////////////////////////////////////////////////////////////////////////
 // Forward declarations                                                      //
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,11 +45,6 @@ template <typename F> struct Diag33_tpl;
 template <typename F> struct Matrix33_tpl;
 template <typename F> struct Matrix34_tpl;
 template <typename F> struct Matrix44_tpl;
-
-//these types exist only on X360 and PS3
-template<typename F> struct Vec4A_tpl;
-template<typename F> struct Matrix34A_tpl;
-template<typename F> struct Matrix44A_tpl;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,6 +75,7 @@ const f64 sqrt3  = 1.7320508075688772935274463415059;
 #define RAD2HCOS( a ) ( cos_tpl( (a*0.5f) ) )
 #define HCOS2RAD( a ) ( acos_tpl(a)*2.0f  )
 #define DEG2HCOS( a ) ( cos_tpl( (a*0.5f)*(gf_PI/180.0f) ) )
+#define DEG2HSIN( a ) ( sin_tpl( (a*0.5f)*(gf_PI/180.0f) ) )
 #define HCOS2DEG( a ) ( acos_tpl(a)*2.0f*(180.0f/gf_PI)  )
 #define SIGN_MASK(x) ((intptr_t)(x) >> ((sizeof(size_t)*8)-1))
 #define TANGENT30 0.57735026918962576450914878050196f // tan(30)
@@ -205,20 +200,32 @@ ILINE f64 isqrt_fast_tpl(f64 op) { return 1.0/sqrt(op); }
 ILINE f32 isqrt_safe_tpl(f32 op2) { f32 op=op2+ + FLT_MIN; 	__m128 s = _mm_rsqrt_ss(_mm_set_ss(op)); 	float r; _mm_store_ss(&r, s); 	return r*(1.5f-op*r*r*0.5f); }	
 ILINE f64 isqrt_safe_tpl(f64 op) { return 1.0/sqrt(op + DBL_MIN); }
 #elif defined (__ARM_NEON__)
-// TODO: Implement with ARM NEON instructions
-ILINE f32 sqrt_tpl(f32 op) { return sqrtf(op); }
+#include "arm_neon.h"
+
+template <int n>
+float isqrt_helper(float f)
+{
+	float32x2_t v = vdup_n_f32(f);
+	float32x2_t r = vrsqrte_f32(v);
+	// n+1 newton iterations because initial approximation is crude
+	for(int i = 0; i <= n; ++i)
+		r = vrsqrts_f32(v * r, r) * r;
+	return vget_lane_f32(r, 0);
+}
+
+ILINE f32 sqrt_tpl(f32 op) { return op != 0.0f ? op * isqrt_helper<1>(op) : op; }
 ILINE f64 sqrt_tpl(f64 op) { return sqrt(op); }
 
-ILINE f32 sqrt_fast_tpl(f32 op) { return sqrtf(op); }
+ILINE f32 sqrt_fast_tpl(f32 op) { return op != 0.0f ? op * isqrt_helper<0>(op) : op; }
 ILINE f64 sqrt_fast_tpl(f64 op) { return sqrt(op); }
 
-ILINE f32 isqrt_tpl(f32 op) { return 1.0f/sqrtf(op); }
+ILINE f32 isqrt_tpl(f32 op) { return isqrt_helper<1>(op); }
 ILINE f64 isqrt_tpl(f64 op) {	return 1.0/sqrt(op); }
 
-ILINE f32 isqrt_fast_tpl(f32 op) { return 1.0f/sqrtf(op);}
+ILINE f32 isqrt_fast_tpl(f32 op) { return isqrt_helper<0>(op);}
 ILINE f64 isqrt_fast_tpl(f64 op) { return 1.0/sqrt(op); }
 
-ILINE f32 isqrt_safe_tpl(f32 op) { return 1.0f/sqrtf(op + FLT_MIN); }	
+ILINE f32 isqrt_safe_tpl(f32 op) { return isqrt_helper<1>(op + FLT_MIN); }	
 ILINE f64 isqrt_safe_tpl(f64 op) { return 1.0/sqrt(op + DBL_MIN); }
 #else
 #error unsupported CPU
@@ -334,26 +341,6 @@ static int32 inc_mod3[]={1,2,0}, dec_mod3[]={2,0,1};
 ILINE int32 incm3(int32 i) { return i+1 & (i-2)>>31; }
 ILINE int32 decm3(int32 i) { return i-1 + ((i-1)>>31&3); }
 #endif
-
-
-
-//////////////////////////////////////////////////////////////////////////
-// Random functions.
-//////////////////////////////////////////////////////////////////////////
-#include "Random.h"               // Random number generator.
-extern unsigned int cry_rand();   // Random function to be used instead of rand()
-extern unsigned int cry_rand32(); // Generates random integer in full 32-bit range.
-extern float cry_frand();         // Generates random floating number in the closed interval [0,1].
-// Random float between 0 and 1 inclusive.
-ILINE float Random() {	return cry_frand(); }
-// Random floats.
-ILINE float Random(float fRange) { 	return cry_frand() * fRange; }
-ILINE float Random(float fStart, float fEnd) { 	return cry_frand() * (fEnd-fStart) + fStart; }
-// Random int from 0..nRange-1.
-ILINE uint32 Random(uint32 nRange) {	return uint32((uint64(cry_rand32()) * nRange) >> 32); }
-// Proper overload resolution for ints.
-ILINE uint32 Random(int32 nRange) {	assert(nRange >= 0); 	return Random(uint32(nRange)); }
-ILINE float BiRandom(float fRange) {	return Random(-fRange, fRange); }
 
 
 //////////////////////////////////////////////////////////////////////////

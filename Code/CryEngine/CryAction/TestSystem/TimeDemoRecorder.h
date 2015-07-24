@@ -17,6 +17,8 @@
 #define __timedemorecorder_h__
 #pragma once
 
+#include <CryListenerSet.h>
+#include <ITimeDemoRecorder.h>
 #include "ITestModule.h"
 
 struct SRecordedGameEvent;
@@ -52,76 +54,54 @@ struct STimeDemoGameEvent
 };
 typedef std::vector<STimeDemoGameEvent> TGameEventRecords;
 
-class CTimeDemoRecorder : public IFrameProfilePeakCallback, IInputEventListener, IEntitySystemSink, IGameplayListener
+class CTimeDemoRecorder : public ITimeDemoRecorder, IFrameProfilePeakCallback, IInputEventListener, IEntitySystemSink, IGameplayListener
 {
 public:
 	CTimeDemoRecorder();
-	~CTimeDemoRecorder();
+	virtual ~CTimeDemoRecorder();
+
 	void Reset();
-	
-	virtual void StartSession();
-	virtual void StopSession();
-	virtual void PreUpdate();
-	virtual void PostUpdate();
-	virtual float RenderInfo(float y=0);
-	virtual void Record( bool bEnable );
-	virtual void Play( bool bEnable );
-	virtual ETestModuleType GetType() const {return TM_TIMEDEMO;}
-	virtual void ParseParams(XmlNodeRef node);
-	virtual void SetVariable(const char* name,const char* szValue);
-	virtual void SetVariable(const char* name,float value);
+
+	void PreUpdate();
+	void PostUpdate();
+
+	void GetMemoryStatistics(class ICrySizer *pSizer) const;
 
 	bool IsRecording() const { return m_bRecording; };
 	bool IsPlaying() const { return m_bPlaying; };
 	bool IsTimeDemoActive() const { return m_bChainloadingDemo || m_bPlaying || m_bRecording; }
 	bool IsChainLoading() const { return m_bChainloadingDemo; }
 
-	//! Get number of frames in record.
-	int GetNumFrames() const;
-	float GetAverageFrameRate() const;
+	virtual void RegisterListener(ITimeDemoListener* pListener) override;
+	virtual void UnregisterListener(ITimeDemoListener* pListener) override;
 
-	void Save( const char *filename );
-	bool Load(  const char *filename );
-	
-	void StartChainDemo( const char *levelsListFilename,bool bAutoLoadChainConfig );
-	void StartDemoLevel( const char **levelNames, int levelCount );
-	void StartDemoDelayed( int nFrames );
+private:
 	//////////////////////////////////////////////////////////////////////////
 	// Implements IFrameProfilePeakCallback interface.
 	//////////////////////////////////////////////////////////////////////////
-	virtual void OnFrameProfilerPeak( CFrameProfiler *pProfiler,float fPeakTime );
+	virtual void OnFrameProfilerPeak( CFrameProfiler *pProfiler,float fPeakTime ) override;
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
 	// Implements IInputEventListener interface.
 	//////////////////////////////////////////////////////////////////////////
-	virtual bool OnInputEvent( const SInputEvent &event );
+	virtual bool OnInputEvent( const SInputEvent &event ) override;
 	//////////////////////////////////////////////////////////////////////////
 	// Implements IGameplayListener interface.
 	//////////////////////////////////////////////////////////////////////////
-	virtual void OnGameplayEvent(IEntity *pEntity, const GameplayEvent &event);
+	virtual void OnGameplayEvent(IEntity *pEntity, const GameplayEvent &event) override;
 
 	//////////////////////////////////////////////////////////////////////////
 	// IEntitySystemSink
 	//////////////////////////////////////////////////////////////////////////
-	virtual bool OnBeforeSpawn( SEntitySpawnParams &params );
-	virtual void OnSpawn( IEntity *pEntity,SEntitySpawnParams &params );
-	virtual bool OnRemove( IEntity *pEntity );
-	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params );
-	virtual void OnEvent( IEntity *pEntity, SEntityEvent &event );
+	virtual bool OnBeforeSpawn( SEntitySpawnParams &params ) override;
+	virtual void OnSpawn( IEntity *pEntity,SEntitySpawnParams &params ) override;
+	virtual bool OnRemove( IEntity *pEntity ) override;
+	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params ) override;
+	virtual void OnEvent( IEntity *pEntity, SEntityEvent &event ) override;
 	//////////////////////////////////////////////////////////////////////////
 
-	virtual void Pause(bool paused) {m_bPaused = paused;}
-
-	void GetMemoryStatistics(class ICrySizer *pSizer) const;
-	virtual bool RecordFrame();
-	virtual bool PlayFrame();
-	virtual int GetNumberOfFrames();
-	virtual int GetTotalPolysRecorded() {return m_nTotalPolysRecorded;}
-	virtual void LogEndOfLoop();
-
 private:
-
 	// Input event list.
 	struct EntityEventRecord
 	{
@@ -165,6 +145,36 @@ private:
 		void GetMemoryUsage(ICrySizer *pSizer ) const{}
 	};
 
+private:
+	void StartSession();
+	void StopSession();
+
+	float RenderInfo(float y=0);
+	void Record( bool bEnable );
+	void Play( bool bEnable );
+	ETestModuleType GetType() const {return TM_TIMEDEMO;}
+	void ParseParams(XmlNodeRef node);
+	void SetVariable(const char* name,const char* szValue);
+	void SetVariable(const char* name,float value);
+
+	//! Get number of frames in record.
+	int GetNumFrames() const;
+	float GetAverageFrameRate() const;
+
+	void Save( const char *filename );
+	bool Load(  const char *filename );
+	
+	void StartChainDemo( const char *levelsListFilename,bool bAutoLoadChainConfig );
+	void StartDemoLevel( const char **levelNames, int levelCount );
+	void StartDemoDelayed( int nFrames );
+
+	void Pause(bool paused) {m_bPaused = paused;}
+
+	bool RecordFrame();
+	bool PlayFrame();
+	int GetNumberOfFrames();
+	int GetTotalPolysRecorded() {return m_nTotalPolysRecorded;}
+	void LogEndOfLoop();
 
 	static const char* GetCurrentLevelPath();
 
@@ -198,6 +208,9 @@ private:
 
 	void AddFrameRecord(const FrameRecord &rec);
 
+	void SignalPlayback(bool bEnable);
+	void SignalRecording(bool bEnable);
+
 protected:
 	static void cmd_StartRecordingTimeDemo( IConsoleCmdArgs *pArgs );
 	static void cmd_Play( IConsoleCmdArgs *pArgs );
@@ -206,6 +219,9 @@ protected:
 	static void cmd_Stop( IConsoleCmdArgs *pArgs );
 
 private:
+	typedef CListenerSet<ITimeDemoListener*> TTimeDemoListeners;
+	TTimeDemoListeners m_listeners;
+
 	typedef std::vector<FrameRecord> FrameRecords;
 	FrameRecords m_records;
 
@@ -222,7 +238,6 @@ private:
 	std::vector<SInputEvent> m_currentFrameInputEvents;
 	EntityEventRecords m_currentFrameEntityEvents;
 	EntityEventRecords m_firstFrameEntityState;
-
 
 	TGameEventRecords m_CurrentFrameGameEvents;
 

@@ -18,11 +18,7 @@ public:
 	Vec3 m_vBoxMin;
 	Vec3 m_vBoxMax;
   
-#if defined(PS3)
-	uint64	m_nOcclusionID;
-#else
   UINT_PTR m_nOcclusionID; // this will carry a pointer LPDIRECT3DQUERY9, so it needs to be 64-bit on WIN64 
-#endif
 
 	CRenderMesh * m_pRMBox;
 	static uint32 m_nQueriesPerFrameCounter;

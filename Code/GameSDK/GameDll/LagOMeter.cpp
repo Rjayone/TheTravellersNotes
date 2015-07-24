@@ -263,8 +263,4 @@ bool CLagOMeter::OnInputEvent( const SInputEvent &rInputEvent )
 	return false;
 }
 
-bool CLagOMeter::OnInputEventUI( const SInputEvent &event )
-{
-	return false;
-}
 #endif // __LAGOMETER_H__

@@ -23,7 +23,7 @@ struct EventPhys;
 
 // Base class for all deferred physics events
 // Basically this class works like a future,
-// Start() start the computation(some in the main thread, major part in a task/spu)
+// Start() start the computation(some in the main thread, major part in a task/job)
 // Result() will sync the task operation and return the result
 struct IDeferredPhysicsEvent : 
 	public IThreadTask
@@ -34,7 +34,7 @@ struct IDeferredPhysicsEvent :
 	};
 
 	IDeferredPhysicsEvent(){}
-
+	// <interfuscator:shuffle>
 	virtual ~IDeferredPhysicsEvent(){}
 
 	// == "future" like interface == //
@@ -56,7 +56,7 @@ struct IDeferredPhysicsEvent :
 
 	// returns a ptr to the original physics event
 	virtual  EventPhys* PhysicsEvent() =0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -67,7 +67,7 @@ struct IDeferredPhysicsEventManager
 	typedef IDeferredPhysicsEvent*(*CreateEventFunc)(const EventPhys *pEvent);
 
 	IDeferredPhysicsEventManager(){}
-
+	// <interfuscator:shuffle>
 	virtual ~IDeferredPhysicsEventManager(){}
 
 	// dispatch an deferred event to the task thread
@@ -88,7 +88,7 @@ struct IDeferredPhysicsEventManager
 	virtual void Update() = 0;
 
 	virtual IDeferredPhysicsEvent* GetLastCollisionEventForEntity(IPhysicalEntity *pPhysEnt) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 

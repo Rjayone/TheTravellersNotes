@@ -134,7 +134,7 @@ void SStaticWeaponSwayParams::Serialize(Serialization::IArchive& ar)
 {
 	ar(easeFactorInc, "EaseFactorInc", "Ease Factor Inc");
 	ar(easeFactorDec, "EaseFactorDec", "Ease Factor Dec");
-	ar(strafeScopeFactor, "StrafeScopeFactor", "Strafe Scoepe Factor");
+	ar(strafeScopeFactor, "StrafeScopeFactor", "Strafe Scope Factor");
 	ar(rotateScopeFactor, "RotateScopeFactor", "Rotate Scope Factor");
 	ar(velocityInterpolationMultiplier, "VelocityInterpolationMultiplier", "Velocity Interpolation Multiplier");
 	ar(velocityLowPassFilter, "VelocityLowPassFilter", "Velocity Low Pass Filter");

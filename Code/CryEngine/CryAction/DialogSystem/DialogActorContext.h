@@ -36,9 +36,10 @@ class CDialogActorContext :
 public:
 	CDialogActorContext(CDialogSession* pSession, CDialogScript::TActorID actorID);
 	~CDialogActorContext();
-
+	
 	bool PlayLine(const CDialogScript::SScriptLine* pLine); // returning false stops the Session!
 	bool Update(float dt);
+	
 	void BeginSession();
 	void EndSession();
 	bool IsAborted() const;
@@ -47,6 +48,8 @@ public:
 
 	static const char* FullSoundName(const string& soundName, bool bWav=true);
 	static const char* GetSoundKey(const string& soundName);
+
+	CDialogSystem::ActorContextID GetContextID() const { return m_ContextID; }
 
 	static void ResetStaticData();
 
@@ -57,9 +60,15 @@ public:
 		return (m_pSession->GetActorFlags(m_actorID) & flag) != 0;
 	}
 
+	static void OnAudioTriggerFinished(SAudioRequestInfo const* const pAudioRequestInfo);
+	static const char* GetClassIdentifier() { return "DialogActorContext"; }
+
+	static CDialogActorContext* GetDialogActorContextByAudioCallbackData(SAudioRequestInfo const* const pAudioRequestInfo);
+	EntityId GetEntityID() const { return m_entityID; }
+
 protected:
 	// Play an animation action on the entity [AG pr EP]
-	bool DoAnimAction(IEntity* pEntity, const string& action, bool bIsSignal, bool bUseEP );
+	bool DoAnimAction(IEntity* pEntity, const string& action, bool bIsSignal, bool bUseEP);
 
 	// Play an animation action [AnimGraph Action/Signal] on the entity
 	bool DoAnimActionAG(IEntity* pEntity, const char* sAction);
@@ -90,7 +99,7 @@ protected:
 	// IAnimationGraphStateListener
 	virtual void SetOutput(const char* output, const char* value);
 	virtual void QueryComplete(TAnimationGraphQueryID queryID, bool succeeded);
-	virtual void DestroyedState(IAnimationGraphState* );
+	virtual void DestroyedState(IAnimationGraphState*);
 	// ~IAnimationGraphStateListener
 
 	void ResetState();
@@ -100,6 +109,8 @@ protected:
 	void StopSound(bool bUnregisterOnly=false);
 	void AbortContext(bool bCancel, CDialogSession::EAbortReason reason);
 	void ResetAGState();
+
+	void UpdateAuxProxyPosition();
 
 	ILINE CDialogSession::EDialogAIInterruptBehaviour GetAIBehaviourMode() const
 	{
@@ -150,6 +161,7 @@ protected:
 	CDialogScript::TActorID m_actorID;
 	EntityId m_entityID;
 	const CDialogScript::SScriptLine* m_pCurLine;
+	CDialogSystem::ActorContextID m_ContextID;
 
 	IActor* m_pIActor;
 
@@ -165,6 +177,7 @@ protected:
 	float m_checkPlayerTimeOut;
 	CDialogSession::EAbortReason m_abortReason;
 
+	TAudioProxyID m_SpeechAuxProxy;
 
 	// Animation specific
 	IAnimationGraphState* m_pAGState;
@@ -185,6 +198,9 @@ protected:
 	bool m_bSoundStarted;
 	float m_soundTimeOut;
 	float m_soundLength;
+
+	int m_VoiceAttachmentIndex;
+	int m_BoneHeadJointID; 
 
 	// LookAt specific
 	CDialogScript::TActorID m_lookAtActorID;

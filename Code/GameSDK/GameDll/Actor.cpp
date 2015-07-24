@@ -84,8 +84,6 @@
 #include "ProceduralContextRagdoll.h"
 #include "AnimActionBlendFromRagdoll.h"
 
-#include "LootSystem.h"
-
 IItemSystem *CActor::m_pItemSystem=0;
 IGameFramework	*CActor::m_pGameFramework=0;
 IGameplayRecorder	*CActor::m_pGameplayRecorder=0;
@@ -148,7 +146,7 @@ void SIKLimb::SetLimb(int slot,const char *limbName,int rootID,int midID,int end
 	endBoneID = endID;
 	middleBoneID = midID;
 
-	cry_strncpy(name,limbName,sizeof(name));
+	cry_strcpy(name, limbName);
 
 	blendID = -1;
 
@@ -262,42 +260,40 @@ void SActorAnimationEvents::Init()
 {
 	if (!m_initialized)
 	{
-		Crc32Gen* pCRC32 = gEnv->pSystem->GetCrc32Gen();
+		m_soundId = CCrc32::ComputeLowercase("sound");
+		m_plugginTriggerId = CCrc32::ComputeLowercase("PluginTrigger");
+		m_footstepSignalId = CCrc32::ComputeLowercase("footstep");
+		m_foleySignalId = CCrc32::ComputeLowercase("foley");
+		m_groundEffectId = CCrc32::ComputeLowercase("groundEffect");
 
-		m_soundId = pCRC32->GetCRC32Lowercase("sound");
-		m_plugginTriggerId = pCRC32->GetCRC32Lowercase("PluginTrigger");
-		m_footstepSignalId = pCRC32->GetCRC32Lowercase("footstep");
-		m_foleySignalId = pCRC32->GetCRC32Lowercase("foley");
-		m_groundEffectId = pCRC32->GetCRC32Lowercase("groundEffect");
+		m_swimmingStrokeId = CCrc32::ComputeLowercase("swimmingStroke");
+		m_footStepImpulseId = CCrc32::ComputeLowercase("footstep_impulse");
+		m_forceFeedbackId = CCrc32::ComputeLowercase("ForceFeedback");
+		m_grabObjectId = CCrc32::ComputeLowercase("FlagGrab");
+		m_stowId = CCrc32::ComputeLowercase("Stow");
+		m_weaponLeftHandId = CCrc32::ComputeLowercase("leftHand");
+		m_weaponRightHandId = CCrc32::ComputeLowercase("rightHand");
 
-		m_swimmingStrokeId = pCRC32->GetCRC32Lowercase("swimmingStroke");
-		m_footStepImpulseId = pCRC32->GetCRC32Lowercase("footstep_impulse");
-		m_forceFeedbackId = pCRC32->GetCRC32Lowercase("ForceFeedback");
-		m_grabObjectId = pCRC32->GetCRC32Lowercase("FlagGrab");
-		m_stowId = pCRC32->GetCRC32Lowercase("Stow");
-		m_weaponLeftHandId = pCRC32->GetCRC32Lowercase("leftHand");
-		m_weaponRightHandId = pCRC32->GetCRC32Lowercase("rightHand");
+		m_deathReactionEndId = CCrc32::ComputeLowercase("DeathReactionEnd");
+		m_reactionOnCollision = CCrc32::ComputeLowercase("ReactionOnCollision");
+		m_forbidReactionsId = CCrc32::ComputeLowercase("ForbidReactions");
+		m_ragdollStartId = CCrc32::ComputeLowercase( "RagdollStart");
 
-		m_deathReactionEndId = pCRC32->GetCRC32Lowercase("DeathReactionEnd");
-		m_reactionOnCollision = pCRC32->GetCRC32Lowercase("ReactionOnCollision");
-		m_forbidReactionsId = pCRC32->GetCRC32Lowercase("ForbidReactions");
-		m_ragdollStartId = pCRC32->GetCRC32Lowercase( "RagdollStart");
+		m_deathBlow = CCrc32::ComputeLowercase("DeathBlow");
+		m_killId = CCrc32::ComputeLowercase("Kill");
 
-		m_deathBlow = pCRC32->GetCRC32Lowercase("DeathBlow");
-		m_killId = pCRC32->GetCRC32Lowercase("Kill");
+		m_startFire = CCrc32::ComputeLowercase("StartFire");
+		m_stopFire = CCrc32::ComputeLowercase("StopFire");
 
-		m_startFire = pCRC32->GetCRC32Lowercase("StartFire");
-		m_stopFire = pCRC32->GetCRC32Lowercase("StopFire");
+		m_shootGrenade = CCrc32::ComputeLowercase("ShootGrenade");
 
-		m_shootGrenade = pCRC32->GetCRC32Lowercase("ShootGrenade");
+		m_meleeHitId = CCrc32::ComputeLowercase("MeleeHit");
+		m_meleeStartDamagePhase = CCrc32::ComputeLowercase("MeleeStartDamagePhase");
+		m_meleeEndDamagePhase = CCrc32::ComputeLowercase("MeleeEndDamagePhase");
+		m_detachEnvironmentalWeapon = CCrc32::ComputeLowercase("DetachEnvironmentalWeapon");
+		m_stealthMeleeDeath = CCrc32::ComputeLowercase("StealthMeleeDeath");
 
-		m_meleeHitId = pCRC32->GetCRC32Lowercase("MeleeHit");
-		m_meleeStartDamagePhase = pCRC32->GetCRC32Lowercase("MeleeStartDamagePhase");
-		m_meleeEndDamagePhase = pCRC32->GetCRC32Lowercase("MeleeEndDamagePhase");
-		m_detachEnvironmentalWeapon = pCRC32->GetCRC32Lowercase("DetachEnvironmentalWeapon");
-		m_stealthMeleeDeath = pCRC32->GetCRC32Lowercase("StealthMeleeDeath");
-
-		m_endReboundAnim = pCRC32->GetCRC32Lowercase("EndReboundAnim");
+		m_endReboundAnim = CCrc32::ComputeLowercase("EndReboundAnim");
 	}
 
 	m_initialized = true;
@@ -531,10 +527,6 @@ void CActor::PostInit( IGameObject * pGameObject )
 		CGameRules *pGameRules = g_pGame->GetGameRules();
 		pGameRules->ClDoSetTeam(m_teamId, GetEntityId());
 	}
-
-	pLootSystem = new CLootSystem();
-
-	pLootSystem->InitLootSystem(this);
 }
 
 //------------------------------------------------------------------------
@@ -1374,25 +1366,14 @@ void CActor::PostPhysicalize()
 	UpdateStance();
 
 	// [*DavidR | 1/Feb/2010]
-	// Disable automatic impulses on collisions with physic particles. We want to have control over impulses on projectiles in game code
+	// Disable physical impulses created by explosions. We want to have control over impulses on projectiles in game code
 	if (ICharacterInstance* pCharacter = GetEntity()->GetCharacter(0))
 	{
 		if (IPhysicalEntity* pCharacterPhysics = pCharacter->GetISkeletonPose()->GetCharacterPhysics())
 		{
-			// Also MP: Disable particle impulses on the player so that we can filter out friendly fire
-			// We will simulate these impulses on the game side
 			pe_params_part colltype;
-			colltype.flagsColliderOR = geom_no_particle_impulse;
-
-			// The lines below completely disable impact simulation 
-			// and explosion collisions (to improve performance). Recommended by Anton
 			colltype.flagsColliderAND = ~geom_colltype_explosion;
-
 			pCharacterPhysics->SetParams(&colltype);
-
-			pe_simulation_params simParams;
-			simParams.mass = 0.0f;
-			pCharacterPhysics->SetParams(&simParams);
 		}
 	}
 
@@ -1454,14 +1435,12 @@ void CActor::Fall(const HitInfo& hitInfo)
 {
 	CRY_ASSERT( m_pAnimatedCharacter->GetActionController() );
 
-#ifdef USE_BLEND_FROM_RAGDOLL
 	if( GetActorStats()->isInBlendRagdoll )
 		return;
 
 	GetActorStats()->isInBlendRagdoll = true;
 
 	m_pAnimatedCharacter->GetActionController()->Queue( *new CAnimActionBlendFromRagdollSleep(PP_HitReaction, *this, hitInfo, m_blendRagdollParams.m_blendInTagState, m_blendRagdollParams.m_blendOutTagState) );
-#endif
 }
 
 //------------------------------------------------------------------------
@@ -1847,6 +1826,14 @@ void CActor::ProcessEvent(SEntityEvent& event)
 	case ENTITY_EVENT_INIT:
 		{
 			Revive(kRFR_FromInit);
+			break;
+		}
+	case ENTITY_EVENT_RELOAD_SCRIPT:
+		{
+			CBodyDamageManager *pBodyDamageManager = g_pGame->GetBodyDamageManager();
+			assert(pBodyDamageManager);
+
+			pBodyDamageManager->ReloadBodyDamage(*this);
 			break;
 		}
   }  
@@ -2501,7 +2488,7 @@ bool CActor::LoadGameParams(SmartScriptTable pEntityTable, SActorGameParams &out
 							const char *name = 0;
 							if (stanceTableChain.GetValue("name",name))
 							{
-								cry_strncpy(sInfo.name,name, sizeof(sInfo.name));
+								cry_strcpy(sInfo.name, name);
 							}
 						}
 					}
@@ -2924,6 +2911,21 @@ bool CActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 									pe_params_flags pf;
 									pf.flagsOR = pef_ignore_areas;
 									pPhysicalEntity->SetParams(&pf);
+
+									pe_params_foreign_data pfd;
+									pfd.iForeignData = PHYS_FOREIGN_ID_ENTITY;
+									pfd.pForeignData = GetEntity();
+									for (int iAuxPhys = -1; ; ++iAuxPhys)
+									{
+										if (IPhysicalEntity* pent = pCharacter->GetISkeletonPose()->GetCharacterPhysics(iAuxPhys))
+										{
+											pent->SetParams(&pfd);
+										}
+										else
+										{
+											break;
+										}
+									}
 
 									IEntityPhysicalProxy *pPhysicsProxy=static_cast<IEntityPhysicalProxy *>(GetEntity()->GetProxy(ENTITY_PROXY_PHYSICS));
 									if (pPhysicsProxy)
@@ -4751,8 +4753,8 @@ void CActor::FillHitInfoFromKillParams(const CActor::KillParams& killParams, Hit
 
 	// Get some needed parameters on the HitInfo structure
 	// This means no DeathReaction has been processed
-	char projectileClassName[129] = {0};
-	if (g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileClassName, 128, killParams.projectileClassId))
+	char projectileClassName[128];
+	if (g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileClassName, sizeof(projectileClassName), killParams.projectileClassId))
 	{
 		IEntityClass* pProjectileClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(projectileClassName);
 		const SAmmoParams *pAmmoParams = g_pGame->GetWeaponSystem()->GetAmmoParams(pProjectileClass);
@@ -5206,9 +5208,8 @@ IMPLEMENT_RMI(CActor, ClAssignWeaponAttachments)
 	for(int i=0; i < numAttachments; i++)
 	{
 		const AttachmentsParams::SWeaponAttachment &data = params.m_attachments[i];
-		const int maxClassNameSize = 256;
-		char className[maxClassNameSize];
-		if(pGameFramework->GetNetworkSafeClassName(className, maxClassNameSize, data.m_classId))
+		char className[256];
+		if(pGameFramework->GetNetworkSafeClassName(className, sizeof(className), data.m_classId))
 		{
 			pItemSystem->GiveItem(this, className, false, data.m_default, true, NULL, EEntityFlags(ENTITY_FLAG_CLIENT_ONLY));
 		}

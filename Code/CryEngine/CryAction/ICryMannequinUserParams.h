@@ -432,7 +432,7 @@ struct structName \
 
 
 #define MANNEQUIN_AUTO_CRC__DECLARE_ELEMENT( elem ) uint32 elem;
-#define MANNEQUIN_AUTO_CRC__INIT_ELEMENT( elem ) elem = pCRC32->GetCRC32Lowercase( #elem );
+#define MANNEQUIN_AUTO_CRC__INIT_ELEMENT( elem ) elem = CCrc32::ComputeLowercase( #elem );
 
 #define MANNEQUIN_AUTO_CRC( structName, crcList ) \
 struct structName \
@@ -445,7 +445,6 @@ struct structName \
 	{ \
 		if ( ! m_initialised ) \
 		{ \
-			const Crc32Gen* const pCRC32 = gEnv->pSystem->GetCrc32Gen(); \
 			crcList( MANNEQUIN_AUTO_CRC__INIT_ELEMENT ) \
 			m_initialised = true; \
 		} \

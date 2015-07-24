@@ -16,7 +16,7 @@
 
 
 
-#if defined(LINUX) || defined(APPLE) || defined(PS3) || defined(ORBIS)
+#if defined(LINUX) || defined(APPLE) || defined(ORBIS)
 #define CPA_ALLOC							memalign
 #define CPA_FREE							free
 #else

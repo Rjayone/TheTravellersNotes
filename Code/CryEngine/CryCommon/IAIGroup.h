@@ -11,15 +11,8 @@ History:
 - 2 Mar 2009			 : Evgeny Adamenkov: Removed IRenderer
 
 *********************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IAIGroup.h)
 
-#ifndef _IAIGROUP_H_
-#define _IAIGROUP_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
 
 #include "AIFormationDescriptor.h"
 #include <IAISystem.h> // <> required for Interfuscator
@@ -34,7 +27,7 @@ History:
 #endif
 
 
-UNIQUE_IFACE struct IAIGroup
+struct IAIGroup
 {
 	enum eAvPositionMode
 	{
@@ -43,6 +36,7 @@ UNIQUE_IFACE struct IAIGroup
 		AVMODE_CLASS
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IAIGroup() {}
 	/// Returns the ID of the group.
 	virtual int					GetGroupId() = 0;
@@ -59,7 +53,7 @@ UNIQUE_IFACE struct IAIGroup
 	virtual int					GetTargetCount(bool bHostileOnly, bool bLiveOnly) const = 0;
 	/// triggers reinforcements state
 	virtual void				NotifyReinfDone(const IAIObject* obj, bool isDone) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -131,7 +125,7 @@ enum EGroupUnitType
 
 struct IAIGroupTactic
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIGroupTactic() {};
 	/// Updates the group tactic.
 	virtual void	Update(float dt) = 0;
@@ -153,9 +147,7 @@ struct IAIGroupTactic
 	virtual void	Serialize(TSerialize ser) = 0;
 	/// Draw debug information about the group tactic. See console var ai_DrawGroupTactic.
 	virtual void	DebugDraw() = 0;
-
+	// </interfuscator:shuffle>
 
 	void GetMemoryUsage(ICrySizer *pSizer) const{/*LATER*/}
 };
-
-#endif

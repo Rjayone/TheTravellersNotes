@@ -122,7 +122,7 @@ void CAreaAnnouncer::LoadAnnouncementArea(const IEntity* pEntity, const char* ar
 		memcpy(area.m_signal, signal, sizeof(area.m_signal));
 
 #if !defined(_RELEASE)
-		cry_strncpy(&area.m_name[0], areaName, SAnnouncementArea::k_maxNameLength);
+		cry_strcpy(area.m_name, areaName);
 #endif
 
 		DesignerWarning(m_areaList.size() < k_maxAnnouncementAreas, "Too many AreaAnnouncer area boxes loaded");
@@ -313,9 +313,9 @@ void CAreaAnnouncer::CmdPlay(IConsoleCmdArgs* pCmdArgs)
 	CGameRules *pGameRules = g_pGame->GetGameRules();
 	CAreaAnnouncer* pAA = pGameRules->GetAreaAnnouncer();
 
-	if(pAA->m_areaList.size() > 0)
+	if(!pAA->m_areaList.empty())
 	{
-		int randA = cry_rand() % pAA->m_areaList.size();
+		int randA = cry_random(0U, pAA->m_areaList.size() - 1);
 
 		const EntityId clientId = gEnv->pGame->GetIGameFramework()->GetClientActorId();
 		CAudioSignalPlayer::JustPlay(pAA->m_areaList[randA].m_signal[pAA->GetAreaAnnouncerTeamIndex(clientId)]);

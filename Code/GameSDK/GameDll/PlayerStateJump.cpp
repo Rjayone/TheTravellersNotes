@@ -38,8 +38,6 @@ History:
 #include "MovementAction.h"
 #include "PersistantStats.h"
 
-#define RANDOM() ((((float)cry_rand()/(float)CRY_RAND_MAX)*2.0f)-1.0f)
-
 CPlayerStateJump::CPlayerStateJump()
 	:
 m_jumpState(JState_None),
@@ -433,7 +431,7 @@ void CPlayerStateJump::Landed(CPlayer& player, const bool isHeavyWeapon, float f
 			const float fallTimeMultiplier = g_pGameCVars->pl_fall_time_multiplier;
 			const float fallTimeMax = g_pGameCVars->pl_fall_time_max;
 			const float zoomMultiplayer = (pCurrentWeapon && pCurrentWeapon->IsZoomed()) ? 0.2f : 1.0f;
-			const float direction = ((cry_rand()%2)==0) ? -1.0f : 1.0f;
+			const float direction = (cry_random(0, 1) == 0) ? -1.0f : 1.0f;
 			const float intensity = clamp_tpl(fallIntensityMultiplier*fallSpeed*zoomMultiplayer, 0.0f, fallIntensityMax);
 			const float shakeTime = clamp_tpl(fallTimeMultiplier*fallSpeed*zoomMultiplayer, 0.0f, fallTimeMax);
 			const Vec3 rotation = Vec3(-0.5f, 0.15f*direction, 0.05f*direction);

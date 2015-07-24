@@ -728,7 +728,7 @@ EntityId CGameRulesMPSpectator::GetRandomSpectatorLocation() const
 {
 	EntityId  e = 0;
 	if (int count=GetSpectatorLocationCount())
-		e = GetSpectatorLocation(Random(count));
+		e = GetSpectatorLocation(cry_random(0, count - 1));
 	return e;
 }
 

@@ -1,13 +1,18 @@
-// CryEngine Header File.
-// Copyright (C), Crytek, 1999-2014.
-
-#ifndef SOUNDALLOCATOR_H_INCLUDED
-#define SOUNDALLOCATOR_H_INCLUDED
+// Copyright 2001-2015 Crytek GmbH. All rights reserved.
+#pragma once
 
 #include <CryMemoryManager.h>
-#include <BucketAllocatorImpl.h>
+
+#ifdef USE_GLOBAL_BUCKET_ALLOCATOR
+#	include <BucketAllocatorImpl.h>
+#endif // USE_GLOBAL_BUCKET_ALLOCATOR
+
 #include <FrameProfiler.h>
 #include <IAudioInterfacesCommonData.h>
+
+#if !defined(_RELEASE)
+#define INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE
+#endif // _RELEASE
 
 class IGeneralMemoryHeap;
 
@@ -57,26 +62,36 @@ public:
 
 	void* AllocateRaw(size_t const nSize, size_t const nAlign, char const* const sUsage)
 	{
+		void* pTemp = NPTR;
+
 		// Redirect small allocations through a bucket allocator
 		if (nSize <= nMaxSmallSize)
-		{			
-			void* const ret = m_smallAllocator.allocate(nSize);
-			TrackSmallAlloc(ret, m_smallAllocator.getSizeEx(ret));			
-			return ret;
-		}
-
-		FRAME_PROFILER("CSoundAllocator::Allocate", GetISystem(), PROFILE_AUDIO);
-
-		void* const ret = m_mspace->Memalign(nAlign, nSize, sUsage);
-
-		if (ret != NPTR)
 		{
-			CryInterlockedAdd(&m_mspaceUsed, m_mspace->UsableSize(ret));
+			pTemp = m_smallAllocator.allocate(nSize);
+			TrackSmallAlloc(pTemp, m_smallAllocator.getSizeEx(pTemp));
+		}
+		else
+		{
+			FRAME_PROFILER("CSoundAllocator::Allocate", GetISystem(), PROFILE_AUDIO);
+
+			pTemp = m_mspace->Memalign(nAlign, nSize, sUsage);
+
+			if (pTemp != NPTR)
+			{
+				CryInterlockedAdd(&m_mspaceUsed, m_mspace->UsableSize(pTemp));
+			}
+
+			TrackGeneralAlloc(pTemp, nSize);
 		}
 
-		TrackGeneralAlloc(ret, nSize);		
+#if defined(INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE)
+		if ((reinterpret_cast<uintptr_t>(pTemp) & (nAlign-1)) > 0)
+		{
+			CryFatalError("<Audio>: allocation not %d byte aligned!", nAlign);
+		}
+#endif // INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE
 
-		return ret;
+		return pTemp;
 	}
 
 	template<typename T>
@@ -170,40 +185,40 @@ private:
 
 	void TrackSmallAlloc( void *ptr, size_t nSize )
 	{		
-#ifdef INCLUDE_AUDIO_PRODUCTION_CODE
+#if defined(INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE)
 		if(ptr)
 		{
 			CryInterlockedIncrement(&nSmallAllocations);
 			CryInterlockedAdd(&nSmallAllocationsSize, nSize);
 		}
-#endif // INCLUDE_AUDIO_PRODUCTION_CODE
+#endif // INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE
 	}
 
 	void TrackGeneralAlloc( void *ptr, size_t nSize )
 	{
-#ifdef INCLUDE_AUDIO_PRODUCTION_CODE
+#if defined(INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE)
 		if(ptr)
 		{
 			CryInterlockedIncrement(&nAllocations);
 			CryInterlockedAdd(&nAllocationsSize, nSize);
 		}
-#endif // INCLUDE_AUDIO_PRODUCTION_CODE
+#endif // INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE
 	}
 
 	void TrackSmallDealloc( void *ptr )
 	{
-#ifdef INCLUDE_AUDIO_PRODUCTION_CODE
+#if defined(INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE)
 		CryInterlockedDecrement(&nSmallAllocations);
 		CryInterlockedAdd(&nSmallAllocationsSize, -static_cast<int>(Size(ptr)));
-#endif // INCLUDE_AUDIO_PRODUCTION_CODE
+#endif // INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE
 	}
 
 	void TrackGeneralDealloc( size_t sz )
 	{
-#ifdef INCLUDE_AUDIO_PRODUCTION_CODE
+#if defined(INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE)
 		CryInterlockedDecrement(&nAllocations);
 		CryInterlockedAdd(&nAllocationsSize, -static_cast<int>(sz));
-#endif // INCLUDE_AUDIO_PRODUCTION_CODE
+#endif // INCLUDE_AUDIO_ALLOCATOR_PRODUCTION_CODE
 	}
 
 	// all allocations below nMaxSmallSize go into the system-wide allocator(and thus the system wide small allocation allocator)
@@ -222,5 +237,3 @@ private:
 	volatile int nSmallAllocationsSize;
 	volatile int nAllocationsSize;
 };
-
-#endif // SOUNDALLOCATOR_H_INCLUDED

@@ -117,7 +117,7 @@ enum EZDeflateState
 	eZDefState_Error						// error has occurred and the stream has been closed and will no longer compress
 };
 
-UNIQUE_IFACE struct IZLibDeflateStream
+struct IZLibDeflateStream
 {
 	protected:
 		virtual												~IZLibDeflateStream() {};				// use Release()
@@ -131,6 +131,7 @@ UNIQUE_IFACE struct IZLibDeflateStream
 			int		peakMemoryUsed;
 		};
 
+		// <interfuscator:shuffle>
 		// Description:
 		//	 Specifies the output buffer for the deflate operation
 		//	 Should be set before providing input
@@ -164,7 +165,7 @@ UNIQUE_IFACE struct IZLibDeflateStream
 		// Description:
 		//	 Deletes the deflate stream. Will assert if stream is in an invalid state to be released (in state eZDefState_Deflating)
 		virtual void										Release()=0;
-
+		// </interfuscator:shuffle>
 };
 
 // md5 support structure
@@ -175,13 +176,13 @@ struct SMD5Context
 	unsigned char		in[64];
 };
 
-UNIQUE_IFACE struct IZLibCompressor
+struct IZLibCompressor
 {
 	protected:
 		virtual													~IZLibCompressor()	{};		// use Release()
 
 	public:
-
+		// <interfuscator:shuffle>
 		// Description:
 		//	 Creates a deflate stream to compress data using zlib
 		//	 See documentation for zlib deflateInit2() for usage details
@@ -201,7 +202,7 @@ UNIQUE_IFACE struct IZLibCompressor
 		// Description:
 		//   Closes the MD5 context and extract the final 16 byte MD5 digest value
 		virtual void										MD5Final( SMD5Context *pIOCtx, char outDigest[16] )=0;
-
+		// </interfuscator:shuffle>
 };
 
 #endif // __IZLIBCOMPRESSOR_H__

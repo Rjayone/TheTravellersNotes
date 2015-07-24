@@ -64,6 +64,7 @@ public:
 	IComponent() : m_pComponentEventDistributer(NULL), m_componentEntityId(0) {}
 	virtual ~IComponent() {}
 
+	// <interfuscator:shuffle>
 	// Description: 
 	//    By overriding this function proxy will be able to handle events sent from the host Entity.
 	// Arguments:
@@ -71,7 +72,7 @@ public:
 	virtual	void ProcessEvent( SEntityEvent& event ) = 0;
 	virtual ComponentEventPriority GetEventPriority( const int eventID ) const = 0;
 	virtual void Initialize( const SComponentInitializer& init ) {}
-
+	// </interfuscator:shuffle>
 
 	ComponentFlags& GetFlags() { return m_flags; }
 	const ComponentFlags& GetFlags() const { return m_flags; }

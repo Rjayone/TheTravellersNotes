@@ -12,14 +12,8 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IReadWriteXMLSink.h)
 
-#ifndef __I_READWRITEXMLSINK_H__
-#define __I_READWRITEXMLSINK_H__
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #include <IXml.h>
 #include <BoostHelpers.h>
@@ -27,9 +21,9 @@
 struct IReadXMLSink;
 struct IWriteXMLSource;
 
-UNIQUE_IFACE struct IReadWriteXMLSink
+struct IReadWriteXMLSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IReadWriteXMLSink(){}
   virtual bool ReadXML( const char * definitionFile, const char * dataFile, IReadXMLSink * pSink ) = 0;
   virtual bool ReadXML( const char * definitionFile, XmlNodeRef node, IReadXMLSink * pSink ) = 0;
@@ -38,7 +32,7 @@ UNIQUE_IFACE struct IReadWriteXMLSink
 
   virtual XmlNodeRef CreateXMLFromSource( const char * definitionFile, IWriteXMLSource * pSource ) = 0;
   virtual bool WriteXML( const char * definitionFile, const char * dataFile, IWriteXMLSource * pSource ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -53,9 +47,9 @@ TYPEDEF_AUTOPTR(IReadXMLSink);
 typedef IReadXMLSink_AutoPtr IReadXMLSinkPtr;
 
 // this interface allows customization of the data read routines
-UNIQUE_IFACE struct IReadXMLSink : public SReadWriteXMLCommon
+struct IReadXMLSink : public SReadWriteXMLCommon
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IReadXMLSink(){}
   // reference counting
   virtual void AddRef() = 0;
@@ -76,7 +70,7 @@ UNIQUE_IFACE struct IReadXMLSink : public SReadWriteXMLCommon
   virtual bool IsCreationMode() = 0;
   virtual XmlNodeRef GetCreationNode() = 0;  
   virtual void SetCreationNode(XmlNodeRef definition) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -84,9 +78,9 @@ TYPEDEF_AUTOPTR(IWriteXMLSource);
 typedef IWriteXMLSource_AutoPtr IWriteXMLSourcePtr;
 
 // this interface allows customization of the data write routines
-UNIQUE_IFACE struct IWriteXMLSource : public SReadWriteXMLCommon
+struct IWriteXMLSource : public SReadWriteXMLCommon
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IWriteXMLSource(){}
   // reference counting
   virtual void AddRef() = 0;
@@ -105,7 +99,5 @@ UNIQUE_IFACE struct IWriteXMLSource : public SReadWriteXMLCommon
   virtual bool EndArray( const char * name ) = 0;
 
   virtual bool Complete() = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif // __I_READWRITEXMLSINK_H__

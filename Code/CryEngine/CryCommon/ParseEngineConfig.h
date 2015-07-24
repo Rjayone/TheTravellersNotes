@@ -44,17 +44,13 @@ public:
 	{
 		ParseConfig(ENGINE_CFG_FILE);
 		if (!m_gameFolder.empty())
-			ParseConfig(m_gameFolder + "\\" GAME_CFG_FILE);
+			ParseConfig(m_gameFolder + CRY_NATIVE_PATH_SEPSTR GAME_CFG_FILE);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 	bool ParseConfig( const char *filename )
 	{
-#ifdef XENON
-		FILE *file = fopen( string("d:\\") + filename, "rb" );
-#else
 		FILE *file = fopen( filename, "rb" );
-#endif
 		if (!file)
 			return false;
 

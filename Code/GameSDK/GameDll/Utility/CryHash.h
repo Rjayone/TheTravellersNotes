@@ -8,9 +8,6 @@
 // from Frd's code-base courtesy of AW. /FH
 typedef uint32 CryHash;
 
-using CryStringUtils::HashStringSeed;
-using CryStringUtils::HashString;
-
 struct CryHashStringId
 {
 	CryHashStringId()
@@ -44,7 +41,7 @@ struct CryHashStringId
 #if defined(_DEBUG)
 		debugName = _name;
 #endif
-		id = HashString(_name);
+		id = CryStringUtils::HashString(_name);
 	}
 
 	ILINE bool operator == (const CryHashStringId& rhs) const

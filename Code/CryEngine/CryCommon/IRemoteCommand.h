@@ -553,12 +553,12 @@ public:
 		: m_szName(szName)
 	{}
 
-	VIRTUAL const char* GetName() const
+	virtual const char* GetName() const
 	{
 		return m_szName;
 	}
 
-	VIRTUAL struct IRemoteCommand* CreateObject()
+	virtual struct IRemoteCommand* CreateObject()
 	{
 		return new T();
 	}
@@ -589,7 +589,7 @@ ILINE IDataReadStream& operator<<(IDataReadStream& stream, string& outString)
 		if (length < kMaxTempString)
 		{
 			// load the string into temporary buffer
-			char temp[kMaxTempString+1];
+			char temp[kMaxTempString];
 			stream.Read(&temp, length);
 			temp[length] = 0;
 
@@ -599,12 +599,12 @@ ILINE IDataReadStream& operator<<(IDataReadStream& stream, string& outString)
 		else
 		{
 			// allocate temporary memory and load the string
-			std::auto_ptr<char> pTemp(new char[length+1]);
- 			stream.Read(pTemp.get(), length);
-			pTemp.get()[length] = 0;
+			std::vector<char> temp;
+			temp.resize(length + 1, 0);
+			stream.Read(&temp[0], length);
 
 			// set the string with new value
-			outString = pTemp.get();
+			outString = &temp[0];
 		} 
 	}
 	else

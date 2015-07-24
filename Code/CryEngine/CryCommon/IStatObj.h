@@ -9,7 +9,6 @@
 //	-:Created by Vladimir Kajalin
 //
 //////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IStatObj.h)
 
 #ifndef _IStatObj_H_
 #define _IStatObj_H_
@@ -83,6 +82,24 @@ enum EStaticObjectFlags
 #define HIT_NO_HIT (-1)
 #define HIT_UNKNOWN (-2)
 
+#define HIT_OBJ_TYPE_BRUSH   0
+#define HIT_OBJ_TYPE_TERRAIN 1
+#define HIT_OBJ_TYPE_VISAREA 2
+
+// used for on-CPU voxelization
+struct SRayHitTriangle
+{
+	SRayHitTriangle() { ZeroStruct(*this); }
+	Vec3 v[3];
+	Vec2 t[3];
+	ColorB c[3];
+	Vec3 n; 
+	IMaterial * pMat;
+	uint8 nTriArea;
+	uint8 nOpacity;
+	uint8 nHitObjType;
+};
+
 struct SRayHitInfo
 {
   SRayHitInfo() 
@@ -116,7 +133,8 @@ struct SRayHitInfo
   Vec2 vHitTC;
   Vec4 vHitColor;
   Vec4 vHitTangent;
-  Vec4 vHitBinormal;
+  Vec4 vHitBitangent;
+  PodArray<SRayHitTriangle> * pHitTris;
 };
 
 enum EFileStreamingStatus
@@ -172,6 +190,7 @@ struct IStreamable
     return bRegister;
   }
 
+	// <interfuscator:shuffle>
 	virtual ~IStreamable(){}
   virtual void StartStreaming(bool bFinishNow, IReadStream_AutoPtr* ppStream) = 0;
   virtual int GetStreamableContentMemoryUsage(bool bJustForDebug = false) = 0;
@@ -179,7 +198,7 @@ struct IStreamable
   virtual void GetStreamableName(string & sName) = 0;
   virtual uint32 GetLastDrawMainFrameId() = 0;
 	virtual bool IsUnloadable() const = 0;
-
+	// </interfuscator:shuffle>
 
   SInstancePriorityInfo m_arrUpdateStreamingPrioriryRoundInfo[2];
   float fCurImportance;
@@ -190,7 +209,7 @@ struct IStreamable
 
 // Summary:
 //     Interface to hold static object data
-UNIQUE_IFACE struct IStatObj : public IStreamable
+struct IStatObj : public IStreamable
 {
 	//! Loading flags
 	enum ELoadingFlags
@@ -276,6 +295,7 @@ UNIQUE_IFACE struct IStatObj : public IStreamable
 		}
 	};
 
+	// <interfuscator:shuffle>
 	// Description:
 	//     Increase the reference count of the object.
 	// Summary:
@@ -727,7 +747,7 @@ UNIQUE_IFACE struct IStatObj : public IStreamable
 
 	// Returns the distance for the first LOD switch. Used for brushes and vegetation.
 	virtual float GetLodDistance() const = 0;
-
+	// </interfuscator:shuffle>
 
 protected:
   virtual ~IStatObj() {}; // should be never called, use Release() instead

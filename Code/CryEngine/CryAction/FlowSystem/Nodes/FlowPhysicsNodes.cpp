@@ -414,7 +414,9 @@ public:
 		HITPOINT,
 		NORMAL,
 		SURFTYPE,
+		PARTID,
 		HIT_ENTITY,
+		HIT_ENTITY_PHID,
 	};
 
 	virtual void GetMemoryUsage(ICrySizer * s) const
@@ -438,7 +440,9 @@ public:
 			OutputPortConfig<Vec3>( "hitpoint", _HELP("Position the ray hit") ),
 			OutputPortConfig<Vec3>( "normal", _HELP("Normal of the surface at the hitpoint") ),
 			OutputPortConfig<int>( "surfacetype", _HELP("Surface type index at the hit point") ),
+			OutputPortConfig<int>( "partid", _HELP("Hit part id") ),
 			OutputPortConfig<EntityId> ( "entity", _HELP("Entity which was hit")), 
+			OutputPortConfig<EntityId> ( "entityPhysId", _HELP("Id of the physical entity that was hit")),
 			{0}
 		};
 		config.sDescription = _HELP("Perform a raycast relative to the camera");
@@ -476,7 +480,9 @@ public:
 					ActivateOutput( pActInfo, HITPOINT, hit.pt );
 					ActivateOutput( pActInfo, NORMAL, hit.n );
 					ActivateOutput( pActInfo, SURFTYPE, (int)hit.surface_idx );
+					ActivateOutput( pActInfo, PARTID, hit.partid );
 					ActivateOutput( pActInfo, HIT_ENTITY, pEntity ? pEntity->GetId() : 0);
+					ActivateOutput( pActInfo, HIT_ENTITY_PHID, gEnv->pPhysicalWorld->GetPhysicalEntityId(hit.pCollider));
 				}
 				else
 					ActivateOutput( pActInfo, NOHIT, false );
@@ -567,9 +573,337 @@ public:
 	}
 };
 
+
+class CFlowNode_CameraProxy : public CFlowBaseNode<eNCT_Singleton>
+{
+public:
+	enum EInputs {
+		IN_CREATE,
+		IN_ID
+	};
+	enum EOutputs {
+		OUT_ID
+	};
+	CFlowNode_CameraProxy( SActivationInfo * pActInfo ) {};
+
+	virtual void GetConfiguration( SFlowNodeConfig &config )
+	{
+		static const SInputPortConfig in_config[] = {
+			InputPortConfig<SFlowSystemVoid>( "Create", SFlowSystemVoid(), _HELP("Create the proxy if it doesnt exist yet") ),
+			InputPortConfig<EntityId>( "EntityHost", 0, _HELP("Activate to sync proxy rotation with the current view camera") ),
+			{0}
+		};
+		static const SOutputPortConfig out_config[] = {
+			OutputPortConfig<int>("EntityCamera", _HELP("")),
+			{0}
+		};
+		config.sDescription = _HELP( "Retrieves or creates a physicalized camera proxy attached to EntityHost" );
+		config.pInputPorts = in_config;
+		config.pOutputPorts = out_config;
+		config.SetCategory(EFLN_ADVANCED);
+	}
+
+	IEntity *GetCameraEnt(IEntity *pHost, bool bCreate)
+	{
+		if (!pHost->GetPhysics())
+			return bCreate ? pHost:0;
+
+		pe_params_articulated_body pab;
+		IEntityLink *plink = pHost->GetEntityLinks();
+		for(; plink && strcmp(plink->name,"CameraProxy"); plink=plink->next);
+		if (plink)
+		{
+			IEntity *pCam = gEnv->pEntitySystem->GetEntity(plink->entityId);
+			if (!pCam)
+			{
+				pHost->RemoveEntityLink(plink);
+				return bCreate ? pHost:0;
+			}
+			pab.qHostPivot = !pHost->GetRotation()*Quat(Matrix33(GetISystem()->GetViewCamera().GetMatrix()));
+			pCam->GetPhysics()->SetParams(&pab);
+			return pCam;
+		} else if (bCreate) 
+		{
+			CCamera& cam = GetISystem()->GetViewCamera();
+			Quat qcam = Quat(Matrix33(cam.GetMatrix()));
+			SEntitySpawnParams esp; 
+			esp.sName = "CameraProxy"; esp.nFlags = 0;
+			esp.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Default");
+			IEntity *pCam = gEnv->pEntitySystem->SpawnEntity(esp);
+			pCam->SetPos(cam.GetPosition()); pCam->SetRotation(qcam);
+			pHost->AddEntityLink("CameraProxy", pCam->GetId());
+			SEntityPhysicalizeParams epp;	epp.type = PE_ARTICULATED;
+			pCam->Physicalize(epp);
+			pe_geomparams gp;
+			gp.flags=0; gp.flagsCollider=0;
+			primitives::sphere sph; sph.r=0.1f; sph.center.zero();
+			IGeometry *psph = gEnv->pPhysicalWorld->GetGeomManager()->CreatePrimitive(primitives::sphere::type, &sph);
+			phys_geometry *pGeom = gEnv->pPhysicalWorld->GetGeomManager()->RegisterGeometry(psph); psph->Release();
+			pCam->GetPhysics()->AddGeometry(pGeom,&gp);	pGeom->nRefCount--;
+			pe_params_pos pp; pp.iSimClass=2;
+			pCam->GetPhysics()->SetParams(&pp);
+			pab.pHost = pHost->GetPhysics();
+			pab.posHostPivot = (cam.GetPosition()-pHost->GetPos())*pHost->GetRotation();
+			pab.qHostPivot = !pHost->GetRotation()*qcam;
+			pCam->GetPhysics()->SetParams(&pab);
+			return pCam;
+		}
+		return 0;
+	}
+
+	virtual void ProcessEvent( EFlowEvent event,SActivationInfo *pActInfo )
+	{
+		if (event==eFE_Activate)
+		{
+			bool bCreate = IsPortActive(pActInfo,IN_CREATE);
+			if (IEntity *pHost = gEnv->pEntitySystem->GetEntity(GetPortEntityId(pActInfo,IN_ID)))
+				if (IEntity *pCam = GetCameraEnt(pHost,bCreate))
+					if (bCreate)
+						ActivateOutput(pActInfo, OUT_ID, pCam->GetId());
+		}
+	}
+
+	virtual void GetMemoryUsage(ICrySizer * s) const
+	{
+		s->Add(*this);
+	}
+};
+
+
+class CFlowNode_Constraint : public CFlowBaseNode<eNCT_Instanced>
+{
+public:
+	enum EInputs {
+		IN_CREATE,
+		IN_BREAK,
+		IN_ID,
+		IN_ENTITY0,
+		IN_PARTID0,
+		IN_ENTITY1,
+		IN_PARTID1,
+		IN_POINT,
+		IN_IGNORE_COLLISIONS,
+		IN_BREAKABLE,
+		IN_FORCE_AWAKE,
+		IN_MAX_FORCE,
+		IN_MAX_TORQUE,
+		IN_MAX_FORCE_REL,
+		IN_AXIS,
+		IN_MIN_ROT,
+		IN_MAX_ROT,
+		IN_MAX_BEND,
+	};
+	enum EOutputs {
+		OUT_ID,
+		OUT_BROKEN,
+	};
+	CFlowNode_Constraint( SActivationInfo * pActInfo ) {};
+	~CFlowNode_Constraint() {}
+
+	struct SConstraintRec {
+		SConstraintRec() : next(0),prev(0),pent(0),pNode(0),idConstraint(-1),bBroken(0),minEnergy(0) {}
+		~SConstraintRec() { Free(); }
+		void Free() {
+			if (idConstraint>=0) 
+			{
+				if (minEnergy>0)
+				{
+					pe_simulation_params sp; sp.minEnergy=minEnergy;
+					pe_params_articulated_body pab; pab.minEnergyLyingMode=minEnergyRagdoll;
+					pent->SetParams(&sp); pent->SetParams(&pab);
+				}
+				if (pent)
+					pent->Release();
+				idConstraint=-1; pent=0;
+				(prev ? prev->next : g_pConstrRec0) = next;
+				if (next) next->prev = prev;	
+			}
+		}
+		SConstraintRec *next,*prev;
+		IPhysicalEntity *pent;
+		CFlowNode_Constraint *pNode;
+		int idConstraint;
+		int bBroken;
+		float minEnergy,minEnergyRagdoll;
+	};
+	static SConstraintRec *g_pConstrRec0;
+
+	static int OnConstraintBroken(const EventPhysJointBroken *ejb)
+	{
+		for(SConstraintRec *pRec=g_pConstrRec0; pRec; pRec=pRec->next) if (pRec->pent==ejb->pEntity[0] && pRec->idConstraint==ejb->idJoint)
+			pRec->bBroken = 1;
+		return 1;
+	}
+
+	virtual void GetConfiguration( SFlowNodeConfig &config )
+	{
+		static const SInputPortConfig in_config[] = {
+			InputPortConfig<SFlowSystemVoid>( "Create", SFlowSystemVoid(), _HELP("Creates the constraint") ),
+			InputPortConfig<SFlowSystemVoid>( "Break", SFlowSystemVoid(), _HELP("Breaks a constraint Id from EntityA if EntityA is activated, or a previously created one") ),
+			InputPortConfig<int>( "Id", 1000, _HELP("Requested constraint Id; -1 to auto-generate") ),
+			InputPortConfig<EntityId>( "EntityA", 0, _HELP("Constraint owner entity") ),
+			InputPortConfig<int>( "PartIdA", -1, _HELP("Part id to attach to; -1 to use default") ),
+			InputPortConfig<EntityId>( "EntityB", 0, _HELP("Constraint 'buddy' entity") ),
+			InputPortConfig<int>( "PartIdB", -1, _HELP("Part id to attach to; -1 to use default") ),
+			InputPortConfig<Vec3>( "Point", Vec3(ZERO), _HELP("Connection point in world space") ),
+			InputPortConfig<bool>( "IgnoreCollisions", true, _HELP("Disables collisions between constrained entities") ),
+			InputPortConfig<bool>( "Breakable", false, _HELP("Break if force limit is reached") ),
+			InputPortConfig<bool>( "ForceAwake", false, _HELP("Make EntityB always awake; restore previous sleep params on Break") ),
+			InputPortConfig<float>( "MaxForce", 0.0f, _HELP("Force limit") ),
+			InputPortConfig<float>( "MaxTorque", 0.0f, _HELP("Rotational force (torque) limit") ),
+			InputPortConfig<bool>( "MaxForceRelative", true, _HELP("Make limits relative to EntityB's mass") ),
+			InputPortConfig<Vec3>( "TwistAxis", Vec3(0,0,1), _HELP("Main rotation axis in world space") ),
+			InputPortConfig<float>( "MinTwist", 0.0f, _HELP("Lower rotation limit around TwistAxis") ),
+			InputPortConfig<float>( "MaxTwist", 0.0f, _HELP("Upper rotation limit around TwistAxis") ),
+			InputPortConfig<float>( "MaxBend", 0.0f, _HELP("Maximum bend of the TwistAxis") ),
+
+			{0}
+		};
+		static const SOutputPortConfig out_config[] = {
+			OutputPortConfig<int>("Id", _HELP("Constraint Id")),
+			OutputPortConfig<bool>("Broken", _HELP("Activated when the constraint breaks")),
+			{0}
+		};
+		config.sDescription = _HELP( "Creates a physical constraint between EntityA and EntityB" );
+		config.pInputPorts = in_config;
+		config.pOutputPorts = out_config;
+		config.SetCategory(EFLN_ADVANCED);
+	}
+
+	virtual void ProcessEvent( EFlowEvent event,SActivationInfo *pActInfo )
+	{
+		SConstraintRec *pRec = 0, *pRecNext;
+		if (event == eFE_Update)
+		{
+			pe_status_pos sp;
+			for(pRec=g_pConstrRec0; pRec; pRec=pRecNext)
+			{
+				pRecNext = pRec->next;
+				if (pRec->pNode==this && (pRec->bBroken || pRec->pent->GetStatus(&sp) && sp.iSimClass==7))
+				{
+					ActivateOutput(pActInfo, OUT_BROKEN, true);
+					ActivateOutput(pActInfo, OUT_ID, pRec->idConstraint);
+					delete pRec;
+				}
+			}
+			if (!g_pConstrRec0)
+				pActInfo->pGraph->SetRegularlyUpdated(pActInfo->myID, false);
+		}
+		else if (event == eFE_Activate)
+		{
+			if (IsPortActive(pActInfo, IN_CREATE))
+			{
+				IEntity *pent[2] = { gEnv->pEntitySystem->GetEntity(GetPortEntityId(pActInfo,IN_ENTITY0)), gEnv->pEntitySystem->GetEntity(GetPortEntityId(pActInfo,IN_ENTITY1)) };
+				if (!pent[0] || !pent[0]->GetPhysics())
+					return;
+				IPhysicalEntity *pentPhys = pent[0]->GetPhysics();
+				pe_action_add_constraint aac;
+				int i; float f;
+				aac.pBuddy = pent[1] ? pent[1]->GetPhysics() : WORLD_ENTITY;
+				aac.id = GetPortInt(pActInfo, IN_ID);
+				for(int iop=0;iop<2;iop++) if ((i=GetPortInt(pActInfo, IN_PARTID0+iop*2))>=0)
+					aac.partid[iop] = i;
+				aac.pt[0] = GetPortVec3(pActInfo, IN_POINT);
+				aac.flags = world_frames | (GetPortBool(pActInfo,IN_IGNORE_COLLISIONS) ? constraint_ignore_buddy:0) | (GetPortBool(pActInfo,IN_BREAKABLE) ? 0:constraint_no_tears);
+				pe_status_dynamics sd; sd.mass = 1.0f;
+				if (GetPortBool(pActInfo,IN_MAX_FORCE_REL))
+					pentPhys->GetStatus(&sd);
+				if ((f = GetPortFloat(pActInfo, IN_MAX_FORCE))>0)
+					aac.maxPullForce = f*sd.mass;
+				if ((f = GetPortFloat(pActInfo, IN_MAX_TORQUE))>0)
+					aac.maxBendTorque = f*sd.mass;
+				for(int iop=0;iop<2;iop++)
+					aac.xlimits[iop] = DEG2RAD(GetPortFloat(pActInfo, IN_MIN_ROT+iop));
+				aac.yzlimits[0] = 0;
+				aac.yzlimits[1] = DEG2RAD(GetPortFloat(pActInfo, IN_MAX_BEND));
+				if (aac.xlimits[1]<=aac.xlimits[0] && aac.yzlimits[1]<=aac.yzlimits[0])
+					aac.flags |= constraint_no_rotation;
+				else if (aac.xlimits[0]<gf_PI*-1.01f && aac.xlimits[1]>gf_PI*1.01f && aac.yzlimits[1]>gf_PI*0.51f)
+					MARK_UNUSED aac.xlimits[0],aac.xlimits[1],aac.yzlimits[0],aac.yzlimits[1];
+				aac.qframe[0] = aac.qframe[1] = Quat::CreateRotationV0V1(Vec3(1,0,0),GetPortVec3(pActInfo, IN_AXIS));
+				if (GetPortBool(pActInfo, IN_FORCE_AWAKE))
+				{
+					pRec = new SConstraintRec;
+					pe_simulation_params sp; sp.minEnergy=0;
+					pentPhys->GetParams(&sp); pRec->minEnergy=pRec->minEnergyRagdoll = sp.minEnergy;
+					new(&sp) pe_simulation_params; sp.minEnergy = 0;
+					pentPhys->SetParams(&sp);
+					pe_params_articulated_body pab; 
+					if (pentPhys->GetParams(&pab))
+					{
+						pRec->minEnergyRagdoll = pab.minEnergyLyingMode;
+						new(&pab) pe_params_articulated_body; pab.minEnergyLyingMode=0;
+						pentPhys->SetParams(&pab);
+					}
+					pe_action_awake aa;	aa.minAwakeTime=0.1f;
+					pentPhys->Action(&aa);
+					if (aac.pBuddy!=WORLD_ENTITY)
+						aac.pBuddy->Action(&aa);
+				}
+				pe_params_flags pf;
+				int queued = aac.pBuddy==WORLD_ENTITY ? 0 : aac.pBuddy->SetParams(&pf)-1, id = pentPhys->Action(&aac,-queued>>31);
+				ActivateOutput(pActInfo, OUT_ID, id);
+				if (!is_unused(aac.maxPullForce || !is_unused(aac.maxBendTorque)) && !(aac.flags & constraint_no_tears))
+				{
+					if (!pRec)
+						pRec = new SConstraintRec;
+					gEnv->pPhysicalWorld->AddEventClient(EventPhysJointBroken::id, (int(*)(const EventPhys*))OnConstraintBroken, 1);
+				}
+				if (pRec)
+				{
+					(pRec->pent = pentPhys)->AddRef();
+					pRec->idConstraint = id;
+					pRec->pNode = this;
+					if (g_pConstrRec0)
+						g_pConstrRec0->prev = pRec;
+					pRec->next = g_pConstrRec0; g_pConstrRec0 = pRec;
+					pActInfo->pGraph->SetRegularlyUpdated(pActInfo->myID, true);
+				}
+				return;
+			}
+
+			if (IsPortActive(pActInfo, IN_BREAK) || IsPortActive(pActInfo, IN_POINT))
+				if (IEntity *pent = gEnv->pEntitySystem->GetEntity(GetPortEntityId(pActInfo,IN_ENTITY0)))
+					if (IPhysicalEntity *pentPhys = pent->GetPhysics())
+					{
+						pe_action_update_constraint auc; 
+						auc.idConstraint = GetPortInt(pActInfo, IN_ID);
+						if (IsPortActive(pActInfo, IN_BREAK))
+							auc.bRemove = 1;
+						if (IsPortActive(pActInfo, IN_POINT))
+							auc.pt[1] = GetPortVec3(pActInfo, IN_POINT);
+						pentPhys->Action(&auc);
+						if (auc.bRemove) 
+						{
+							for(pRec=g_pConstrRec0; pRec; pRec=pRecNext) 
+							{
+								pRecNext = pRec->next;
+								if (pRec->pent==pentPhys && pRec->idConstraint==auc.idConstraint)
+									delete pRec;
+							}
+							ActivateOutput(pActInfo, OUT_BROKEN, true);
+							ActivateOutput(pActInfo, OUT_ID, auc.idConstraint);
+							if (!g_pConstrRec0)
+								pActInfo->pGraph->SetRegularlyUpdated(pActInfo->myID, false);
+						}
+					}
+		}
+	}
+
+	virtual void GetMemoryUsage(ICrySizer * s) const
+	{
+		s->Add(*this);
+	}
+};
+
+CFlowNode_Constraint::SConstraintRec *CFlowNode_Constraint::g_pConstrRec0 = 0;
+
+
 REGISTER_FLOW_NODE( "Physics:Dynamics", CFlowNode_Dynamics );
 REGISTER_FLOW_NODE( "Physics:ActionImpulse", CFlowNode_ActionImpulse );
 REGISTER_FLOW_NODE( "Physics:RayCast", CFlowNode_Raycast );
 REGISTER_FLOW_NODE( "Physics:RayCastCamera", CFlowNode_RaycastCamera );
 REGISTER_FLOW_NODE( "Physics:PhysicsEnable", CFlowNode_PhysicsEnable );
 REGISTER_FLOW_NODE( "Physics:PhysicsSleepQuery", CFlowNode_PhysicsSleepQuery );
+REGISTER_FLOW_NODE( "Physics:Constraint", CFlowNode_Constraint );
+REGISTER_FLOW_NODE( "Physics:CameraProxy", CFlowNode_CameraProxy );

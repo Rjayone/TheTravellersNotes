@@ -473,5 +473,4 @@ void IMetadataRecorder::Delete()
 	delete this;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IMetadata)
-#include UNIQUE_VIRTUAL_WRAPPER(IMetadataRecorder)
+

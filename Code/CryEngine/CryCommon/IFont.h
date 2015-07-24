@@ -40,7 +40,7 @@ typedef ICryFont *(*PFNCREATECRYFONTINTERFACE)(ISystem* pSystem);
 //////////////////////////////////////////////////////////////////////////////////////////////
 struct ICryFont
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICryFont(){}
 	//
 	virtual void Release() = 0;
@@ -61,7 +61,7 @@ struct ICryFont
 	// Example:
 	//	 "console,default,hud"
 	virtual string GetLoadedFontNames() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +150,7 @@ struct STextDrawContext
 //////////////////////////////////////////////////////////////////////////////////////////////
 struct IFFont
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFFont(){}
 	// Summary:
 	//	 Releases the font object.
@@ -169,40 +169,24 @@ struct IFFont
 	virtual void Free() = 0;
 
 	// Summary:
-	//	 Draws a formated string.
+	//	 Draws a formatted string (UTF-8).
 	virtual void DrawString(float x, float y, const char* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) = 0;
 
 	// Summary:
-	//	 Draws a formated string, taking z into account.
+	//	 Draws a formatted string (UTF-8), taking z into account.
 	virtual void DrawString(float x, float y, float z, const char* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) = 0;
 
 	// Summary:
-	//	 Draws a formated string (Unicode)
-	virtual void DrawStringW(float x, float y, const wchar_t* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) = 0;
-
-	// Summary:
-	//	 Draws a formated string (Unicode), taking z into account.
-	virtual void DrawStringW(float x, float y, float z, const wchar_t* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) = 0;
-
-	// Summary:
-	//	 Computes the text size.
+	//	 Computes the text size (UTF-8).
 	virtual Vec2 GetTextSize(const char* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) = 0;
 
-	// Summary:
-	//	 Computes the text size (Unicode)
-	virtual Vec2 GetTextSizeW(const wchar_t* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) = 0;
-
 	// Description:
-	//	 Computes virtual text-length (because of special chars...).
+	//	 Computes virtual text-length (UTF-8) (because of special chars...).
 	virtual size_t GetTextLength(const char* pStr, const bool asciiMultiLine) const = 0;
 
 	// Description:
-	//	 Computes virtual text-length (Unicode) (because of special chars...).
-	virtual size_t GetTextLengthW(const wchar_t* pStr, const bool asciiMultiLine) const = 0;
-
-	// Description:
-	//	 Wraps text based on specified maximum line width.
-	virtual void WrapText(wstring& result, float maxWidth, const wchar_t* pStr, const STextDrawContext& ctx) = 0;
+	//	 Wraps text based on specified maximum line width (UTF-8)
+	virtual void WrapText(string& result, float maxWidth, const char* pStr, const STextDrawContext& ctx) = 0;
 
 	// Description:
 	//	 Puts the memory used by this font into the given sizer.
@@ -213,16 +197,16 @@ struct IFFont
 	virtual void GetGradientTextureCoord(float& minU, float& minV, float& maxU, float& maxV) const = 0;
 
 	virtual unsigned int GetEffectId(const char* pEffectName) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 struct IFFont_RenderProxy
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFFont_RenderProxy(){}
-	virtual void RenderCallback(float x, float y, float z, const wchar_t* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) = 0;
-
+	virtual void RenderCallback(float x, float y, float z, const char* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) = 0;
+	// </interfuscator:shuffle>
 };
 
 #endif // CRYFONT_ICRYFONT_H

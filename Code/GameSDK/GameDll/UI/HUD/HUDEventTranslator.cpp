@@ -293,9 +293,6 @@ void CHUDEventTranslator::SubscribeWeapon(EntityId weapon)
 				pWeapon->AddEventListener(this, "hud");
 				OnFireModeChanged(pWeapon, pWeapon->GetCurrentFireMode());
 				m_currentWeapon = weapon;
-
-				//CWeapon* pCWeapon = static_cast<CWeapon*>(pWeapon);
-				//int hudStyle = pCWeapon->GetSharedItemParams()->params.hud_style;
 			}
 		}
 	}

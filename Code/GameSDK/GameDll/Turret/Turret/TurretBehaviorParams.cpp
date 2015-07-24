@@ -208,7 +208,7 @@ void SFollowTargetParams::Reset( SmartScriptTable pScriptTable )
 
 float SFollowTargetParams::GetFireDelaySeconds() const
 {
-	const float fireDelaySeconds = Random( minFireDelaySeconds, maxFireDelaySeconds );
+	const float fireDelaySeconds = cry_random( minFireDelaySeconds, maxFireDelaySeconds );
 	return fireDelaySeconds;
 }
 
@@ -246,7 +246,7 @@ void SFireTargetParams::Reset( SmartScriptTable pScriptTable )
 
 float SFireTargetParams::GetStopFireSeconds() const
 {
-	const float stopFireSeconds = Random( minStopFireSeconds, maxStopFireSeconds );
+	const float stopFireSeconds = cry_random( minStopFireSeconds, maxStopFireSeconds );
 	return stopFireSeconds;
 }
 

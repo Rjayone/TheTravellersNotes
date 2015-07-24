@@ -183,9 +183,9 @@ void CEntityObject::UpdateWorldTM( CEntity *pEntity )
 	{
 		// Add entity matrix as parent.
 		if (!m_pXForm)
-			m_worldTM = pEntity->GetWorldTM_Fast();
+			m_worldTM = pEntity->GetWorldTM();
 		else
-			m_worldTM = pEntity->GetWorldTM_Fast() * m_pXForm->localTM; 
+			m_worldTM = pEntity->GetWorldTM() * m_pXForm->localTM; 
 	}
 	else 
 	{
@@ -348,13 +348,7 @@ void CEntityObject::Render( CEntity *pEntity,SRendParams &rParams,int nRndFlags,
 		// Disable hand-placed (static) decals on characters
 		rParams.dwFObjFlags |= FOB_DYNAMIC_OBJECT;
 
-		bool updated = false;
- 		pCharacter->Render( rParams, Offset, passInfo, &updated );
-		if(updated)
-		{
-			pRenderProxy->ClearFlags(CRenderProxy::FLAG_BBOX_VALID_LOCAL);
-			//pRenderProxy->CalcLocalBounds();
-		}
+ 		pCharacter->Render(rParams, Offset, passInfo);
 
 		const uint32 renderProxyFlags = pRenderProxy->GetFlags();
 		if( !passInfo.IsShadowPass() || (renderProxyFlags & CRenderProxy::FLAG_ANIMATE_OFFSCREEN_SHADOW))
@@ -413,6 +407,7 @@ void CEntityObject::OnXForm( CEntity *pEntity )
 		pDLight->m_nEntityId = pEntity->GetId();
     pEntity->UpdateLightClipBounds(*pDLight);
 		pLightSource->SetMatrix(m_worldTM);
+		pLight->SetSrcEntity(pEntity);
 	}
 	else if (pChildRenderNode)
 	{

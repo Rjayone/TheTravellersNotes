@@ -196,7 +196,7 @@ typedef VisionID ObservableID;
 class IVisionMap
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IVisionMap() {}
 
 	virtual void Reset() = 0;
@@ -220,7 +220,7 @@ public:
 	virtual const ObservableParams* GetObservableParams( const ObservableID& observableID ) const = 0;
 
 	virtual void Update( float frameTime ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct VisionMapHelpers

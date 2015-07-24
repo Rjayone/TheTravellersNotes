@@ -58,6 +58,15 @@ private:
 	uint16 m_materialId;	
 	volatile bool m_bUpdateFrame[2];
 	volatile int m_transformUpdateState[2];
+
+	// We use a double buffered m_meshFillData array for input from the main thread. When data 
+	// was successfully sent from the main thread it gets copied to m_meshRenderData
+	// This simplifies the cases where frame data is missing, e.g. meshFillData is not updated for a frame
+	// Note that meshFillData really needs to be double buffered because the copy occurs in render thread
+	// so the next main thread could already be touching the data again
+	//
+	// Note: m_meshRenderData is directly accessed for ray intersections via GetRenderDataPtr. 
+	// This is safe, because it's only used in editor.
 	DynArray<SMeshRenderData> m_meshFillData[2];		
 	DynArray<SMeshRenderData> m_meshRenderData;
 

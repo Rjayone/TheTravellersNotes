@@ -35,14 +35,14 @@ public:
 	virtual ~CActionMapAction();
 
 	// IActionMapAction
-	VIRTUAL void GetMemoryUsage(ICrySizer *pSizer ) const;
+	virtual void GetMemoryUsage(ICrySizer *pSizer ) const;
 	virtual void Release() { delete this; };
-	VIRTUAL int GetNumActionInputs() const { return m_actionInputs.size(); };
-	VIRTUAL const SActionInput* FindActionInput(const char* szInput) const;
-	VIRTUAL const SActionInput* GetActionInput(const int iIndex) const;
-	VIRTUAL const SActionInput* GetActionInput(const EActionInputDevice device, const int iIndexByDevice) const;
-	VIRTUAL const ActionId& GetActionId() const { return m_actionId; }
-	VIRTUAL const char* GetTriggeredActionInput() const { return m_triggeredInput; };
+	virtual int GetNumActionInputs() const { return m_actionInputs.size(); };
+	virtual const SActionInput* FindActionInput(const char* szInput) const;
+	virtual const SActionInput* GetActionInput(const int iIndex) const;
+	virtual const SActionInput* GetActionInput(const EActionInputDevice device, const int iIndexByDevice) const;
+	virtual const ActionId& GetActionId() const { return m_actionId; }
+	virtual const char* GetTriggeredActionInput() const { return m_triggeredInput; };
 	// IActionMapAction
 
 	bool AddActionInput(const SActionInput& actionInput, const int iByDeviceIndex = -1);
@@ -73,33 +73,33 @@ public:
 	virtual ~CActionMap();
 
 	// IActionMap
-	VIRTUAL void GetMemoryUsage(ICrySizer *pSizer ) const;
+	virtual void GetMemoryUsage(ICrySizer *pSizer ) const;
 	virtual void Release();
-	VIRTUAL void Clear();
-	VIRTUAL const IActionMapAction* GetAction(const ActionId& actionId) const;
-	VIRTUAL IActionMapAction* GetAction(const ActionId& actionId);
-	VIRTUAL bool CreateAction(const ActionId& actionId);
-	VIRTUAL bool RemoveAction(const ActionId& actionId);
-	VIRTUAL int  GetActionsCount() const { return m_actions.size(); };
-	VIRTUAL bool AddActionInput(const ActionId& actionId, const SActionInput& actionInput, const int iByDeviceIndex = -1);
-	VIRTUAL bool AddAndBindActionInput(const ActionId& actionId, const SActionInput& actionInput) OVERRIDE;
-	VIRTUAL bool RemoveActionInput(const ActionId& actionId, const char* szInput);
-	VIRTUAL bool ReBindActionInput(const ActionId& actionId, const char* szCurrentInput, const char* szNewInput);
-	VIRTUAL bool ReBindActionInput(const ActionId& actionId, 
+	virtual void Clear();
+	virtual const IActionMapAction* GetAction(const ActionId& actionId) const;
+	virtual IActionMapAction* GetAction(const ActionId& actionId);
+	virtual bool CreateAction(const ActionId& actionId);
+	virtual bool RemoveAction(const ActionId& actionId);
+	virtual int  GetActionsCount() const { return m_actions.size(); };
+	virtual bool AddActionInput(const ActionId& actionId, const SActionInput& actionInput, const int iByDeviceIndex = -1);
+	virtual bool AddAndBindActionInput(const ActionId& actionId, const SActionInput& actionInput) override;
+	virtual bool RemoveActionInput(const ActionId& actionId, const char* szInput);
+	virtual bool ReBindActionInput(const ActionId& actionId, const char* szCurrentInput, const char* szNewInput);
+	virtual bool ReBindActionInput(const ActionId& actionId, 
 																 const char* szNewInput, 
 																 const EActionInputDevice device,
 																 const int iByDeviceIndex);
-	VIRTUAL int GetNumRebindedInputs() { return m_iNumRebindedInputs; }
-	VIRTUAL bool Reset();
-	VIRTUAL bool LoadFromXML(const XmlNodeRef& actionMapNode);
-	VIRTUAL bool LoadRebindingDataFromXML(const XmlNodeRef& actionMapNode);
-	VIRTUAL bool SaveRebindingDataToXML(XmlNodeRef& actionMapNode) const;
-	VIRTUAL IActionMapActionIteratorPtr CreateActionIterator();
-	VIRTUAL void SetActionListener(EntityId id);
-	VIRTUAL EntityId GetActionListener() const;
-	VIRTUAL const char* GetName() { return m_name.c_str(); }
-	VIRTUAL void Enable(bool enable);
-	VIRTUAL bool Enabled() const { return m_enabled; };
+	virtual int GetNumRebindedInputs() { return m_iNumRebindedInputs; }
+	virtual bool Reset();
+	virtual bool LoadFromXML(const XmlNodeRef& actionMapNode);
+	virtual bool LoadRebindingDataFromXML(const XmlNodeRef& actionMapNode);
+	virtual bool SaveRebindingDataToXML(XmlNodeRef& actionMapNode) const;
+	virtual IActionMapActionIteratorPtr CreateActionIterator();
+	virtual void SetActionListener(EntityId id);
+	virtual EntityId GetActionListener() const;
+	virtual const char* GetName() { return m_name.c_str(); }
+	virtual void Enable(bool enable);
+	virtual bool Enabled() const { return m_enabled; };
 	// ~IActionMap
 
 	void EnumerateActions( IActionMapPopulateCallBack* pCallBack ) const; 

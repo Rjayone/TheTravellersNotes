@@ -182,7 +182,7 @@ int CScriptBind_Script::SetTimerForFunction(IFunctionHandler *pH,int nMillisecon
 	}
 	else
 	{
-		strcpy_s(timer.sFuncName, sizeof(timer.sFuncName), sFunctionName);
+		cry_strcpy(timer.sFuncName, sFunctionName);
 	}
 	timer.pScriptFunction = 0;
 	timer.pUserData = pUserData;

@@ -596,7 +596,7 @@ CPlayerProgression::SRank::SRank(XmlNodeRef node)
 	CRY_ASSERT_MESSAGE(node->haveAttr("name"), "Missing name attribute in rank xml");
 	CRY_ASSERT_MESSAGE(node->haveAttr("xpRequired"), "Missing xpRequired attribute in rank xml");
 
-	cry_strncpy(m_name, node->getAttr("name"), k_maxNameLength);
+	cry_strcpy(m_name, node->getAttr("name"));
 	node->getAttr("xpRequired", m_xpRequired);
 }
 

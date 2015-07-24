@@ -33,16 +33,19 @@ CGameObjectDispatch::~CGameObjectDispatch()
 
 void CGameObjectDispatch::RegisterInterface( SGameObjectExtensionRMI* pMessages, size_t nCount )
 {
-	if (m_bSafety)
-	{
-		CryFatalError("CGameObjectDispatch::RegisterInterface: occurs too late");
+	if (nCount == 0)
 		return;
-	}
 
 	// watch out for duplicate registrations...
 	for (size_t i=0; i<m_messages.size(); i++)
 		if (m_messages[i]->pBase == pMessages)
 			return; // messages already registered
+
+	if (m_bSafety)
+	{
+		CryFatalError("CGameObjectDispatch::RegisterInterface: occurs too late");
+		return;
+	}
 
 	// actually build protocol definitions for the messages
 	for (size_t i=0; i<nCount; i++)

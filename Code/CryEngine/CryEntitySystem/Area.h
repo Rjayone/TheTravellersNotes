@@ -157,9 +157,9 @@ public:
 	CArea( CAreaManager *pManager );
 
 	//IArea
-	VIRTUAL size_t GetEntityAmount() const { return m_vEntityID.size(); }
-	VIRTUAL const EntityId GetEntityByIdx(int index) const { return m_vEntityID[index]; }
-	VIRTUAL void GetMinMax(Vec3 **min, Vec3 **max) const
+	virtual size_t GetEntityAmount() const { return m_vEntityID.size(); }
+	virtual const EntityId GetEntityByIdx(int index) const { return m_vEntityID[index]; }
+	virtual void GetMinMax(Vec3 **min, Vec3 **max) const
 	{ 
 		(*min)->x = m_areaBBox.min.x; (*min)->y = m_areaBBox.min.y; (*min)->z = m_VOrigin;
 		(*max)->x = m_areaBBox.max.x; (*max)->y = m_areaBBox.max.y; (*max)->z = m_VOrigin+m_VSize;
@@ -187,7 +187,7 @@ public:
 	void	SetSoundObstructionOnAreaFace( int unsigned const nFaceIndex, bool const bObstructs );
 
 	void SetAreaType( EEntityAreaType type );
-	EEntityAreaType GetAreaType( ) const { return m_AreaType; } 
+	EEntityAreaType GetAreaType( ) const { return m_AreaType; }
 
 	//////////////////////////////////////////////////////////////////////////
 	// These functions also switch area type.
@@ -292,9 +292,10 @@ public:
 	void	GetBBox(Vec2& vMin, Vec2& vMax) const;
 	void	GetSolidBoundBox( AABB& outBoundBox ) const;
 
-#if !defined(_RELEASE)
+#if defined(INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE)
 	size_t GetCacheEntityCount() const {return m_mapEntityCachedAreaData.size();}
-#endif // !_RELEASE
+	char const* const GetAreaEntityName() const;
+#endif // INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE
 
 	void GetMemoryUsage(ICrySizer *pSizer ) const;
 

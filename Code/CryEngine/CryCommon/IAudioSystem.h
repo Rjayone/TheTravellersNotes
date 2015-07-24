@@ -8,19 +8,18 @@
 #include "ILipSyncProvider.h"
 
 // General macros.
+//#define ENABLE_AUDIO_PORT_MESSAGES
+
+#if defined(ENABLE_AUDIO_PORT_MESSAGES) && (defined(WIN32) || defined (DURANGO))
 #define AUDIO_STRINGANIZE2(x) #x
 #define AUDIO_STRINGANIZE1(x) AUDIO_STRINGANIZE2(x)
-
-#if defined(WIN32) || defined (DURANGO)
 #define TODO(y) __pragma(message(__FILE__ "(" AUDIO_STRINGANIZE1(__LINE__) ") : " "[AUDIO] TODO >>> " AUDIO_STRINGANIZE2(y)))
 #define REINST_FULL(y) __pragma(message(__FILE__ "(" AUDIO_STRINGANIZE1(__LINE__) ") : " "[AUDIO] REINST " __FUNCSIG__ " >>> " AUDIO_STRINGANIZE2(y)))
-#define REINST(y) __pragma(message(__FILE__ "(" AUDIO_STRINGANIZE1(__LINE__) ") : " "[AUDIO] REINST " __FUNCTION__ " >>> " AUDIO_STRINGANIZE2(y)))
-#elif defined(ORBIS) || defined(MAC) || defined(LINUX) || defined(CAFE)
+#define REINST(y)
+#else
 #define TODO(y)
 #define REINST_FULL(y)
 #define REINST(y)
-#else
-#error "Undefined platform."
 #endif
 
 // Note:
@@ -47,74 +46,68 @@ enum EATLDataScope ATL_ENUM_TYPE
 
 enum EAudioManagerRequestType ATL_ENUM_TYPE
 {
-	eAMRT_NONE,
-	eAMRT_INIT_AUDIO_SYSTEM,
-	eAMRT_SHUTDOWN_AUDIO_SYSTEM,
-	eAMRT_REFRESH_AUDIO_SYSTEM,
-	eAMRT_RESERVE_AUDIO_OBJECT_ID,
-	eAMRT_LOSE_FOCUS,
-	eAMRT_GET_FOCUS,
-	eAMRT_MUTE_ALL,
-	eAMRT_UNMUTE_ALL,
-	eAMRT_STOP_ALL_SOUNDS,
-	eAMRT_PARSE_CONTROLS_DATA,
-	eAMRT_PARSE_PRELOADS_DATA,
-	eAMRT_CLEAR_CONTROLS_DATA,
-	eAMRT_CLEAR_PRELOADS_DATA,
-	eAMRT_PRELOAD_SINGLE_REQUEST,
-	eAMRT_UNLOAD_SINGLE_REQUEST,
-	eAMRT_UNLOAD_AFCM_DATA_BY_SCOPE,
-	eAMRT_DRAW_DEBUG_INFO,					// Only used internally!
-	eAMRT_ADD_REQUEST_LISTENER,
-	eAMRT_REMOVE_REQUEST_LISTENER,
-	eAMRT_CHANGE_LANGUAGE,
+	eAMRT_NONE											= 0,
+	eAMRT_SET_AUDIO_IMPL						= BIT(0),	
+	eAMRT_REFRESH_AUDIO_SYSTEM			= BIT(1),
+	eAMRT_RESERVE_AUDIO_OBJECT_ID		= BIT(2),
+	eAMRT_LOSE_FOCUS								= BIT(3),
+	eAMRT_GET_FOCUS									= BIT(4),
+	eAMRT_MUTE_ALL									= BIT(5),
+	eAMRT_UNMUTE_ALL								= BIT(6),
+	eAMRT_STOP_ALL_SOUNDS						= BIT(7),
+	eAMRT_PARSE_CONTROLS_DATA				= BIT(8),
+	eAMRT_PARSE_PRELOADS_DATA				= BIT(9),
+	eAMRT_CLEAR_CONTROLS_DATA				= BIT(10),
+	eAMRT_CLEAR_PRELOADS_DATA				= BIT(11),
+	eAMRT_PRELOAD_SINGLE_REQUEST		= BIT(12),
+	eAMRT_UNLOAD_SINGLE_REQUEST			= BIT(13),
+	eAMRT_UNLOAD_AFCM_DATA_BY_SCOPE	= BIT(14),
+	eAMRT_DRAW_DEBUG_INFO						= BIT(15),	// Only used internally!
+	eAMRT_ADD_REQUEST_LISTENER			= BIT(16),
+	eAMRT_REMOVE_REQUEST_LISTENER		= BIT(17),
+	eAMRT_CHANGE_LANGUAGE						= BIT(18),
+	eAMRT_RETRIGGER_AUDIO_CONTROLS	= BIT(19),
 };
 
 enum EAudioCallbackManagerRequestType ATL_ENUM_TYPE
 {
-	eACMRT_NONE,
-	eACMRT_REPORT_FINISHED_EVENT,							// Only used internally!
-	eACMRT_REPORT_PROCESSED_OBSTRUCTION_RAY,	// Only used internally!
+	eACMRT_NONE															= 0,
+	eACMRT_REPORT_FINISHED_EVENT						= BIT(0),	// Only used internally!
+	eACMRT_REPORT_FINISHED_TRIGGER_INSTANCE	= BIT(1),	// Only used internally!
+	eACMRT_REPORT_PROCESSED_OBSTRUCTION_RAY	= BIT(2),	// Only used internally!
 };
 
 enum EAudioListenerRequestType ATL_ENUM_TYPE
 {
 	eALRT_NONE = 0,
-	eALRT_SET_POSITION,
+	eALRT_SET_POSITION = BIT(0),
 };
 
 enum EAudioObjectRequestType ATL_ENUM_TYPE
 {
-	eAORT_NONE = 0,
-	eAORT_PREPARE_TRIGGER,
-	eAORT_UNPREPARE_TRIGGER,
-	eAORT_EXECUTE_TRIGGER,
-	eAORT_STOP_TRIGGER,
-	eAORT_STOP_ALL_TRIGGERS,
-
-	eAORT_SET_POSITION,
-	eAORT_SET_RTPC_VALUE,
-	eAORT_SET_SWITCH_STATE,
-	eAORT_SET_VOLUME,
-	eAORT_SET_ENVIRONMENT_AMOUNT,
-	eAORT_RESET_ENVIRONMENTS,
-
-	eAORT_RELEASE_OBJECT,
+	eAORT_NONE										= 0,
+	eAORT_PREPARE_TRIGGER					= BIT(0),
+	eAORT_UNPREPARE_TRIGGER				= BIT(1),
+	eAORT_EXECUTE_TRIGGER					= BIT(2),
+	eAORT_STOP_TRIGGER						= BIT(3),
+	eAORT_STOP_ALL_TRIGGERS				= BIT(4),
+	eAORT_SET_POSITION						= BIT(5),
+	eAORT_SET_RTPC_VALUE					= BIT(6),
+	eAORT_SET_SWITCH_STATE				= BIT(7),
+	eAORT_SET_VOLUME							= BIT(8),
+	eAORT_SET_ENVIRONMENT_AMOUNT	= BIT(9),
+	eAORT_RESET_ENVIRONMENTS			= BIT(10),
+	eAORT_RELEASE_OBJECT					= BIT(11),
 };
 
 enum EAudioObjectObstructionCalcType ATL_ENUM_TYPE
 {
-	eAOOCT_NONE					= 0,
-	eAOOCT_IGNORE				= 1,
-	eAOOCT_SINGLE_RAY		= 2,
-	eAOOCT_MULTI_RAY		= 3,
+	eAOOCT_NONE				= 0,
+	eAOOCT_IGNORE			= 1,
+	eAOOCT_SINGLE_RAY	= 2,
+	eAOOCT_MULTI_RAY	= 3,
 
 	eAOOCT_COUNT,
-};
-
-enum EAudioTriggerFinishedCallbackFlags ATL_ENUM_TYPE
-{
-	eATFCF_CALL_ON_AUDIO_THREAD = BIT(0),
 };
 
 enum EAudioControlType ATL_ENUM_TYPE
@@ -127,21 +120,6 @@ enum EAudioControlType ATL_ENUM_TYPE
 	eACT_SWITCH_STATE	= 5,
 	eACT_PRELOAD			= 6,
 	eACT_ENVIRONMENT	= 7,
-};
-
-typedef void (*TTriggerFinishedCallback)(TAudioObjectID const, TAudioControlID const, void* const);
-
-struct SAudioTriggerFinishedCallbackData
-{
-	explicit SAudioTriggerFinishedCallbackData(TTriggerFinishedCallback const pPassedCallback, void* const pPassedCookie = NULL)
-		: pCallback(pPassedCallback)
-		, pCookie(pPassedCookie)
-		, nFlags(0)
-	{}
-
-	TTriggerFinishedCallback	pCallback;
-	void*											pCookie;
-	TATLEnumFlagsType					nFlags;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -166,100 +144,88 @@ struct SAudioManagerRequestData : public SAudioManagerRequestDataBase
 
 //////////////////////////////////////////////////////////////////////////
 template<>
-struct SAudioManagerRequestData<eAMRT_RESERVE_AUDIO_OBJECT_ID> : public SAudioManagerRequestDataBase
+struct SAudioManagerRequestData<eAMRT_SET_AUDIO_IMPL> : public SAudioManagerRequestDataBase
 {
-	SAudioManagerRequestData()
-		: SAudioManagerRequestDataBase(eAMRT_RESERVE_AUDIO_OBJECT_ID)
-		, pObjectID(NPTR)
-		, sObjectName(NPTR)
+	SAudioManagerRequestData(IAudioSystemImplementation* const pPassedImpl)
+		: SAudioManagerRequestDataBase(eAMRT_SET_AUDIO_IMPL)
+		, pImpl(pPassedImpl)
 	{}
 
+	IAudioSystemImplementation* const pImpl;
+};
+
+//////////////////////////////////////////////////////////////////////////
+template<>
+struct SAudioManagerRequestData<eAMRT_RESERVE_AUDIO_OBJECT_ID> : public SAudioManagerRequestDataBase
+{
 	SAudioManagerRequestData(TAudioObjectID* const pPassedObjectID, char const* const sPassedObjectName = NPTR)
 		: SAudioManagerRequestDataBase(eAMRT_RESERVE_AUDIO_OBJECT_ID)
 		, pObjectID(pPassedObjectID)
 		, sObjectName(sPassedObjectName)
 	{}
 
-	TAudioObjectID* pObjectID;
-	char const*			sObjectName;
+	TAudioObjectID* const pObjectID;
+	char const* const			sObjectName;
 };
 
 //////////////////////////////////////////////////////////////////////////
 template<>
 struct SAudioManagerRequestData<eAMRT_ADD_REQUEST_LISTENER> : public SAudioManagerRequestDataBase
 {
-	SAudioManagerRequestData()
+	SAudioManagerRequestData(void const* const pPassedObjectToListenTo, void (*passedfunc)(SAudioRequestInfo const* const), EAudioRequestType passedRequestType, TATLEnumFlagsType passedSpecificRequestMask)
 		: SAudioManagerRequestDataBase(eAMRT_ADD_REQUEST_LISTENER)
-		, pRequestOwner(NPTR)
-		, func(NPTR)
-	{}
-
-	SAudioManagerRequestData(void const* const pPassedRequestOwner, void (*passedfunc)(SAudioRequestInfo const* const))
-		: SAudioManagerRequestDataBase(eAMRT_ADD_REQUEST_LISTENER)
-		, pRequestOwner(pPassedRequestOwner)
+		, pObjectToListenTo(pPassedObjectToListenTo)
 		, func(passedfunc)
+		, requestType(passedRequestType)
+		, specificRequestMask(passedSpecificRequestMask)
 	{}
 
-	void const*	pRequestOwner;
-	void				(*func)(SAudioRequestInfo const* const);
+	void const* const	pObjectToListenTo;
+	void							(*func)(SAudioRequestInfo const* const);
+	EAudioRequestType const requestType;
+	TATLEnumFlagsType const specificRequestMask;
 };
 
 //////////////////////////////////////////////////////////////////////////
 template<>
 struct SAudioManagerRequestData<eAMRT_REMOVE_REQUEST_LISTENER> : public SAudioManagerRequestDataBase
 {
-	SAudioManagerRequestData()
+	SAudioManagerRequestData(void const* const pPassedObjectToListenTo, void (*passedfunc)(SAudioRequestInfo const* const))
 		: SAudioManagerRequestDataBase(eAMRT_REMOVE_REQUEST_LISTENER)
-		, pRequestOwner(NPTR)
-		, func(NPTR)
-	{}
-
-	SAudioManagerRequestData(void const* const pPassedRequestOwner, void (*passedfunc)(SAudioRequestInfo const* const))
-		: SAudioManagerRequestDataBase(eAMRT_REMOVE_REQUEST_LISTENER)
-		, pRequestOwner(pPassedRequestOwner)
+		, pObjectToListenTo(pPassedObjectToListenTo)
 		, func(passedfunc)
 	{}
 
-	void const*	pRequestOwner;
-	void				(*func)(SAudioRequestInfo const* const);
+	void const* const	pObjectToListenTo;
+	void							(*func)(SAudioRequestInfo const* const);
 };
 
 //////////////////////////////////////////////////////////////////////////
 template<>
 struct SAudioManagerRequestData<eAMRT_PARSE_CONTROLS_DATA> : public SAudioManagerRequestDataBase
 {
-	SAudioManagerRequestData()
-		: SAudioManagerRequestDataBase(eAMRT_PARSE_CONTROLS_DATA)
-		, sFolderPath(NPTR)
-	{}
-
 	SAudioManagerRequestData(char const* const sConfigFolderPath, EATLDataScope const ePassedDataScope)
 		: SAudioManagerRequestDataBase(eAMRT_PARSE_CONTROLS_DATA)
 		, sFolderPath(sConfigFolderPath)
 		, eDataScope(ePassedDataScope)
 	{}
 
-	char const*		sFolderPath;
-	EATLDataScope	eDataScope;
+	char const* const		sFolderPath;
+	EATLDataScope const	eDataScope;
 };
 
 //////////////////////////////////////////////////////////////////////////
 template<>
 struct SAudioManagerRequestData<eAMRT_PARSE_PRELOADS_DATA> : public SAudioManagerRequestDataBase
 {
-	SAudioManagerRequestData()
-		: SAudioManagerRequestDataBase(eAMRT_PARSE_PRELOADS_DATA)
-		, sFolderPath(NPTR)
-	{}
-
 	SAudioManagerRequestData(char const* const sConfigFolderPath, EATLDataScope const ePassedDataScope)
 		: SAudioManagerRequestDataBase(eAMRT_PARSE_PRELOADS_DATA)
 		, sFolderPath(sConfigFolderPath)
 		, eDataScope(ePassedDataScope)
 	{}
 
-	char const*		sFolderPath;
-	EATLDataScope	eDataScope;
+	char const* const		sFolderPath;
+	EATLDataScope const	eDataScope;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -328,17 +294,12 @@ struct SAudioManagerRequestData<eAMRT_UNLOAD_AFCM_DATA_BY_SCOPE> : public SAudio
 template<>
 struct SAudioManagerRequestData<eAMRT_REFRESH_AUDIO_SYSTEM> : public SAudioManagerRequestDataBase
 {
-	SAudioManagerRequestData()
-		: SAudioManagerRequestDataBase(eAMRT_REFRESH_AUDIO_SYSTEM)
-		, sLevelName(NPTR)
-	{}
-
 	SAudioManagerRequestData(char const* const sPassedLevelName)
 		: SAudioManagerRequestDataBase(eAMRT_REFRESH_AUDIO_SYSTEM)
 		, sLevelName(sPassedLevelName)
 	{}
 
-	char const* sLevelName;
+	char const* const sLevelName;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -347,6 +308,15 @@ struct SAudioManagerRequestData<eAMRT_CHANGE_LANGUAGE> : public SAudioManagerReq
 {
 	SAudioManagerRequestData()
 		: SAudioManagerRequestDataBase(eAMRT_CHANGE_LANGUAGE)
+	{}
+};
+
+//////////////////////////////////////////////////////////////////////////
+template<>
+struct SAudioManagerRequestData<eAMRT_RETRIGGER_AUDIO_CONTROLS> : public SAudioManagerRequestDataBase
+{
+	SAudioManagerRequestData()
+		: SAudioManagerRequestDataBase(eAMRT_RETRIGGER_AUDIO_CONTROLS)
 	{}
 };
 
@@ -374,20 +344,26 @@ struct SAudioCallbackManagerRequestData : public SAudioCallbackManagerRequestDat
 template<>
 struct SAudioCallbackManagerRequestData<eACMRT_REPORT_FINISHED_EVENT> : public SAudioCallbackManagerRequestDataBase
 {
-	SAudioCallbackManagerRequestData()
-		: SAudioCallbackManagerRequestDataBase(eACMRT_REPORT_FINISHED_EVENT)
-		, nEventID(INVALID_AUDIO_EVENT_ID)
-		, bSuccess(false)
-	{}
-
 	SAudioCallbackManagerRequestData(TAudioEventID const nPassedEventID, bool const bPassedSuccess)
 		: SAudioCallbackManagerRequestDataBase(eACMRT_REPORT_FINISHED_EVENT)
 		, nEventID(nPassedEventID)
 		, bSuccess(bPassedSuccess)
 	{}
 
-	TAudioEventID	nEventID;
-	bool					bSuccess;
+	TAudioEventID	const	nEventID;
+	bool const					bSuccess;
+};
+
+//////////////////////////////////////////////////////////////////////////
+template<>
+struct SAudioCallbackManagerRequestData<eACMRT_REPORT_FINISHED_TRIGGER_INSTANCE> : public SAudioCallbackManagerRequestDataBase
+{
+	SAudioCallbackManagerRequestData(TAudioControlID const nPassedControlID)
+		: SAudioCallbackManagerRequestDataBase(eACMRT_REPORT_FINISHED_TRIGGER_INSTANCE)
+		, nAudioTriggerID(nPassedControlID)
+	{}
+
+	TAudioControlID	const nAudioTriggerID;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -400,8 +376,8 @@ struct SAudioCallbackManagerRequestData<eACMRT_REPORT_PROCESSED_OBSTRUCTION_RAY>
 		, nRayID(nPassedRayID)
 	{}
 
-	TAudioObjectID	nObjectID;
-	size_t					nRayID;
+	TAudioObjectID const	nObjectID;
+	size_t const					nRayID;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -433,9 +409,6 @@ struct SAudioObjectRequestData<eAORT_EXECUTE_TRIGGER> : public SAudioObjectReque
 		, nTriggerID(INVALID_AUDIO_CONTROL_ID)
 		, fTimeUntilRemovalInMS(0.0f)
 		, eLipSyncMethod(eLSM_None)
-		, pCallbackCookie(NULL)
-		, pCallback(NULL)
-		, nFlags(0)
 	{}
 
 	SAudioObjectRequestData(TAudioControlID const nPassedTriggerID, float const fPassedTimeUntilRemovalInMS)
@@ -443,27 +416,11 @@ struct SAudioObjectRequestData<eAORT_EXECUTE_TRIGGER> : public SAudioObjectReque
 		, nTriggerID(nPassedTriggerID)
 		, fTimeUntilRemovalInMS(fPassedTimeUntilRemovalInMS)
 		, eLipSyncMethod(eLSM_None)
-		, pCallbackCookie(NULL)
-		, pCallback(NULL)
-		, nFlags(0)
 	{}
 
-	SAudioObjectRequestData(TAudioControlID const nPassedTriggerID, float const fPassedTimeUntilRemovalInMS, SAudioTriggerFinishedCallbackData const& rPassedCallbackData)
-		: SAudioObjectRequestDataBase(eAORT_EXECUTE_TRIGGER)
-		, nTriggerID(nPassedTriggerID)
-		, fTimeUntilRemovalInMS(fPassedTimeUntilRemovalInMS)
-		, eLipSyncMethod(eLSM_None)
-		, pCallback(rPassedCallbackData.pCallback)
-		, pCallbackCookie(rPassedCallbackData.pCookie)
-		, nFlags(rPassedCallbackData.nFlags)
-	{}
-
-	TAudioControlID						nTriggerID;
-	float											fTimeUntilRemovalInMS;
-	ELipSyncMethod						eLipSyncMethod;
-	TTriggerFinishedCallback	pCallback;
-	void*											pCallbackCookie;
-	TATLEnumFlagsType					nFlags;
+	TAudioControlID	nTriggerID;
+	float						fTimeUntilRemovalInMS;
+	ELipSyncMethod	eLipSyncMethod;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -488,8 +445,8 @@ template<>
 struct SAudioObjectRequestData<eAORT_UNPREPARE_TRIGGER> : public SAudioObjectRequestDataBase
 {
 	SAudioObjectRequestData()
-		: SAudioObjectRequestDataBase(eAORT_UNPREPARE_TRIGGER)
-		, nTriggerID(INVALID_AUDIO_CONTROL_ID)
+	: SAudioObjectRequestDataBase(eAORT_UNPREPARE_TRIGGER)
+	, nTriggerID(INVALID_AUDIO_CONTROL_ID)
 	{}
 
 	explicit SAudioObjectRequestData(TAudioControlID const nPassedTriggerID)
@@ -497,14 +454,19 @@ struct SAudioObjectRequestData<eAORT_UNPREPARE_TRIGGER> : public SAudioObjectReq
 		, nTriggerID(nPassedTriggerID)
 	{}
 
-	TAudioControlID nTriggerID;
+	TAudioControlID	nTriggerID;
 };
 
 //////////////////////////////////////////////////////////////////////////
 template<>
 struct SAudioObjectRequestData<eAORT_STOP_TRIGGER> : public SAudioObjectRequestDataBase
 {
-	explicit SAudioObjectRequestData(TAudioControlID const nPassedTriggerID = INVALID_AUDIO_CONTROL_ID)
+	SAudioObjectRequestData()
+		: SAudioObjectRequestDataBase(eAORT_STOP_TRIGGER)
+		, nTriggerID(INVALID_AUDIO_CONTROL_ID)
+	{}
+
+	explicit SAudioObjectRequestData(TAudioControlID const nPassedTriggerID)
 		: SAudioObjectRequestDataBase(eAORT_STOP_TRIGGER)
 		, nTriggerID(nPassedTriggerID)
 	{}
@@ -548,10 +510,10 @@ struct SAudioObjectRequestData<eAORT_SET_RTPC_VALUE> : public SAudioObjectReques
 		, fValue(0.0f) 
 	{}
 
-	SAudioObjectRequestData(TAudioControlID const nPassedControlID, float const fValue)
+	SAudioObjectRequestData(TAudioControlID const nPassedControlID, float const fPassedValue)
 		: SAudioObjectRequestDataBase(eAORT_SET_RTPC_VALUE)
 		, nControlID(nPassedControlID)
-		, fValue(fValue) 
+		, fValue(fPassedValue) 
 	{}
 
 	TAudioControlID	nControlID;
@@ -587,7 +549,7 @@ struct SAudioObjectRequestData<eAORT_SET_VOLUME> : public SAudioObjectRequestDat
 		, fVolume(fPassedVolume)
 	{}
 
-	float fVolume;
+	float const fVolume;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -661,24 +623,7 @@ struct SAudioListenerRequestData<eALRT_SET_POSITION> : public SAudioListenerRequ
 		, oNewPosition(oWorldPosition)
 	{}
 
-	SAudioListenerRequestData(Matrix34 const& nMat, Vec3 const& vVel)
-		: SAudioListenerRequestDataBase(eALRT_SET_POSITION)
-		, oNewPosition(nMat, vVel)
-	{}
-
-	SATLWorldPosition	oNewPosition;
-};
-
-//////////////////////////////////////////////////////////////////////////
-struct SAudioEventListener
-{
-	SAudioEventListener()
-	:	pRequestOwner(NPTR),
-		OnEvent(NPTR)
-	{}
-
-	void const*	pRequestOwner;
-	void				(*OnEvent)(SAudioRequestInfo const* const);
+	SATLWorldPosition oNewPosition;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -702,60 +647,60 @@ struct SAudioSystemInfo
 //////////////////////////////////////////////////////////////////////////
 struct IAudioProxy
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAudioProxy() {}
 
-	virtual void	Initialize(char const* const sObjectName, bool const bInitAsync = true) = 0;
-	virtual void	Release() = 0;
-	virtual void	Reset() = 0;
-	virtual void	ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod) = 0;
-	virtual void	ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TTriggerFinishedCallback const pCallback, void* const pCallbackCookie) = 0;
-	virtual void	StopTrigger(TAudioControlID const nTriggerID) = 0;
-	virtual void	SetSwitchState(TAudioControlID const nSwitchID, TAudioSwitchStateID const nStateID) = 0;
-	virtual void	SetRtpcValue(TAudioControlID const nRtpcID, float const fValue) = 0;
-	virtual void	SetObstructionCalcType(EAudioObjectObstructionCalcType const eObstructionType) = 0;
-	virtual void	SetPosition(SATLWorldPosition const& rPosition) = 0;
-	virtual void	SetPosition(Vec3 const& rPosition) = 0;
-	virtual void	SetEnvironmentAmount(TAudioEnvironmentID const nEnvironmentID, float const fAmount) = 0;
-	virtual void	SetCurrentEnvironments(EntityId const nEntityToIgnore = 0) = 0;
-	virtual void	SetLipSyncProvider(ILipSyncProvider* const pILipSyncProvider) = 0;
-
+	virtual void						Initialize(char const* const sObjectName, bool const bInitAsync = true) = 0;
+	virtual void						Release() = 0;
+	virtual void						Reset() = 0;
+	virtual void						ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, SAudioCallBackInfos const& rCallbackInfos = SAudioCallBackInfos::GetEmptyObject()) = 0;
+	virtual void						StopTrigger(TAudioControlID const nTriggerID) = 0;
+	virtual void						SetSwitchState(TAudioControlID const nSwitchID, TAudioSwitchStateID const nStateID) = 0;
+	virtual void						SetRtpcValue(TAudioControlID const nRtpcID, float const fValue) = 0;
+	virtual void						SetObstructionCalcType(EAudioObjectObstructionCalcType const eObstructionType) = 0;
+	virtual void						SetPosition(SATLWorldPosition const& rPosition) = 0;
+	virtual void						SetPosition(Vec3 const& rPosition) = 0;
+	virtual void						SetEnvironmentAmount(TAudioEnvironmentID const nEnvironmentID, float const fAmount) = 0;
+	virtual void						SetCurrentEnvironments(EntityId const nEntityToIgnore = 0) = 0;
+	virtual void						SetLipSyncProvider(ILipSyncProvider* const pILipSyncProvider) = 0;
+	virtual TAudioObjectID	GetAudioObjectID() const = 0;
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 struct IAudioSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAudioSystem() {}
 
-	virtual void										Initialize(IAudioSystemImplementation* const pImpl) = 0;
-	virtual void										Release() = 0;
-	virtual void										PushRequest(SAudioRequest const& rAudioRequestData) = 0;
-	virtual void										AddRequestListener(void (*func)(SAudioRequestInfo const* const), void* const pRequestOwner) = 0;
-	virtual void										RemoveRequestListener(void (*func)(SAudioRequestInfo const* const), void* const pRequestOwner) = 0;
-	virtual void										ExternalUpdate() = 0;
-	virtual bool										GetAudioTriggerID(char const* const sAudioTriggerName, TAudioControlID& rAudioTriggerID) const = 0;
-	virtual bool										GetAudioRtpcID(char const* const sAudioRtpcName, TAudioControlID& rAudioRtpcID) const = 0;
-	virtual bool										GetAudioSwitchID(char const* const sAudioSwitchName, TAudioControlID& rAudioSwitchID) const = 0;
-	virtual bool										GetAudioSwitchStateID(TAudioControlID const nSwitchID, char const* const sAudioTriggerName, TAudioSwitchStateID& rAudioStateID) const = 0;
-	virtual bool										GetAudioPreloadRequestID(char const* const sAudioPreloadRequestName, TAudioPreloadRequestID& rAudioPreloadRequestID) const = 0;
-	virtual bool										GetAudioEnvironmentID(char const* const sAudioEnvironmentName, TAudioEnvironmentID& rAudioEnvironmentID) const = 0;
-	virtual bool										ReserveAudioListenerID(TAudioObjectID& rAudioObjectID) = 0;
-	virtual bool										ReleaseAudioListenerID(TAudioObjectID const nAudioObjectID) = 0;
-	virtual void										OnCVarChanged(ICVar* const pCvar) = 0;
-	virtual void										GetInfo(SAudioSystemInfo& rAudioSystemInfo) = 0;
-	virtual char const*							GetConfigPath() const = 0;
-	virtual IAudioProxy*						GetFreeAudioProxy() = 0;
-	virtual void										FreeAudioProxy(IAudioProxy* const pIAudioProxy) = 0;
-	virtual char const*							GetAudioControlName(EAudioControlType const eAudioEntityType, TATLIDType const nAudioEntityID) = 0;
-	virtual char const*							GetAudioControlName(EAudioControlType const eAudioEntityType, TATLIDType const nAudioEntityID1, TATLIDType const nAudioEntityID2) = 0;
-
+	virtual bool					Initialize() = 0;
+	virtual void					Release() = 0;
+	virtual void					PushRequest(SAudioRequest const& rAudioRequestData) = 0;
+	virtual void					AddRequestListener(void (*func)(SAudioRequestInfo const* const), void* const pObjectToListenTo, EAudioRequestType const requestType = eART_AUDIO_ALL_REQUESTS, TATLEnumFlagsType const specificRequestMask = ALL_AUDIO_REQUEST_SPECIFIC_TYPE_FLAGS) = 0;
+	virtual void					RemoveRequestListener(void (*func)(SAudioRequestInfo const* const), void* const pObjectToListenTo) = 0;
+	virtual void					ExternalUpdate() = 0;
+	virtual bool					GetAudioTriggerID(char const* const sAudioTriggerName, TAudioControlID& rAudioTriggerID) const = 0;
+	virtual bool					GetAudioRtpcID(char const* const sAudioRtpcName, TAudioControlID& rAudioRtpcID) const = 0;
+	virtual bool					GetAudioSwitchID(char const* const sAudioSwitchName, TAudioControlID& rAudioSwitchID) const = 0;
+	virtual bool					GetAudioSwitchStateID(TAudioControlID const nSwitchID, char const* const sAudioTriggerName, TAudioSwitchStateID& rAudioStateID) const = 0;
+	virtual bool					GetAudioPreloadRequestID(char const* const sAudioPreloadRequestName, TAudioPreloadRequestID& rAudioPreloadRequestID) const = 0;
+	virtual bool					GetAudioEnvironmentID(char const* const sAudioEnvironmentName, TAudioEnvironmentID& rAudioEnvironmentID) const = 0;
+	virtual bool					ReserveAudioListenerID(TAudioObjectID& rAudioObjectID) = 0;
+	virtual bool					ReleaseAudioListenerID(TAudioObjectID const nAudioObjectID) = 0;
+	virtual void					OnCVarChanged(ICVar* const pCvar) = 0;
+	virtual void					GetInfo(SAudioSystemInfo& rAudioSystemInfo) = 0;
+	virtual char const*		GetConfigPath() const = 0;
+	virtual IAudioProxy*	GetFreeAudioProxy() = 0;
+	virtual void					FreeAudioProxy(IAudioProxy* const pIAudioProxy) = 0;
+	virtual char const*		GetAudioControlName(EAudioControlType const eAudioEntityType, TATLIDType const nAudioEntityID) = 0;
+	virtual char const*		GetAudioControlName(EAudioControlType const eAudioEntityType, TATLIDType const nAudioEntityID1, TATLIDType const nAudioEntityID2) = 0;
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 struct IAudioListener 
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAudioListener() {}
 
 	virtual void						Init() = 0;
@@ -779,7 +724,7 @@ struct IAudioListener
 	virtual void						SetUnderwater(const float fUnder) = 0;
 	virtual IVisArea*				GetVisArea() const = 0;
 	virtual void						SetVisArea(IVisArea* const pVArea) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // IAUDIOSYSTEM_H_INCLUDED

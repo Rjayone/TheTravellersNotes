@@ -61,8 +61,6 @@ enum EPlayerActionPriority
 	f( hitDeath ) \
 	f( animationControlled ) \
 	f( weaponPose ) \
-	f( swing )\
-	f( release)\
 
 #define MAN_PLAYER_CONTEXTS( f ) \
 	f( Char1P ) \
@@ -93,23 +91,7 @@ enum EPlayerActionPriority
 	f( localClient ) \
 	f( throwing ) \
 	f( slaveHuman ) \
-	f( BowPrime ) \
-	f(leftSide) \
-	f(rightSide) \
-	f(up) \
-	f(down) \
-	f(front) \
-	f(vertical) \
-	f(diagonal) \
-	f(horizontal) \
-	f(pricking) \
-	f(cancel)\
-	f(swing)\
-	f(hold)\
-	f(release)\
-	f(hit)\
-	f(miss) \
-	f(defence)
+	f( BowPrime )
 
 #define MAN_PLAYER_TAG_GROUPS( f ) \
 	f( stance ) \

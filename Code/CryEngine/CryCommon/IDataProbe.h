@@ -12,14 +12,8 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IDataProbe.h)
 
-#ifndef __IDataProbe_h__
-#define __IDataProbe_h__
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "NetHelpers.h"
 
@@ -102,7 +96,7 @@ struct SDataProbeContext
 	}
 };
 
-UNIQUE_IFACE struct IDataProbe
+struct IDataProbe
 {
 	struct SModuleInfo
 	{
@@ -110,6 +104,7 @@ UNIQUE_IFACE struct IDataProbe
 		void* handle;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IDataProbe() {};
 	virtual bool Dummy1( SDataProbeContext &ctx ) = 0;
 	virtual int Dummy2( void *pBuf,int aa,SDataProbeContext &ctx ) = 0;
@@ -128,6 +123,7 @@ UNIQUE_IFACE struct IDataProbe
 	// Return array of loaded modules information, returns number of modules.
 	virtual int GetLoadedModules( SModuleInfo **pModules ) = 0;
 	virtual void AddModule( SModuleInfo &moduleInfo ) = 0;
+	virtual void RemoveModule( const char* name ) = 0;
 
 	virtual void RandomAlloc() = 0;
 	
@@ -150,12 +146,12 @@ UNIQUE_IFACE struct IDataProbe
 	virtual	void RandSeed( uint32 seed ) = 0;
 	virtual	uint32 GetRand() = 0;
 	virtual	float GetRand( float fMin,float fMax ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IDefenceContext : public INetMessageSink
 {
-
+	// <interfuscator:shuffle>
   inline virtual ~IDefenceContext() {}
   virtual void AddProtectedFile( const SDefenseFileInfo& ) = 0;
   virtual void ClearProtectedFiles() = 0;
@@ -169,7 +165,5 @@ struct IDefenceContext : public INetMessageSink
 	virtual void SendNextRequestSplitCvarRange(uint32 nOffset, uint32 nSize) = 0;
 
 	virtual void Abort() = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif // __IDataProbe_h__

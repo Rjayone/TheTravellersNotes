@@ -83,13 +83,14 @@ struct ICrysis3AuthenticationHandler
 		SPersona(const char* pDisplayName, const int id):
 			m_id(id)
 		{
-			strncpy_s(m_pdisplayName, s_MaxDisplayNameLength, pDisplayName, _TRUNCATE);
+			cry_strcpy(m_pdisplayName, pDisplayName);
 		}
 
 		char m_pdisplayName[s_MaxDisplayNameLength];
 		const int m_id;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3AuthenticationHandler() {}
 
 	virtual void OnDisplayCountrySelect() = 0;
@@ -111,7 +112,7 @@ struct ICrysis3AuthenticationHandler
 	virtual void OnProfileSelected() = 0;
 	virtual void OnProfileLoaded(EAuthenticationError errorCode) = 0;
 	virtual void OnProfileUnloaded(EAuthenticationError errorCode) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SCrysis3SettingsLoadResult
@@ -167,8 +168,7 @@ public:
 
 	void FromString(const char *pString)
 	{
-		strcpy_s(m_id, 64, pString);
-		m_id[63] = '\0';
+		cry_strcpy(m_id, pString);
 	}
 
 private:
@@ -263,6 +263,7 @@ struct ICrysis3UserSettings
 {
 	typedef uint32 CryUserSettingsTaskID;
 
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3UserSettings() {}
 
 	virtual ECryLobbyError	SettingsSave(uint32 user, const CryUserID& userId, const char *pKey, const char *pValue, CryLobbyTaskID* pTaskID, Crysis3LobbyBasicCallback cb, void *cbArg) = 0;
@@ -271,7 +272,7 @@ struct ICrysis3UserSettings
 	virtual ECryLobbyError	SettingsDelete(uint32 user, const CryUserID& userId, const char *pKey, CryLobbyTaskID* pTaskID, Crysis3LobbyBasicCallback cb, void *cbArg) = 0;
 	virtual void						CancelTask(CryLobbyTaskID taskID) = 0;
 	virtual uint32					GetServerTime() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #define IC3_MAX_COUNTRY_CODE_LENGTH 8
@@ -1244,11 +1245,8 @@ struct SPlaygroupSearchDetails
 #define DETAILED_SESSION_MAX_CUSTOMS		(32)
 
 // Can't use MAX_PLAYER_LIMIT define since it only exists inside game dll
-#if defined(XENON) || defined(PS3)
-	#define DETAILED_SESSION_MAX_PLAYERS		(12)
-#else
-	#define DETAILED_SESSION_MAX_PLAYERS		(16)
-#endif
+#define DETAILED_SESSION_MAX_PLAYERS		(16)
+
 
 //-------------------------------------------------------------------------
 struct SDetailedServerInfo
@@ -1285,6 +1283,7 @@ struct ICrysis3MatchMaking
 		eNHT_Unknown,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3MatchMaking() {}
 	
 	virtual ECryLobbyError MatchMake(const SMatchMakeParams &params, SGameModeDetails *pDisallowedModes, int numDisallowedModes, CryLobbyTaskID* pTaskID, Crysis3LobbyMatchMakingCallback cb, void *cbArg) = 0;
@@ -1306,7 +1305,7 @@ struct ICrysis3MatchMaking
 	virtual ECryLobbyError SessionSetGameModes(CrySessionHandle gh, SGameModeDetails *pModes, int numModes, CryLobbyTaskID* taskId, Crysis3LobbyBasicCallback pCb, void *pCbArg) = 0;
 
 	virtual ECryLobbyError ReportLoss(CrySessionHandle gh, int modeId, int mapId, CryLobbyTaskID* pTaskID, Crysis3LobbyBasicCallback cb, void *cbArg) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //-------------------------------------------------------------------------
@@ -1314,6 +1313,7 @@ struct ICrysis3Playgroups
 {
 	typedef uint32 CryPlaygroupsTaskID;
 
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3Playgroups() {}
 
 	virtual ECryLobbyError CreatePlaygroup( const char* name, uint maxMembers, bool enableVoip, bool privateGroup, CryLobbyTaskID* pTaskID, Crysis3LobbyPlaygroupCallback cb, void *cbArg) = 0;
@@ -1331,7 +1331,7 @@ struct ICrysis3Playgroups
 	virtual ECryLobbyError GetAttributes(CryPlaygroupHandle h, CryLobbyTaskID *pTaskId, Crysis3PlaygroupAttributesCallback pCb, void *pCbArg) = 0;
 
 	virtual ECryLobbyError GetPlaygroupDetailsByUsers(CryUserID *pUserIds, int numUsers, CryLobbyTaskID *pTaskId, Crysis3PlaygroupSearchCallback pCb, void *pCbArg) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //-------------------------------------------------------------------------
@@ -1406,7 +1406,7 @@ struct SRequestedFeedItem
 		if(numStrParams < IC3_MAX_PARAMSTRS)
 		{
 			char* pDest = &stringParams[numStrParams*IC3_MAX_FEEDPARAMSTR_LENGTH]; 
-			strncpy_s(pDest, IC3_MAX_FEEDPARAMSTR_LENGTH, pStringParam,_TRUNCATE);
+			cry_strcpy(pDest, IC3_MAX_FEEDPARAMSTR_LENGTH, pStringParam);
 			++numStrParams; 
 			return true;
 		}
@@ -1432,8 +1432,7 @@ struct SRequestedFeedItem
 
 	void SetStringId(const char* pStringId)
 	{
-		char* pDest = stringId; 
-		strncpy_s(pDest, IC3_MAX_STRID_LENGTH, pStringId, _TRUNCATE);
+		cry_strcpy(stringId, pStringId);
 	}
 
 	void SetType(EFeedItemType newType)
@@ -1485,6 +1484,7 @@ struct ICrysis3FeedProvider
 {
 	typedef uint32 CryFeedProviderTaskID;
 
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3FeedProvider() {}		
 
 	// Config // 	
@@ -1496,7 +1496,7 @@ struct ICrysis3FeedProvider
 	virtual ECryLobbyError AddFeedItem(const SRequestedFeedItem& feedItem, uint32 user, CryLobbyTaskID* pTaskID, Crysis3LobbyBasicCallback cb, void *cbArg)	= 0;
 
 	virtual void					 CancelTask(CryLobbyTaskID taskId) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -1570,6 +1570,7 @@ struct ICrysis3PartnerTelemetry
 	typedef void (*Crysis3TelemClocksCallback)( int& careerTime, int& gameTime, int& sessionTime, void* pArg );
 	typedef void (*Crysis3TelemTokenCallback)( const CTelemetryToken& token, void* pArg );
 
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3PartnerTelemetry() {}
 
 	virtual void RegisterGetClocksCallback( Crysis3TelemClocksCallback cb, void* pArg ) = 0;
@@ -1594,13 +1595,13 @@ struct ICrysis3PartnerTelemetry
 	virtual ECryLobbyError CampaignCompleted() = 0;
 
 	virtual ECryLobbyError OnShutdown() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //-------------------------------------------------------------------------
 struct ICrysis3Stats
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3Stats() {}
 
 	virtual ECryLobbyError LoadC3GeneralStats(CryUserID userId, CryLobbyTaskID *pTaskId, Crysis3GeneralStatsCallback cb, void *cbArg) = 0;
@@ -1637,7 +1638,7 @@ struct ICrysis3Stats
 	virtual ECryLobbyError ReadLeaderBoardByUserID(const char *pBoardName, CryUserID* pUserIDs, uint32 numUserIDs, CryLobbyTaskID* pTaskID, Crysis3ReadLeaderBoardCallback cb, void* pCbArg) = 0;
 
 	virtual void					 CancelTask(CryLobbyTaskID taskId) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -1723,6 +1724,7 @@ struct ICrysis3ChallengeSystem
 {
 	typedef uint32 CryChallengeSystemTaskID;
 
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3ChallengeSystem() {}		
 
 	virtual ECryLobbyError GetChallenges(uint32 user, CryLobbyTaskID* pTaskID, Crysis3LobbyGetChallengesCallback cb, void *cbArg) = 0;
@@ -1732,7 +1734,7 @@ struct ICrysis3ChallengeSystem
 	virtual ECryLobbyError RequestChallengeConfig(uint32 user, CryLobbyTaskID* pTaskID, Crysis3LobbyGetChallengeXPCallback cb, void *cbArg) = 0;
 
 	virtual void					 CancelTask(CryLobbyTaskID taskId) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #define FRIENDS_MESSAGE_GAME_INVITE			"game_invite"
@@ -1742,14 +1744,14 @@ struct ICrysis3ChallengeSystem
 //-------------------------------------------------------------------------
 struct ICrysis3Friends
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3Friends() {}
 
 	virtual ECryLobbyError FriendsSendSquadInvite(uint32 user, CryUserID* pUserIDs, uint32 numUserIDs, CryLobbyTaskID* pTaskID, Crysis3LobbyBasicCallback cb, void* pCbArg) = 0;
 	virtual ECryLobbyError FriendsSendRequestSquadInvite(uint32 user, CryUserID userID, CryLobbyTaskID* pTaskID, Crysis3LobbyBasicCallback cb, void* pCbArg) = 0;
 	virtual ECryLobbyError FriendsAcceptSquadInvite(uint32 user, CryUserID inviterId, CryLobbyTaskID* pTaskID, Crysis3LobbyBasicCallback cb, void* pCbArg) = 0;
 	virtual ECryLobbyError FriendsGetName(CryUserID userID, CryLobbyTaskID* pTaskID, CryFriendsManagementSearchCallback pCb, void* pCbArg) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //-------------------------------------------------------------------------
@@ -1758,7 +1760,7 @@ typedef CryFixedStringT<1024> TTextBuffer;
 
 struct ICrysis3Lobby
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICrysis3Lobby() {}
 
 	virtual ICrysis3UserSettings *GetUserSettings() = 0;
@@ -1808,12 +1810,11 @@ struct ICrysis3Lobby
 
 	// GetPartyMembers
 	// Causes the current party members to be obtained and dispatched within an eCLSE_PartyMembers event
-	//							Party members are a XENON feature only
 	// return			-	eCLE_Success if successful or an error code if failed
 	virtual ECryLobbyError		GetPartyMembers() = 0;
 
 	virtual void GetStateInfo( TTextBuffer& textBuffer ) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __ICRYSIS3LOBBY_H__

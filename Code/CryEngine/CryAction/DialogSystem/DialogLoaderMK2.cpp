@@ -246,7 +246,8 @@ void CDialogLoaderMK2::ResetLine(CDialogScript::SScriptLine& scriptLine)
 	scriptLine.m_flagSoundStopsAnim = false;
 	scriptLine.m_flagAGSignal = false;
 	scriptLine.m_flagAGEP = false;
-	scriptLine.m_sound = "";
+	scriptLine.m_audioID = INVALID_AUDIO_CONTROL_ID;
+	//scriptLine.m_sound = "";
 	scriptLine.m_anim = "";
 	scriptLine.m_facial = "";
 	scriptLine.m_delay = 0.0f;
@@ -277,7 +278,11 @@ bool CDialogLoaderMK2::ReadLine(const XmlNodeRef& lineNode, CDialogScript::SScri
 	if (lineNode->getAttr("flagSoundStopsAnim", tmp)) line.m_flagSoundStopsAnim = tmp;
 	if (lineNode->getAttr("flagAGSignal", tmp)) line.m_flagAGSignal = tmp;
 	if (lineNode->getAttr("flagAGEP", tmp)) line.m_flagAGEP = tmp;
-	line.m_sound = lineNode->getAttr("sound");
+	const char* audioIDString = lineNode->getAttr("audioID");
+	if (audioIDString != 0)
+		gEnv->pAudioSystem->GetAudioTriggerID(audioIDString, line.m_audioID);
+	else
+		line.m_audioID = INVALID_AUDIO_CONTROL_ID;
 	line.m_anim = lineNode->getAttr("anim");
 	line.m_facial = lineNode->getAttr("facial");
 	if (CryStringUtils::stristr(line.m_facial, "#RESET#") != 0)

@@ -50,6 +50,19 @@ public:
 
 		return NULL;
 	}
+
+	const T* GetFirstValue( const char* name )
+	{
+		for( typename std::vector<TRecord>::iterator it = m_dictionary.begin(), end = m_dictionary.end(); it != end; ++it )
+		{
+			if( !stricmp( it->first, name ) )
+			{
+				return &it->second;
+			}
+		}
+
+		return NULL;
+	}
 };
 
 #endif // XMLAttrReader_h

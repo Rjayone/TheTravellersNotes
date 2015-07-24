@@ -48,7 +48,7 @@ struct VecPrecisionValues<float>
 };
 
 
-template <typename F> struct __passinreg Vec3s_tpl
+template <typename F> struct Vec3s_tpl
 {
 	F x,y,z;
 
@@ -65,9 +65,10 @@ template <typename F> struct __passinreg Vec3s_tpl
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-template <typename F> struct __passinreg Vec3_tpl
+template <typename F> struct Vec3_tpl
 {
 	typedef F value_type;
+	enum { component_count = 3 };
 
 	F x,y,z;
 
@@ -219,7 +220,8 @@ template <typename F> struct __passinreg Vec3_tpl
 		return (fabs_tpl(x) + fabs_tpl(y) + fabs_tpl(z)) <= e;
 	}
 
-	ILINE bool IsEquivalent(const Vec3_tpl<F> &v1, F epsilon=VEC_EPSILON) const 
+	// Chebyshev distance (axis aligned)
+ 	ILINE bool IsEquivalent(const Vec3_tpl<F> &v1, F epsilon=VEC_EPSILON) const 
 	{
 		assert(v1.IsValid()); 
 		assert(this->IsValid()); 
@@ -232,6 +234,19 @@ template <typename F> struct __passinreg Vec3_tpl
 		return  ((fabs_tpl(v0.x-v1.x) <= epsilon) &&	(fabs_tpl(v0.y-v1.y) <= epsilon)&&	(fabs_tpl(v0.z-v1.z) <= epsilon));	
 	}
 
+	// Euclidean distance L2
+	ILINE bool IsEquivalentL2(const Vec3_tpl<F> &v1, F epsilon=VEC_EPSILON) const 
+	{
+		assert(v1.IsValid()); 
+		assert(this->IsValid()); 
+		return (*this - v1).GetLengthSquared() <= (epsilon * epsilon);
+	}
+	ILINE static bool IsEquivalentL2(const Vec3_tpl<F>& v0, const Vec3_tpl<F>& v1, F epsilon=VEC_EPSILON) 
+	{
+		assert(v0.IsValid()); 
+		assert(v1.IsValid()); 
+		return (v0 - v1).GetLengthSquared() <= (epsilon * epsilon);
+	}
 
 	ILINE bool IsUnit(F epsilon=VEC_EPSILON) const 
 	{
@@ -614,32 +629,6 @@ template <typename F> struct __passinreg Vec3_tpl
 		return ip;
 	}
 
-
-
-
-	/*!
-	* set random normalized vector (=random position on unit sphere) 
-	* 
-	* Example:
-	*  Vec3 v;
-	*  v.SetRandomDirection(); 
-	*/
-	void SetRandomDirection( void )
-	{ 
-		int nMax = 5; // To prevent hanging with bad randoms.
-		F Length2;
-		do {
-			x = 1.0f - 2.0f*cry_frand();
-			y = 1.0f - 2.0f*cry_frand();
-			z = 1.0f - 2.0f*cry_frand();
-			Length2 = len2();
-			nMax--;
-		} while((Length2>1.0f || Length2<0.0001f) && nMax > 0);
-		F InvScale = isqrt_tpl(Length2);				// dividion by 0 is prevented
-		x *= InvScale; y *= InvScale; z *= InvScale;
-	}	
-
-
 	/*!
 	* rotate a vector using angle&axis 
 	* 
@@ -843,36 +832,6 @@ template<> inline Vec3_tpl<f64>::Vec3_tpl(type_min) { x=y=z=-1.7E308; }
 template<> inline Vec3_tpl<f64>::Vec3_tpl(type_max) { x=y=z=1.7E308; }
 template<> inline Vec3_tpl<f32>::Vec3_tpl(type_min) { x=y=z=-3.3E38f; }
 template<> inline Vec3_tpl<f32>::Vec3_tpl(type_max) { x=y=z=3.3E38f; }
-
-
-//////////////////////////////////////////////////////////////////////////
-// Random vector functions.
-
-ILINE Vec3 Random(const Vec3& v)
-{
-	return Vec3( Random(v.x), Random(v.y), Random(v.z) );
-}
-ILINE Vec3 Random(const Vec3& a, const Vec3& b)
-{
-	return Vec3( Random(a.x,b.x), Random(a.y,b.y), Random(a.z,b.z) );
-}
-
-ILINE Vec3 BiRandom( const Vec3& vRange)
-{
-	return Random(-vRange, vRange);
-}
-
-// Random point in sphere.
-ILINE Vec3 SphereRandom(float fRadius)
-{
-	Vec3 v;
-	do {
-		v( BiRandom(fRadius), BiRandom(fRadius), BiRandom(fRadius) );
-	} while (v.GetLengthSquared() > fRadius*fRadius);
-	return v;
-}
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1107,7 +1066,7 @@ template <typename F> struct AngleAxis_tpl
 	// default quaternion constructor
 	AngleAxis_tpl( void ) { };
 	AngleAxis_tpl( F a, F ax, F ay, F az ) {  angle=a; axis.x=ax; axis.y=ay; axis.z=az; }
-	AngleAxis_tpl( F a, Vec3_tpl<F> &n ) { angle=a; axis=n; }
+	AngleAxis_tpl( F a, const Vec3_tpl<F> &n ) { angle=a; axis=n; }
 	void operator () ( F a, const Vec3_tpl<F> &n ) {  angle=a; axis=n; }
 	AngleAxis_tpl( const AngleAxis_tpl<F>& aa ); //CAngleAxis aa=angleaxis
 	const Vec3_tpl<F> operator * ( const Vec3_tpl<F>& v ) const;

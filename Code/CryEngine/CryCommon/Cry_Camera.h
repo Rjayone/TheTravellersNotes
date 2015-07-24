@@ -227,7 +227,6 @@ public:
   void UpdateFrustum();
 	void GetMemoryUsage( ICrySizer *pSizer ) const {/*nothing*/}
 private:		
-
   bool AdditionalCheck( const AABB& aabb ) const; 
 	bool AdditionalCheck( const Vec3& wpos, const OBB& obb, f32 uscale ) const; 
 
@@ -249,17 +248,6 @@ private:
 	Vec3	m_cltp,m_crtp,m_clbp,m_crbp;		//this are the 4 vertices of the projection-plane in cam-space
 	Vec3	m_cltn,m_crtn,m_clbn,m_crbn;		//this are the 4 vertices of the near-plane in cam-space
 	Vec3	m_cltf,m_crtf,m_clbf,m_crbf;		//this are the 4 vertices of the farclip-plane in cam-space
-
-	//usually we update these values every frame (they depend on m_Matrix)
-#if defined(XENON_INTRINSICS)
-	__vector4  m_PlaneNX[2];
-  __vector4  m_PlaneNY[2];
-  __vector4  m_PlaneNZ[2];
-  __vector4  m_PlaneDist[2]; 
-  __vector4  m_idxSelX[2];
-  __vector4  m_idxSelY[2];
-  __vector4  m_idxSelZ[2];
-#endif
 
 	Plane	m_fp [FRUSTUM_PLANES]; //
 	uint32	m_idx1[FRUSTUM_PLANES],m_idy1[FRUSTUM_PLANES],m_idz1[FRUSTUM_PLANES]; //
@@ -898,7 +886,6 @@ inline bool CCamera::IsAABBVisible_F( const AABB& aabb ) const
 	x=m_idx1[5]; y=m_idy1[5]; z=m_idz1[5]; if ( (m_fp[5]|Vec3(p[x],p[y],p[z])) > 0) return CULL_EXCLUSION;	
 	return CULL_OVERLAP;	  
 }
-
 
 
 // Description

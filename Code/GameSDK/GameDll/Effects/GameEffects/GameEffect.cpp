@@ -233,16 +233,16 @@ void CGameEffect::SpawnParticlesOnSkeleton(IEntity* pEntity, IParticleEmitter* p
 
 				const uint32 numJoints = rIDefaultSkeleton.GetJointCount();
 
-				while(numParticles > 0)
+				for (uint32 i = 0; i < numParticles; ++i)
 				{
-					int id = Random(numJoints);
+					int id = cry_random(0U, numJoints - 1);
 					int parentId = rIDefaultSkeleton.GetJointParentIDByID(id);
 
 					if(parentId>0)
 					{
 						QuatT boneQuat = pPose->GetAbsJointByID(id);
 						QuatT parentBoneQuat= pPose->GetAbsJointByID(parentId);
-						float lerpScale = cry_frand();
+						float lerpScale = cry_random(0.0f, 1.0f);
 
 						QuatTS loc(IDENTITY);
 						loc.t = LERP(boneQuat.t,parentBoneQuat.t,lerpScale);

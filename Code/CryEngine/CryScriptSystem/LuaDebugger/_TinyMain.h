@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <string.h>
-#include MATH_H
+#include <math.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Helper macros
@@ -59,7 +59,7 @@ __inline void __cdecl _TinyTrace(const char *sFormat, ...)
 	vsprintf(sTraceString, sFormat, vl);
 	va_end(vl);
 
-	strcat(sTraceString, "\n");
+	cry_strcat(sTraceString, "\n");
 
 	::OutputDebugString(sTraceString);	
 }
@@ -84,7 +84,7 @@ __inline void _TinyCheckLastError(const char *pszFile, int iLine)
 			NULL 
 		);
 		sprintf(szLineFileInfo, "Error catched in file %s line %i", pszFile, iLine);
-		strcat(szMessageBuf, szLineFileInfo);
+		cry_strcat(szMessageBuf, szLineFileInfo);
 
 #ifdef _DEBUG
 		MessageBox(NULL, szMessageBuf, "Tiny Framework Error", MB_OK | MB_ICONERROR);

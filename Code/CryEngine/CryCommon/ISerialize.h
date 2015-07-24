@@ -119,10 +119,10 @@ enum ESerializationTarget
 // serialization classes
 struct ISerializeUpdateFunction
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISerializeUpdateFunction(){}
 	virtual void Execute() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // concrete implementation of IUpdateFunction for a general functor class
@@ -202,6 +202,7 @@ struct ISerialize
 
 	ILINE ISerialize() {}
 
+	// <interfuscator:shuffle>
 	virtual ~ISerialize(){}
 
 	// this is for string values -- they need special support
@@ -231,7 +232,7 @@ struct ISerialize
 	virtual bool ShouldCommitValues() const = 0;
 	virtual ESerializationTarget GetSerializationTarget() const = 0;
 	virtual bool Ok() const = 0;
-
+	// </interfuscator:shuffle>
 
 	// declare all primitive Value() implementations
 #define SERIALIZATION_TYPE(T) \
@@ -999,7 +1000,8 @@ template <class B>
 void ISerialize::Value( const char * name, B& x, uint32 policy )
 {
 	if (!BeginOptionalGroup(name,true)) return;
-	x.Serialize( TSerialize(this) );
+	TSerialize	ser(this);
+	x.Serialize(ser);
 	EndGroup();
 }
 
@@ -1009,7 +1011,8 @@ void ISerialize::ValueWithDefault( const char * name, B& x, const B& defaultValu
 {
 	if (BeginOptionalGroup(name, x != defaultValue))
 	{
-		x.Serialize(TSerialize(this));
+		TSerialize	ser(this);
+		x.Serialize(ser);
 		EndGroup();
 	}
 	else if (IsReading())

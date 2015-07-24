@@ -76,7 +76,7 @@ CJaw::CJaw()
 #		undef ADD_HANDLER
 	}
 
-	m_dropJAWAnimEvent = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("DropJAW");
+	m_dropJAWAnimEvent = CCrc32::ComputeLowercase("DropJAW");
 }
 
 

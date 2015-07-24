@@ -40,8 +40,6 @@ void CTeamVisualizationManager::InitTeamVisualizationData( XmlNodeRef xmlNode )
 		DesignerWarning(pPlayerTeamVisualization, "expected to find <PlayerTeamVisualization> </PlayerTeamVisualization>, not found");
 		if(pPlayerTeamVisualization)
 		{
-			Crc32Gen* pCRCGen = gEnv->pSystem->GetCrc32Gen();
-
 			// Grab each model setup node
 			const int modelCount = pPlayerTeamVisualization->getChildCount();
 			for(int i = 0; i < modelCount; ++i)
@@ -70,7 +68,7 @@ void CTeamVisualizationManager::InitTeamVisualizationData( XmlNodeRef xmlNode )
 								if(pModelName && pModelName[0])
 								{
 									// Add new + Fill in details
-									TModelNameCRC modelNameCRC = pCRCGen->GetCRC32Lowercase(pModelName); 
+									TModelNameCRC modelNameCRC = CCrc32::ComputeLowercase(pModelName); 
 									CRY_ASSERT(m_teamVisualizationPartsMap.find(modelNameCRC) == m_teamVisualizationPartsMap.end());
 									m_teamVisualizationPartsMap[modelNameCRC] = SModelMaterialSetup(); 
 									SModelMaterialSetup& newConfig = m_teamVisualizationPartsMap[modelNameCRC];
@@ -99,7 +97,7 @@ void CTeamVisualizationManager::InitTeamVisualizationData( XmlNodeRef xmlNode )
 									for(int j = 0; j < numAttachments; ++j)
 									{
 										XmlNodeRef attachmentNode = attachmentsNode->getChild(j);
-										newConfig.m_attachments.push_back(pCRCGen->GetCRC32Lowercase(attachmentNode->getAttr("name")));
+										newConfig.m_attachments.push_back(CCrc32::ComputeLowercase(attachmentNode->getAttr("name")));
 									}	
 									continue;
 								}	
@@ -130,7 +128,7 @@ void CTeamVisualizationManager::RefreshTeamMaterial( IEntity* pEntity, const boo
 		const char* pPlayerModelName = pCharInstance->GetFilePath();
 		if(pPlayerModelName && pPlayerModelName[0])
 		{
-			TModelNameCRC modelNameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pPlayerModelName); 
+			TModelNameCRC modelNameCRC = CCrc32::ComputeLowercase(pPlayerModelName); 
 			TModelPartsMap::const_iterator iter = m_teamVisualizationPartsMap.find(modelNameCRC);
 			if(iter != m_teamVisualizationPartsMap.end())
 			{

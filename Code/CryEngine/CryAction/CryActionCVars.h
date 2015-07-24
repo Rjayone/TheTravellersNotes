@@ -32,8 +32,6 @@ public:
 	int		g_userNeverAutoSignsIn;
 #endif
 
-	ICVar* g_TweakProfile;
-
 #ifdef AI_LOG_SIGNALS
 	int aiLogSignals;
 	float aiMaxSignalDuration;
@@ -75,6 +73,8 @@ public:
 	int g_disableInputKeyFlowNodeInDevMode;
 
 	int g_disableSequencePlayback;
+
+	int g_enableMergedMeshRuntimeAreas;
 
 	// AI stances
 	ICVar* ag_defaultAIStance; 

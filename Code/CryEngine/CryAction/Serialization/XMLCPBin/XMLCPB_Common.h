@@ -273,15 +273,15 @@ enum eAttrConstants
 template<class T>
 inline void SwapIntegerValue( T& val )
 {
-	#if defined(PS3) || defined(XENON)
+#if defined(NEED_ENDIAN_SWAP)
 	SwapEndianBase( &val, 1 );
-	#endif
+#endif
 }
 
 template<>
 inline void SwapIntegerValue( FlatAddr& _val )
 {
-#if defined(PS3) || defined(XENON)
+#if defined(NEED_ENDIAN_SWAP)
 	uint32 val = _val;
 	SwapEndianBase( &val, 1 );
 	_val = val;

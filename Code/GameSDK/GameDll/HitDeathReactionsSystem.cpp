@@ -191,7 +191,7 @@ namespace
 	{
 		if( piActionController )
 		{
-			uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( pTargetTag );
+			uint32 crc = CCrc32::ComputeLowercase( pTargetTag );
 
 			return piActionController->GetFragTagID( fragID, crc );
 		}
@@ -1077,7 +1077,7 @@ ProfileId CHitDeathReactionsSystem::GetActorProfileId(const CActor& actor) const
 					CryPathString sReactionsDataFilePath(szReactionsDataFilePath);
 					CryStringUtils::UnifyFilePath(sReactionsDataFilePath);
 
-					key = gEnv->pSystem->GetCrc32Gen()->GetCRC32(sReactionsDataFilePath);
+					key = CCrc32::Compute(sReactionsDataFilePath);
 				}
 				else
 				{
@@ -1367,7 +1367,7 @@ bool CHitDeathReactionsSystem::LoadHitDeathReactionsConfig(const CActor& actor, 
 
 		if( const IActionController* piActionController = actor.GetAnimatedCharacter()->GetActionController() )
 		{
-			const uint32 MANQ_HITDEATH_FRAGMENT = gEnv->pSystem->GetCrc32Gen()->GetCRC32( MANQ_TAG_FRAGMENT );
+			const uint32 MANQ_HITDEATH_FRAGMENT = CCrc32::Compute( MANQ_TAG_FRAGMENT );
 			pHitDeathReactionsConfig->fragmentID = piActionController->GetFragID( MANQ_HITDEATH_FRAGMENT );
 		}
 
@@ -1377,7 +1377,7 @@ bool CHitDeathReactionsSystem::LoadHitDeathReactionsConfig(const CActor& actor, 
 			pReactionsConfigTable->GetValue(MANQ_TARGET_TAG, szManqTargetTag);
 
 			// Sadly, can't store the fragID as it might be used on a different action controller.
-			pHitDeathReactionsConfig->manqTargetCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( szManqTargetTag );
+			pHitDeathReactionsConfig->manqTargetCRC = CCrc32::ComputeLowercase( szManqTargetTag );
 		}
 	}
 
@@ -2073,8 +2073,7 @@ bool CHitDeathReactionsSystem::GetValidationParamsFromScript(const ScriptTablePt
 		const char* szDestructibleEvent = NULL;
 		if (pScriptTable->GetValue(DESTRUCTIBLE_EVENT_PROPERTY, szDestructibleEvent) && szDestructibleEvent && (szDestructibleEvent[0] != '\0'))
 		{
-			const Crc32Gen* pCRC32 = gEnv->pSystem->GetCrc32Gen();
-			validationParams.destructibleEvent = pCRC32->GetCRC32Lowercase(szDestructibleEvent);
+			validationParams.destructibleEvent = CCrc32::ComputeLowercase(szDestructibleEvent);
 			const TagID tagID = tagMapping.m_pTagDefinition->Find( szDestructibleEvent );
 			if( tagID != TAG_ID_INVALID )
 			{

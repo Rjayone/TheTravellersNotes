@@ -18,13 +18,6 @@
 
 #define BUCKET_ALLOCATOR_DEBUG 0
 
-// _ALIGN may not be defined yet, so create a local definition for it
-#if defined(PS3)
-#define BUCKET_ALIGN(num) __attribute__ ((aligned(num)))
-#else
-#define BUCKET_ALIGN(...)
-#endif
-
 #if BUCKET_ALLOCATOR_DEBUG
 #define BucketAssert(expr) if (!(expr)) { __debugbreak(); }
 #else
@@ -51,11 +44,7 @@ namespace BucketAllocatorDetail
 		private:
 			enum
 			{
-#ifndef XENON
 				ReserveCapacity = 4 * 1024 * 1024
-#else
-				ReserveCapacity = 1 * 1024 * 1024
-#endif
 			};
 
 		private:
@@ -104,9 +93,6 @@ public:
 public:
 	void* allocate(size_t sz)
 	{
-#ifdef __SPU__
-		return CryModuleMalloc(sz);
-#else
 		void* ptr = NULL;
 
 		MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CryMalloc);
@@ -127,7 +113,6 @@ public:
 		MEMREPLAY_SCOPE_ALLOC(ptr, sz, 0);
 
 		return ptr;
-#endif
 	}
 
 	bool CanGuaranteeAlignment(size_t sz, size_t align)
@@ -137,11 +122,6 @@ public:
 
 		if (((SmallBlockLength % sz) == 0) && (sz % align) == 0)
 			return true;
-
-#ifdef PS3
-		if (((sz % 128) == 0) && (align <= 128))
-			return true;
-#endif
 
 		if (((sz % 16) == 0) && (align <= 16))
 			return true;
@@ -154,9 +134,6 @@ public:
 
 	void* allocate(size_t sz, size_t align)
 	{
-#ifdef __SPU__
-		return CryModuleMemalign(sz, align);
-#else
 		void* ptr = NULL;
 
 		MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CryMalloc);
@@ -175,7 +152,6 @@ public:
 
 		MEMREPLAY_SCOPE_ALLOC(ptr, sz, 0);
 		return ptr;
-#endif
 	}
 
 	ILINE void* alloc(size_t sz)
@@ -189,10 +165,6 @@ public:
 
 		MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CryMalloc);
 
-#ifdef __SPU__
-		CryModuleFree(ptr);
-		return 0;
-#else
 		size_t sz = 0;
 
 		if (this->IsInAddressRange(ptr))
@@ -251,7 +223,6 @@ public:
 		MEMREPLAY_SCOPE_FREE(ptr);
 
 		return sz;
-#endif
 	}
 
 	ILINE size_t dealloc(void* ptr)
@@ -265,7 +236,6 @@ public:
 		return deallocate(ptr);
 	}
 
-#ifndef __SPU__
 	ILINE bool IsInAddressRange(void* ptr)
 	{
 		UINT_PTR ptri = reinterpret_cast<UINT_PTR>(ptr);
@@ -306,7 +276,7 @@ public:
 	}
 
 	size_t GetBucketStorageSize();
-	size_t GetBucketStorageCapacity();
+	size_t GetBucketStoragePages();
 	size_t GetBucketConsumedSize();
 
 	void cleanup();
@@ -326,7 +296,6 @@ public:
 	ILINE size_t get_wasted_in_blocks() { return 0; }
 	ILINE size_t get_wasted_in_allocation() { return 0; }
 	ILINE size_t _S_get_free() { return 0; }
-#endif
 
 #if CAPTURE_REPLAY_LOG
 	void ReplayRegisterAddressRange(const char* name)
@@ -506,12 +475,6 @@ private:
 				// If this fires, something has trampled the free list items.
 				__debugbreak();
 
-#ifdef XENON
-				char error[256];
-				sprintf_s(error, 256, "Bucket allocator free list has been trampled at %p\n", ptr);
-				OutputDebugString(error);
-#endif
-
 #if CAPTURE_REPLAY_LOG
 				CryGetIMemReplay()->Stop();
 #endif // CAPTURE_REPLAY_LOG
@@ -664,8 +627,9 @@ private:
 	int m_cleanupOnDestruction;
 };
 
-#undef BUCKET_ALIGN
-
+#else
+// if node allocator is used instead of global bucket allocator, windows.h is required
+#	include "CryWindows.h"
 #endif
 
 #endif

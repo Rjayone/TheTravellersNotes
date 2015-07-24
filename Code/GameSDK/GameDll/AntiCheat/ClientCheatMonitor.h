@@ -42,9 +42,6 @@ public:
 	void UploadTelemetry();
 	
 private:
-	ILINE void * GetRealMonitorPointer(void * pPtr) { return (void*)((size_t)pPtr - m_MonitorAccessOffset); }
-
-	size_t				m_MonitorAccessOffset;
 	IGameFramework* m_pFramework;
 };
 #else

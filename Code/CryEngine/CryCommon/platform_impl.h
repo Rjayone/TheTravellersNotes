@@ -13,49 +13,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef __platform_impl_h__
-#define __platform_impl_h__
 #pragma once
 
 #include <StringUtils.h>
 #include <platform.h>
 #include <ISystem.h>
-//#include <CryUnitTest.h>
 #include <ITestSystem.h>
 #include <CryExtension/Impl/RegFactoryNode.h>
 #include <CryExtension/Impl/ICryFactoryRegistryImpl.h>
-
-#ifdef XENON_INTRINSICS
-#ifndef _RELEASE
-#if defined(XENON)
-#if _XDK_VER < 8276
-const XMVECTOR  g_XMIdentityR0          = {1.0f, 0.0f, 0.0f, 0.0f};
-const XMVECTOR  g_XMIdentityR1          = {0.0f, 1.0f, 0.0f, 0.0f};
-const XMVECTOR  g_XMIdentityR2          = {0.0f, 0.0f, 1.0f, 0.0f};
-const XMVECTOR  g_XMIdentityR3          = {0.0f, 0.0f, 0.0f, 1.0f};
-#endif
-#if _XDK_VER < 11626
-const XMVECTOR  g_XMZero                = {0.0f, 0.0f, 0.0f, 0.0f};
-const XMVECTOR  g_XMOne                 = {1.0f, 1.0f, 1.0f, 1.0f};
-#endif
-#elif defined(PS3)
-extern const XMVECTOR  g_XMIdentityR0;
-extern const XMVECTOR  g_XMIdentityR1;
-extern const XMVECTOR  g_XMIdentityR2;
-extern const XMVECTOR  g_XMIdentityR3;
-extern const XMVECTOR  g_XMZero;
-extern const XMVECTOR  g_XMOne;
-#else
-const XMVECTOR  g_XMIdentityR0          = XMVECTOR(1.0f, 0.0f, 0.0f, 0.0f);
-const XMVECTOR  g_XMIdentityR1          = XMVECTOR(0.0f, 1.0f, 0.0f, 0.0f);
-const XMVECTOR  g_XMIdentityR2          = XMVECTOR(0.0f, 0.0f, 1.0f, 0.0f);
-const XMVECTOR  g_XMIdentityR3          = XMVECTOR(0.0f, 0.0f, 0.0f, 1.0f);
-const XMVECTOR  g_XMZero                = XMVECTOR(0.0f, 0.0f, 0.0f, 0.0f);
-const XMVECTOR  g_XMOne                 = XMVECTOR(1.0f, 1.0f, 1.0f, 1.0f);
-#endif
-#endif
-#endif
-
+#include <UnicodeFunctions.h>
 
 #if defined(SYS_ENV_AS_STRUCT)
 #	if defined(_LAUNCHER)
@@ -68,48 +34,33 @@ SC_API struct SSystemGlobalEnvironment* gEnv = NULL;
 #endif
 
 
-#if defined(_LAUNCHER) && (defined(PS3) || defined(_RELEASE) || defined(LINUX) || defined(APPLE) || defined(ORBIS)) || !defined(PS3) && !defined(_LIB)
+#if defined(_LAUNCHER) && (defined(_RELEASE) || defined(LINUX) || defined(APPLE) || defined(ORBIS)) || !defined(_LIB)
 //The reg factory is used for registering the different modules along the whole project
 struct SRegFactoryNode* g_pHeadToRegFactories = 0;
 #endif
 
-
-#if defined(_LIB) && !defined(_LAUNCHER)
-extern CRndGen g_random_generator;
-#else //_LIB
-
+#if !defined(_LIB) || defined(_LAUNCHER)
 //////////////////////////////////////////////////////////////////////////
 // If not in static library.
 #include <CryThreadImpl.h>
 #include <CryCommon.cpp>
 
-/*
- #ifdef CRY_STRING
- int sEmptyStringBuffer[] = { -1, 0, 0, 0 };
- template <>
- string::StrHeader* string::m_emptyStringData = (string::StrHeader*)&sEmptyStringBuffer;
- template <>
- wstring::StrHeader* wstring::m_emptyStringData = (wstring::StrHeader*)&sEmptyStringBuffer;
- #endif //CRY_STRING
- */
-
 // Define UnitTest static variables
 CryUnitTest::Test* CryUnitTest::Test::m_pFirst = 0;
 CryUnitTest::Test* CryUnitTest::Test::m_pLast = 0;
 
-#if defined(WIN32) || defined(WIN64) || defined(XENON)
+#if defined(WIN32) || defined(WIN64)
 void CryPureCallHandler()
 {
 	CryFatalError("Pure function call");
 }
 
 void CryInvalidParameterHandler(
-                                const wchar_t * expression,
-                                const wchar_t * function,
-                                const wchar_t * file,
-                                unsigned int line,
-                                uintptr_t pReserved
-                                )
+	const wchar_t * expression,
+	const wchar_t * function,
+	const wchar_t * file,
+	unsigned int line,
+	uintptr_t pReserved)
 {
 	//size_t i;
 	//char sFunc[128];
@@ -147,7 +98,7 @@ extern "C" DLL_EXPORT void ModuleInitISystem( ISystem *pSystem,const char *modul
 	if (pSystem) // DONT REMOVE THIS. ITS FOR RESOURCE COMPILER!!!!
 		gEnv = pSystem->GetGlobalEnvironment();
 #endif
-#if !defined(PS3) && !defined(_LIB) && !(defined(DURANGO) && defined(_LIB))
+#if !defined(_LIB) && !(defined(DURANGO) && defined(_LIB))
 	if (pSystem)
 	{
 		ICryFactoryRegistryImpl* pCryFactoryImpl = static_cast<ICryFactoryRegistryImpl*>(pSystem->GetCryFactoryRegistry());
@@ -177,24 +128,9 @@ bool g_bProfilerEnabled = false;
 int g_iTraceAllocations = 0;
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" {
-	CRYSYSTEM_API unsigned int CryRandom(); // Exported by CrySystem
-}
+// global random number generator used by cry_random functions
+CRndGen CryRandom_Internal::g_random_generator;
 
-CRndGen g_random_generator;
-uint32 cry_rand32()
-{
-	return g_random_generator.GenerateUint32();
-}
-unsigned int cry_rand()
-{
-	//return CryRandom(); // Return in range from 0 to RAND_MAX
-	return g_random_generator.GenerateUint32() & CRY_RAND_MAX;
-}
-float cry_frand()
-{
-	return g_random_generator.GenerateFloat();
-}
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -244,7 +180,7 @@ void __stl_debug_message(const char * format_str, ...)
 #endif
 
 // If we use cry memory manager this should be also included in every module.
-#if defined(USING_CRY_MEMORY_MANAGER) && !defined(__SPU__)
+#if defined(USING_CRY_MEMORY_MANAGER)
 #include <CryMemoryManager_impl.h>
 #endif
 
@@ -252,7 +188,7 @@ void __stl_debug_message(const char * format_str, ...)
 #include "CryAssert_impl.h"
 #endif
 
-#if defined (_WIN32) || defined (XENON)
+#if defined (_WIN32)
 
 #include "CryAssert_impl.h"
 
@@ -321,31 +257,64 @@ int CryMessageBox( const char *lpText,const char *lpCaption,unsigned int uType)
 		return 0;
 	}
 #endif
-	return MessageBox( NULL,lpText,lpCaption,uType );
+	wstring wideText, wideCaption;
+	Unicode::Convert(wideText, lpText);
+	Unicode::Convert(wideCaption, lpCaption);
+	return MessageBoxW( NULL,wideText.c_str(),wideCaption.c_str(),uType );
 #else
 	return 0;
 #endif
 }
 
 //////////////////////////////////////////////////////////////////////////
-int CryCreateDirectory( const char *lpPathName,void *lpSecurityAttributes )
+bool CryCreateDirectory( const char *lpPathName )
 {
 	// Convert from UTF-8 to UNICODE
-#if defined(WIN32) || defined(WIN64)  || defined(DURANGO)
-	return CreateDirectoryW( CryStringUtils::UTF8ToWStr(lpPathName).c_str(),(LPSECURITY_ATTRIBUTES)lpSecurityAttributes );
-#else
-	return CreateDirectory( lpPathName,(LPSECURITY_ATTRIBUTES)lpSecurityAttributes );
-#endif
+	wstring widePath;
+	Unicode::Convert(widePath, lpPathName);
+
+	const DWORD dwAttr = ::GetFileAttributesW(widePath.c_str());
+	if (dwAttr != INVALID_FILE_ATTRIBUTES && (dwAttr & FILE_ATTRIBUTE_DIRECTORY) != 0)
+	{
+		return true;
+	}
+
+	return ::CreateDirectoryW(widePath.c_str(), 0) != 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
-int CryGetCurrentDirectory( unsigned int nBufferLength,char *lpBuffer )
+void CryGetCurrentDirectory( unsigned int nBufferLength,char *lpBuffer )
 {
-#if defined(WIN32) || defined(WIN64)  || defined(DURANGO)
-	return GetCurrentDirectoryA(nBufferLength, lpBuffer);
-#else
-	return 0;
-#endif
+	if (nBufferLength <= 0 || !lpBuffer)
+	{
+		return;
+	}
+
+	*lpBuffer = 0;
+
+	// Get directory in UTF-16
+	std::vector<wchar_t> buffer;
+	{
+		const size_t requiredLength = ::GetCurrentDirectoryW(0, 0);
+
+		if (requiredLength <= 0)
+		{
+			return;
+		}
+
+		buffer.resize(requiredLength, 0);
+
+		if (::GetCurrentDirectoryW(requiredLength, &buffer[0]) != requiredLength - 1)
+		{
+			return;
+		}
+	}
+	
+	// Convert to UTF-8
+	if (Unicode::Convert<Unicode::eEncoding_UTF16, Unicode::eEncoding_UTF8>(lpBuffer, nBufferLength, &buffer[0]) > nBufferLength)
+	{
+		*lpBuffer = 0;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -354,13 +323,13 @@ int CryGetWritableDirectory( unsigned int nBufferLength, char* lpBuffer )
 	return 0;
 }
 
-#if defined(WIN32) || defined(WIN64)  || defined(DURANGO)
 // Initializes root folder of the game, optionally returns exe name.
 void InitRootDir(char szExeFileName[] = 0, uint nSize = 0)
 {
 	WCHAR szExePathName[_MAX_PATH];
 	size_t nLen = GetModuleFileNameW(GetModuleHandle(NULL), szExePathName, _MAX_PATH);
-    
+	assert(nLen < _MAX_PATH && "The path to the current executable exceeds the expected length");
+
 	// Find path above exe name and deepest folder.
 	int nCount = 0;
 	for (size_t n = nLen-1; n > 0; n--)
@@ -382,12 +351,10 @@ void InitRootDir(char szExeFileName[] = 0, uint nSize = 0)
 		// Switch to upper folder.
 		SetCurrentDirectoryW(szExePathName);
         
-		// Return exe name and relative folder, assuming it's ASCII.
-		if (szExeFileName)
-			wcstombs(szExeFileName, szExePathName+nLen, nSize);
+		// Return exe name and relative folder (UTF-8)
+		Unicode::Convert(szExeFileName, nSize, szExePathName + nLen);
 	}
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 short CryGetAsyncKeyState( int vKey )
@@ -522,90 +489,20 @@ threadID CryGetCurrentThreadId()
 	return GetCurrentThreadId();
 }
 
-#else // WIN32
-
-// These are implemented in WinBase.cpp
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif // _WIN32
 
 #endif //_LIB
 
 
-#if !defined(_LIB) || defined(PERFORMANCE_BUILD)
-#ifdef XENON
-
-static int startStart = GetTickCount();
-
-HMODULE XenonLoadLibrary( const char *libName )
-{
-	char s[256];
-	MEMORYSTATUS MemoryStatus;
-	GlobalMemoryStatus(&MemoryStatus);
-	
-	//sprintf( s,"Memory: %.2f MB\n",(MemoryStatus.dwTotalPhys - MemoryStatus.dwAvailPhys)/(1024.0f*1024.0f) );
-	//OutputDebugString( s );
-	
-	int m0 = MemoryStatus.dwAvailPhys;
-	static int total = 0;
-    
-	int start = GetTickCount();
-	HMODULE h = ::LoadLibrary(libName);
-	int end = GetTickCount();
-	GlobalMemoryStatus(&MemoryStatus);
-	int m1 = MemoryStatus.dwAvailPhys;
-	if (m0-m1 > 0)
-	{
-		total += (end-start);
-		sprintf_s( s,"Library %s takes %d Kb. Loading time = %is. Total = %is. Overall=%is\n",libName,(m0-m1)/1024, (end-start)/1000, total/1000, (end-startStart)/1000 );
-		OutputDebugString( s );
-	}
-    
-#if CAPTURE_REPLAY_LOG
-	if (h)
-		CryGetIMemReplay()->LoadedModule(h);
-#endif
-    
-	//sprintf( s,"Memory: %.2f MB\n",(MemoryStatus.dwTotalPhys - MemoryStatus.dwAvailPhys)/(1024.0f*1024.0f) );
-	//OutputDebugString( s );
-    
-	return h;
-}
-
-#elif defined(DURANGO)
-
+#if defined(DURANGO) && (!defined(_LIB) || defined(PERFORMANCE_BUILD))
 HMODULE DurangoLoadLibrary( const char *libName )
 {
 	HMODULE h = ::LoadLibraryExA(libName, 0, 0);
 	return h;
 }
-
-#endif
 #endif
 
-#if defined(WIN32) || defined(WIN64)
-#if !defined(_LIB) || defined(_LAUNCHER)
+#if (defined(WIN32) || defined(WIN64)) && (!defined(_LIB) || defined(_LAUNCHER))
 int64 CryGetTicks()
 {
 	LARGE_INTEGER li;
@@ -613,7 +510,19 @@ int64 CryGetTicks()
 	return li.QuadPart;
 }
 #endif
+
+#if defined(DURANGO)
+// Dec2012 XDK: MoveFileEx still in header but there's no MoveFileExA in kernelx.lib
+BOOL MoveFileEx(LPCSTR lpExistingFileName, LPCSTR lpNewFileName, DWORD dwFlags)
+{
+	const uint32 STR_LEN = 128;
+	CryStackStringT<wchar_t, STR_LEN> wsExistingFileName, wsNewFileName;
+	Unicode::Convert(wsExistingFileName, lpExistingFileName);
+	Unicode::Convert(wsNewFileName, lpNewFileName);
+	return MoveFileExW(wsExistingFileName.c_str(), wsNewFileName.c_str(), dwFlags);
+}
 #endif
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Threads implementation. For static linking it must be declared inline otherwise creating multiple symbols
@@ -634,20 +543,11 @@ inline void CryDebugStr( const char *format,... )
      va_start(ArgList, format);
      _vsnprintf_c(szBuffer,sizeof(szBuffer)-1, format, ArgList);
      va_end(ArgList);
-     strcat(szBuffer,"\n");
+     cry_strcat(szBuffer,"\n");
      OutputDebugString(szBuffer);
      #endif
      */
 }
-
-#ifdef PS3
-#if CAPTURE_REPLAY_LOG
-#define TRACKED_SYSMODULE_LOAD(mod) TrackedSysmoduleLoad(mod, #mod)
-int TrackedSysmoduleLoad(int module, const char* moduleName);
-#else
-#define TRACKED_SYSMODULE_LOAD cellSysmoduleLoadModule
-#endif
-#endif
 
 // load implementation of platform profile marker
 #if !defined(_LIB)
@@ -722,4 +622,3 @@ _MS_ALIGN(64) uint32  BoxSides[0x40*8] = {
 	0,0,0,0, 0,0,0,0, //3f
 };
 #endif // !_LIB || _LAUNCHER
-#endif // __platform_impl_h__

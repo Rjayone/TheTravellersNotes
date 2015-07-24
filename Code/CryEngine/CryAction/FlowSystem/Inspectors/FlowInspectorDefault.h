@@ -28,13 +28,13 @@ public:
 	// IFlowGraphInspector interface 
 	virtual void AddRef();
 	virtual void Release();
-	VIRTUAL void PreUpdate(IFlowGraph * pGraph);   // called once per frame before IFlowSystem::Update
-	VIRTUAL void PostUpdate(IFlowGraph * pGraph);  // called once per frame after  IFlowSystem::Update
-	VIRTUAL void NotifyFlow(IFlowGraph * pGraph, const SFlowAddress from, const SFlowAddress to);
-	VIRTUAL void NotifyProcessEvent(IFlowNode::EFlowEvent event, IFlowNode::SActivationInfo * pActInfo, IFlowNode * pImpl);
-	VIRTUAL void AddFilter(IFlowGraphInspector::IFilterPtr pFilter);
-	VIRTUAL void RemoveFilter(IFlowGraphInspector::IFilterPtr pFilter);
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+	virtual void PreUpdate(IFlowGraph * pGraph);   // called once per frame before IFlowSystem::Update
+	virtual void PostUpdate(IFlowGraph * pGraph);  // called once per frame after  IFlowSystem::Update
+	virtual void NotifyFlow(IFlowGraph * pGraph, const SFlowAddress from, const SFlowAddress to);
+	virtual void NotifyProcessEvent(IFlowNode::EFlowEvent event, IFlowNode::SActivationInfo * pActInfo, IFlowNode * pImpl);
+	virtual void AddFilter(IFlowGraphInspector::IFilterPtr pFilter);
+	virtual void RemoveFilter(IFlowGraphInspector::IFilterPtr pFilter);
+	virtual void GetMemoryUsage(ICrySizer * s) const;
 	// ~IFlowGraphInspector interface 
 
 	enum ERecType

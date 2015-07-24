@@ -12,7 +12,6 @@
 	- 2 Mar 2009				: Evgeny Adamenkov: Removed parameter of type IRenderer in DebugDraw
 
 *********************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(AIProxy.h)
 
 #ifndef __AIProxy_H__
 #define __AIProxy_H__
@@ -36,7 +35,7 @@ struct IAIProxyListener
 };
 
 
-UNIQUE_IFACE struct IFireController
+struct IFireController
 {
 	virtual	~IFireController(){}
 	virtual bool RequestFire(bool bFire) = 0;
@@ -73,81 +72,83 @@ public:
 
 
 	//------------------  IAIActorProxy
-	VIRTUAL int  Update(SOBJECTSTATE &state, bool bFullUpdate);
-	VIRTUAL bool CheckUpdateStatus();
-	VIRTUAL void EnableUpdate(bool enable);
-	VIRTUAL bool IsEnabled() const;
-	VIRTUAL int  GetAlertnessState() const;
-	VIRTUAL void SetAlertnessState(int alertness);
-	VIRTUAL bool IsCurrentBehaviorExclusive() const;
-	VIRTUAL bool SetCharacter( const char* character, const char* behaviour=NULL );
-	VIRTUAL const char* GetCharacter();
-	VIRTUAL void QueryBodyInfo( SAIBodyInfo& bodyInfo ) ;
-	VIRTUAL bool QueryBodyInfo( const SAIBodyInfoQuery& query, SAIBodyInfo& bodyInfo );
-	VIRTUAL void QueryWeaponInfo( SAIWeaponInfo& weaponInfo );
-	VIRTUAL EntityId GetLinkedDriverEntityId();
-	VIRTUAL bool IsDriver();
-	VIRTUAL EntityId GetLinkedVehicleEntityId();
-	VIRTUAL bool GetLinkedVehicleVisionHelper(Vec3 &outHelperPos) const;
-	VIRTUAL void Reset(EObjectResetType type);
+	virtual int  Update(SOBJECTSTATE &state, bool bFullUpdate);
+	virtual bool CheckUpdateStatus();
+	virtual void EnableUpdate(bool enable);
+	virtual bool IsEnabled() const;
+	virtual int  GetAlertnessState() const;
+	virtual void SetAlertnessState(int alertness);
+	virtual bool IsCurrentBehaviorExclusive() const;
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
+	virtual bool SetCharacter( const char* character, const char* behaviour=NULL );
+	virtual const char* GetCharacter();
+#endif
+	virtual void QueryBodyInfo( SAIBodyInfo& bodyInfo ) ;
+	virtual bool QueryBodyInfo( const SAIBodyInfoQuery& query, SAIBodyInfo& bodyInfo );
+	virtual void QueryWeaponInfo( SAIWeaponInfo& weaponInfo );
+	virtual EntityId GetLinkedDriverEntityId();
+	virtual bool IsDriver();
+	virtual EntityId GetLinkedVehicleEntityId();
+	virtual bool GetLinkedVehicleVisionHelper(Vec3 &outHelperPos) const;
+	virtual void Reset(EObjectResetType type);
 
-	VIRTUAL IAICommunicationHandler* GetCommunicationHandler();
+	virtual IAICommunicationHandler* GetCommunicationHandler();
 
-	VIRTUAL bool BecomeAggressiveToAgent(EntityId agentID);
+	virtual bool BecomeAggressiveToAgent(EntityId agentID);
 
 	// This will internally keep a counter to allow stacking of such commands
-	VIRTUAL void SetForcedExecute(bool forced);
-	VIRTUAL bool IsForcedExecute() const;
+	virtual void SetForcedExecute(bool forced);
+	virtual bool IsForcedExecute() const;
 
-	VIRTUAL void Serialize( TSerialize ser );
-	VIRTUAL IPhysicalEntity* GetPhysics(bool wantCharacterPhysics=false);
-	VIRTUAL void DebugDraw(int iParam = 0);
-	VIRTUAL void GetWorldBoundingRect(Vec3& FL, Vec3& FR, Vec3& BL, Vec3& BR, float extra=0) const;
-	VIRTUAL bool SetAGInput(EAIAGInput input, const char* value, const bool isUrgent=false);
-	VIRTUAL bool ResetAGInput(EAIAGInput input);
-	VIRTUAL bool IsSignalAnimationPlayed( const char* value );
-	VIRTUAL bool IsActionAnimationStarted( const char* value );
-	VIRTUAL bool IsAnimationBlockingMovement() const;
-	VIRTUAL EActorTargetPhase GetActorTargetPhase() const;
-	VIRTUAL void PlayAnimationAction( const struct IAIAction* pAction, int goalPipeId );
-	VIRTUAL void AnimationActionDone( bool succeeded );
-	VIRTUAL bool IsPlayingSmartObjectAction() const;
-	VIRTUAL int  GetAndResetShotBulletCount() { int ret = m_shotBulletCount; m_shotBulletCount = 0; return ret; }  // Only used in firecommand
-	VIRTUAL void EnableWeaponListener(const EntityId weaponId, bool needsSignal);
-	VIRTUAL void UpdateMind(SOBJECTSTATE &state);
-	VIRTUAL bool IsDead() const;
-	VIRTUAL float  GetActorHealth() const;
-	VIRTUAL float  GetActorMaxHealth() const;
-	VIRTUAL int  GetActorArmor() const;
-	VIRTUAL int  GetActorMaxArmor() const;
-	VIRTUAL bool GetActorIsFallen() const;
-	VIRTUAL IWeapon *QueryCurrentWeapon(EntityId& currentWeaponId);
-	VIRTUAL IWeapon* GetCurrentWeapon(EntityId& currentWeaponId) const;
-	VIRTUAL const AIWeaponDescriptor& GetCurrentWeaponDescriptor() const;
-	VIRTUAL IWeapon* GetSecWeapon( const ERequestedGrenadeType prefGrenadeType=eRGT_ANY, ERequestedGrenadeType* pReturnedGrenadeType=NULL, EntityId* const pSecondaryWeaponId = NULL ) const;
-	VIRTUAL bool GetSecWeaponDescriptor(AIWeaponDescriptor &outDescriptor, ERequestedGrenadeType prefGrenadeType=eRGT_ANY) const;
-	VIRTUAL void SetUseSecondaryVehicleWeapon(bool bUseSecondary);
-	VIRTUAL bool IsUsingSecondaryVehicleWeapon() const { return m_UseSecondaryVehicleWeapon; }
-	VIRTUAL IEntity* GetGrabbedEntity() const;
-	VIRTUAL bool IsUpdateAlways() const {return m_UpdateAlways;}
-	VIRTUAL bool IfShouldUpdate() {return m_pGameObject->ShouldUpdate();}
-	VIRTUAL bool IsAutoDeactivated() const { return m_autoDeactivated; };
-	VIRTUAL void NotifyAutoDeactivated() { m_autoDeactivated = true; };
+	virtual void Serialize( TSerialize ser );
+	virtual IPhysicalEntity* GetPhysics(bool wantCharacterPhysics=false);
+	virtual void DebugDraw(int iParam = 0);
+	virtual void GetWorldBoundingRect(Vec3& FL, Vec3& FR, Vec3& BL, Vec3& BR, float extra=0) const;
+	virtual bool SetAGInput(EAIAGInput input, const char* value, const bool isUrgent=false);
+	virtual bool ResetAGInput(EAIAGInput input);
+	virtual bool IsSignalAnimationPlayed( const char* value );
+	virtual bool IsActionAnimationStarted( const char* value );
+	virtual bool IsAnimationBlockingMovement() const;
+	virtual EActorTargetPhase GetActorTargetPhase() const;
+	virtual void PlayAnimationAction( const struct IAIAction* pAction, int goalPipeId );
+	virtual void AnimationActionDone( bool succeeded );
+	virtual bool IsPlayingSmartObjectAction() const;
+	virtual int  GetAndResetShotBulletCount() { int ret = m_shotBulletCount; m_shotBulletCount = 0; return ret; }  // Only used in firecommand
+	virtual void EnableWeaponListener(const EntityId weaponId, bool needsSignal);
+	virtual void UpdateMind(SOBJECTSTATE &state);
+	virtual bool IsDead() const;
+	virtual float  GetActorHealth() const;
+	virtual float  GetActorMaxHealth() const;
+	virtual int  GetActorArmor() const;
+	virtual int  GetActorMaxArmor() const;
+	virtual bool GetActorIsFallen() const;
+	virtual IWeapon *QueryCurrentWeapon(EntityId& currentWeaponId);
+	virtual IWeapon* GetCurrentWeapon(EntityId& currentWeaponId) const;
+	virtual const AIWeaponDescriptor& GetCurrentWeaponDescriptor() const;
+	virtual IWeapon* GetSecWeapon( const ERequestedGrenadeType prefGrenadeType=eRGT_ANY, ERequestedGrenadeType* pReturnedGrenadeType=NULL, EntityId* const pSecondaryWeaponId = NULL ) const;
+	virtual bool GetSecWeaponDescriptor(AIWeaponDescriptor &outDescriptor, ERequestedGrenadeType prefGrenadeType=eRGT_ANY) const;
+	virtual void SetUseSecondaryVehicleWeapon(bool bUseSecondary);
+	virtual bool IsUsingSecondaryVehicleWeapon() const { return m_UseSecondaryVehicleWeapon; }
+	virtual IEntity* GetGrabbedEntity() const;
+	virtual bool IsUpdateAlways() const {return m_UpdateAlways;}
+	virtual bool IfShouldUpdate() {return m_pGameObject->ShouldUpdate();}
+	virtual bool IsAutoDeactivated() const { return m_autoDeactivated; };
+	virtual void NotifyAutoDeactivated() { m_autoDeactivated = true; };
 
-	VIRTUAL	const char* GetVoiceLibraryName(const bool useForcedDefaultName = false) const;
-	VIRTUAL	const char* GetCommunicationConfigName() const;
-	VIRTUAL const float GetFmodCharacterTypeParam() const;
-	VIRTUAL const char* GetBehaviorSelectionTreeName() const;
-	VIRTUAL const char* GetNavigationTypeName() const;
+	virtual const char* GetVoiceLibraryName(const bool useForcedDefaultName = false) const;
+	virtual const char* GetCommunicationConfigName() const;
+	virtual const float GetFmodCharacterTypeParam() const;
+	virtual const char* GetBehaviorSelectionTreeName() const;
+	virtual const char* GetNavigationTypeName() const;
 
-	VIRTUAL bool PredictProjectileHit(float vel, Vec3& posOut, Vec3& dirOut, float& speedOut, Vec3* pTrajectoryPositions = 0, unsigned int* trajectorySizeInOut = 0, Vec3* pTrajectoryVelocities = 0);
-	VIRTUAL bool PredictProjectileHit(const Vec3& throwDir, float vel, Vec3& posOut, float& speedOut, ERequestedGrenadeType prefGrenadeType = eRGT_ANY, 
+	virtual bool PredictProjectileHit(float vel, Vec3& posOut, Vec3& dirOut, float& speedOut, Vec3* pTrajectoryPositions = 0, unsigned int* trajectorySizeInOut = 0, Vec3* pTrajectoryVelocities = 0);
+	virtual bool PredictProjectileHit(const Vec3& throwDir, float vel, Vec3& posOut, float& speedOut, ERequestedGrenadeType prefGrenadeType = eRGT_ANY, 
 		Vec3* pTrajectoryPositions = 0, unsigned int* trajectorySizeInOut = 0, Vec3* pTrajectoryVelocities = 0);
-	VIRTUAL void GetReadabilityBlockingParams(const char* text, float& time, int& id);
-	VIRTUAL const char* GetCurrentBehaviorName() const;
-	VIRTUAL const char* GetPreviousBehaviorName() const;
-	VIRTUAL void UpdateMeAlways(bool doUpdateMeAlways);
-	VIRTUAL void ResendTargetSignalsNextFrame();
+	virtual void GetReadabilityBlockingParams(const char* text, float& time, int& id);
+	virtual const char* GetCurrentBehaviorName() const;
+	virtual const char* GetPreviousBehaviorName() const;
+	virtual void UpdateMeAlways(bool doUpdateMeAlways);
+	virtual void ResendTargetSignalsNextFrame();
 	//------------------  ~IAIActorProxy
 
 	void SetMinFireTime(float fTime) {m_fMinFireTime = fTime;}
@@ -251,7 +252,7 @@ protected:
 	typedef std::vector<IAIProxyListener*> TListeners;
 	TListeners m_listeners;
 
-	std::auto_ptr<CommunicationHandler> m_commHandler;
+	std::unique_ptr<CommunicationHandler> m_commHandler;
 
 	AimQueryMode m_aimQueryMode;
 };

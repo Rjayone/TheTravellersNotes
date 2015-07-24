@@ -33,28 +33,28 @@ public:
 	void Reset();
 
 	// Clear all equipment packs
-	VIRTUAL void DeleteAllEquipmentPacks();
+	virtual void DeleteAllEquipmentPacks();
 
 	// Loads equipment packs from rootNode 
-	VIRTUAL void LoadEquipmentPacks(const XmlNodeRef& rootNode);
+	virtual void LoadEquipmentPacks(const XmlNodeRef& rootNode);
 
 	// Load all equipment packs from a certain path
-	VIRTUAL void LoadEquipmentPacksFromPath(const char* path);
+	virtual void LoadEquipmentPacksFromPath(const char* path);
 
 	// Load an equipment pack from an XML node
-	VIRTUAL bool LoadEquipmentPack(const XmlNodeRef& rootNode, bool bOverrideExisting=true);
+	virtual bool LoadEquipmentPack(const XmlNodeRef& rootNode, bool bOverrideExisting=true);
 
 	// Give an equipment pack (resp. items/ammo) to an actor
-	VIRTUAL bool GiveEquipmentPack(IActor* pActor, const char* packName, bool bAdd, bool selectPrimary=false);
+	virtual bool GiveEquipmentPack(IActor* pActor, const char* packName, bool bAdd, bool selectPrimary=false);
 
 	// Pre-cache all resources needed for the items included in the given pack
-	VIRTUAL void PreCacheEquipmentPackResources(const char* packName, IEquipmentPackPreCacheCallback& preCacheCallback);
+	virtual void PreCacheEquipmentPackResources(const char* packName, IEquipmentPackPreCacheCallback& preCacheCallback);
 
 	// return iterator with all available equipment packs
-	VIRTUAL IEquipmentManager::IEquipmentPackIteratorPtr CreateEquipmentPackIterator();
+	virtual IEquipmentManager::IEquipmentPackIteratorPtr CreateEquipmentPackIterator();
 
-	VIRTUAL void RegisterListener(IListener *pListener);
-	VIRTUAL void UnregisterListener(IListener *pListener);
+	virtual void RegisterListener(IListener *pListener);
+	virtual void UnregisterListener(IListener *pListener);
 
 	// listener callbacks
 	void OnBeginGiveEquipmentPack();
@@ -90,10 +90,9 @@ public:
 					char stringBuffer[128];
 					while (nxt)
 					{
-						strncpy(stringBuffer, cur, nxt-cur);
-						stringBuffer[nxt-cur] = '\0';
+						cry_strcpy(stringBuffer, cur, (size_t)(nxt - cur));
 						
-						if(strlen(stringBuffer) > 0)
+						if (stringBuffer[0] != '\0')
 						{
 							if(IEntityClass* pClass = pClassRegistry->FindClass(stringBuffer))
 							{

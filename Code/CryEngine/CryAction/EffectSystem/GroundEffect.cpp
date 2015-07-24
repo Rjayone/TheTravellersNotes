@@ -336,4 +336,4 @@ void CGroundEffect::Reset()
 	m_active = false;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IGroundEffect)
+

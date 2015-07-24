@@ -133,5 +133,4 @@ IUIEventSystem* CUIEventSystemIterator::Next( string &sName )
 }
 
 //------------------------------------------------------------------------------------
-#include UNIQUE_VIRTUAL_WRAPPER(IUIEventSystem)
-#include UNIQUE_VIRTUAL_WRAPPER(IUIEventSystemIterator)
+

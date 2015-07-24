@@ -514,13 +514,13 @@ void CBattlechatter::RegisterCVars()
 
 	if (gEnv->pConsole)
 	{
-		REGISTER_COMMAND("bc_play", CmdPlay, VF_CHEAT, CVARHELP("play battlechatter and nearby player"));
+		REGISTER_COMMAND("bc_play", CmdPlay, VF_CHEAT, "play battlechatter and nearby player");
 		gEnv->pConsole->RegisterAutoComplete("bc_play", & s_battlechatterAutoComplete);
-		REGISTER_COMMAND("bc_clearRecentlyPlayed", CmdClearRecentlyPlayed, VF_CHEAT, CVARHELP("clear recently played list. Makes it easier when debugging battlechatter"));
-		REGISTER_COMMAND("bc_dump", CBattlechatter::CmdDump, VF_CHEAT, CVARHELP("dump all battlechatter data"));
-		REGISTER_COMMAND("bc_dumpPlayed", CBattlechatter::CmdDumpPlayed, VF_CHEAT, CVARHELP("dump all played battlechatter data"));
-		REGISTER_COMMAND("bc_dumpUnPlayed", CBattlechatter::CmdDumpUnPlayed, VF_CHEAT, CVARHELP("dump all unplayed battlechatter data"));
-		REGISTER_COMMAND("bc_clearPlayCount", CBattlechatter::CmdClearPlayCount, VF_CHEAT, CVARHELP("clear the playcount of all battlechatter data"));	
+		REGISTER_COMMAND("bc_clearRecentlyPlayed", CmdClearRecentlyPlayed, VF_CHEAT, "clear recently played list. Makes it easier when debugging battlechatter");
+		REGISTER_COMMAND("bc_dump", CBattlechatter::CmdDump, VF_CHEAT, "dump all battlechatter data");
+		REGISTER_COMMAND("bc_dumpPlayed", CBattlechatter::CmdDumpPlayed, VF_CHEAT, "dump all played battlechatter data");
+		REGISTER_COMMAND("bc_dumpUnPlayed", CBattlechatter::CmdDumpUnPlayed, VF_CHEAT, "dump all unplayed battlechatter data");
+		REGISTER_COMMAND("bc_clearPlayCount", CBattlechatter::CmdClearPlayCount, VF_CHEAT, "clear the playcount of all battlechatter data");	
 	}
 #endif
 }
@@ -950,7 +950,7 @@ bool CBattlechatter::ChanceToPlay(EBattlechatter chatter)
 	}
 #endif
 
-	return cry_frand() < m_data[chatter].m_chance;
+	return cry_random(0.0f, 1.0f) < m_data[chatter].m_chance;
 }
 
 //-------------------------------------------------------
@@ -1448,22 +1448,22 @@ const uint32 CBattlechatter::GetVoiceIndex(bool friendly)
 	{
 		if(friendly)
 		{
-			voiceIndex = bc_FriendlyHunterActorVoiceIndex + (cry_rand() % bc_FriendlyHunterActorVoiceRange);
+			voiceIndex = bc_FriendlyHunterActorVoiceIndex + cry_random(0, bc_FriendlyHunterActorVoiceRange - 1);
 		}
 		else
 		{
-			voiceIndex = bc_EnemyHunterActorVoiceIndex + (cry_rand() % bc_EnemyHunterActorVoiceRange);
+			voiceIndex = bc_EnemyHunterActorVoiceIndex + cry_random(0, bc_EnemyHunterActorVoiceRange - 1);
 		}
 	}
 	else
 	{
 		if(friendly)
 		{
-			voiceIndex = bc_FriendlyActorVoiceIndex + (cry_rand() % bc_FriendlyActorVoiceRange);
+			voiceIndex = bc_FriendlyActorVoiceIndex + cry_random(0, bc_FriendlyActorVoiceRange - 1);
 		}
 		else
 		{
-			voiceIndex = bc_EnemyActorVoiceIndex + (cry_rand() % bc_EnemyActorVoiceRange);
+			voiceIndex = bc_EnemyActorVoiceIndex + cry_random(0, bc_EnemyActorVoiceRange - 1);
 		}
 	}
 
@@ -1689,7 +1689,7 @@ void CBattlechatter::Debug()
 
 			if(actorData.spectatorMode == CActor::eASM_None && actorData.health > 0.0f)
 			{
-				if(cry_frand() < bc_chatterFreq)
+				if(cry_random(0.0f, 1.0f) < bc_chatterFreq)
 				{
 					
 					EntityId actorId = actorData.entityId;
@@ -1697,7 +1697,7 @@ void CBattlechatter::Debug()
 					SVoiceInfo* pInfo = GetVoiceInfo(actorId);
 					if(pInfo && pActor != NULL)
 					{
-						EBattlechatter chatter = (EBattlechatter) (cry_rand() % BC_Last);
+						EBattlechatter chatter = (EBattlechatter) cry_random(0, BC_Last - 1);
 						CryLogAlways("bc_chatter - Entity %s saying %s", pActor->GetEntity()->GetName(), s_battlechatterName[chatter]);
 
 						Event(chatter, actorId);

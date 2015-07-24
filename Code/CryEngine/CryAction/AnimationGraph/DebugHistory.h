@@ -22,19 +22,19 @@ public:
 	CDebugHistory(const char* name, int size);
 	~CDebugHistory();
 	
-	VIRTUAL void SetName(const char* newName);
+	virtual void SetName(const char* newName);
 
-	VIRTUAL void SetVisibility(bool show);
+	virtual void SetVisibility(bool show);
 
-	VIRTUAL void SetupLayoutAbs(float leftx, float topy, float width, float height, float margin);
-	VIRTUAL void SetupLayoutRel(float leftx, float topy, float width, float height, float margin);
-	VIRTUAL void SetupScopeExtent(float outermin, float outermax, float innermin, float innermax);
-	VIRTUAL void SetupScopeExtent(float outermin, float outermax);
-	VIRTUAL void SetupColors(ColorF curvenormal, ColorF curveclamped, ColorF box, ColorF gridline, ColorF gridnumber, ColorF name);
-	VIRTUAL void SetGridlineCount(int nGridlinesX, int nGridlinesY);
+	virtual void SetupLayoutAbs(float leftx, float topy, float width, float height, float margin);
+	virtual void SetupLayoutRel(float leftx, float topy, float width, float height, float margin);
+	virtual void SetupScopeExtent(float outermin, float outermax, float innermin, float innermax);
+	virtual void SetupScopeExtent(float outermin, float outermax);
+	virtual void SetupColors(ColorF curvenormal, ColorF curveclamped, ColorF box, ColorF gridline, ColorF gridnumber, ColorF name);
+	virtual void SetGridlineCount(int nGridlinesX, int nGridlinesY);
 
-	VIRTUAL void AddValue(float value);
-	VIRTUAL void ClearHistory();
+	virtual void AddValue(float value);
+	virtual void ClearHistory();
 
   void GetMemoryStatistics(ICrySizer * s) { s->Add(*this); }
 	void GetMemoryUsage(ICrySizer *pSizer) const { /*nothing*/ }
@@ -118,11 +118,11 @@ public:
 		m_allhistory->erase(this);
 	}
 
-	VIRTUAL IDebugHistory* CreateHistory(const char* id, const char* name=0);
-	VIRTUAL void RemoveHistory(const char* id);
+	virtual IDebugHistory* CreateHistory(const char* id, const char* name=0);
+	virtual void RemoveHistory(const char* id);
 
-	VIRTUAL IDebugHistory* GetHistory(const char* id);
-	VIRTUAL void Clear()
+	virtual IDebugHistory* GetHistory(const char* id);
+	virtual void Clear()
 	{
 		MapIterator it = m_histories.begin();
 		while (it != m_histories.end())
@@ -136,7 +136,7 @@ public:
 		m_histories.clear();
 	}
   virtual void Release();
-  VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+  virtual void GetMemoryUsage(ICrySizer * s) const;
 
 	static void RenderAll();
 	static void SetupRenderer();

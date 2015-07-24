@@ -404,22 +404,22 @@ struct ICaptureKey : public IKey
 		FormatTGA(); 
 		ICVar *pCaptureFolderCVar = gEnv->pConsole->GetCVar("capture_folder");
 		if(pCaptureFolderCVar != NULL  && pCaptureFolderCVar->GetString())
-			strcpy_s(folder, pCaptureFolderCVar->GetString());
+			cry_strcpy(folder, pCaptureFolderCVar->GetString());
 		ICVar *pCaptureFilePrefixCVar = gEnv->pConsole->GetCVar("capture_file_prefix");
 		if(pCaptureFilePrefixCVar != NULL  && pCaptureFilePrefixCVar->GetString())
-			strcpy_s(prefix, pCaptureFilePrefixCVar->GetString());
+			cry_strcpy(prefix, pCaptureFilePrefixCVar->GetString());
 		ICVar *pCaptureFileFormatCVar = gEnv->pConsole->GetCVar("capture_file_format");
 		if(pCaptureFileFormatCVar != NULL )
 			format = pCaptureFileFormatCVar->GetString();
 	}
 
 	ICaptureKey(const ICaptureKey& other) : IKey(other),
-																					duration(other.duration), timeStep(other.timeStep),
-																					once(other.once), format(other.format),
-																					bufferToCapture(other.bufferToCapture)
+		duration(other.duration), timeStep(other.timeStep),
+		once(other.once), format(other.format),
+		bufferToCapture(other.bufferToCapture)
 	{
-		strcpy_s(folder, other.folder);
-		strcpy_s(prefix, other.prefix);
+		cry_strcpy(folder, other.folder);
+		cry_strcpy(prefix, other.prefix);
 	}
 
 private:
@@ -458,7 +458,7 @@ struct ICommentKey : public IKey
 	{ 
 		m_strComment = other.m_strComment;
 		m_duration = other.m_duration;
-		strcpy_s(m_strFont, other.m_strFont);
+		cry_strcpy(m_strFont, other.m_strFont);
 		m_color = other.m_color;
 		m_size = other.m_size;
 		m_align = other.m_align;
@@ -496,7 +496,7 @@ struct IScreenFaderKey : public IKey
 		:IKey(other),m_fadeTime(other.m_fadeTime),m_bUseCurColor(other.m_bUseCurColor),m_fadeType(other.m_fadeType),m_fadeChangeType(other.m_fadeChangeType)
 	{
 		m_fadeColor = other.m_fadeColor;
-		strcpy_s(m_strTexture, other.m_strTexture);
+		cry_strcpy(m_strTexture, other.m_strTexture);
 	}
 
 	//-----------------------------------------------------------------------------

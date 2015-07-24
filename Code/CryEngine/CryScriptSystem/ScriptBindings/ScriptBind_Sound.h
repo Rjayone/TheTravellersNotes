@@ -41,7 +41,7 @@ public:
 	int GetAudioSwitchStateID(IFunctionHandler* pH, ScriptHandle const hSwitchID, char const* const sSwitchStateName);
 
 	//! <code>Sound.GetAudioRtpcID(char const* const sRtpcName)</code>
-	//! <description>Get the RTPC TAudioControlID (wrapped into a ScriptHandle)
+	//! <description>Get the RTPC TAudioControlID (wrapped into a ScriptHandle).</description>
 	//!		<param name="sRtpcName">unique name of an audio RTPC</param>
 	//! <returns>ScriptHandle with the TAudioControlID value, or nil if the sRtpcName is not found.</returns>
 	int GetAudioRtpcID(IFunctionHandler* pH, char const* const sRtpcName);

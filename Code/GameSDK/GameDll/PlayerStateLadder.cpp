@@ -245,7 +245,7 @@ CPlayerStateLadder::CPlayerStateLadder()
 
 	if (s_ladderFractionCRC == 0)
 	{
-		s_ladderFractionCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("LadderFraction");
+		s_ladderFractionCRC = CCrc32::ComputeLowercase("LadderFraction");
 	}
 }
 

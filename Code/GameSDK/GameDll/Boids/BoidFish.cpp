@@ -234,7 +234,7 @@ void CBoidFish::Update( float dt,SBoidContext &bc )
 	}
 
 	/*
-	if (rand()%80 == 1)
+	if (cry_random(0, 79) == 1)
 	{
 		if (m_pos.GetSquaredDistance(bc.playerPos) < 10.0f*10.0f)
 		{
@@ -266,7 +266,7 @@ void CBoidFish::Update( float dt,SBoidContext &bc )
 	if (m_pos.z > bc.waterLevel-0.2f)
 	{
 		m_pos.z = bc.waterLevel-0.2f;
-		if (rand()%40 == 1)
+		if (cry_random(0, 39) == 1)
 		{
 			if (m_pos.GetSquaredDistance(bc.playerPos) < 10.0f*10.0f)
 			{

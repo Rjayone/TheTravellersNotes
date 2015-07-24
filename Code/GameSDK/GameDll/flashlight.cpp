@@ -6,30 +6,30 @@
 #include "Player.h"
 #include "EntityUtility/EntityScriptCalls.h"
 
-
-
 namespace
 {
-
-
 	CItem* GetLocalPlayerItem()
 	{
 		CPlayer* pPlayer = static_cast<CPlayer*>(gEnv->pGame->GetIGameFramework()->GetClientActor());
+
 		if (!pPlayer)
+		{
 			return 0;
+		}
 
 		CItem* pCurrentItem = static_cast<CItem*>(pPlayer->GetCurrentItem());
 
 		return pCurrentItem;
 	}
 
-
-
 	CFlashLight* GetPlayerFlashLight()
 	{
 		CItem* pItem = GetLocalPlayerItem();
+
 		if (!pItem)
+		{
 			return 0;
+		}
 
 		static IEntityClass* pFlashLightClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Flashlight");
 
@@ -48,18 +48,10 @@ namespace
 
 		return 0;
 	}
-
-
-
 }
-
-
-
 
 bool CFlashLight::m_flashLightEnabled = true;
 bool CFlashLight::m_lightEnabled = true;
-
-
 
 CFlashLight::CFlashLight()
 	:	m_fogVolume(0)
@@ -67,23 +59,22 @@ CFlashLight::CFlashLight()
 {
 }
 
-
-
 CFlashLight::~CFlashLight()
 {
-	if( m_fogVolume )
+	if (m_fogVolume)
 	{
 		gEnv->pEntitySystem->RemoveEntity(m_fogVolume);
 	}
 }
 
-
-
 void CFlashLight::EnableLight(bool enable)
 {
 	CWeapon* pWeapon = GetWeapon();
+
 	if (!pWeapon || !m_sharedparams->pFlashLightParams || (m_lightEnabled && enable) || (!m_lightEnabled && !enable))
+	{
 		return;
+	}
 
 	CActor* pOwner = pWeapon->GetOwnerActor();
 	bool ownerIsFP = pWeapon->IsOwnerFP();
@@ -95,11 +86,15 @@ void CFlashLight::EnableLight(bool enable)
 		const Vec3 direction = Vec3(-1.0f, 0.0f, 0.0f);
 
 		IRenderNode* pCasterException = NULL;
+
 		if (pOwner)
 		{
 			IEntityRenderProxy* pRenderProxy = static_cast<IEntityRenderProxy*>(pOwner->GetEntity()->GetProxy(ENTITY_PROXY_RENDER));
+
 			if (pRenderProxy)
+			{
 				pCasterException = pRenderProxy->GetRenderNode();
+			}
 		}
 
 		EntityEffects::SLightAttachParams lightParams;
@@ -124,7 +119,10 @@ void CFlashLight::EnableLight(bool enable)
 	else
 	{
 		if (m_lightId)
+		{
 			pWeapon->DetachEffect(m_lightId);
+		}
+
 		m_lightId = 0;
 		EnableFogVolume(pWeapon, slot, false);
 	}
@@ -132,24 +130,26 @@ void CFlashLight::EnableLight(bool enable)
 	m_lightEnabled = enable;
 }
 
-
-
 void CFlashLight::EnableFogVolume(CWeapon* pWeapon, int slot, bool enable)
 {
 	if (!g_pGameCVars->i_flashlight_has_fog_volume)
+	{
 		return;
+	}
 
 	if (!m_sharedparams->pFlashLightParams)
+	{
 		return;
+	}
 
 	IEntity* pFogVolume = 0;
 
 	if (m_fogVolume == 0)
 	{
 		const Vec3 size = Vec3(
-			m_sharedparams->pFlashLightParams->fogVolumeRadius,
-			m_sharedparams->pFlashLightParams->fogVolumeSize,
-			m_sharedparams->pFlashLightParams->fogVolumeRadius);
+		                    m_sharedparams->pFlashLightParams->fogVolumeRadius,
+		                    m_sharedparams->pFlashLightParams->fogVolumeSize,
+		                    m_sharedparams->pFlashLightParams->fogVolumeRadius);
 
 		SEntitySpawnParams fogVolumeParams;
 		fogVolumeParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("FogVolume");
@@ -157,12 +157,17 @@ void CFlashLight::EnableFogVolume(CWeapon* pWeapon, int slot, bool enable)
 		fogVolumeParams.vPosition = Vec3(ZERO);
 
 		pFogVolume = gEnv->pEntitySystem->SpawnEntity(fogVolumeParams);
+
 		if (!pFogVolume)
+		{
 			return;
+		}
+
 		m_fogVolume = pFogVolume->GetId();
 
 		SmartScriptTable pProperties;
 		pFogVolume->GetScriptTable()->GetValue("Properties", pProperties);
+
 		if (pProperties)
 		{
 			pProperties->SetValue("color_Color", m_sharedparams->pFlashLightParams->fogVolumeColor);
@@ -170,6 +175,7 @@ void CFlashLight::EnableFogVolume(CWeapon* pWeapon, int slot, bool enable)
 			pProperties->SetValue("Size", size);
 			pProperties->SetValue("FallOffScale", 0.0f);
 		}
+
 		EntityScripts::CallScriptFunction(pFogVolume, pFogVolume->GetScriptTable(), "OnPropertyChange");
 
 		pFogVolume->Activate(true);
@@ -180,15 +186,19 @@ void CFlashLight::EnableFogVolume(CWeapon* pWeapon, int slot, bool enable)
 	}
 
 	if (!pFogVolume)
+	{
 		return;
+	}
 
 	const char* attachHelper = "lightFog_term";
 	const float distance = m_sharedparams->pFlashLightParams->fogVolumeSize * 0.5f;
 	ICharacterInstance* pCharacter = pWeapon->GetEntity()->GetCharacter(slot);
+
 	if (enable && pCharacter)
 	{
 		IAttachmentManager* pAttachmentManager = pCharacter->GetIAttachmentManager();
 		IAttachment* pAttachment = pAttachmentManager->GetInterfaceByName(attachHelper);
+
 		if (pAttachment)
 		{
 			CEntityAttachment* pEntityAttachment = new CEntityAttachment();
@@ -203,26 +213,21 @@ void CFlashLight::EnableFogVolume(CWeapon* pWeapon, int slot, bool enable)
 	pFogVolume->Hide(!enable);
 }
 
-
-
 void CFlashLight::OnAttach(bool attach)
 {
 	EnableLight(attach && m_lightEnabled);
 }
 
-
-
 void CFlashLight::OnParentSelect(bool select)
 {
 	bool wasEnabled = m_lightEnabled;
 	EnableLight(select && m_lightEnabled);
+
 	if (!select && wasEnabled)
 	{
 		m_lightEnabled = true;
 	}
 }
-
-
 
 void CFlashLight::OnEnterFirstPerson()
 {
@@ -233,8 +238,6 @@ void CFlashLight::OnEnterFirstPerson()
 	}
 }
 
-
-
 void CFlashLight::OnEnterThirdPerson()
 {
 	if (m_lightEnabled)
@@ -244,103 +247,36 @@ void CFlashLight::OnEnterThirdPerson()
 	}
 }
 
-
-
 void CFlashLight::ToggleFlashLight()
 {
 	EnableLight(!m_lightEnabled && m_flashLightEnabled);
 }
 
-
-
 void CFlashLight::EnableFlashLight(bool enable)
 {
 	m_flashLightEnabled = m_lightEnabled = enable;
 	CFlashLight* pFlashLight = GetPlayerFlashLight();
+
 	if (pFlashLight)
 	{
 		pFlashLight->EnableLight(m_flashLightEnabled);
 	}
 }
 
-
-
 bool CFlashLight::IsFlashLightEnabled()
 {
 	return m_flashLightEnabled;
 }
 
-
-
 CWeapon* CFlashLight::GetWeapon() const
 {
 	IItem* pParentItem = m_pItemSystem->GetItem(GetParentId());
-	if(pParentItem == NULL)
+
+	if (pParentItem == NULL)
+	{
 		return 0;
+	}
+
 	CWeapon* pParentWeapon = static_cast<CWeapon*>(pParentItem->GetIWeapon());
 	return pParentWeapon;
 }
-
-
-
-
-#include "Nodes/G2FlowBaseNode.h"
-
-
-class CFlowNode_FlashLightNode : public CFlowBaseNode<eNCT_Singleton>
-{
-public:
-	CFlowNode_FlashLightNode(SActivationInfo * pActInfo)
-	{
-	}
-
-	void GetConfiguration( SFlowNodeConfig& config )
-	{
-		static const SInputPortConfig in_ports[] = 
-		{
-			InputPortConfig_Void( "Disable", _HELP("Permanently disables the flashlight" )),
-			{0}
-		};
-
-		static const SOutputPortConfig out_ports[] = 
-		{
-			{0}
-		};
-
-		config.pInputPorts = in_ports;
-		config.pOutputPorts = out_ports;
-		config.SetCategory(EFLN_APPROVED);
-	}
-
-	void ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
-	{
-		if (event == eFE_Initialize)
-		{
-			CFlashLight::EnableFlashLight(true);
-		}
-
-		if (event == eFE_Activate && IsPortActive(pActInfo, 0))
-		{
-			CFlashLight::EnableFlashLight(false);
-		}
-	}
-
-	virtual void Serialize(SActivationInfo*, TSerialize ser)
-	{
-		ser.BeginGroup("flashlightNode");
-		bool flashLightEnabled = CFlashLight::IsFlashLightEnabled();
-		ser.Value("flashlightEnabled", flashLightEnabled);
-		if (ser.IsReading())
-		{
-			CFlashLight::EnableFlashLight(flashLightEnabled);
-		}
-		ser.EndGroup();
-	}
-
-	virtual void GetMemoryUsage(ICrySizer* s) const
-	{
-	}
-};
-
-
-REGISTER_FLOW_NODE("Crysis3:FlashLight",	CFlowNode_FlashLightNode);

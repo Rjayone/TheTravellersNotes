@@ -231,22 +231,8 @@ void CSettingsManagerTools::GetEditorExecutable(SettingsManagerHelpers::CWCharBu
 		}
 	}
 
-	bool bFound = false;
-	if (Is64bitWindows())
-	{
-		const size_t len = editorExe.length();
-		editorExe.appendAscii("/Bin64/Editor.exe");
-		bFound = FileExists(editorExe.c_str());
-		if (!bFound)
-		{
-			editorExe.setLength(len);
-		}
-	}
-	if (!bFound)
-	{
-		editorExe.appendAscii("/Bin32/Editor.exe");
-		bFound = FileExists(editorExe.c_str());
-	}
+	editorExe.appendAscii("/Bin64/Editor.exe");
+	const bool bFound = FileExists(editorExe.c_str());
 
 	const size_t sizeToCopy = (editorExe.length() + 1) * sizeof(wbuffer[0]);
 	if (!bFound || sizeToCopy > wbuffer.getSizeInBytes())
@@ -300,37 +286,6 @@ bool CSettingsManagerTools::CallEditor(void** pEditorWindow, void* hParent, cons
 	return false;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Modified version of
-// http://msdn.microsoft.com/en-us/library/windows/desktop/ms684139(v=vs.85).aspx
-bool CSettingsManagerTools::Is64bitWindows()
-{
-#if defined(_WIN64)
-	// 64-bit programs run only on 64-bit Windows
-	return true;  
-#else
-	// 32-bit programs run on both 32-bit and 64-bit Windows
-	static bool bWin64 = false;
-	static bool bOnce = true;
-	if (bOnce)
-	{
-		typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS)(HANDLE, PBOOL);
-		LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(GetModuleHandleA("kernel32"), "IsWow64Process");
-		if (fnIsWow64Process != NULL)
-		{
-			BOOL itIsWow64Process = FALSE;
-			if (fnIsWow64Process(GetCurrentProcess(), &itIsWow64Process))
-			{
-				bWin64 = (itIsWow64Process == TRUE);
-			}
-		}
-		bOnce = false;
-	}
-	return bWin64;
-#endif
-}
-
 #endif // #if defined(CRY_ENABLE_RC_HELPER)
-
 
 // eof

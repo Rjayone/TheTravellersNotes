@@ -10,10 +10,6 @@
  - 11/01/2006   : Dima Kukushkin, Created
  
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(INetworkService.h)
-
-#ifndef __INETWORKSERVICE_H__
-#define __INETWORKSERVICE_H__
 
 #pragma once
 
@@ -62,7 +58,7 @@ enum ENetworkServiceState
 
 struct INetworkService : public CMultiThreadRefCount
 {
-
+	// <interfuscator:shuffle>
   virtual ENetworkServiceState GetState() = 0;
   virtual void              Close() = 0;
   virtual void              CreateContextViewExtensions(bool server, IContextViewExtensionAdder* adder) = 0;
@@ -80,40 +76,40 @@ struct INetworkService : public CMultiThreadRefCount
 	virtual INetProfileTokens* GetNetProfileTokens() = 0;
 	//etc
 	virtual ~INetworkService(){}
-
+	// </interfuscator:shuffle>
 };
 
 struct INetProfileTokens
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INetProfileTokens(){}
 	virtual void AddToken(uint32 profile, uint32 token) = 0;
 	virtual bool IsValid(uint32 profile, uint32 token) = 0;
 	virtual void Init() = 0;
 	virtual void Lock() = 0;
 	virtual void Unlock() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct INetworkInterface
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INetworkInterface(){}
 	virtual bool IsAvailable()const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IGameQueryListener;
 
 struct ITestInterface
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITestInterface(){}
 	virtual void TestBrowser(IGameQueryListener *GQListener){}
 	virtual void TestReport(){}
 	virtual void TestChat(){}
 	virtual void TestStats(){}
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -149,7 +145,7 @@ enum EServerBrowserError
 
 struct IServerListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IServerListener(){}
 	//new server reported during update and basic values received
 	virtual void NewServer(const int id,const SBasicServerInfo*)=0;
@@ -175,12 +171,12 @@ struct IServerListener
   virtual void ServerUpdateComplete(const int id)=0;
 
   virtual void ServerDirectConnect(bool needsnat, uint32 ip, uint16 port)=0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IServerBrowser:public INetworkInterface
+struct IServerBrowser:public INetworkInterface
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IServerBrowser(){}
 	virtual void	Start(bool browseLAN) = 0;
   virtual void	SetListener(IServerListener* lst) = 0;
@@ -193,7 +189,7 @@ UNIQUE_IFACE struct IServerBrowser:public INetworkInterface
   virtual void  CheckDirectConnect(int id, uint16 port) = 0;
 	virtual int		GetServerCount() = 0;
 	virtual int		GetPendingQueryCount() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 enum EChatJoinResult
@@ -221,7 +217,7 @@ enum ENetworkChatMessageType
 
 struct IChatListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IChatListener(){}
 	virtual void Joined(EChatJoinResult)=0;
 	virtual void Message(const char* from, const char* message, ENetworkChatMessageType type)=0;
@@ -229,12 +225,12 @@ struct IChatListener
   virtual void OnError(int err)=0;
 	virtual void OnChatKeys(const char* user, int num, const char** keys, const char** values)=0;
 	virtual void OnGetKeysFailed(const char* user)=0;
-
+	// </interfuscator:shuffle>
 };
 
 struct INetworkChat:public INetworkInterface
 {
-
+	// <interfuscator:shuffle>
 	virtual void Join()=0;
 	virtual void Leave()=0;
   virtual void SetListener(IChatListener* lst)=0;
@@ -242,7 +238,7 @@ struct INetworkChat:public INetworkInterface
 	virtual void SendData(const char* nick, const char* message)=0;
 	virtual void SetChatKeys(int num, const char** keys, const char** value) = 0;
 	virtual void GetChatKeys(const char* user, int num, const char** keys) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 enum EServerReportError
@@ -256,16 +252,16 @@ enum EServerReportError
 
 struct IServerReportListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IServerReportListener(){}
 	virtual void OnError(EServerReportError) = 0;
 	virtual void OnPublicIP(uint32,unsigned short) = 0;
-
+	// </interfuscator:shuffle>
 }; 
 
-UNIQUE_IFACE struct	IServerReport : public INetworkInterface
+struct	IServerReport : public INetworkInterface
 {
-
+	// <interfuscator:shuffle>
 	virtual void AuthPlayer(int playerid, uint32 ip, const char* challenge, const char* responce) = 0;
 	virtual void ReAuthPlayer(int playerid, const char* responce) = 0;
 
@@ -280,7 +276,7 @@ UNIQUE_IFACE struct	IServerReport : public INetworkInterface
 	virtual void StopReporting() = 0;//Stop reporting and clear listener
 
   virtual void ProcessQuery(char* data, int len, struct sockaddr_in* addr) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 enum EStatsTrackError
@@ -294,18 +290,18 @@ enum EStatsTrackError
 
 struct IStatsTrackListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IStatsTrackListener(){}
 	virtual void OnError(EStatsTrackError) = 0;	
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //	Player/Team id semantic differ from ServerReport, 
 //	as ServerReport is stateless, and StatsTrack is not
-UNIQUE_IFACE struct	IStatsTrack : public INetworkInterface
+struct	IStatsTrack : public INetworkInterface
 {
-
+	// <interfuscator:shuffle>
 	virtual void  SetListener(IStatsTrackListener*) = 0;
 	//These will return id that should be used in all other calls
 	virtual int   AddPlayer(int id) = 0;//player
@@ -325,35 +321,35 @@ UNIQUE_IFACE struct	IStatsTrack : public INetworkInterface
 	virtual void  SetServerValue(int key, int value) = 0;
 	virtual void  SetPlayerValue(int, int key, int value) = 0;
 	virtual void  SetTeamValue(int, int key, int value) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct INatNegListener
+struct INatNegListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INatNegListener(){}
   virtual void OnDetected(bool success, bool compatible) = 0;//indicates NAT is possible on this site
   virtual void OnCompleted(int cookie, bool success, struct sockaddr_in* addr) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct INatNeg : public INetworkInterface
+struct INatNeg : public INetworkInterface
 {
-
+	// <interfuscator:shuffle>
   virtual void StartNegotiation(int cookie, bool server, int socket) = 0;
   virtual void CancelNegotiation(int cookie) = 0;
   virtual void OnPacket(char *data, int len, struct sockaddr_in *fromaddr) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
 struct IDownloadStream
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IDownloadStream(){}
 	virtual void GotData( const uint8 * pData, uint32 length ) = 0;
 	virtual void Complete( bool success ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SFileDownloadParameters
@@ -392,16 +388,16 @@ struct SFileDownloadParameters
 
 struct IFileDownload
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFileDownload(){}
 	virtual bool Finished() const = 0;
 	virtual float GetProgress() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IFileDownloader : public INetworkInterface
+struct IFileDownloader : public INetworkInterface
 {
-
+	// <interfuscator:shuffle>
 	// start downloading from http server and save the file locally
 	virtual void DownloadFile(SFileDownloadParameters& dl) = 0;
 
@@ -423,12 +419,12 @@ UNIQUE_IFACE struct IFileDownloader : public INetworkInterface
 
 	// stop downloads (also called when no more files to download)
 	virtual void Stop() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IPatchCheck : public INetworkInterface
 {
-
+	// <interfuscator:shuffle>
 	// fire off a query to a server somewhere to figure out if there's an update available for download
 	virtual bool CheckForUpdate() = 0;
 
@@ -456,18 +452,18 @@ struct IPatchCheck : public INetworkInterface
 	virtual const char* GetPatchFileName() const = 0;
 
 	virtual void TrackUsage() = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IHTTPGateway
+struct IHTTPGateway
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IHTTPGateway(){}
 	virtual int GetURL(const char* url, IDownloadStream* stream) = 0;
 	virtual int PostURL(const char* url, const char* params, IDownloadStream* stream) = 0;
 	virtual int PostFileToURL(const char* url, const char* params, const char* name, const uint8* data, uint32 size, const char* mime, IDownloadStream* stream) = 0;
 	virtual void CancelRequest(int) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 const int MAX_PROFILE_STRING_LEN = 31;
@@ -524,7 +520,7 @@ enum ENetworkProfileError
 
 struct INetworkProfileListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INetworkProfileListener(){}
   virtual void AddNick(const char* nick) = 0;
   virtual void UpdateFriend(int id, const char* nick, EUserStatus, const char* status, bool foreign) = 0;
@@ -540,22 +536,22 @@ struct INetworkProfileListener
   virtual void OnUserId(const char* nick, int id) = 0;
   virtual void OnUserNick(int id, const char* nick, bool foreign_name) = 0;
 	virtual void RetrievePasswordResult(bool ok) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IStatsAccessor
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IStatsAccessor(){}
   //input
   virtual const char* GetTableName() = 0;
   virtual void        End(bool success) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IStatsReader : public IStatsAccessor
 {
-
+	// <interfuscator:shuffle>
 	virtual int         GetFieldsNum() = 0;
 	virtual const char* GetFieldName(int i) = 0;
 	//output
@@ -563,12 +559,12 @@ struct IStatsReader : public IStatsAccessor
   virtual void        OnValue(int field, const char* val) = 0;
   virtual void        OnValue(int field, int val) = 0;
   virtual void        OnValue(int field, float val) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IStatsWriter : public IStatsAccessor
 {
-
+	// <interfuscator:shuffle>
 	virtual int         GetFieldsNum() = 0;
 	virtual const char* GetFieldName(int i) = 0;
 	//input
@@ -579,17 +575,17 @@ struct IStatsWriter : public IStatsAccessor
   virtual bool  GetValue(int field, float& val) = 0;
   //output
   virtual void  OnResult(int idx, int id, bool success) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IStatsDeleter : public IStatsAccessor
 {
-
+	// <interfuscator:shuffle>
 	virtual int   GetRecordsNum() = 0;
 	virtual int   NextRecord() = 0;
 	virtual void  OnResult(int idx, int id, bool success) = 0;
 	virtual void  End(bool success) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SRegisterDayOfBirth
@@ -608,7 +604,7 @@ struct SRegisterDayOfBirth
 
 struct INetworkProfile : public INetworkInterface
 {
-
+	// <interfuscator:shuffle>
   virtual void AddListener(INetworkProfileListener* ) = 0;
   virtual void RemoveListener(INetworkProfileListener* ) = 0;
 
@@ -635,7 +631,5 @@ struct INetworkProfile : public INetworkInterface
   //Other Player's Stats
 	virtual void ReadStats(int id, IStatsReader* reader) = 0;
 	virtual void RetrievePassword(const char* email) = 0;
-
+	// </interfuscator:shuffle>
 };
-#endif /*__INETWORKSERVICE_H__*/
-

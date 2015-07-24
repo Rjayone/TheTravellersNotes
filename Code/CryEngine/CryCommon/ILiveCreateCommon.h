@@ -32,7 +32,7 @@ namespace LiveCreate
 
 	struct IManagerListenerEx
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~IManagerListenerEx(){};
 
 		// Manager was successfully connected to a remote host
@@ -53,6 +53,7 @@ namespace LiveCreate
 		// Internal message logging
 		virtual void OnLogMessage(ELogMessageType aType, const char* pMessage){};
 
+		// </interfuscator:shuffle>
 	};
 
 	//------------------------------------------------------------------------------------

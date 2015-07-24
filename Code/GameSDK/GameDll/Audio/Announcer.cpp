@@ -446,9 +446,9 @@ const SAnnouncementDef * CAnnouncer::FindAnnouncementWithConditions(const int an
 		}
 	}
 
-	if(results.size() > 0)
+	if(!results.empty())
 	{
-		return results[cry_rand32() % results.size()];
+		return results[cry_random((size_t)0, results.size() - 1)];
 	}
 
 	return NULL;
@@ -720,7 +720,7 @@ EAnnouncementID CAnnouncer::NameToID(const char* announcement)
 {
 	CryStackStringT<char, 32> lower(announcement);
 	lower.MakeLower();
-	return gEnv->pSystem->GetCrc32Gen()->GetCRC32(lower.c_str());
+	return CCrc32::Compute(lower.c_str());
 }
 
 

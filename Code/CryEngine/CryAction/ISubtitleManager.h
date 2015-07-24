@@ -12,37 +12,33 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(ISubtitleManager.h)
 
 #ifndef __ISUBTITLEMANAGER_H__
 #define __ISUBTITLEMANAGER_H__
 #pragma once
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct ISubtitleHandler
+struct ISubtitleHandler
 {
 	virtual	~ISubtitleHandler(){}
-	//virtual void ShowSubtitle(ISound* pSound, bool bShow) = 0;
+	virtual void ShowSubtitle(const SAudioRequestInfo* const pAudioRequestInfo, bool bShow) = 0;
 	virtual void ShowSubtitle(const char* subtitleLabel, bool bShow) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct ISubtitleManager 
+struct ISubtitleManager
 {
 	virtual	~ISubtitleManager(){}
 	virtual void SetHandler(ISubtitleHandler* pHandler) = 0;
-	virtual ISubtitleHandler* GetHandler() = 0;
 	
 	// enables/disables subtitles manager
 	virtual void SetEnabled(bool bEnabled) = 0;
 
-	// automatic mode. reacts on every voice sound being played
-	// can be disabled/enabled
+	// automatic mode. Will inform the subtitleHandler about every executed/stopped audio trigger.
+	// You can use this mode, if you want to drive your subtitles by started sounds and not manually.
 	virtual void SetAutoMode(bool bOn) = 0;
 
-	//virtual void ShowSubtitle(ISound* pSound, bool bShow) = 0;
 	virtual void ShowSubtitle(const char* subtitleLabel, bool bShow) = 0;
-
 };
 
 #endif // __ISUBTITLEMANAGER_H__

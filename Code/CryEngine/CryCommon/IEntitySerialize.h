@@ -63,7 +63,7 @@ struct EntityCloneState
 //////////////////////////////////////////////////////////////////////////
 struct IEntitySerializationContext
 {
-
+	// <interfuscator:shuffle>
 	// Description:
 	//    Call to release this interface.
 	virtual void Release() = 0;
@@ -85,7 +85,7 @@ struct IEntitySerializationContext
 	// Description:
 	//    Returns currently Assign current clone state.
 	virtual EntityCloneState* GetCloneState() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __IEntitySerialize_h__

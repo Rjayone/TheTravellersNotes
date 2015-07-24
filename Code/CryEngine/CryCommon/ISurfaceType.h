@@ -12,10 +12,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(ISurfaceType.h)
 
-#ifndef __ISurfaceType_h__
-#define __ISurfaceType_h__
 #pragma once
 
 //////////////////////////////////////////////////////////////////////////
@@ -124,6 +121,7 @@ struct ISurfaceType
 		SBreakageParticles() : count_per_unit(1),count_scale(1),scale(1) {}
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ISurfaceType(){}
 
 	// Releases surface type.
@@ -167,7 +165,7 @@ struct ISurfaceType
 	//////////////////////////////////////////////////////////////////////////
 	// Loads surface, (do not use directly).
 	virtual bool Load( int nId ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -176,12 +174,12 @@ struct ISurfaceType
 //////////////////////////////////////////////////////////////////////////
 struct ISurfaceTypeEnumerator
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISurfaceTypeEnumerator(){}
 	virtual void Release() = 0;
 	virtual ISurfaceType* GetFirst() = 0;
 	virtual ISurfaceType* GetNext() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
@@ -190,9 +188,9 @@ struct ISurfaceTypeEnumerator
 //    At start will enumerate all material names.
 //    When the surface is first time requested by name it will be loaded and cached 
 //    and new unique id will be generated for it.
-UNIQUE_IFACE struct ISurfaceTypeManager
+struct ISurfaceTypeManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISurfaceTypeManager(){}
 
 
@@ -224,8 +222,5 @@ UNIQUE_IFACE struct ISurfaceTypeManager
 	virtual void UnregisterSurfaceType( ISurfaceType *pSurfaceType ) = 0;
 
 	virtual void GetMemoryUsage( ICrySizer* pSizer ) const=0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif // __ISurfaceType_h__
-

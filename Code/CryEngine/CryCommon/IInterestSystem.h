@@ -12,7 +12,6 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IInterestSystem.h)
 
 #ifndef __IInterestSystem_h__
 #define __IInterestSystem_h__
@@ -35,21 +34,22 @@ struct IInterestListener
 		eIE_InterestActionCancel,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IInterestListener(){}
 
 	virtual void OnInterestEvent(EInterestEvent eInterestEvent, EntityId idInterestedActor, EntityId idInterestingEntity) = 0;
 
 	virtual void GetMemoryUsage(ICrySizer* pCrySizer) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
 //---------------------------------------------------------------------//
 
-UNIQUE_IFACE class ICentralInterestManager
+class ICentralInterestManager
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~ICentralInterestManager(){}
 	virtual void Reset() = 0;
 	virtual bool Enable(bool bEnable) = 0;
@@ -66,7 +66,7 @@ public:
 
 	virtual void RegisterListener(IInterestListener* pInterestListener, EntityId idInterestingEntity) = 0;
 	virtual void UnRegisterListener(IInterestListener* pInterestListener, EntityId idInterestingEntity) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 

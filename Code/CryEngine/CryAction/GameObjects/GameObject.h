@@ -258,7 +258,7 @@ public:
 
 	virtual void DontSyncPhysics() { m_bNoSyncPhysics = true; }
 
-	void AquireMutex();
+	void AcquireMutex();
 	void ReleaseMutex();
 
 private:
@@ -273,9 +273,7 @@ private:
 #endif
 
 	// Need a mutex to defend shutdown against event handling.
-#ifndef PS3
 	CryMutex m_mutex;
-#endif
 
 	template <class T> bool DoGetSetExtensionParams( const char * extension, SmartScriptTable params );
 

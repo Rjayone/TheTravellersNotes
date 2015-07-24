@@ -106,7 +106,7 @@ public:
 	};
 
 	// INetMsgListener
-	virtual void OnMessage(const SNetMsgData & data) OVERRIDE
+	virtual void OnMessage(const SNetMsgData & data) override
 	{
 		// Notify if the expected message has arrived
 		const string & key = GetPortString(&m_actInfo,IN_MSG);

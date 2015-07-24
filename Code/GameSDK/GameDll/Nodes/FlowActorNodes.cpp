@@ -1464,8 +1464,12 @@ public:
           {
             pActor->RagDollize(true);
 
-            Vec3 impulseValue = Random(GetPortVec3(pActInfo, EIP_ImpulseMin), GetPortVec3(pActInfo, EIP_ImpulseMax));
-            Vec3 angImpulseValue = Random(GetPortVec3(pActInfo, EIP_AngImpulseMin), GetPortVec3(pActInfo, EIP_AngImpulseMax));
+            Vec3 impulseValue = cry_random_componentwise(
+              GetPortVec3(pActInfo, EIP_ImpulseMin),
+              GetPortVec3(pActInfo, EIP_ImpulseMax));
+            Vec3 angImpulseValue = cry_random_componentwise(
+              GetPortVec3(pActInfo, EIP_AngImpulseMin),
+              GetPortVec3(pActInfo, EIP_AngImpulseMax));
             Vec3 impulseOrigin = pActor->GetEntity()->GetWorldPos();
             Matrix34 transMat = pActor->GetEntity()->GetWorldTM();
 

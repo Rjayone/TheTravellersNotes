@@ -28,7 +28,7 @@ class CCodeCheckpoint;
 /// Interface for a global manager of code coverage checkpoints. Must be thread safe.
 struct ICodeCheckpointMgr
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICodeCheckpointMgr(){}
 	/// Used by code checkpoints to register themselves with the manager.
 	virtual void RegisterCheckpoint(CCodeCheckpoint* pCheckpoint) = 0;
@@ -50,7 +50,7 @@ struct ICodeCheckpointMgr
 
 	/// Frees this instance from memory
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 /// Inline helper class used for registration and update of code checkpoint state.

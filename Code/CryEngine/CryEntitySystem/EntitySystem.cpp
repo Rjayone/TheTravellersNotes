@@ -631,7 +631,8 @@ IEntity* CEntitySystem::SpawnEntity( SEntitySpawnParams &params,bool bAutoInit )
 
 		for (const char * checkEachChar = params.sName; *checkEachChar; ++ checkEachChar)
 		{
-			countIllegalCharacters += ((*checkEachChar) >= 32 && (*checkEachChar) <= 126) ? 0 : 1;
+			const uint8 c = static_cast<uint8>(*checkEachChar);
+			countIllegalCharacters += (c < ' ') || (c == 127);
 		}
 
 		if (countIllegalCharacters)
@@ -3718,6 +3719,4 @@ void CEntitySystem::ReleaseBSPTree3D(IBSPTree3D*& pTree)
 	SAFE_DELETE(pTree);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityIt)
-#include UNIQUE_VIRTUAL_WRAPPER(IEntitySystem)
 

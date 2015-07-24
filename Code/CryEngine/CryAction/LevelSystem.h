@@ -31,32 +31,32 @@ public:
 	};
 
 	// ILevelInfo
-	VIRTUAL const char *GetName() const { return m_levelName.c_str(); };
-	VIRTUAL const bool IsOfType(const char* sType) const;
-	VIRTUAL const char *GetPath() const { return m_levelPath.c_str(); };
-	VIRTUAL const char *GetPaks() const { return m_levelPaks.c_str(); };
-	VIRTUAL bool GetIsModLevel() const { return m_isModLevel; }
-	VIRTUAL const uint32 GetScanTag() const { return m_scanTag; }
-	VIRTUAL const uint32 GetLevelTag() const { return m_levelTag; }
-	VIRTUAL const char* GetDisplayName() const;
-	VIRTUAL const char *GetPreviewImagePath() const { return m_previewImagePath.c_str(); }
-	VIRTUAL const char *GetBackgroundImagePath() const { return m_backgroundImagePath.c_str(); }
-	VIRTUAL const char *GetMinimapImagePath() const {return m_minimapImagePath.c_str(); }
-  //VIRTUAL const ILevelInfo::TStringVec& GetMusicLibs() const { return m_musicLibs; }; // Gets reintroduced when level specific music data loading is implemented.
-	VIRTUAL int GetHeightmapSize() const { return m_heightmapSize; };
-	VIRTUAL const bool MetadataLoaded() const { return m_bMetaDataRead; }
+	virtual const char *GetName() const { return m_levelName.c_str(); };
+	virtual const bool IsOfType(const char* sType) const;
+	virtual const char *GetPath() const { return m_levelPath.c_str(); };
+	virtual const char *GetPaks() const { return m_levelPaks.c_str(); };
+	virtual bool GetIsModLevel() const { return m_isModLevel; }
+	virtual const uint32 GetScanTag() const { return m_scanTag; }
+	virtual const uint32 GetLevelTag() const { return m_levelTag; }
+	virtual const char* GetDisplayName() const;
+	virtual const char *GetPreviewImagePath() const { return m_previewImagePath.c_str(); }
+	virtual const char *GetBackgroundImagePath() const { return m_backgroundImagePath.c_str(); }
+	virtual const char *GetMinimapImagePath() const {return m_minimapImagePath.c_str(); }
+  //virtual const ILevelInfo::TStringVec& GetMusicLibs() const { return m_musicLibs; }; // Gets reintroduced when level specific music data loading is implemented.
+	virtual int GetHeightmapSize() const { return m_heightmapSize; };
+	virtual const bool MetadataLoaded() const { return m_bMetaDataRead; }
 
-	VIRTUAL int GetGameTypeCount() const { return m_gameTypes.size(); };
-	VIRTUAL const ILevelInfo::TGameTypeInfo *GetGameType(int gameType) const { return &m_gameTypes[gameType]; };
-	VIRTUAL bool SupportsGameType(const char *gameTypeName) const;
-	VIRTUAL const ILevelInfo::TGameTypeInfo *GetDefaultGameType() const;
-	VIRTUAL bool HasGameRules() const{ return !m_gamerules.empty(); }
+	virtual int GetGameTypeCount() const { return m_gameTypes.size(); };
+	virtual const ILevelInfo::TGameTypeInfo *GetGameType(int gameType) const { return &m_gameTypes[gameType]; };
+	virtual bool SupportsGameType(const char *gameTypeName) const;
+	virtual const ILevelInfo::TGameTypeInfo *GetDefaultGameType() const;
+	virtual bool HasGameRules() const{ return !m_gamerules.empty(); }
 
-	VIRTUAL const ILevelInfo::SMinimapInfo& GetMinimapInfo() const { return m_minimapInfo; }
+	virtual const ILevelInfo::SMinimapInfo& GetMinimapInfo() const { return m_minimapInfo; }
 
-	VIRTUAL const char* GetDefaultGameRules() const{ return m_gamerules.empty() ? NULL : m_gamerules[0].c_str(); }
-	VIRTUAL ILevelInfo::TStringVec GetGameRules() const{ return m_gamerules; }
-	VIRTUAL bool GetAttribute(const char* name, TFlowInputData& val) const;
+	virtual const char* GetDefaultGameRules() const{ return m_gamerules.empty() ? NULL : m_gamerules[0].c_str(); }
+	virtual ILevelInfo::TStringVec GetGameRules() const{ return m_gamerules; }
+	virtual bool GetAttribute(const char* name, TFlowInputData& val) const;
 	// ~ILevelInfo
 
 
@@ -115,47 +115,47 @@ public:
 	typedef std::vector<SLevelRotationEntry> TLevelRotationVector;
 
 	// ILevelRotation
-	VIRTUAL bool Load(ILevelRotationFile* file);
-	VIRTUAL bool LoadFromXmlRootNode(const XmlNodeRef rootNode, const char* altRootTag);
+	virtual bool Load(ILevelRotationFile* file);
+	virtual bool LoadFromXmlRootNode(const XmlNodeRef rootNode, const char* altRootTag);
 	
-	VIRTUAL void Reset();
-	VIRTUAL int  AddLevel(const char *level);
-	VIRTUAL void AddGameMode(int level, const char* gameMode);
+	virtual void Reset();
+	virtual int  AddLevel(const char *level);
+	virtual void AddGameMode(int level, const char* gameMode);
 
-	VIRTUAL int  AddLevel(const char *level, const char* gameMode);
+	virtual int  AddLevel(const char *level, const char* gameMode);
 
 	//call to set the playlist ready for a new session
-	VIRTUAL void Initialise( int nSeed );
+	virtual void Initialise( int nSeed );
 
-	VIRTUAL bool First();
-	VIRTUAL bool Advance();
+	virtual bool First();
+	virtual bool Advance();
 
-	VIRTUAL bool AdvanceAndLoopIfNeeded();
+	virtual bool AdvanceAndLoopIfNeeded();
 
-	VIRTUAL const char *GetNextLevel() const;
-	VIRTUAL const char *GetNextGameRules() const;
+	virtual const char *GetNextLevel() const;
+	virtual const char *GetNextGameRules() const;
 
-	VIRTUAL const char*	GetLevel( uint32 idx, bool accessShuffled = true ) const;
-	VIRTUAL int GetNGameRulesForEntry( uint32 idx, bool accessShuffled = true ) const;
-	VIRTUAL const char*	GetGameRules( uint32 idx, uint32 iMode, bool accessShuffled = true ) const;
+	virtual const char*	GetLevel( uint32 idx, bool accessShuffled = true ) const;
+	virtual int GetNGameRulesForEntry( uint32 idx, bool accessShuffled = true ) const;
+	virtual const char*	GetGameRules( uint32 idx, uint32 iMode, bool accessShuffled = true ) const;
 
-	VIRTUAL const char* GetNextGameRulesForEntry( int idx ) const; //always matches shuffling
+	virtual const char* GetNextGameRulesForEntry( int idx ) const; //always matches shuffling
 
-	VIRTUAL const int NumAdvancesTaken() const;
-	VIRTUAL void ResetAdvancement();
+	virtual const int NumAdvancesTaken() const;
+	virtual void ResetAdvancement();
 
-	VIRTUAL int GetLength() const;
-	VIRTUAL int GetTotalGameModeEntries() const;
-	VIRTUAL int GetNext() const;
+	virtual int GetLength() const;
+	virtual int GetTotalGameModeEntries() const;
+	virtual int GetNext() const;
 
-	VIRTUAL void ChangeLevel(IConsoleCmdArgs* pArgs = NULL);
+	virtual void ChangeLevel(IConsoleCmdArgs* pArgs = NULL);
 
-	VIRTUAL bool NextPairMatch() const;
+	virtual bool NextPairMatch() const;
 
-	VIRTUAL TRandomisationFlags GetRandomisationFlags() const { return m_randFlags; }
-	VIRTUAL void SetRandomisationFlags( TRandomisationFlags flags );
+	virtual TRandomisationFlags GetRandomisationFlags() const { return m_randFlags; }
+	virtual void SetRandomisationFlags( TRandomisationFlags flags );
 
-	VIRTUAL bool IsRandom()const;
+	virtual bool IsRandom()const;
 	//~ILevelRotation
 
 	ILINE void SetExtendedInfoId(const ILevelRotation::TExtInfoId id) { m_extInfoId = id; }
@@ -208,31 +208,31 @@ public:
 	void Release() { delete this; };
 
 	// ILevelSystem
-	VIRTUAL DynArray<string>* GetLevelTypeList();
-	VIRTUAL void Rescan(const char *levelsFolder, const uint32 tag);
-  VIRTUAL void LoadRotation();
-	VIRTUAL int GetLevelCount();
-	VIRTUAL ILevelInfo *GetLevelInfo(int level);
-	VIRTUAL ILevelInfo *GetLevelInfo(const char *levelName);
+	virtual DynArray<string>* GetLevelTypeList();
+	virtual void Rescan(const char *levelsFolder, const uint32 tag);
+  virtual void LoadRotation();
+	virtual int GetLevelCount();
+	virtual ILevelInfo *GetLevelInfo(int level);
+	virtual ILevelInfo *GetLevelInfo(const char *levelName);
 
-	VIRTUAL void AddListener(ILevelSystemListener *pListener);
-	VIRTUAL void RemoveListener(ILevelSystemListener *pListener);
+	virtual void AddListener(ILevelSystemListener *pListener);
+	virtual void RemoveListener(ILevelSystemListener *pListener);
 
-	VIRTUAL ILevel *GetCurrentLevel() const { return m_pCurrentLevel;	}
-	VIRTUAL ILevel *LoadLevel(const char *levelName);
-	VIRTUAL void UnLoadLevel();
-	VIRTUAL ILevel *SetEditorLoadedLevel(const char *levelName, bool bReadLevelInfoMetaData = false);
-	VIRTUAL void PrepareNextLevel(const char *levelName);
-	VIRTUAL float GetLastLevelLoadTime() { return m_fLastLevelLoadTime; };
-	VIRTUAL bool IsLevelLoaded() { return m_bLevelLoaded; }
+	virtual ILevel *GetCurrentLevel() const { return m_pCurrentLevel;	}
+	virtual ILevel *LoadLevel(const char *levelName);
+	virtual void UnLoadLevel();
+	virtual ILevel *SetEditorLoadedLevel(const char *levelName, bool bReadLevelInfoMetaData = false);
+	virtual void PrepareNextLevel(const char *levelName);
+	virtual float GetLastLevelLoadTime() { return m_fLastLevelLoadTime; };
+	virtual bool IsLevelLoaded() { return m_bLevelLoaded; }
 
-	VIRTUAL ILevelRotation* GetLevelRotation() { return &m_levelRotation; };
+	virtual ILevelRotation* GetLevelRotation() { return &m_levelRotation; };
 
-	VIRTUAL ILevelRotation* FindLevelRotationForExtInfoId(const ILevelRotation::TExtInfoId findId);
+	virtual ILevelRotation* FindLevelRotationForExtInfoId(const ILevelRotation::TExtInfoId findId);
 
-	VIRTUAL bool AddExtendedLevelRotationFromXmlRootNode(const XmlNodeRef rootNode, const char* altRootTag, const ILevelRotation::TExtInfoId extInfoId);
-	VIRTUAL void ClearExtendedLevelRotations();
-	VIRTUAL ILevelRotation *CreateNewRotation(const ILevelRotation::TExtInfoId id);
+	virtual bool AddExtendedLevelRotationFromXmlRootNode(const XmlNodeRef rootNode, const char* altRootTag, const ILevelRotation::TExtInfoId extInfoId);
+	virtual void ClearExtendedLevelRotations();
+	virtual ILevelRotation *CreateNewRotation(const ILevelRotation::TExtInfoId id);
 	// ~ILevelSystem
 
 	// ILoadingProgessListener

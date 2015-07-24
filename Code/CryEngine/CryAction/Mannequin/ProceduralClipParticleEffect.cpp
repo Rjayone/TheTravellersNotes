@@ -41,7 +41,7 @@ struct SPlayParticleEffectParams : public IProceduralParams
 		ar(keepEmitterActive, "KeepEmitterActive", "Keep Emitter Active");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = effectName.c_str();
 	}

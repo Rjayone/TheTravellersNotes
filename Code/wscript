@@ -9,6 +9,7 @@
 
 SUBFOLDERS =	[
 	'CryEngine',
+	'Libs'
 	]
 	
 def build(bld):

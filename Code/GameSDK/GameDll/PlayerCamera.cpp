@@ -35,7 +35,7 @@ static AUTOENUM_BUILDNAMEARRAY(s_cameraModeNames, CameraModeList);
 
 #endif
 
-#define CAMERA_NEAR_PLANE_DISTANCE 0.24f  //Use always this value
+#define CAMERA_NEAR_PLANE_DISTANCE 0.0f  //Use Engine defaults
 
 CPlayerCamera::CPlayerCamera(const CPlayer & ownerPlayer) :
 	m_ownerPlayer(ownerPlayer),

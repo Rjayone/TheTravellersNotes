@@ -219,8 +219,6 @@ void CAnimatedCharacter::SetDesiredLocalLocation( ISkeletonAnim* pSkeletonAnim, 
 	SetMotionParam(pSkeletonAnim, eMotionParamID_TurnAngle, turnAngle);
 	// eMotionParamID_TravelDist
 	SetMotionParam(pSkeletonAnim, eMotionParamID_StopLeg, 0);
-	// eMotionParamID_TravelDistScale
-	// eMotionParamID_Scale
 }
 
 
@@ -234,4 +232,44 @@ void CAnimatedCharacter::SetMotionParam(ISkeletonAnim*const pSkeletonAnim, const
 
 	// Set desired parameter (note: the last parameter is not used anymore so put to 0.0f)
 	pSkeletonAnim->SetDesiredMotionParam(motionParamID, overriddenValue, 0.0f);
+}
+
+void CAnimatedCharacter::SetBlendWeightParam(const EMotionParamID motionParamID, const float value, const uint8 targetFlags/* = eBWPT_All*/)
+{
+	if (motionParamID >= eMotionParamID_BlendWeight && motionParamID <= eMotionParamID_BlendWeight_Last)
+	{ //only allowed on the generic blend weights params
+
+		IEntity* pEntity = GetEntity();
+		CRY_ASSERT(pEntity);
+
+		if (targetFlags & eBWPT_FirstPersonSkeleton)
+		{
+			if (ICharacterInstance* pCharacterInstance = pEntity->GetCharacter(0))
+			{
+				if (ISkeletonAnim* pSkeletonAnim = pCharacterInstance->GetISkeletonAnim())
+				{
+					pSkeletonAnim->SetDesiredMotionParam(motionParamID, value, 0.0f);
+				}
+			}
+		}
+
+		if (targetFlags & eBWPT_ShadowSkeleton)
+		{
+			if (m_hasShadowCharacter)
+			{
+				if (ICharacterInstance* pShadowCharacter = pEntity->GetCharacter(m_shadowCharacterSlot))
+				{
+					if (ISkeletonAnim* pShadowSkeletonAnim = pShadowCharacter->GetISkeletonAnim())
+					{
+						pShadowSkeletonAnim->SetDesiredMotionParam(motionParamID, value, 0.0f);
+					}
+				}
+			}
+		}
+
+	} 
+	else
+	{
+		CryLogAlways("[CryAnimation] ERROR: motionParam that was sent: %d is not within allowed range of blendweights %d to %d", motionParamID, eMotionParamID_BlendWeight, eMotionParamID_BlendWeight_Last);
+	}
 }

@@ -223,7 +223,7 @@ private:
 	void GetMappingParameters(float& fCoeff, float& fCurve) const;
 
 	void SetSliding(bool set);
-	bool PerformJump(bool quickPress);
+	bool PerformJump();
 
 	void SelectNextItem(int direction, bool keepHistory, int category, bool disableVisorFirst);
 	void ToggleItem(int primaryCategory, int secondaryCategory, bool disableVisorFirst);
@@ -253,8 +253,6 @@ private:
 	uint32 m_actions;
 	uint32 m_lastActions;
 
-	CPlayer::EActionFlags m_actionFlags;
-
 	Vec3 m_deltaMovement;
 	Vec3 m_xi_deltaMovement;
 	
@@ -270,7 +268,6 @@ private:
 	Ang3 m_flyCamDeltaRotation;
 	bool m_flyCamTurbo;
 
-	float m_jumpPressTime;
 	float m_suitArmorPressTime;
 	float m_suitStealthPressTime;
 	float m_lookAtTimeStamp;
@@ -348,6 +345,8 @@ private:
 
   } m_moveOverlay;
 
+	float m_pendingYawSnapAngle;
+	bool m_bYawSnappingActive;
 };
 
 

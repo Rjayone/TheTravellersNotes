@@ -14,6 +14,7 @@ public:
 	int		i_forcefeedback;
 
 	int		i_mouse_buffered;
+	float	i_mouse_sensitivity;
 	float	i_mouse_accel;
 	float	i_mouse_accel_max;
 	float	i_mouse_smooth;

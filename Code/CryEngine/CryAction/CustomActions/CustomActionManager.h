@@ -26,23 +26,23 @@ public:
 
 public:
 	// ICustomActionManager
-	VIRTUAL bool StartAction( IEntity* pObject, const char* szCustomActionGraphName, ICustomActionListener* pListener = NULL );
-	VIRTUAL bool SucceedAction( IEntity* pObject, const char* szCustomActionGraphName, ICustomActionListener* pListener = NULL );
-	VIRTUAL bool SucceedWaitAction( IEntity* pObject );
-	VIRTUAL bool SucceedWaitCompleteAction( IEntity* pObject );
-	VIRTUAL bool AbortAction( IEntity* pObject );
-	VIRTUAL bool EndAction( IEntity* pObject, bool bSuccess );
-	VIRTUAL void LoadLibraryActions( const char* sPath );
-	VIRTUAL void ClearActiveActions();
-	VIRTUAL void ClearLibraryActions();
-	VIRTUAL size_t GetNumberOfCustomActionsFromLibrary() const { return m_actionsLib.size(); }
-	VIRTUAL ICustomAction* GetCustomActionFromLibrary( const char* szCustomActionGraphName );
-	VIRTUAL ICustomAction* GetCustomActionFromLibrary( const size_t index );
-	VIRTUAL size_t GetNumberOfActiveCustomActions() const;
-	VIRTUAL ICustomAction* GetActiveCustomAction( const IEntity* pObject );
-	VIRTUAL ICustomAction* GetActiveCustomAction( const size_t index );
-	VIRTUAL bool UnregisterListener( ICustomActionListener* pEventListener );
-	VIRTUAL void Serialize( TSerialize ser );
+	virtual bool StartAction( IEntity* pObject, const char* szCustomActionGraphName, ICustomActionListener* pListener = NULL );
+	virtual bool SucceedAction( IEntity* pObject, const char* szCustomActionGraphName, ICustomActionListener* pListener = NULL );
+	virtual bool SucceedWaitAction( IEntity* pObject );
+	virtual bool SucceedWaitCompleteAction( IEntity* pObject );
+	virtual bool AbortAction( IEntity* pObject );
+	virtual bool EndAction( IEntity* pObject, bool bSuccess );
+	virtual void LoadLibraryActions( const char* sPath );
+	virtual void ClearActiveActions();
+	virtual void ClearLibraryActions();
+	virtual size_t GetNumberOfCustomActionsFromLibrary() const { return m_actionsLib.size(); }
+	virtual ICustomAction* GetCustomActionFromLibrary( const char* szCustomActionGraphName );
+	virtual ICustomAction* GetCustomActionFromLibrary( const size_t index );
+	virtual size_t GetNumberOfActiveCustomActions() const;
+	virtual ICustomAction* GetActiveCustomAction( const IEntity* pObject );
+	virtual ICustomAction* GetActiveCustomAction( const size_t index );
+	virtual bool UnregisterListener( ICustomActionListener* pEventListener );
+	virtual void Serialize( TSerialize ser );
 	// ~ICustomActionManager
 
 	// IEntityPoolListener

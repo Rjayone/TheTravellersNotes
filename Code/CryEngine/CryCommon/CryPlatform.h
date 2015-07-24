@@ -27,12 +27,8 @@
 #	include "CryPlatform.Win32.h"
 #elif defined(WIN64)
 #	include "CryPlatform.Win64.h"
-#elif defined(XENON)
-#	include "CryPlatform.Xenon.h"
 #elif defined(DURANGO)
 #	include "CryPlatform.Durango.h"
-#elif defined(PS3)
-#	include "CryPlatform.PS3.h"
 #elif defined(ORBIS)
 #	include "CryPlatform.Orbis.h"
 #elif defined(LINUX)

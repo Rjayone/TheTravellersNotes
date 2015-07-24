@@ -134,7 +134,7 @@ CBoidBug::CBoidBug( SBoidContext &bc )
 
 void CBoidBug::UpdateBugsBehavior( float dt,SBoidContext &bc )
 {
-	if ((rand() % 10) == 0)
+	if (cry_random(0, 9) == 0)
 	{
 		// Randomally modify heading vector.
 		m_heading.x += Boid::Frand()*0.2f*bc.factorAlignment; // Used as random movement.
@@ -185,7 +185,7 @@ void CBoidBug::UpdateFrogsBehavior( float dt,SBoidContext &bc )
 {
 	if (m_onGround)
 	{
-		if (((rand() % 100) == 1) ||
+		if ((cry_random(0, 99) == 1) ||
 			((Vec3(bc.playerPos.x-m_pos.x,bc.playerPos.y-m_pos.y,0).GetLengthSquared()) < BUGS_SCARE_DISTANCE*BUGS_SCARE_DISTANCE))
 		{
 			// Sacred by player or random jump.
@@ -280,7 +280,7 @@ void CBoidBug::Update( float dt,SBoidContext &bc )
 			m_heading = (m_heading).GetNormalized();
 			m_speed = 1;
 		}
-		else if ((rand() % 50) == 0)
+		else if (cry_random(0, 49) == 0)
 		{
 			// take off.
 			m_onGround = false;
@@ -353,7 +353,7 @@ void CBoidBug::Update( float dt,SBoidContext &bc )
 	{
 		// Land.
 		m_pos.z = bc.terrainZ+0.1f;
-		if (!bc.noLanding && (rand()%10) == 0)
+		if (!bc.noLanding && cry_random(0, 9) == 0)
 		{
 			m_onGround = true;
 			m_speed = 0;

@@ -12,7 +12,6 @@
 	- 15:9:2010  12:30 : Revised by Dean Claassen
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IActionMapManager.h)
 
 #ifndef __IACTIONMAPMANAGER_H__
 #define __IACTIONMAPMANAGER_H__
@@ -81,7 +80,7 @@ struct SActionInputBlocker
 	EKeyId					keyId;							// External id for fast comparison.
 };
 
-typedef std::vector<SActionInputBlocker> TActionInputBlockers;
+typedef DynArray<SActionInputBlocker> TActionInputBlockers;
 
 // Summary
 //  Input blocking data
@@ -112,10 +111,10 @@ enum EActionFilterType
 
 enum EActionInputDevice
 {
-	eAID_Unknown				= 0,
-	eAID_KeyboardMouse	= BIT(0),
-	eAID_XboxPad				= BIT(1),
-	eAID_PS3Pad					= BIT(2),
+	eAID_Unknown					= 0,
+	eAID_KeyboardMouse		= BIT(0),
+	eAID_XboxPad					= BIT(1),
+	eAID_PS4Pad						= BIT(2),
 };
 
 struct SActionInputDeviceData
@@ -228,7 +227,7 @@ struct IActionMapPopulateCallBack
 	virtual void AddActionName( const char* const pName ) = 0;
 };
 
-UNIQUE_IFACE struct IActionMapAction
+struct IActionMapAction
 {
 	virtual ~IActionMapAction(){}
 	virtual void GetMemoryUsage( ICrySizer * ) const = 0;
@@ -251,7 +250,7 @@ struct IActionMapActionIterator
 };
 typedef _smart_ptr<IActionMapActionIterator> IActionMapActionIteratorPtr;
 
-UNIQUE_IFACE struct IActionMap
+struct IActionMap
 {
 	virtual ~IActionMap(){}
 	virtual void GetMemoryUsage( ICrySizer * ) const = 0;
@@ -296,7 +295,7 @@ typedef _smart_ptr<IActionMapIterator> IActionMapIteratorPtr;
 
 
 //------------------------------------------------------------------------
-UNIQUE_IFACE struct IActionFilter
+struct IActionFilter
 {
 	virtual ~IActionFilter(){}
 	virtual void GetMemoryUsage( ICrySizer * ) const= 0;
@@ -322,7 +321,7 @@ typedef _smart_ptr<IActionFilterIterator> IActionFilterIteratorPtr;
 
 //------------------------------------------------------------------------
 
-UNIQUE_IFACE struct IActionMapManager
+struct IActionMapManager
 {
 	virtual ~IActionMapManager(){}
 	virtual void Update() = 0;

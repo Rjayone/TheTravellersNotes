@@ -1,11 +1,7 @@
 #ifndef _SMART_PTR_H_
 #define _SMART_PTR_H_
 
-#ifdef __SPU__
-	#define CryFatalError printf
-#else
-	void CryFatalError(const char *, ...) PRINTF_PARAMS(1, 2);
-#endif
+void CryFatalError(const char *, ...) PRINTF_PARAMS(1, 2);
 #if defined(APPLE)
     #include <cstddef>
 #endif
@@ -53,9 +49,9 @@ public:
 	_smart_ptr&  operator=(_I* newp)
 	{
 		if (newp)
-			SPU_MAIN_PTR(newp)->AddRef();
+			newp->AddRef();
 		if (p)
-			SPU_MAIN_PTR(p)->Release();
+			p->Release();
 		p = newp;
 		return *this;
 	}
@@ -115,7 +111,50 @@ ILINE void swap(_smart_ptr<T>& a, _smart_ptr<T>& b)
 	a.swap(b);
 }
 
-// reference target for smart pointer
+// reference target without vtable for smart pointer
+// implements AddRef() and Release() strategy using reference counter of the specified type
+template <typename TDerived, typename Counter = int> class _reference_target_no_vtable
+{
+public:
+	_reference_target_no_vtable():
+		m_nRefCounter (0)
+	{
+	}
+
+	~_reference_target_no_vtable()
+	{
+		//assert (!m_nRefCounter);
+	}
+
+	void AddRef()
+	{
+		CHECK_REFCOUNT_CRASH(m_nRefCounter>=0);
+		++m_nRefCounter;
+	}
+
+	void Release()
+	{
+		CHECK_REFCOUNT_CRASH(m_nRefCounter>0);
+		if (--m_nRefCounter == 0)
+		{
+			delete static_cast<TDerived*>( this );
+		}
+		else if (m_nRefCounter < 0)
+		{
+			assert(0);
+			CryFatalError( "Deleting Reference Counted Object Twice" );
+		}
+	}
+	// Warning: use for debugging/statistics purposes only!
+	Counter NumRefs()
+	{
+		return m_nRefCounter;
+	}
+protected:
+	Counter m_nRefCounter;
+};
+
+// reference target with vtable for smart pointer
 // implements AddRef() and Release() strategy using reference counter of the specified type
 template <typename Counter> class _reference_target
 {
@@ -129,7 +168,7 @@ public:
 	{
 		//assert (!m_nRefCounter);
 	}
-	
+
 	void AddRef()
 	{
 		CHECK_REFCOUNT_CRASH(m_nRefCounter>=0);

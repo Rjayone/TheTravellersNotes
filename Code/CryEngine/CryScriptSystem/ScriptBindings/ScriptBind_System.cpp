@@ -510,30 +510,28 @@ void CScriptBind_System::LogString(IFunctionHandler *pH, bool bToConsoleOnly)
 	pH->GetParam(1, sParam);
 
 	if (sParam)
-  {
-    // add the "<Lua> " prefix to understand that this message
+	{
+		// add the "<Lua> " prefix to understand that this message
 		// has been called from a script function
-    char sLogMessage[1024];
+		char sLogMessage[1024];
 
 		if (sParam[0]<=5 && sParam[0]!=0)
 		{
 			sLogMessage[0] = sParam[0];
-			strcpy(&sLogMessage[1], "<Lua> ");
-			strncat(sLogMessage, &sParam[1], sizeof(sLogMessage)-7);
+			cry_strcpy(&sLogMessage[1], sizeof(sLogMessage) - 1, "<Lua> ");
+			cry_strcat(sLogMessage, &sParam[1]);
 		}
 		else
 		{
-			strcpy(sLogMessage, "<Lua> ");
-			strncat(sLogMessage, sParam, sizeof(sLogMessage)-7);
+			cry_strcpy(sLogMessage, "<Lua> ");
+			cry_strcat(sLogMessage, sParam);
 		}
-
-		sLogMessage[sizeof(sLogMessage)-1] = 0;
 
 		if (bToConsoleOnly)
 			m_pLog->LogToConsole(sLogMessage);
 		else
 			m_pLog->Log(sLogMessage);
-  }
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -723,6 +721,7 @@ int CScriptBind_System::GetEntityClass(IFunctionHandler *pH)
 /////////////////////////////////////////////////////////////////////////////////
 /*!Entity pool management
 	@param nID the entity id
+	@param bPrepareNow (optional) whether the entity shall get prepared immediately, rather than enqueuing a request if another entity is already being prepared
 */
 int CScriptBind_System::PrepareEntityFromPool(IFunctionHandler *pH)
 {
@@ -741,10 +740,16 @@ int CScriptBind_System::PrepareEntityFromPool(IFunctionHandler *pH)
 		eID = (EntityId)sh.n;
 	}
 
+	bool bPrepareNow = false;
+	if (pH->GetParamType(2) == svtBool)
+	{
+		pH->GetParam(2, bPrepareNow);
+	}
+
 	IEntityPoolManager* pPoolManager = gEnv->pEntitySystem->GetIEntityPoolManager();
 	if (pPoolManager)
 	{
-		bResult = pPoolManager->PrepareFromPool(eID);
+		bResult = pPoolManager->PrepareFromPool(eID, bPrepareNow);
 	}
 
 	return pH->EndFunction(bResult);

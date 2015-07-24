@@ -249,19 +249,18 @@ bool CWaypointPath::GetPosAfterDistance(TNodeId currentNode, const Vec3& current
 				float localPathLoc = 0.f;
 				float basePathLoc = 0.f;
 				const int totalNodes = m_MaxNodeIndex+1;
-				CIntToFloat totalNodesFloat(totalNodes);
+
 				localPathLoc = 100.f;
 				for(int i=0;i<3&&localPathLoc>=1.0f;i++)
 				{
-					CIntToFloat basePathLocIndex(currentNode+i);
 					const Vec3 AB(m_Nodes[(currentNode+i+1)%totalNodes].pos-m_Nodes[(currentNode+i)%totalNodes].pos);
 					const Vec3 AP(currentPos-m_Nodes[(currentNode+i)%totalNodes].pos);
-					basePathLoc = basePathLocIndex.Convert();
+					basePathLoc = static_cast<float>(currentNode+i);
 					const float ABAB = AB.dot(AB);
 					localPathLoc = ABAB>0.0f ? AB.dot(AP)/ABAB : 0.f;
 				}
 				localPathLoc = clamp_tpl(localPathLoc,0.f,0.9999f);
-				newPathLoc = clamp_tpl(basePathLoc+localPathLoc, 0.f, totalNodesFloat.Convert());
+				newPathLoc = clamp_tpl(basePathLoc+localPathLoc, 0.f, static_cast<float>(totalNodes));
 			}
 		}
 		//Haven't reached first node yet
@@ -401,11 +400,10 @@ bool CWaypointPath::GetPosAfterDistance(TNodeId currentNode, const Vec3& current
 	//Already at or moving towards the final node
 	else
 	{
-		CIntToFloat maxNodeFloat(m_MaxNodeIndex);
 		newNode = m_MaxNodeIndex;
 		interpolatedNode = m_MaxNodeIndex;
 		interpolatedPos = m_Nodes[m_MaxNodeIndex].pos;
-		newPathLoc = maxNodeFloat.Convert();
+		newPathLoc = static_cast<float>(m_MaxNodeIndex);
 	}
 
 	return false;

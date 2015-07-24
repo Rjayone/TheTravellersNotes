@@ -25,8 +25,8 @@
 #define _CPU_NEON
 #endif
 
-#ifndef CRY_MOBILE
-#define CRY_MOBILE
+#ifndef MOBILE
+#define MOBILE
 #endif
 
 #define CRY_FORCE_MALLOC_NEW_ALIGN
@@ -119,7 +119,6 @@ typedef unsigned char				byte;
 
 #include "LinuxSpecific.h"
 // these functions do not exist int the wchar.h header
-// we'll use the implementation for the PS3 instead.
 #undef wscasecomp
 #undef wscasencomp
 extern int wcsicmp (const wchar_t* s1, const wchar_t* s2);

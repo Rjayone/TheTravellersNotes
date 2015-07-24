@@ -664,15 +664,15 @@ void CBreakableManager::BreakIntoPieces( GeomRef &geoOrig, const Matrix34 &mxSrc
 					if (!sRotAxes.empty())
 					{
 						Ang3 angRot;
-						angRot.x = strchr(sRotAxes,'x') ? BiRandom(DEG2RAD(180)) : 0.f;
-						angRot.y = strchr(sRotAxes,'y') ? BiRandom(DEG2RAD(180)) : 0.f;
-						angRot.z = strchr(sRotAxes,'z') ? BiRandom(DEG2RAD(180)) : 0.f;
+						angRot.x = strchr(sRotAxes,'x') ? DEG2RAD(cry_random(-180.0f, 180.0f)) : 0.f;
+						angRot.y = strchr(sRotAxes,'y') ? DEG2RAD(cry_random(-180.0f, 180.0f)) : 0.f;
+						angRot.z = strchr(sRotAxes,'z') ? DEG2RAD(cry_random(-180.0f, 180.0f)) : 0.f;
 						mxPiece = mxPiece * Matrix33::CreateRotationXYZ(angRot);
 					}
 
 					if (fSizeVar != 0.f)
 					{
-						float fScale = 1.f + BiRandom(fSizeVar);
+						float fScale = 1.f + cry_random(-fSizeVar, fSizeVar);
 						if (fScale <= 0.01f)
 							fScale = 0.01f;
 						mxPiece = mxPiece * Matrix33::CreateScale( Vec3(fScale,fScale,fScale) );
@@ -820,7 +820,8 @@ void CBreakableManager::BreakIntoPieces( GeomRef &geoOrig, const Matrix34 &mxSrc
 					pPhysEnt->Action(&sv);
 
 					// Apply impulses, randomising point on each piece to provide variation & rotation.
-					Vec3 vObj = vPartCM + BiRandom(Vec3(pSubObj->GetRadius() * 0.5f));
+					float fHalfRadius = pSubObj->GetRadius() * 0.5f;
+					Vec3 vObj = vPartCM + Vec3( cry_random(-fHalfRadius, fHalfRadius), cry_random(-fHalfRadius, fHalfRadius), cry_random(-fHalfRadius, fHalfRadius));
 					float fHitRadius = pPiecesObj->GetRadius();
 
 					pe_action_impulse imp;
@@ -1911,7 +1912,7 @@ void CBreakableManager::HandlePhysicsCreateEntityPartEvent( const EventPhysCreat
 
 					pNewStatObj = pSubObj->pStatObj;
 					if (!pSubObj->bIdentityMatrix)
-						createParams.slotTM = pSubObj->tm;
+						createParams.slotTM = createParams.slotTM*pSubObj->tm;
 				}
 			}
 		}
@@ -2651,4 +2652,4 @@ bool CBreakableManager::IsGeometryBreakable(IPhysicalEntity* pEntity, IStatObj* 
 	return true;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IBreakableManager)
+

@@ -1,5 +1,6 @@
-#ifndef PS3DLMALLOC_H
-#define PS3DLMALLOC_H
+#ifndef CRY_DLMALLOC_H
+#define CRY_DLMALLOC_H
+#pragma once
 
 typedef void* dlmspace;
 

@@ -612,7 +612,7 @@ void CVTOLVehicleManager::CreateExplosion(IParticleEffect *inParticleEffect, con
 		explosionInfo.effect_scale = inEffectScale; // this is likely not connected up in the particle effect but should be able to be so that the effect can be adjusted dynamically
 		explosionInfo.pos = pos; 
 		explosionInfo.dir.Set(0.0f,-1.0f,0.0f);
-		explosionInfo.effect_scale = Random(0.9f,1.1f);
+		explosionInfo.effect_scale = cry_random(0.9f,1.1f);
 		explosionInfo.pressure = 1000.0f;
 		explosionInfo.maxblurdistance = 10.0;
 		explosionInfo.radius = 12.0f;

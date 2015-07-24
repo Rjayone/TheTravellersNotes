@@ -27,15 +27,17 @@
 // This was chewing up a lot of CPU time just waiting for a connection
 #define NO_LIVECREATE
 
+// [VR]
 // Optional HMD SDK integrations
-#define EXCLUDE_OCULUS_SDK
-#define EXCLUDE_CINEMIZER_SDK
+#if defined(MOBILE) || defined(LINUX) || defined(APPLE) || defined (ORBIS) || defined (DURANGO) || defined(DEDICATED_SERVER)
+#	define EXCLUDE_OCULUS_SDK
+#endif
 
 // Scaleform base configuration
 #if defined(DEDICATED_SERVER)
 #  define EXCLUDE_SCALEFORM_SDK // Not used in dedicated server
 #endif
-#if defined(CRY_MOBILE) || defined(LINUX) || defined(APPLE)
+#if defined(MOBILE) || defined(LINUX) || defined(APPLE)
 #  define EXCLUDE_SCALEFORM_VIDEO // Not currently supported on these platforms
 #endif
 
@@ -68,9 +70,9 @@
 // Type used for vertex indices
 #if defined(RESOURCE_COMPILER)
 	typedef uint32 vtx_idx;
-
-
-#elif defined(XENON) || defined(PS3) || defined(CRY_MOBILE)
+#elif defined(IS_PROSDK)
+	typedef uint32 vtx_idx;  
+#elif defined(MOBILE)
 	typedef uint16 vtx_idx;
 #elif defined(ORBIS)
 	// note: CryEngine freezes on ORBIS if uint32 is used
@@ -88,15 +90,16 @@
 
 // for consoles every bit of memory is important so files for documentation purpose are excluded
 // they are part of regular compiling to verify the interface
-#if defined(PS3) || defined(XENON) || defined(ORBIS)
+#if defined(ORBIS)
 #	define EXCLUDE_DOCUMENTATION_PURPOSE
 #endif
 
-#if defined(PS3) || defined(XENON)
-#	define RENDERNODES_LEAN_AND_MEAN
-#endif
+// When non-zero, const cvar accesses (by name) are logged in release-mode on consoles.
+// This can be used to find non-optimal usage scenario's, where the constant should be used directly instead.
+// Since read accesses tend to be used in flow-control logic, constants allow for better optimization by the compiler.
+#define LOG_CONST_CVAR_ACCESS 0
 
-#if defined(WIN32) || defined(WIN64)
+#if defined(WIN32) || defined(WIN64) || LOG_CONST_CVAR_ACCESS
 #define RELEASE_LOGGING
 #if defined(_RELEASE)
 #define CVARS_WHITELIST
@@ -127,16 +130,13 @@ extern void SliceAndSleep( const char* pFunc, int line );
 #define SLICE_SCOPE_DEFINE()
 #endif
 
-#if (defined(PS3) || defined(XENON)) && !defined(_DEBUG)
-#	define EXCLUDE_CVARHELP
-#endif
 
 // Compile with unit testing enabled when not in RELEASE
 #if !defined(_RELEASE)
 	#define CRY_UNIT_TESTING
 
 	// configure the unit testing framework, if we have exceptions or not
-	#if !(defined(PS3) || defined(XENON) || defined(APPLE) || defined(LINUX) || defined(ORBIS))
+	#if !(defined(APPLE) || defined(LINUX) || defined(ORBIS))
 		#define CRY_UNIT_TESTING_USE_EXCEPTIONS
 	#endif
 
@@ -146,22 +146,8 @@ extern void SliceAndSleep( const char* pFunc, int line );
 	#define USE_HTTP_WEBSOCKETS 0
 #endif
 
-#if ((defined(XENON) && !defined(_LIB)) || defined(WIN32) || defined(ORBIS) || defined(DURANGO)) && !defined(RESOURCE_COMPILER)
+#if (defined(WIN32) || defined(ORBIS) || defined(DURANGO)) && !defined(RESOURCE_COMPILER)
   #define CAPTURE_REPLAY_LOG 1
-#endif
-
-#ifdef PS3
-  #if defined(ENABLE_MEMREPLAY) && !defined(CRY_DXPS_SINGLEFLUSHVALIDATE)
-    #define CAPTURE_REPLAY_LOG 1
-  #endif
-  #if defined(JOB_LIB_COMP) || defined(__SPU__)
-    #undef CAPTURE_REPLAY_LOG
-  #endif
-	
-#endif
-
-#if CAPTURE_REPLAY_LOG && defined(PS3_CRYSIZER_HEAP_TRAVERSAL)
-	#undef CAPTURE_REPLAY_LOG
 #endif
 
 #if defined(RESOURCE_COMPILER) || defined(_RELEASE)
@@ -172,50 +158,29 @@ extern void SliceAndSleep( const char* pFunc, int line );
   #define CAPTURE_REPLAY_LOG 0
 #endif
 
-#if (defined(PS3) || defined(XENON) || defined(LINUX) || defined(ANDROID) || defined(APPLE) ||  defined(WIN32) || defined(DURANGO) || defined(ORBIS)) && !defined(PS3_CRYSIZER_HEAP_TRAVERSAL)
+#if (defined(LINUX) || defined(ANDROID) || defined(APPLE) ||  defined(WIN32) || defined(DURANGO) || defined(ORBIS))
 	#define USE_GLOBAL_BUCKET_ALLOCATOR
-#endif
-
-#if (defined(PS3) || defined(XENON)) && !defined(PS3_CRYSIZER_HEAP_TRAVERSAL)
-#define USE_LEVEL_HEAP 1
 #endif
 
 #define OLD_VOICE_SYSTEM_DEPRECATED
 
+#ifdef IS_PROSDK
+#   define USING_TAGES_SECURITY					// Wrapper for TGVM security
+# if defined(LINUX) || defined(APPLE)
+#   error LINUX and Mac does not support evaluation version 
+# endif
+#endif
 
-
-
-
-
-
-
-
-
-
-
-
+#ifdef USING_TAGES_SECURITY
+#	define TAGES_EXPORT __declspec(dllexport)
+#else 
 #	define TAGES_EXPORT
-
+#endif // USING_TAGES_SECURITY
 // test -------------------------------------
-//#define EXCLUDE_CVARHELP
 
 #define _DATAPROBE
-#if defined(_RELEASE) && !defined(XENON) && !defined(PS3) && !defined(DURANGO)
-#define ENABLE_COPY_PROTECTION
-#endif // #if defined(_RELEASE) && !defined(XENON) && !defined(PS3)
 
-// GPU pass timers are enabled here for Release builds as well
-// Disable them before shipping, otherwise game is linked against instrumented libraries on 360
-//#ifndef PURE_XENON_RELEASE
-//#define ENABLE_SIMPLE_GPU_TIMERS
-//#endif
 
-#if defined(XENON) && defined(_RELEASE) && !defined(ENABLE_PROFILING_CODE)
-//#ifndef ENABLE_SIMPLE_GPU_TIMERS
-//	#define PURE_XENON_RELEASE
-//#endif
-#undef ENABLE_FRAME_PROFILER
-#endif
 
 //This feature allows automatic crash submission to JIRA, but does not work outside of CryTek
 //Note: This #define will be commented out during code export
@@ -223,12 +188,6 @@ extern void SliceAndSleep( const char* pFunc, int line );
 
 #if !defined(PHYSICS_STACK_SIZE)
 # define PHYSICS_STACK_SIZE (128U<<10)
-#endif 
-#if !defined(EMBED_PHYSICS_AS_FIBER)
-# define EMBED_PHYSICS_AS_FIBER 0
-#endif 
-#if EMBED_PHYSICS_AS_FIBER && !defined(EXCLUDE_PHYSICS_THREAD)
-# error cannot embed physics as fiber if the physics timestep is threaded!
 #endif 
 
 #if !defined(USE_LEVEL_HEAP)
@@ -264,14 +223,6 @@ extern void SliceAndSleep( const char* pFunc, int line );
 #endif
 
 #if defined(ENABLE_PROFILING_CODE)
-//  #define ENABLE_SIMPLE_GPU_TIMERS
-#endif
-
-#if defined(PS3) && defined(ENABLE_PROFILING_CODE)
-  #define ENABLE_ACCURATE_RSX_PROFILING
-#endif
-
-#if defined(ENABLE_PROFILING_CODE)
   #define USE_PERFHUD
 #endif
 
@@ -283,15 +234,11 @@ extern void SliceAndSleep( const char* pFunc, int line );
 	#define FMOD_STREAMING_DEBUGGING 1
 #endif
 
-#if (defined(PS3) || defined(XENON)) && !defined(ENABLE_LW_PROFILERS)
+#if !defined(ENABLE_LW_PROFILERS)
 #ifndef USE_NULLFONT
 #define USE_NULLFONT 1
 #endif
 #define USE_NULLFONT_ALWAYS 1
-#endif
-
-#if defined(XENON) || defined(PS3)
-#	define ENABLE_FLASH_LOCKLESS_RENDERING_API
 #endif
 
 #if defined(WIN32) || defined(WIN64)
@@ -309,12 +256,7 @@ extern void SliceAndSleep( const char* pFunc, int line );
 #define CRY_ENABLE_RC_HELPER 1
 #endif
 
-#if !defined(_RELEASE) && (defined(XENON) || defined(PS3))
-// create a watchdog thread on PS3/360 which will crash the game if the main update loop takes more than 5 minutes
-#define ENABLE_WATCHDOG_THREAD
-#endif
-
-#if !defined(_RELEASE) && !defined(PS3) && !defined(LINUX) && !defined(APPLE) && !defined(DURANGO) && !defined(ORBIS)
+#if !defined(_RELEASE) && !defined(LINUX) && !defined(APPLE) && !defined(DURANGO) && !defined(ORBIS)
 	#define SOFTCODE_SYSTEM_ENABLED
 #endif
 
@@ -336,7 +278,7 @@ extern void SliceAndSleep( const char* pFunc, int line );
 
 #endif
 
-#if defined(PS3) || defined(_LIB)
+#if defined(_LIB)
 #	define SYS_ENV_AS_STRUCT
 #endif
 
@@ -356,7 +298,7 @@ extern void SliceAndSleep( const char* pFunc, int line );
 // a special ticker thread to run during load and unload of levels
 #define USE_NETWORK_STALL_TICKER_THREAD
 
-#if !defined(XENON) && !defined(PS3) && !defined(CRY_MOBILE)
+#if !defined(MOBILE)
 	//---------------------------------------------------------------------
 	// Enable Tessellation Features
 	// (displacement mapping, subdivision, water tessellation)
@@ -366,49 +308,59 @@ extern void SliceAndSleep( const char* pFunc, int line );
 	
 	// Global tessellation feature flag
 	#define TESSELLATION
+		#ifdef TESSELLATION
+			// Specific features flags
+			#define WATER_TESSELLATION
+			#define PARTICLES_TESSELLATION
 
-	#ifdef TESSELLATION
-		// Specific features flags
-		#define WATER_TESSELLATION
-		#define PARTICLES_TESSELLATION
+			#ifndef ORBIS // Causes memory wastage in RenderMesh.cpp
+				// Mesh tessellation (displacement, smoothing, subd)
+				#define MESH_TESSELLATION
+				// Mesh tessellation also in motion blur passes
+				#define MOTIONBLUR_TESSELLATION
+			#endif
 
-		#ifndef ORBIS // Causes memory wastage in RenderMesh.cpp
-			// Mesh tessellation (displacement, smoothing, subd)
-			#define MESH_TESSELLATION
-			// Mesh tessellation also in motion blur passes
-			#define MOTIONBLUR_TESSELLATION
-		#endif
-
-		// Dependencies
-		#ifdef MESH_TESSELLATION
-			#define MESH_TESSELLATION_ENGINE
-		#endif
-		#ifdef DIRECT3D10
-			#ifdef WATER_TESSELLATION
-				#define WATER_TESSELLATION_RENDERER
+			// Dependencies
+			#ifdef MESH_TESSELLATION
+				#define MESH_TESSELLATION_ENGINE
 			#endif
-			#ifdef PARTICLES_TESSELLATION
-				#define PARTICLES_TESSELLATION_RENDERER
-			#endif
-			#ifdef MESH_TESSELLATION_ENGINE
-				#define MESH_TESSELLATION_RENDERER
-			#endif
+			#ifndef NULL_RENDERER
+				#ifdef WATER_TESSELLATION
+					#define WATER_TESSELLATION_RENDERER
+				#endif
+				#ifdef PARTICLES_TESSELLATION
+					#define PARTICLES_TESSELLATION_RENDERER
+				#endif
+				#ifdef MESH_TESSELLATION_ENGINE
+					#define MESH_TESSELLATION_RENDERER
+				#endif
 
 			#if defined(WATER_TESSELLATION_RENDERER) || defined(PARTICLES_TESSELLATION_RENDERER) || defined(MESH_TESSELLATION_RENDERER)
 				// Common tessellation flag enabling tessellation stages in renderer
 				#define TESSELLATION_RENDERER
 			#endif
-		#endif
-	#endif //#ifdef TESSELLATION
-#endif //#if !defined(XENON) && !defined(PS3)
+		#endif // !NULL_RENDERER
+	#endif // TESSELLATION
+#endif // !defined(MOBILE)
 
-#if !defined(XENON) && !defined(PS3)
+
 #define USE_GEOM_CACHES
+
+//------------------------------------------------------
+// SVO GI
+//------------------------------------------------------
+// Modules   : Renderer, Engine
+// Platform  : DX11
+#if !defined(RENDERNODES_LEAN_AND_MEAN) && (defined(WIN32) || defined(DURANGO) /*|| defined(ORBIS)*/)
+#define FEATURE_SVO_GI
+#if defined(WIN32)
+	#define FEATURE_SVO_GI_ALLOW_HQ
+#endif
 #endif
 
-
-
-
+#if	defined(RELEASE) && defined(WIN32) && defined(DEDICATED_SERVER) && 0
+#define RELEASE_SERVER_SECURITY
+#endif
 
 #if !defined(_RELEASE)
 #	define ENABLE_DYNTEXSRC_PROFILING
@@ -424,8 +376,9 @@ extern void SliceAndSleep( const char* pFunc, int line );
 #endif
 
 
-#if !defined(_DEBUG) && (defined(WIN32) || defined(WIN64)) && !defined(IS_FREESDK) && !defined(IS_PROSDK) && !defined(IS_EAAS)
-//#define CRY_PROFILE_MARKERS_USE_GPA
+#if !defined(_DEBUG) && (defined(WIN32) || defined(WIN64)) && !defined(IS_EAAS)
+////# define CRY_PROFILE_MARKERS_USE_GPA
+//# define CRY_PROFILE_MARKERS_USE_NVTOOLSEXT
 #endif
 
 #if defined(WIN32) || defined(WIN64)
@@ -445,7 +398,7 @@ extern void SliceAndSleep( const char* pFunc, int line );
 #endif
 
 #if defined(GAME_IS_CRYSIS3)
-#if !defined(XENON) && !defined(PS3) && !PC_CONSOLE_NET_COMPATIBLE
+#if !PC_CONSOLE_NET_COMPATIBLE
 #define ANTI_CHEAT
 #endif
 #define ENABLE_BBOX_EXCLUDE_LIST
@@ -465,7 +418,7 @@ extern void SliceAndSleep( const char* pFunc, int line );
 
 //#define SUPPORT_XTEA_PAK_ENCRYPTION										//C2 Style. Compromised - do not use
 //#define SUPPORT_STREAMCIPHER_PAK_ENCRYPTION						//C2 DLC Style - by Mark Tully
-#if !defined(XENON) && !defined(PS3) && !defined(DURANGO)
+#if !defined(DURANGO)
 #define SUPPORT_RSA_AND_STREAMCIPHER_PAK_ENCRYPTION		//C3/Warface Style - By Timur Davidenko and integrated by Rob Jessop
 #endif
 #if !defined(_RELEASE) || defined(PERFORMANCE_BUILD)
@@ -480,7 +433,7 @@ extern void SliceAndSleep( const char* pFunc, int line );
 //#define SUPPORT_SMARTGLASS
 #endif
 
-#if (defined(WIN32) || defined(WIN64) || defined(LINUX) || defined(APPLE) || defined(ORBIS)) && !defined(DIRECT3D9) && !defined(NULL_RENDERER)
+#if (defined(WIN32) || defined(WIN64) || defined(LINUX) || defined(APPLE) || defined(ORBIS)) && !defined(NULL_RENDERER)
 #define GPU_PARTICLES 1
 #else
 #define GPU_PARTICLES 0
@@ -495,16 +448,13 @@ extern void SliceAndSleep( const char* pFunc, int line );
 //Computes a CRC of the decompressed data and compares it to the CRC stored in the archive CDR for that file.
 //Files with CRC mismatches will return Z_ERROR_CORRUPT and invoke the global handler in the PlatformOS.
 #define VERIFY_PAK_ENTRY_CRC
-#if !defined(PS3)
-//Define for enabling CRC checking in the streaming engine. Can only work if the entire file is streamed and decompressed.
-//Currently doesn't work on PS3 due to the complexity of adding it to the SPU code
-#define VERIFY_PAK_ENTRY_CRC_STREAMING
-#endif	//!PS3
+
 //#define CHECK_CRC_ONLY_ONCE	//Do NOT enable this if using SUPPORT_RSA_AND_STREAMCIPHER_PAK_ENCRYPTION - it will break subsequent decryption attempts for a file as it nulls the stored CRC32
-#if defined(XENON) || defined(PS3)
+
+#if 0 // Enable when clear on which platforms we want this check
 //On consoles we can trust files that have been loaded from optical drives
 #define SKIP_CHECKSUM_FROM_OPTICAL_MEDIA
-#endif //XENON || PS3
+#endif // 0
 
 //End of encryption & security defines
 
@@ -514,10 +464,10 @@ extern void SliceAndSleep( const char* pFunc, int line );
 #define EXPOSE_D3DDEVICE
 
 // The maximum number of joints in an animation
-#if defined(XENON) || defined(PS3)
-#define MAX_JOINT_AMOUNT 256
-#else
 #define MAX_JOINT_AMOUNT 1024
-#endif
+
+// #define this if you still need the old C1-style AI-character system, but which will get removed soon
+//#define USE_DEPRECATED_AI_CHARACTER_SYSTEM
+
 
 #endif // PROJECTDEFINES_H

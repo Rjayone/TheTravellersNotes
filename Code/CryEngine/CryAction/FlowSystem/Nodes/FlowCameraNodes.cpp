@@ -217,7 +217,7 @@ public:
 		float freq = GetPortFloat(pActInfo, EIP_Frequency);
 		if (iszero(freq) == false)
 			freq = 1.0f / freq;
-		const float rand = GetPortFloat(pActInfo, EIP_Randomness);
+		const float randomness = GetPortFloat(pActInfo, EIP_Randomness);
 		static const bool bFlip = true; // GetPortBool(pActInfo, EIP_Flip);
 		const bool bUpdateOnly = !bTriggered && bFreqTriggered; // it's an update if and only if Frequency has been changed
 
@@ -229,7 +229,7 @@ public:
 		angles *= amount;
 		shift *= amount;
 
-		pView->SetViewShake(angles, shift, duration, freq, rand, FLOWGRAPH_SHAKE_ID, bFlip, bUpdateOnly, bGroundOnly);
+		pView->SetViewShake(angles, shift, duration, freq, randomness, FLOWGRAPH_SHAKE_ID, bFlip, bUpdateOnly, bGroundOnly);
 	}
 	
 };
@@ -314,7 +314,7 @@ public:
 		
 		if (pPresetsHelp[0]==0)
 		{
-			strcpy_s(pPresetsHelp, sizeof(pPresetsHelp), "Preset input values. When this is used, all parameter inputs are ignored.\n" );
+			cry_strcpy(pPresetsHelp, "Preset input values. When this is used, all parameter inputs are ignored.\n" );
 			for (int i=0; i<NUM_PRESETS; i++)
 			{
 				char buf[300];
@@ -322,19 +322,19 @@ public:
 					m_Presets[i].pName, m_Presets[i].angle.x, m_Presets[i].angle.y, m_Presets[i].angle.z, m_Presets[i].shift.x, m_Presets[i].shift.y, m_Presets[i].shift.z, m_Presets[i].frequency,
 					m_Presets[i].randomness, m_Presets[i].distance, m_Presets[i].rangeMin, m_Presets[i].rangeMax, m_Presets[i].sustainDuration, m_Presets[i].fadeInDuration, m_Presets[i].fadeOutDuration );
 				
-				strcat_s( pPresetsHelp, sizeof(pPresetsHelp), buf );
+				cry_strcat(pPresetsHelp, buf);
 			}
 		}
 		
 		static char pPresetsEnumDef[100] = "";
 		if (pPresetsEnumDef[0]==0)
 		{
-			strcpy_s(pPresetsEnumDef, sizeof(pPresetsEnumDef), "enum_int:NoPreset=0," );
+			cry_strcpy(pPresetsEnumDef, "enum_int:NoPreset=0," );
 			for (int i=0; i<NUM_PRESETS; i++)
 			{
 				char buf[100];
 				sprintf_s(buf, sizeof(buf), "%s=%1d,", m_Presets[i].pName, i+1 );
-				strcat_s( pPresetsEnumDef, sizeof(pPresetsEnumDef), buf );
+				cry_strcat(pPresetsEnumDef, buf);
 			}
 		}
 	#endif

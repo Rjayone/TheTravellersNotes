@@ -22,12 +22,12 @@ public:
 	explicit CLipSyncProvider_TransitionQueue(EntityId entityId);
 
 	// ILipSyncProvider
-	void RequestLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) OVERRIDE;
-	void StartLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) OVERRIDE;
-	void PauseLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) OVERRIDE;
-	void UnpauseLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) OVERRIDE;
-	void StopLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) OVERRIDE;
-	void UpdateLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) OVERRIDE;
+	void RequestLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) override;
+	void StartLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) override;
+	void PauseLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) override;
+	void UnpauseLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) override;
+	void StopLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) override;
+	void UpdateLipSync(IEntityAudioProxy* pProxy, const TAudioControlID nAudioTriggerId, const ELipSyncMethod lipSyncMethod) override;
 	// ~ILipSyncProvider
 
 	void FullSerialize(TSerialize ser);
@@ -77,27 +77,27 @@ class CLipSync_TransitionQueue : public CGameObjectExtensionHelper<CLipSync_Tran
 {
 public:
 	// IGameObjectExtension
-	virtual void GetMemoryUsage(ICrySizer *pSizer) const OVERRIDE;
-	virtual bool Init(IGameObject* pGameObject) OVERRIDE;
-	virtual void PostInit(IGameObject* pGameObject) OVERRIDE;
-	virtual void InitClient(int channelId) OVERRIDE;
-	virtual void PostInitClient(int channelId) OVERRIDE;
-	virtual bool ReloadExtension(IGameObject* pGameObject, const SEntitySpawnParams& params) OVERRIDE;
-	virtual void PostReloadExtension(IGameObject* pGameObject, const SEntitySpawnParams& params) OVERRIDE;
-	virtual bool GetEntityPoolSignature(TSerialize signature) OVERRIDE;
-	virtual void Release() OVERRIDE;
-	virtual void FullSerialize(TSerialize ser) OVERRIDE;
-	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags) OVERRIDE;
-	virtual void PostSerialize() OVERRIDE;
-	virtual void SerializeSpawnInfo(TSerialize ser) OVERRIDE;
-	virtual ISerializableInfoPtr GetSpawnInfo() OVERRIDE;
-	virtual void Update(SEntityUpdateContext& ctx, int updateSlot) OVERRIDE;
-	virtual void HandleEvent(const SGameObjectEvent& event) OVERRIDE;
-	virtual void ProcessEvent(SEntityEvent& event) OVERRIDE;
-	virtual void SetChannelId(uint16 id) OVERRIDE;
-	virtual void SetAuthority(bool auth) OVERRIDE;
-	virtual void PostUpdate(float frameTime) OVERRIDE;
-	virtual void PostRemoteSpawn() OVERRIDE;
+	virtual void GetMemoryUsage(ICrySizer *pSizer) const override;
+	virtual bool Init(IGameObject* pGameObject) override;
+	virtual void PostInit(IGameObject* pGameObject) override;
+	virtual void InitClient(int channelId) override;
+	virtual void PostInitClient(int channelId) override;
+	virtual bool ReloadExtension(IGameObject* pGameObject, const SEntitySpawnParams& params) override;
+	virtual void PostReloadExtension(IGameObject* pGameObject, const SEntitySpawnParams& params) override;
+	virtual bool GetEntityPoolSignature(TSerialize signature) override;
+	virtual void Release() override;
+	virtual void FullSerialize(TSerialize ser) override;
+	virtual bool NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags) override;
+	virtual void PostSerialize() override;
+	virtual void SerializeSpawnInfo(TSerialize ser) override;
+	virtual ISerializableInfoPtr GetSpawnInfo() override;
+	virtual void Update(SEntityUpdateContext& ctx, int updateSlot) override;
+	virtual void HandleEvent(const SGameObjectEvent& event) override;
+	virtual void ProcessEvent(SEntityEvent& event) override;
+	virtual void SetChannelId(uint16 id) override;
+	virtual void SetAuthority(bool auth) override;
+	virtual void PostUpdate(float frameTime) override;
+	virtual void PostRemoteSpawn() override;
 	// ~IGameObjectExtension
 
 private:

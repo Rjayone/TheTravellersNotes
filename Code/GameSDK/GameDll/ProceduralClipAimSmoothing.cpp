@@ -18,6 +18,13 @@
 struct SAimSmoothingParams 
 	: public IProceduralParams
 {
+	SAimSmoothingParams()
+		: smoothTimeSeconds(0.1f)
+		, maxYawDegreesPerSecond(360.0f)
+		, maxPitchDegreesPerSecond(360.0f)
+	{
+	}
+
 	virtual void Serialize(Serialization::IArchive& ar)
 	{
 		ar(smoothTimeSeconds, "SmoothTimeSeconds", "Smooth Time Seconds");

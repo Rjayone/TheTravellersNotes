@@ -602,7 +602,7 @@ FragmentID CHitDeathReactions::GetHitDeathFragmentID( const IActionController* p
 {
 	CRY_ASSERT( piActionController );
 
-	const uint32 FRAGID_HITDEATH = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "hitDeath" );
+	const uint32 FRAGID_HITDEATH = CCrc32::ComputeLowercase( "hitDeath" );
 	const FragmentID fragID = piActionController->GetFragID( FRAGID_HITDEATH );
 
 	return fragID;
@@ -2353,8 +2353,8 @@ uint32 CHitDeathReactions::GetSynchedSeed(bool bKillReaction) const
 	// will be re-seeded with the same value over and over, and thus pick
 	// the same identical random value for deciding to play a hit-reaction or not!
 	return bKillReaction ? 
-		gEnv->pSystem->GetCrc32Gen()->GetCRC32(m_actor.GetEntity()->GetName()) :
-	gEnv->pSystem->GetCrc32Gen()->GetCRC32(m_actor.GetEntity()->GetName()) + static_cast<uint32>(m_actor.GetHealth() * 100.f);
+		CCrc32::Compute(m_actor.GetEntity()->GetName()) :
+	CCrc32::Compute(m_actor.GetEntity()->GetName()) + static_cast<uint32>(m_actor.GetHealth() * 100.f);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2363,7 +2363,7 @@ float CHitDeathReactions::GetRandomProbability() const
 {
 	if (!(gEnv->bMultiplayer))
 	{
-		return Random();
+		return cry_random(0.0f, 1.0f);
 	}
 
 	return m_pseudoRandom.GenerateFloat();

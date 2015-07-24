@@ -80,7 +80,7 @@ protected:
 
 	//! <code>Entity.LoadObjectLattice( nSlot )</code>
 	//! <description>Load lattice into the entity slot.</description>
-	//    nSlot">Slot identifier.</param>
+	//    <param name="nSlot">Slot identifier.</param>
 	int LoadObjectLattice( IFunctionHandler *pH,int nSlot );
 
 	//! <code>Entity.LoadSubObject( nSlot, sFilename, sGeomName )</code>
@@ -123,7 +123,6 @@ protected:
 	//!		<param name="nLightSlot">Slot where our light is loaded.</param>
 	int SetSelfAsLightCasterException(IFunctionHandler *pH, int nLightSlot);
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 	//! <code>Entity.LoadCloud( nSlot, sFilename )</code>
 	//! <description>Loads the cloud XML file into the entity slot.</description>
 	//!		<param name="nSlot">Slot identifier.</param>
@@ -135,7 +134,6 @@ protected:
 	//!		<param name="nSlot">Slot identifier.</param>
 	//!		<param name="table">Table property for the cloud movement.</param>
 	int SetCloudMovementProperties(IFunctionHandler *pH, int nSlot, SmartScriptTable table);
-#endif
 
 	//! <code>Entity.LoadFogVolume( nSlot, table )</code>
 	//! <description>Loads the fog volume XML file into the entity slot.</description>
@@ -154,7 +152,6 @@ protected:
 	int LoadPrismObject(IFunctionHandler* pH, int nSlot);
 #endif // EXCLUDE_DOCUMENTATION_PURPOSE
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 	//! <code>Entity.LoadVolumeObject( nSlot, sFilename )</code>
 	//!		<param name="nSlot">Slot identifier.</param>
 	//!		<param name="sFilename">File name of the volume object.</param>
@@ -166,7 +163,6 @@ protected:
 	//!		<param name="table">Table with volume object properties.</param>
 	//! <description>Sets the properties of the volume object movement.</description>
 	int SetVolumeObjectMovementProperties(IFunctionHandler *pH, int nSlot, SmartScriptTable table);
-#endif
 
 	//! <code>Entity.LoadParticleEffect( nSlot, sEffectName, fPulsePeriod, bPrime, fScale )</code>
 	//! <description>Loads CGF geometry into the entity slot.</description>
@@ -263,37 +259,37 @@ protected:
 
 	//! <code>Entity.CopySlotTM( destSlot, srcSlot, includeTranslation )</code>
 	//! <description>Copies the TM (Transformation Matrix) of the slot.</description>
-	//!		<param name="destSlot">Destination slot identifier.
-	//!		<param name="srcSlot">Source slot identifier.
-	//!		<param name="includeTranslation">True to include the translation, false otherwise.
+	//!		<param name="destSlot">Destination slot identifier.</param>
+	//!		<param name="srcSlot">Source slot identifier.</param>
+	//!		<param name="includeTranslation">True to include the translation, false otherwise.</param>
 	int CopySlotTM(IFunctionHandler *pH, int destSlot, int srcSlot, bool includeTranslation);
 
 	//! <code>Entity.MultiplyWithSlotTM( slot, pos )</code>
 	//! <description>Multiplies with the TM (Transformation Matrix) of the slot.</description>
-	//!		<param name="slot">Slot identifier.
-	//!		<param name="pos">Position vector.
+	//!		<param name="slot">Slot identifier.</param>
+	//!		<param name="pos">Position vector.</param>
 	int MultiplyWithSlotTM(IFunctionHandler *pH, int slot, Vec3 pos);
 
 	//! <code>Entity.SetSlotWorldTM( nSlot, pos, dir )</code>
 	//! <description>Sets the World TM (Transformation Matrix) of the slot.</description>
-	//!		<param name="nSlot">Slot identifier.
-	//!		<param name="pos">Position vector.
-	//!		<param name="dir">Direction vector.
+	//!		<param name="nSlot">Slot identifier.</param>
+	//!		<param name="pos">Position vector.</param>
+	//!		<param name="dir">Direction vector.</param>
 	int SetSlotWorldTM(IFunctionHandler *pH, int nSlot, Vec3 pos, Vec3 dir);
 
 	//! <code>Entity.GetSlotWorldPos( nSlot )</code>
 	//! <description>Gets the World position of the slot.</description>
-	//!		<param name="nSlot">Slot identifier.
+	//!		<param name="nSlot">Slot identifier.</param>
 	int GetSlotWorldPos(IFunctionHandler *pH, int nSlot);
 
 	//! <code>Entity.GetSlotWorldDir( nSlot )</code>
 	//! <description>Gets the World direction of the slot.</description>
-	//!		<param name="nSlot">Slot identifier.
+	//!		<param name="nSlot">Slot identifier.</param>
 	int GetSlotWorldDir(IFunctionHandler *pH, int nSlot);
 
 	//! <code>Entity.SetSlotHud3D( nSlot )</code>
 	//! <description>Setup flags for use as 3D HUD entity.</description>
-	//!		<param name="nSlot">Slot identifier.
+	//!		<param name="nSlot">Slot identifier.</param>
 	int SetSlotHud3D(IFunctionHandler *pH, int nSlot);
 
 
@@ -301,7 +297,7 @@ protected:
 
 	//! <code>Entity.SetPos( vPos )</code>
 	//! <description>Sets the position of the entity.</description>
-	//!		<param name="vPos">Position vector.
+	//!		<param name="vPos">Position vector.</param>
 	int SetPos(IFunctionHandler *pH,Vec3 vPos );
 
 	//! <code>Entity.GetPos()</code>
@@ -309,7 +305,7 @@ protected:
 	int GetPos(IFunctionHandler *pH);
 
 	//! <code>Entity.SetAngles( vAngles )</code>
-	//!		<param name="vAngles">Angle vector.
+	//!		<param name="vAngles">Angle vector.</param>
 	//! <description>Sets the angle of the entity.</description>
 	int SetAngles(IFunctionHandler *pH,Ang3 vAngles );
 
@@ -318,7 +314,7 @@ protected:
 	int GetAngles(IFunctionHandler *pH);
 
 	//! <code>Entity.SetScale( fScale )</code>
-	//!		<param name="fScale">Scale amount.
+	//!		<param name="fScale">Scale amount.</param>
 	//! <description>Sets the scaling value for the entity.</description>
 	int SetScale(IFunctionHandler *pH,float fScale );
 
@@ -394,19 +390,19 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	//! <code>Entity.DrawSlot( nSlot )</code>
 	//! <description>Enables/Disables drawing of object or character at specified slot of the entity.</description>
-	//!		<param name="nSlot">Slot identifier.
-	//!		<param name="nEnable">1-Enable drawing, 0-Disable drawing.
+	//!		<param name="nSlot">Slot identifier.</param>
+	//!		<param name="nEnable">1-Enable drawing, 0-Disable drawing.</param>
 	int DrawSlot(IFunctionHandler *pH, int nSlot,int nEnable );
 
 	//////////////////////////////////////////////////////////////////////////
 	//! <code>Entity.IgnorePhysicsUpdatesOnSlot( nSlot )</code>
 	//! <description>Ignore physics when it try to update the position of a slot.</description>
-	//!		<param name="nSlot">Slot identifier.
+	//!		<param name="nSlot">Slot identifier.</param>
 	int IgnorePhysicsUpdatesOnSlot(IFunctionHandler *pH, int nSlot);
 
 	//! <code>Entity.FreeSlot( nSlot )</code>
 	//! <description>Delete all objects from specified slot.</description>
-	//!		<param name="nSlot">Slot identifier.
+	//!		<param name="nSlot">Slot identifier.</param>
 	int FreeSlot(IFunctionHandler *pH, int nSlot );
 
 	//! <code>Entity.FreeAllSlots()</code>
@@ -522,9 +518,9 @@ protected:
 	//!          gravity             Gravity vector inside the physical area.
 	//!       </para>
 	//!</description>
-	//!		<param name="nSlot - Slot identifier, if -1 use geometries from all slots.
-	//!		<param name="nPhysicsType - Type of physical entity to create.
-	//!		<param name="physicsParams - Table with physicalization parameters.
+	//!		<param name="nSlot - Slot identifier, if -1 use geometries from all slots.</param>
+	//!		<param name="nPhysicsType - Type of physical entity to create.</param>
+	//!		<param name="physicsParams - Table with physicalization parameters.</param>
 	int Physicalize(IFunctionHandler *pH,int nSlot,int nPhysicsType,SmartScriptTable physicsParams);
 
 	//! <code>Entity.SetPhysicParams()</code>
@@ -558,7 +554,7 @@ protected:
 
 	//! <code>Entity.IsUsingPipe( pipename )</code>
 	//! <description>Returns true if entity is running the given goalpipe or has it inserted.</description>
-	//!		<param name="pipename - goalpipe name
+	//!		<param name="pipename - goalpipe name</param>
 	//! <returns>
 	//!  	true - if entity is running the given goalpipe or has it inserted
 	//!		false - otherwise
@@ -571,7 +567,7 @@ protected:
 	//!		This calls ignores update policy and forces entity to activate or deactivate
 	//!		All active entities will be updated every frame, having too many active entities can affect performance.
 	//! </description>
-	//!		<param name="bActivate - if true entity will become active, is false will deactivate and stop being updated every frame.
+	//!		<param name="bActivate - if true entity will become active, is false will deactivate and stop being updated every frame.</param>
 	int Activate(IFunctionHandler *pH,int bActive);
 
 	//! <code>Entity.IsActive( bActivate )</code>
@@ -682,7 +678,7 @@ protected:
 	int GetName(IFunctionHandler *pH);
 
 	//! <code>Entity.GetRawId()</code>
-	//! <description>Returns entityId in raw numeric format.
+	//! <description>Returns entityId in raw numeric format.</description>
 	int GetRawId(IFunctionHandler *pH); 
 
 	//! <code>Entity.SetAIName()</code>
@@ -824,7 +820,6 @@ protected:
 	//! <returns>nil</returns>
 	int StopAudioTrigger(IFunctionHandler* pH, ScriptHandle const hTriggerID, ScriptHandle const hAudioProxyLocalID);
 
-	////////////////////////////////////////////////////////////////////////
 	//! <code>Entity.SetAudioSwitchState( hSwitchID, hSwitchStateID, hAudioProxyLocalID )</code>
 	//! <description>Set the specified audio switch to the specified state on the current Entity.</description>
 	//!		<param name="hSwitchID">the audio switch ID handle</param>
@@ -833,7 +828,6 @@ protected:
 	//! <returns>nil</returns>
 	int SetAudioSwitchState(IFunctionHandler* pH, ScriptHandle const hSwitchID, ScriptHandle const hSwitchStateID, ScriptHandle const hAudioProxyLocalID);
 
-	////////////////////////////////////////////////////////////////////////
 	//! <code>Entity.SetAudioObstructionCalcType( nObstructionCalcType, hAudioProxyLocalID )</code>
 	//! <description>Set the Audio Obstruction/Occlusion calculation type on the underlying GameAudioObject.</description>
 	//!		<param name="nObstructionCalcType">Obstruction/Occlusion calculation type; 
@@ -882,6 +876,12 @@ protected:
 	//!		<param name="hAudioProxyLocalID">ID of the AuxAudioProxy local to the EntityAudioProxy (to address the default AuxAudioProxy pass 1 to address all AuxAudioProxies pass 0)</param>
 	//! <returns>nil</returns>
 	int SetAudioRtpcValue(IFunctionHandler* pH, ScriptHandle const hRtpcID, float const fValue, ScriptHandle const hAudioProxyLocalID);
+
+	//! <code>Entity.AuxAudioProxiesMoveWithEntity( bCanMoveWithEntity )</code>
+	//! <description>Set whether AuxAudioProxies should move with the entity or not.</description>
+	//!		<param name="bCanMoveWithEntity">boolean parameter to enable or disable</param>
+	//! <returns>nil</returns>
+	int AuxAudioProxiesMoveWithEntity(IFunctionHandler* pH, bool const bCanMoveWithEntity);
 
 	// ~Audio
 
@@ -994,7 +994,7 @@ protected:
 	int GetTouchedSurfaceID(IFunctionHandler *pH);
 
 	//! <code> Entity.GetTouchedPoint()</code>
-	//! <description>Retrieves point of collision for rigid body.
+	//! <description>Retrieves point of collision for rigid body.</description>
 	int GetTouchedPoint(IFunctionHandler *pH);
 
 	//! <code> Entity.CreateBoneAttachment( characterSlot, boneName, attachmentName )</code>
@@ -1111,7 +1111,7 @@ protected:
 	//!		<param name="nSlot">On which slot to change material.</param>
 	//!		<param name="nSubMtlId">Specify sub-material by Id.</param>
 	//!		<param name="sParamName">Name of the material parameter.</param>
-	//! <returns>Material parameter value.</returns></param>
+	//! <returns>Material parameter value.</returns>
 	int GetMaterialFloat( IFunctionHandler *pH, int slot,int nSubMtlId,const char *sParamName );
 
 	//! <code>Entity.SetMaterialVec3( nSlotId, nSubMtlId, sParamName, vVec3 )</code>
@@ -1367,7 +1367,7 @@ protected:
 	int IsEntityInsideArea(IFunctionHandler * pH, int areaId, ScriptHandle entityId);
 
 	//! <code>Entity.GetPhysicalStats()</code>
-	//! <description>Some more physics related.
+	//! <description>Some more physics related.</description>
 	int GetPhysicalStats(IFunctionHandler *pH);
 
 	//! <code>Entity.SetParentSlot( child, parent )</code>
@@ -1418,6 +1418,13 @@ protected:
 	//! <returns>current time of day as a float value.</returns>
 	int GetTimeOfDayHour(IFunctionHandler *pH);
 
+	//! <code>Entity.CreateDRSProxy()</code>
+	//! <description>
+	//!    Creates a Dynamic Response System Proxy
+	//! </description>
+	//! <returns>Returns the ID of the created proxy.</returns>
+	int CreateDRSProxy(IFunctionHandler* pH);
+
 private: // -------------------------------------------------------------------------------
 	
 	// Helper function to get IEntity pointer from IFunctionHandler
@@ -1434,10 +1441,9 @@ private: // --------------------------------------------------------------------
 	
 	bool ParseLightParams(IScriptTable *pLightTable, CDLight &light);
 	bool ParseFogVolumesParams( IScriptTable* pTable, IEntity* pEntity, SFogVolumeProperties& properties );
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 	bool ParseCloudMovementProperties(IScriptTable* pTable, IEntity* pEntity, SCloudMovementProperties& properties);
 	bool ParseVolumeObjectMovementProperties(IScriptTable* pTable, IEntity* pEntity, SVolumeObjectMovementProperties& properties);
-#endif
+
 	// Parse script table to the entity physical params table.
 	bool ParsePhysicsParams( IScriptTable *pTable,SEntityPhysicalizeParams &params );
 
@@ -1454,7 +1460,7 @@ private: // --------------------------------------------------------------------
 	} SIntersectionResult;
 
 	static int __cdecl cmpIntersectionResult(const void *v1, const void *v2);
-	static void TriggerFinishedCallback(TAudioObjectID const nObjectID, TAudioControlID const nTriggerID, void* const pCookie);
+	static void OnAudioTriggerFinishedEvent(SAudioRequestInfo const* const pAudioRequestInfo);
 	int IStatObjRayIntersect(IStatObj *pStatObj, const Vec3 &rayOrigin, const Vec3 &rayDir, float maxDistance, SIntersectionResult *pOutResult, unsigned int maxResults);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1471,6 +1477,8 @@ private: // --------------------------------------------------------------------
 
 	//temp table used by GetPhysicalStats
 	SmartScriptTable m_pStats;
+
+	bool m_bIsAudioEventListener;
 };
 
 #endif // __ScriptBind_Entity_h__

@@ -11,8 +11,6 @@ Copyright (c) 2001-2005 Crytek Studios. All Rights Reserved.
 #ifndef __CREIMPOSTER_H__
 #define __CREIMPOSTER_H__
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
-
 #include <IRenderer.h>
 #include "Cry_Camera.h"
 
@@ -112,7 +110,5 @@ public:
 	virtual void SetTerrainNode(CTerrainNode * pTerrainNode) { m_pTerrainNode = pTerrainNode; }
 	virtual void SetBBox(const Vec3 & min, const Vec3 & max) { m_WorldSpaceBV.SetMin(min); m_WorldSpaceBV.SetMax(max); }
 };
-
-#endif // #if !defined(RENDERNODES_LEAN_AND_MEAN)
 
 #endif	// __CREIMPOSTER_H__

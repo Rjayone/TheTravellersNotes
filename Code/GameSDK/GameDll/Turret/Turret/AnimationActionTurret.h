@@ -23,7 +23,7 @@ public:
 	virtual EPriorityComparison ComparePriority( const IAction& currentAction ) const
 	{
 		assert( &currentAction != this );
-		return Higher;
+		return (IAction::Installed == currentAction.GetStatus() && IAction::Installing & ~currentAction.GetFlags()) ? Higher : BaseClass::ComparePriority(currentAction);
 	}
 
 	virtual EStatus Update( float elapsedSeconds )

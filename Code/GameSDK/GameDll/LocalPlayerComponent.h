@@ -49,10 +49,10 @@ public:
 	virtual ~CLocalPlayerComponent();
 
 	//IInventoryListener
-	VIRTUAL void OnAddItem(EntityId entityId){};
-	VIRTUAL void OnSetAmmoCount(IEntityClass* pAmmoType, int count){};
-	VIRTUAL void OnAddAccessory(IEntityClass* pAccessoryClass){};
-	VIRTUAL void OnClearInventory();
+	virtual void OnAddItem(EntityId entityId){};
+	virtual void OnSetAmmoCount(IEntityClass* pAmmoType, int count){};
+	virtual void OnAddAccessory(IEntityClass* pAccessoryClass){};
+	virtual void OnClearInventory();
 	//~IInventoryListener
 
 	void Revive();

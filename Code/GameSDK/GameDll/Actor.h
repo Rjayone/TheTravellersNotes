@@ -49,7 +49,6 @@ DECLARE_BOOST_POINTERS(CActor);
 class CActorImpulseHandler;
 DECLARE_BOOST_POINTERS(CActorImpulseHandler);
 class CProceduralContextRagdoll;
-class CLootSystem;
 
 namespace PlayerActor
 {
@@ -1178,9 +1177,6 @@ private:
 	TBodyDamageProfileId m_OverrideBodyDamageProfileId;
 
 	string m_sLipSyncExtensionType;		// represents the type of the lip-sync extension if one was acquired; equals "" if none was acquired
-
-	CLootSystem *pLootSystem;
-
 };
 
 #endif //__Actor_H__

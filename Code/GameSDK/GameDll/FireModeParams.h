@@ -397,14 +397,12 @@ struct SRapidParams
 	}
 
 #define RAPID_PARAMS_MEMBERS(f) \
-	f(float,	camshake_perShot) \
 	f(float,	min_speed) \
 	f(float,	max_speed) \
 	f(float,	acceleration) \
 	f(float,	deceleration) \
 	f(float,	min_firingTimeToStop) \
 	f(ItemString, barrel_attachment) \
-	f(bool, shoot_play_sound)
 
 	REGISTER_STRUCT(RAPID_PARAMS_MEMBERS, SRapidParams)
 };
@@ -597,11 +595,8 @@ struct SFireParams
 	f(float,			changeFMFireDelayFraction) \
 	f(float,			endReloadFraction) \
 	f(float,			fillAmmoReloadFraction) \
-	f(float,			lowAmmoWarningFraction) \
-	f(float,			offset) \
 	f(float,			stabilization) \
 	f(float,			speed_override) \
-	f(float,			stealthEnergyDrainMultiplier) \
 	f(int,				damage) \
 	f(float,			damage_drop_per_meter) \
 	f(float,			damage_drop_min_distance) \
@@ -612,7 +607,6 @@ struct SFireParams
 	f(int,				npc_additional_damage) \
 	f(float,			ai_reload_time) \
 	f(float,			spin_up_time) \
-	f(float,			spin_down_time) \
 	f(float,			min_damage_for_knockDown) \
 	f(int,				knockdown_chance_leg) \
 	f(float,			min_damage_for_knockDown_leg) \
@@ -631,13 +625,11 @@ struct SFireParams
 	f(short,			barrel_count) \
 	f(bool,				no_cock) \
 	f(int8,				bullet_chamber) \
-	f(bool,				hasEmptyReload) \
 	f(bool,				ai_infiniteAmmo) \
 	f(bool,				knocks_target) \
 	f(int8,				bullet_pierceability_modifier) \
 	f(bool,				is_silenced) \
 	f(bool,				muzzleFromFiringLocator) \
-	f(bool,				useLowAmmoWarning) \
 	f(bool,				autoReload) \
 	f(bool,				autoSwitch) \
 	f(bool,				ignore_damage_falloff) \

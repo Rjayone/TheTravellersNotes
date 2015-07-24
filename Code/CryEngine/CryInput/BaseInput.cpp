@@ -17,6 +17,7 @@ History:
 #include "BaseInput.h"
 #include "InputDevice.h"
 #include "InputCVars.h"
+#include "UnicodeFunctions.h"
 
 bool compareInputListener(const IInputEventListener* pListenerA, const IInputEventListener* pListenerB)
 {
@@ -222,15 +223,15 @@ char CBaseInput::GetInputCharAscii(const SInputEvent& event)
 	return '\0';
 }
 
-const wchar_t* CBaseInput::GetOSKeyName(const SInputEvent& event)
+const char* CBaseInput::GetOSKeyName(const SInputEvent& event)
 {
 	for (TInputDevices::iterator i = m_inputDevices.begin(); i != m_inputDevices.end(); ++i)
 	{
-		const wchar_t* ret = (*i)->GetOSKeyName(event);
+		const char* ret = (*i)->GetOSKeyName(event);
 		if (ret && *ret) 
 			return ret;
 	}
-	return L"";
+	return "";
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -442,7 +443,7 @@ void CBaseInput::PostInputEvent( const SInputEvent &event, bool bForce )
 		return;
 	}
 
-	if(event.keyId == eKI_Unknown && event.state != eIS_UI)
+	if(event.keyId == eKI_Unknown)
 	{
 		return;
 	}
@@ -469,19 +470,33 @@ void CBaseInput::PostInputEvent( const SInputEvent &event, bool bForce )
 	}
 }
 
+void CBaseInput::PostUnicodeEvent( const SUnicodeEvent &event, bool bForce )
+{
+	FUNCTION_PROFILER( GetISystem(),PROFILE_INPUT );
+	assert(event.inputChar != 0 && Unicode::Validate(event.inputChar) && "Attempt to post invalid unicode event");
 
+	if(!bForce && !m_enableEventPosting) 
+	{
+		return;
+	}
+
+	if (g_pInputCVars->i_debug)
+	{
+		char utf8_buf[5];
+		Unicode::Convert(utf8_buf, event.inputChar);
+		gEnv->pLog->Log("InputDebug: Unicode input codepoint (%u), %s", event.inputChar, utf8_buf);
+	}
+
+	if (!SendEventToListeners(event))
+		return;
+}
 
 bool CBaseInput::SendEventToListeners(const SInputEvent &event)
 {
 	// console listeners get to process the event first
 	for (TInputEventListeners::const_iterator it = m_consoleListeners.begin(); it != m_consoleListeners.end(); ++it)
 	{
-		bool ret = false;
-		if (event.state != eIS_UI)
-			ret = (*it)->OnInputEvent(event);
-		else
-			ret = (*it)->OnInputEventUI(event);
-
+		bool ret = (*it)->OnInputEvent(event);
 		if (ret)
 			return false;
 	}
@@ -490,12 +505,7 @@ bool CBaseInput::SendEventToListeners(const SInputEvent &event)
 	// before any of the regular listeners get to process it
 	if (m_pExclusiveListener)
 	{ 
-		bool ret = false;
-		if (event.state != eIS_UI)
-			ret = m_pExclusiveListener->OnInputEvent(event);
-		else
-			ret = m_pExclusiveListener->OnInputEventUI(event);
-
+		bool ret = m_pExclusiveListener->OnInputEvent(event);
 		if (ret)
 			return false;
 	}
@@ -512,12 +522,7 @@ bool CBaseInput::SendEventToListeners(const SInputEvent &event)
 			if (*it == NULL)
 				continue;
 
-			bool ret = false;
-			if (event.state != eIS_UI)
-				ret = (*it)->OnInputEvent(event);
-			else
-				ret = (*it)->OnInputEventUI(event);
-
+			bool ret = (*it)->OnInputEvent(event);
 			if (ret) break;
 		}
 	}
@@ -525,6 +530,38 @@ bool CBaseInput::SendEventToListeners(const SInputEvent &event)
 	return true;
 }
 
+bool CBaseInput::SendEventToListeners(const SUnicodeEvent &event)
+{
+	// console listeners get to process the event first
+	for (TInputEventListeners::const_iterator it = m_consoleListeners.begin(); it != m_consoleListeners.end(); ++it)
+	{
+		bool ret = (*it)->OnInputEventUI(event);
+		if (ret)
+			return false;
+	}
+
+	// exclusive listener can filter out the event if he wants to and cause this call to return
+	// before any of the regular listeners get to process it
+	if (m_pExclusiveListener)
+	{ 
+		bool ret = m_pExclusiveListener->OnInputEventUI(event);
+		if (ret)
+			return false;
+	}
+
+	// Send this event to all listeners until the first one returns true.
+	for (TInputEventListeners::const_iterator it = m_listeners.begin(); it != m_listeners.end(); ++it)
+	{
+		assert(*it);
+		if (*it == NULL)
+			continue;
+
+		bool ret = (*it)->OnInputEventUI(event);
+		if (ret) break;
+	}
+
+	return true;
+}
 
 void CBaseInput::AddEventToHoldSymbols(const SInputEvent &event)
 {
@@ -952,4 +989,17 @@ void CBaseInput::PostTouchEvent( const STouchEvent &event, bool bForce/*=false *
 	
 	for (CListenerSet<ITouchEventListener*>::Notifier notifier(m_touchListeners); notifier.IsValid(); notifier.Next())
 		notifier->OnTouchEvent(event);
+}
+
+IInputDevice* CBaseInput::GetDevice(uint16 id, EInputDeviceType deviceType)
+{
+	for(TInputDevices::const_iterator it = m_inputDevices.begin(); it != m_inputDevices.end(); ++it)
+	{
+		IInputDevice *pDevice = *it;
+
+		if(id == pDevice->GetDeviceIndex() && pDevice->GetDeviceType() == deviceType)
+			return pDevice;
+	}
+
+	return NULL;
 }

@@ -237,9 +237,17 @@ void CVar::Init( struct IConsole *pConsole )
 	REGISTER_CVAR(es_TestPoolSignatures,0,VF_CHEAT,"Enable signature testing on entity classes the first time they're prepared from an entity pool");
 	REGISTER_CVAR(es_DebugPoolFilter,"",0,"Filter entity pool debugging for just this pool and draw more info about it");
 
-	REGISTER_CVAR(es_LayerSaveLoadSerialization, 0, VF_CHEAT, "Switches layer entity serialization : 0 - serialize all, 1 - automatically ignore entities on disabled layers, 2 - only ignore entities on non-save layers.");
+	REGISTER_CVAR(es_LayerSaveLoadSerialization, 0, VF_CHEAT, 
+		"Switches layer entity serialization: \n" 
+		"0 - serialize all \n"
+		"1 - automatically ignore entities on disabled layers \n"
+		"2 - only ignore entities on non-save layers.");
 	REGISTER_CVAR(es_LayerDebugInfo, 0, VF_CHEAT, 
-		"Render debug info on active layers : 0 - inactive, 1 - active brush layers, 2 - all layer info, 3 - all layer and all layer pak info");
+		"Render debug info on active layers: \n"
+		"0 - inactive \n"
+		"1 - active brush layers \n"
+		"2 - all layer info \n"
+		"3 - all layer and all layer pak info");
 	REGISTER_CVAR(es_SaveLoadUseLUANoSaveFlag, 0, VF_CHEAT, "Save&Load optimization : use lua flag to not serialize entities, for example rigid bodies.");
 	
 	REGISTER_CVAR(es_ClearPoolBookmarksOnLayerUnload, 1, VF_CHEAT, "Clear pool bookmarks when a layer is unloaded (saves memory and makes smaller saves)");

@@ -251,4 +251,4 @@ void CCooperativeAnimationManager::Reset()
 	stl::free_container(m_activeAnimations);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(ICooperativeAnimationManager)
+

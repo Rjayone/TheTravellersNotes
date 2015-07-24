@@ -104,7 +104,7 @@ typedef void (*CryLobbyUIGetConsumableAssetsCallback)(CryLobbyTaskID taskID, ECr
 
 struct ICryLobbyUI
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICryLobbyUI(){}
 	// ShowGamerCard
 	// Show the gamer card of the given user id.
@@ -257,15 +257,8 @@ struct ICryLobbyUI
 	// taskID			- The task to cancel
 	virtual void CancelTask(CryLobbyTaskID lTaskID) = 0;
 	
-	// HandleOldNotSignedInInviteGame
-	// PS3 only
-	// can be called when a previous HandleInvite() call has returned eCLE_UserNotSignedIn after the game has
-	// signed the user in and switched to multiplayer. The cached original invite data will be used to try and recover the pending invite
-	// and properly HandleInvite() again
-	virtual void							HandleOldNotSignedInInviteGame() = 0;
-
 	// AddRecentPlayers
-	// PS3 and PS4 require recently players be registered with system software, even if they are not friends
+	// PS4 requires recently players be registered with system software, even if they are not friends
 	// Typically should be called at the end of each game round.
 	// user				-	The pad number of the user making the call
 	// pUserIDs		- list of recent players
@@ -287,6 +280,7 @@ struct ICryLobbyUI
 	// return			- eCLE_Success if function successfully started or an error code if function failed to start
 	virtual ECryLobbyError					AddActivityFeed(uint32 user, CryLobbyTaskID* pTaskID, CryLobbyUICallback cb, void* pCbArg) = 0;						
 
+	// </interfuscator:shuffle>
 };
 
 #endif // __ICRYLOBBYUI_H__

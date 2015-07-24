@@ -1,0 +1,4 @@
+# Add headers on which Interfuscator should not perform #include safety checks here.
+# Wildcards * and ? are supported, and non-rooted paths are relative to $(SolutionDir)..\CryEngine\CryCommon.
+
+PS3LauncherCommon.cpp

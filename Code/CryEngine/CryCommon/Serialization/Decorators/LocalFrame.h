@@ -46,15 +46,19 @@ struct LocalOrientation
 
 struct LocalFrame
 {
-	QuatT* value;
+	Quat* rotation;
+	Vec3* position;
 	const char* parentName;
-	int space;
+	int rotationSpace;
+	int positionSpace;
 	const void* handle;
 
-	LocalFrame(QuatT& vec, int space, const char* parentName, const void* handle)
-	: value(&vec)
+	LocalFrame(Quat* rotation, int rotationSpace, Vec3* position, int positionSpace, const char* parentName, const void* handle)
+	: rotation(rotation)
+	, position(position)
 	, parentName(parentName)
-	, space(space)
+	, rotationSpace(rotationSpace)
+	, positionSpace(positionSpace)
 	, handle(handle)
 	{
 	}
@@ -67,58 +71,26 @@ enum
 	SPACE_JOINT,
 	SPACE_ENTITY,
 	SPACE_JOINT_WITH_PARENT_ROTATION,
-	SPACE_JOINT_SET_RELATIVE_TO_BIND_POSE
+	SPACE_JOINT_WITH_CHARACTER_ROTATION,
+	SPACE_SOCKET_RELATIVE_TO_JOINT,
+	SPACE_SOCKET_RELATIVE_TO_BINDPOSE
 };
 
 
-inline LocalFrame LocalToJoint(QuatT& transform, const string& jointName, const void* handle = 0)
-{
-	return LocalFrame(transform, SPACE_JOINT, jointName.c_str(), handle ? handle : &transform);
-}
 
-inline LocalFrame LocalToEntity(QuatT& transform, const void* handle = 0)
-{
-	return LocalFrame(transform, SPACE_ENTITY, "", handle ? handle : &transform);
-}
-
-inline LocalFrame LocalToEntity(QuatT& transform, const string& jointName, const void* handle = 0)
-{
-	return LocalFrame(transform, SPACE_ENTITY, jointName.c_str(), handle ? handle : &transform);
-}
-
-inline LocalFrame LocalToCharacter(QuatT& transform, const string& jointName, const void* handle = 0)
-{
-	return LocalFrame(transform, SPACE_JOINT_SET_RELATIVE_TO_BIND_POSE, jointName.c_str(), handle ? handle : &transform);
-}
-inline LocalOrientation LocalToCharacter(Quat& transform, const string& jointName, const void* handle = 0)
-{
-	return LocalOrientation(transform, SPACE_JOINT_SET_RELATIVE_TO_BIND_POSE, jointName.c_str(), handle ? handle : &transform);
-}
-
-inline LocalPosition LocalToCharacter(Vec3& transform, const string& jointName, const void* handle = 0)
-{
-	return LocalPosition(transform, SPACE_JOINT_SET_RELATIVE_TO_BIND_POSE, jointName.c_str(), handle ? handle : &transform);
-}
-
-inline LocalOrientation LocalToJoint(Quat& orientation, const string& jointName, const void* handle = 0)
-{
-	return LocalOrientation(orientation, SPACE_JOINT, jointName.c_str(), handle ? handle : &orientation);
-}
-
-
-inline LocalOrientation LocalToEntity(Quat& orientation, const void* handle = 0)
-{
-	return LocalOrientation(orientation, SPACE_ENTITY, "", handle ? handle : &orientation);
-}
-
+//position
 inline LocalPosition LocalToEntity(Vec3& position, const void* handle = 0)
 {
 	return LocalPosition(position, SPACE_ENTITY, "", handle ? handle : &position);
 }
-
 inline LocalPosition LocalToJoint(Vec3& position, const string& jointName, const void* handle = 0)
 {
 	return LocalPosition(position, SPACE_JOINT, jointName.c_str(), handle ? handle : &position);
+}
+
+inline LocalPosition LocalToJointCharacterRotation(Vec3& position, const string& jointName, const void* handle = 0)
+{
+	return LocalPosition(position, SPACE_JOINT_WITH_CHARACTER_ROTATION, jointName.c_str(), handle ? handle : &position);
 }
 
 bool Serialize(Serialization::IArchive& ar, Serialization::LocalPosition& value, const char* name, const char* label);

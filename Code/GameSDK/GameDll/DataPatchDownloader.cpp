@@ -91,8 +91,6 @@ void CDataPatchDownloader::RemoveListener(
 void CDataPatchDownloader::DataDownloaded(
 	CDownloadableResourcePtr		inResource)
 {
-	Crc32Gen										*pCRC=GetISystem()->GetCrc32Gen();
-
 	const int bufferSize = 1024*1024;
 	char* pBuffer = new char[bufferSize];
 	if (pBuffer)
@@ -105,7 +103,7 @@ void CDataPatchDownloader::DataDownloaded(
 		{
 			IXmlParser		*pParser=GetISystem()->GetXmlUtils()->CreateXmlParser();
 
-			m_patchCRC=pCRC->GetCRC32(pBuffer,dataLength,0);
+			m_patchCRC=CCrc32::Compute(pBuffer,dataLength);
 			m_patchXML=pParser->ParseBuffer(pBuffer,dataLength,false);
 			if (!m_patchXML)
 			{
@@ -334,10 +332,9 @@ void CDataPatchDownloader::LoadPatchFromFile(const char *szFilename)
 		{
 			int bytesRead = fread(pBuffer, 1, bufferSize, pFile);
 
-			Crc32Gen *pCRC=GetISystem()->GetCrc32Gen();
 			IXmlParser *pParser=GetISystem()->GetXmlUtils()->CreateXmlParser();
 
-			m_patchCRC=pCRC->GetCRC32(pBuffer,bytesRead,0);
+			m_patchCRC=CCrc32::Compute(pBuffer,bytesRead);
 			m_patchXML=pParser->ParseBuffer(pBuffer,bytesRead,false);
 
 			gEnv->pSystem->GetXmlUtils()->SetXMLPatcher(&m_patchXML);

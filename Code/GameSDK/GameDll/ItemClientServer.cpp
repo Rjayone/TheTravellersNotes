@@ -100,8 +100,8 @@ IMPLEMENT_RMI(CItem, SvRequestAttachAccessory)
 {
 	if (IInventory *pInventory=GetActorInventory(GetOwnerActor()))
 	{
-		char accessoryName[129] = {0};
-		bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, 128, params.accessoryClassId);
+		char accessoryName[128];
+		bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, sizeof(accessoryName), params.accessoryClassId);
 
 #if !defined(_RELEASE)
 	if(!result)
@@ -127,8 +127,8 @@ IMPLEMENT_RMI(CItem, SvRequestAttachAccessory)
 //------------------------------------------------------------------------
 IMPLEMENT_RMI(CItem, ClAttachAccessory)
 {
-	char accessoryName[129] = {0};
-	bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, 128, params.accessoryClassId);
+	char accessoryName[128];
+	bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, sizeof(accessoryName), params.accessoryClassId);
 
 #if !defined(_RELEASE)
 	if(!result)
@@ -147,8 +147,8 @@ IMPLEMENT_RMI(CItem, ClAttachAccessory)
 //------------------------------------------------------------------------
 IMPLEMENT_RMI(CItem, ClAttachInitialAccessory)
 {
-	char accessoryName[129] = {0};
-	bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, 128, params.accessoryClassId);
+	char accessoryName[128];
+	bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, sizeof(accessoryName), params.accessoryClassId);
 
 #if !defined(_RELEASE)
 	if(!result)
@@ -170,8 +170,8 @@ IMPLEMENT_RMI(CItem, SvRequestDetachAccessory)
 {
 	if (IInventory *pInventory=GetActorInventory(GetOwnerActor()))
 	{
-		char accessoryName[129] = {0};
-		bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, 128, params.accessoryClassId);
+		char accessoryName[128];
+		bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, sizeof(accessoryName), params.accessoryClassId);
 
 #if !defined(_RELEASE)
 		if(!result)
@@ -196,8 +196,8 @@ IMPLEMENT_RMI(CItem, SvRequestDetachAccessory)
 //------------------------------------------------------------------------
 IMPLEMENT_RMI(CItem, ClDetachAccessory)
 {
-	char accessoryName[129] = {0};
-	bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, 128, params.accessoryClassId);
+	char accessoryName[128];
+	bool result = g_pGame->GetIGameFramework()->GetNetworkSafeClassName(accessoryName, sizeof(accessoryName), params.accessoryClassId);
 
 #if !defined(_RELEASE)
 	if(!result)

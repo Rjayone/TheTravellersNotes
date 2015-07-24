@@ -74,162 +74,161 @@ namespace spline
 		Final*			m_pFinal;
 	};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#if 0
+
+	//////////////////////////////////////////////////////////////////////////
+	// LookupTableSpline
+	//////////////////////////////////////////////////////////////////////////
+	
+	template <class S, class value_type, const int nMAX_ENTRIES>
+	class	LookupTableSplineInterpolater
+	{
+	public:
+		ILINE static void fast_interpolate( float t, value_type& val, S *m_table)
+		{
+			t *= nMAX_ENTRIES - 1.0f;
+			float frac = t - floorf(t);
+			int idx = int(t);
+			val = value_type(m_table[idx]) * (1.f - frac);
+			val += value_type(m_table[idx + 1]) * frac;
+		}
+	};
+	
+	template <class value_type, const int nMAX_ENTRIES>
+	class	LookupTableSplineInterpolater <UnitFloat8, value_type, nMAX_ENTRIES>
+	{
+		enum { SHIFT_AMOUNT = 24 };
+
+	public:
+		ILINE static void fast_interpolate( float t, value_type& val, UnitFloat8 *m_table )
+		{
+			const float scale = (float)(1 << SHIFT_AMOUNT);
+			uint32 ti = uint32(t * scale * (nMAX_ENTRIES - 1.0f));
+			uint32 idx = ti >> SHIFT_AMOUNT;
+			uint32 frac = ti - (idx << SHIFT_AMOUNT);
+			uint32 vali = (uint32)m_table[idx + 1].GetStore() * frac;
+			frac = (1 << SHIFT_AMOUNT) - frac;
+			vali += (uint32)m_table[idx].GetStore() * frac;
+			val = (value_type)vali * (1.0f / (255.0f * scale));
+		}
+	};
+
+
+	template <class S, class Source>
+	class	LookupTableSpline: public FinalizingSpline<Source>
+	{
+		typedef FinalizingSpline<Source> super_type;
+		using super_type::m_pSource;
+		using super_type::is_updated;
+
+		enum { nSTORE_SIZE = 128 };
+		enum { nMAX_ENTRIES = nSTORE_SIZE - 1 };
+		enum { nMIN_VALUE = nMAX_ENTRIES };
+
+	public:
+
+		using_type(super_type, value_type);
+
+		LookupTableSpline()
+		{ 
+			init(); 
+		}
+
+		LookupTableSpline( const LookupTableSpline& other )
+			: super_type(other)
+		{
+			init();
+			update();
+		}
+		void operator=( const LookupTableSpline& other )
+		{
+			super_type::operator=(other);
+			update();
+		}
+
+		~LookupTableSpline()
+		{
+			delete[] m_table;
+		}
+
+		void interpolate( float t, value_type& val )
+		{
+			if (!is_updated())
+				update();
+			fast_interpolate( clamp_tpl(t, 0.0f, 1.0f), val );
+		}
+
+		void fast_interpolate( float t, value_type& val ) const
+		{
+			LookupTableSplineInterpolater<S, value_type, nMAX_ENTRIES>::fast_interpolate(t, val, m_table);
+		}
+
+		ILINE void min_value( value_type& val ) const
+		{
+			val = value_type(m_table[nMIN_VALUE]);
+		}
+
+		void finalize()
+		{
+			if (!is_updated())
+				update();
+			super_type::finalize();
+		}
+
+		void GetMemoryUsage(ICrySizer* pSizer, bool bSelf = false) const
+		{
+			if (bSelf && !pSizer->AddObjectSize(this))
+				return;
+			super_type::GetMemoryUsage(pSizer);
+			if (m_table)
+				pSizer->AddObject(m_table, nSTORE_SIZE * sizeof(S));
+		}
+
+	protected:
+
+		void update()
+		{
+			value_type minVal(1.0f);
+			if (!m_table)
+			{
+				m_table = new S[nSTORE_SIZE];
+			}
+			if (!m_pSource || m_pSource->empty())
+			{
+				for (int i=0; i<nMAX_ENTRIES; i++)
+				{
+					m_table[i] = value_type(1.f);
+				}
+			}
+			else
+			{
+				m_pSource->update();
+				for (int i=0; i<nMAX_ENTRIES; i++)
+				{
+					value_type val;
+					float t = float(i) * (1.0f/(float)(nMAX_ENTRIES-1));
+					m_pSource->interpolate(t, val);
+					minVal = min(minVal, val);
+					m_table[i] = val;
+				}
+			}
+			m_table[nMIN_VALUE] = minVal;
+		}
+
+		void init()
+		{
+			m_table = NULL;
+		}
+
+		bool is_updated() const
+		{
+			return super_type::is_updated() && m_table;
+		}
+
+		S*			m_table;
+	};
+
+#endif // LookupTableSpline
 
 	//////////////////////////////////////////////////////////////////////////
 	// OptSpline
@@ -452,7 +451,7 @@ namespace spline
 				return alloc_size(nKeys);
 			}
 
-			SPU_NO_INLINE key_type key( int n ) const
+			key_type key( int n ) const
 			{
 				key_type key;
 				if (n < nKeys)
@@ -481,7 +480,7 @@ namespace spline
 				return key;
 			}
 
-			SPU_NO_INLINE void interpolate( float t, value_type& val ) const
+			void interpolate( float t, value_type& val ) const
 			{
 				float prev_t = aElems[0].st;
 				if (t <= prev_t)
@@ -508,7 +507,7 @@ namespace spline
 				}
 			}
 
-			SPU_NO_INLINE void min_value( value_type& val ) const
+			void min_value( value_type& val ) const
 			{
 				VStore sval = aElems[0].sv;
 				for (int n = 1; n < nKeys; n++)
@@ -517,7 +516,7 @@ namespace spline
 				val = sval;
 			}
 
-			SPU_NO_INLINE void max_value( value_type& val ) const
+			void max_value( value_type& val ) const
 			{
 				VStore sval = aElems[0].sv;
 				for (int n = 1; n < nKeys; n++)
@@ -526,7 +525,7 @@ namespace spline
 				val = sval;
 			}
 
-			SPU_NO_INLINE value_type default_slope( int n ) const
+			value_type default_slope( int n ) const
 			{
 				return n > 0 && n < nKeys-1 ? 
 					minmag( aElems[n].value() - aElems[n-1].value(), aElems[n+1].value() - aElems[n].value() )
@@ -715,6 +714,7 @@ namespace spline
 				}
 #endif
 			}
+
 		}
 
 		void to_source( source_spline& source ) const

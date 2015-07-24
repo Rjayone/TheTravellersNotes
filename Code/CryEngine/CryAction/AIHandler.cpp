@@ -136,7 +136,9 @@ CAIHandler::CAIHandler(IGameObject *pGameObject)
 	m_pGameObject(pGameObject),
 	m_pEntity(pGameObject->GetEntity()),
 	m_FaceManager(pGameObject->GetEntity()),
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	m_bDelayedCharacterConstructor(false),
+#endif
 	m_bDelayedBehaviorConstructor(false),
 	m_vAnimationTargetPosition(ZERO),
 	m_lastTargetType(AITARGET_NONE),
@@ -175,6 +177,7 @@ CAIHandler::~CAIHandler(void)
 }
 
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 //
 //------------------------------------------------------------------------------
 const char* CAIHandler::GetInitialCharacterName()
@@ -196,6 +199,7 @@ const char* CAIHandler::GetInitialCharacterName()
 
 	return szAICharacterName;
 }
+#endif
 
 //
 //------------------------------------------------------------------------------
@@ -282,7 +286,9 @@ void CAIHandler::ResetCommonTables()
 	m_pBehaviorTableAVAILABLE = 0;
 	m_pBehaviorTableINTERNAL = 0;
 	m_pDEFAULTDefaultBehavior = 0;
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	m_pDefaultCharacter = 0;
+#endif
 }
 
 //
@@ -306,6 +312,7 @@ bool CAIHandler::SetCommonTables()
 		return false;
 	}
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	SmartScriptTable pCharacterTable;
 	if (!gEnv->pScriptSystem->GetGlobalValue("AICharacter", pCharacterTable))
 	{
@@ -318,6 +325,7 @@ bool CAIHandler::SetCommonTables()
 		AIWarningID("<CAIHandler> ", "can't find DEFAULT character. Entity %s", m_pEntity->GetName());
 		return false;
 	}
+#endif
 
 	return true;
 }
@@ -331,14 +339,19 @@ void CAIHandler::SetInitialBehaviorAndCharacter()
 
 	if (!isPlayer)
 	{
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 		ResetCharacter();
+#endif
+
 		ResetBehavior();
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 		const char* szDefaultCharacter = GetInitialCharacterName();
 		m_sFirstCharacterName = szDefaultCharacter;
 		if (!SetCharacter(szDefaultCharacter, SET_DELAYED) && !m_sFirstCharacterName.empty())
 			AIWarningID("<CAIHandler> ", "Could not set initial character: %s on Entity: %s",
 			szDefaultCharacter, m_pEntity->GetEntityTextDescription());
+#endif
 
 		const char* szDefaultBehavior = GetInitialBehaviorName();
 		m_sFirstBehaviorName = szDefaultBehavior;
@@ -421,7 +434,9 @@ void CAIHandler::Reset(EObjectResetType type)
 
 	if (type == AIOBJRESET_SHUTDOWN)
 	{
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 		ResetCharacter();
+#endif
 		ResetBehavior();
 		ResetCommonTables();
 	}
@@ -442,7 +457,9 @@ void CAIHandler::Reset(EObjectResetType type)
 	}
 
 	m_pPreviousBehavior = 0;
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	m_sPrevCharacterName.clear();
+#endif
 
 	m_timeSinceEvent = 0.0f;
 }
@@ -633,7 +650,7 @@ void	CAIHandler::AIMind(SOBJECTSTATE &state)
 				if (targetIsCloaked)
 				{
 					const char* cloakedTargetSeenSignal = "OnCloakedTargetSeen";
-					AISignal(AISIGNAL_DEFAULT, cloakedTargetSeenSignal, GetISystem()->GetCrc32Gen()->GetCRC32(cloakedTargetSeenSignal), NULL, pExtraData);
+					AISignal(AISIGNAL_DEFAULT, cloakedTargetSeenSignal, CCrc32::Compute(cloakedTargetSeenSignal), NULL, pExtraData);
 				}
 
 				eventString = "OnEnemySeen";
@@ -663,7 +680,7 @@ void	CAIHandler::AIMind(SOBJECTSTATE &state)
 		IAIRecordable::RecorderEventData recorderEventData(eventString);
 		pEntityAI->RecordEvent(IAIRecordable::E_SIGNALRECIEVED, &recorderEventData);
 
-		AISignal(AISIGNAL_DEFAULT, eventString, GetISystem()->GetCrc32Gen()->GetCRC32(eventString), NULL, pExtraData);
+		AISignal(AISIGNAL_DEFAULT, eventString, CCrc32::Compute(eventString), NULL, pExtraData);
 	}
 
 	if (pExtraData)
@@ -691,6 +708,7 @@ void CAIHandler::AISignal(int signalID, const char* signalText, uint32 crc, IEnt
 
 	if (!CallScript(m_pBehavior, signalText, NULL, pSender, pData))
 	{	
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 		if (!CallScript(m_pDefaultBehavior, signalText, NULL, pSender, pData))
 		{
 			if (CallScript(m_pDEFAULTDefaultBehavior, signalText, NULL, pSender, pData))
@@ -702,6 +720,12 @@ void CAIHandler::AISignal(int signalID, const char* signalText, uint32 crc, IEnt
 		{
 			gEnv->pAISystem->Record(m_pEntity->GetAI(), IAIRecordable::E_SIGNALEXECUTING, "from default behaviour");
 		}
+#else
+		if (CallScript(m_pDEFAULTDefaultBehavior, signalText, NULL, pSender, pData))
+		{
+			gEnv->pAISystem->Record(m_pEntity->GetAI(), IAIRecordable::E_SIGNALEXECUTING, "from defaultDefault behaviour");
+		}
+#endif
 	}
 
 	if (m_pEntity)
@@ -716,12 +740,15 @@ void CAIHandler::AISignal(int signalID, const char* signalText, uint32 crc, IEnt
 		}
 	}
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	if (const char* szNextBehavior = CheckAndGetBehaviorTransition(signalText))
 	{
 		SetBehavior(szNextBehavior, pData);
 	}
+#endif
 }
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 //
 //------------------------------------------------------------------------------
 const char* CAIHandler::CheckAndGetBehaviorTransition(const char* szSignalText) const
@@ -926,6 +953,7 @@ const char* CAIHandler::GetCharacter()
 {
 	return m_sCharacterName.c_str();
 }
+#endif
 
 
 //
@@ -1136,6 +1164,7 @@ void CAIHandler::FindOrLoadBehavior(const char* szBehaviorName, SmartScriptTable
 	}	 
 }
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 //
 //------------------------------------------------------------------------------
 void CAIHandler::CallCharacterConstructor()
@@ -1155,6 +1184,7 @@ void CAIHandler::CallCharacterConstructor()
 		}
 	}
 }
+#endif
 
 //
 //------------------------------------------------------------------------------
@@ -1252,7 +1282,7 @@ bool	CAIHandler::CallScript(IScriptTable* scriptTable, const char* funcName, flo
 #if !defined(_RELEASE) && !defined(CONSOLE_CONST_CVAR_MODE)
 			IPersistantDebug* pPD = CCryAction::GetCryAction()->GetIPersistantDebug();
 
-			// TODO : (MATT) I don't think we usually do this with statics, and they are slow on PS3 {2008/01/23:16:30:25}
+			// TODO : (MATT) I don't think we usually do this with statics {2008/01/23:16:30:25}
 			static ICVar* pAIShowBehaviorCalls = NULL;
 			if ( !pAIShowBehaviorCalls )
 				pAIShowBehaviorCalls = gEnv->pConsole->GetCVar( "ai_ShowBehaviorCalls" );
@@ -1440,7 +1470,7 @@ bool CAIHandler::GetMostLikelyTable( IScriptTable* table, SmartScriptTable& dest
 	}
 
 	// Choose among the possible choices
-	int probability = cry_rand() % maxProb;
+	int probability = cry_random(0, maxProb - 1);
 
 	for (int i = 0; i < numAnims; ++i)
 	{
@@ -1683,17 +1713,17 @@ CAnimActionExactPositioning* CAIHandler::CreateExactPositioningAction(bool isOne
 	if (!pActionController)
 		return NULL;
 
-	const uint32 valueCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(szFragmentID);
+	const uint32 valueCRC = CCrc32::ComputeLowercase(szFragmentID);
 
 	bool isDefaultValue = true;
 	if (isOneShot)
 	{
-		static const uint32 noneCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("none");
+		static const uint32 noneCRC = CCrc32::ComputeLowercase("none");
 		isDefaultValue = (valueCRC == noneCRC);
 	}
 	else
 	{
-		static const uint32 idleCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("idle");
+		static const uint32 idleCRC = CCrc32::ComputeLowercase("idle");
 		isDefaultValue = (valueCRC == idleCRC);
 	}
 
@@ -2217,10 +2247,14 @@ void CAIHandler::OnDialogFailed(struct ILipSync *pLipSync)
 //----------------------------------------------------------------------------------------------------------
 void CAIHandler::Serialize( TSerialize ser )
 {
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	ser.Value("m_sCharacterName", m_sCharacterName);
+#endif
 	// Must be serialized before the character/behavior is set below.
 	ser.Value("m_CurrentAlertness", m_CurrentAlertness);
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	ser.Value("m_bDelayedCharacterConstructor", m_bDelayedCharacterConstructor);
+#endif
 	ser.Value("m_bDelayedBehaviorConstructor", m_bDelayedBehaviorConstructor);
 	ser.Value("m_CurrentExclusive", m_CurrentExclusive);
 	ser.Value("m_bSoundFinished", m_bSoundFinished);
@@ -2238,7 +2272,9 @@ void CAIHandler::Serialize( TSerialize ser )
 	if (ser.IsReading())
 	{
 		SetInitialBehaviorAndCharacter();
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 		SetCharacter(m_sCharacterName.c_str(), SET_ON_SERILIAZE);
+#endif
 	}
 
 	SerializeScriptAI(ser);
@@ -2320,11 +2356,13 @@ void CAIHandler::Update()
 {
 	FUNCTION_PROFILER(gEnv->pSystem, PROFILE_AI);
 
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	if (m_bDelayedCharacterConstructor)
 	{
 		CallCharacterConstructor();
 		m_bDelayedCharacterConstructor = false;
 	}
+#endif
 
 	if (m_bDelayedBehaviorConstructor)
 	{
@@ -2410,7 +2448,7 @@ void CAIHandler::DoReadibilityPackForAIObjectsOfType( unsigned short int nType, 
 	{
 		IAISignalExtraData* pData = pAISystem->CreateSignalExtraData();
 		pData->iValue = 0;		// Default Priority.
-		pData->fValue = fResponseDelay > 0.0f ? fResponseDelay : Random(2.5f, 4.f);	// Delay
+		pData->fValue = fResponseDelay > 0.0f ? fResponseDelay : cry_random(2.5f, 4.f);	// Delay
 		pAISystem->SendSignal(SIGNALFILTER_READABILITYRESPONSE, 1, szText, nearestInGroup, pData);
 	}
 }
@@ -2508,12 +2546,12 @@ void CAIHandler::OnAnimActionTriStateExit( CAnimActionTriState* pActionTriState 
 //------------------------------------------------------------------------------
 bool CAIHandler::SetMannequinAGInput( IActionController* pActionController, EAIAGInput input, const char* value, const bool isUrgent )
 {
-	const uint32 valueCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( value );
+	const uint32 valueCRC = CCrc32::ComputeLowercase( value );
 	const FragmentID fragmentID = pActionController->GetContext().controllerDef.m_fragmentIDs.Find( valueCRC );
 
 	if ( input == AIAG_ACTION )
 	{
-		static const uint32 idleCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "idle" );
+		static const uint32 idleCRC = CCrc32::ComputeLowercase( "idle" );
 		const bool isIdleValue = ( valueCRC == idleCRC );
 		if ( ( fragmentID != FRAGMENT_ID_INVALID ) && !isIdleValue )
 		{
@@ -2564,7 +2602,7 @@ bool CAIHandler::SetMannequinAGInput( IActionController* pActionController, EAIA
 		//	// Really? Do we really want this?  Don't we want the signal to trigger the animation AGAIN?
 		//	return true;
 		//}
-		static const uint32 noneCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "none" );
+		static const uint32 noneCRC = CCrc32::ComputeLowercase( "none" );
 		const bool isNoneValue = ( valueCRC == noneCRC );
 		if ( ( fragmentID != FRAGMENT_ID_INVALID ) && !isNoneValue )
 		{

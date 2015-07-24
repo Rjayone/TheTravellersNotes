@@ -27,8 +27,6 @@ History:
 #include "PlayerPlugin_Interaction.h"
 
  
-#include "WeaponProperties.h"
-
 //===========AUX FUNCTIONS====================
 namespace
 {
@@ -75,11 +73,6 @@ void CWeapon::RegisterActions()
 		//ADD_HANDLER(xi_zoom,OnActionZoomXI);
 		ADD_HANDLER(stabilize,OnActionStabilize);
 		ADD_HANDLER(toggle_flashlight,OnActionToggleFlashLight);
-
-		//Traveller
-		ADD_HANDLER(attack2, OnActionSecondaryAttack);
-		ADD_HANDLER(attack3, OnActionAdditionalAttack);
-		ADD_HANDLER(deselect, OnActionDeselect);
 
 		#undef ADD_HANDLER
 	}
@@ -221,7 +214,9 @@ bool CWeapon::PreMeleeAttack()
 
 bool CWeapon::CanStabilize() const
 {
-	return false;
+	CPlayer* pPlayer = GetOwnerPlayer();
+
+	return (pPlayer != NULL);
 }
 
 //--------------------------------------------------------------------
@@ -254,115 +249,21 @@ bool CWeapon::OnActionSprint(EntityId actorId, const ActionId& actionId, int act
 
 //---------------------------------------------------------
 //Controller input (primary fire)
-//---------------------------------------------------------
-//TTN
-bool CWeapon::OnActionSecondaryAttack(EntityId actorId, const ActionId& actionId, int activationMode, float value)
-{
-	if (GetWeaponType() == e_WeaponTypeAxe || GetWeaponType() == e_WeaponTypeSword)
-	{
-		if (activationMode == eAAM_OnPress && (!gEnv->bMultiplayer || m_weaponNextShotTimer <= 0.f))
-		{
-			if (PreActionAttack(true))
-				return true;
-
-			StartFire(0/*vertical*/);
-		}
-		else if (activationMode == eAAM_OnHold)
-		{
-			if ((!gEnv->bMultiplayer || m_weaponNextShotTimer <= 0.f) && m_fm && m_fm->CanFire() && !m_fm->IsFiring() && !IsDeselecting() && !CheckSprint())
-			{
-				StartFire();
-			}
-		}
-		else
-		{
-			PreActionAttack(false);
-			StopFire();
-		}
-	}
-
-	return true;
-}
-
-//---------------------------------------------------------
-//TTN
-bool CWeapon::OnActionAdditionalAttack(EntityId actorId, const ActionId& actionId, int activationMode, float value)
-{
-	if (GetWeaponType() == e_WeaponTypeAxe || GetWeaponType() == e_WeaponTypeSword)
-	{
-		if (activationMode == eAAM_OnPress && (!gEnv->bMultiplayer || m_weaponNextShotTimer <= 0.f))
-		{
-			if (PreActionAttack(true))
-				return true;
-
-			StartFire(2/*prick*/);
-		}
-		else if (activationMode == eAAM_OnHold)
-		{
-			if ((!gEnv->bMultiplayer || m_weaponNextShotTimer <= 0.f) && m_fm && m_fm->CanFire() && !m_fm->IsFiring() && !IsDeselecting() && !CheckSprint())
-			{
-				StartFire();
-			}
-		}
-		else
-		{
-			PreActionAttack(false);
-			StopFire();
-		}
-	}
-
-	return true;
-}
-
-//---------------------------------------------------------
-//TTN
-bool CWeapon::OnActionDeselect(EntityId actorId, const ActionId& actionId, int activationMode, float value)
-{
-	if (activationMode == eAAM_OnPress && !IsBusy())
-	{
-		if (!IsDeselecting())
-		{
-			//DeselectItem(GetEntity()->GetId());
-			//GetOwnerActor()->SelectItemByName("NoWeapon", true);
-			PlayAction(GetFragmentIds().deselect, 4);
-			m_isDeselecting = true;
-
-			IActionController *pActionController = GetActionController();
-			if (!pActionController)
-				return false;
-
-			SAnimationContext &animContext = pActionController->GetContext();
-			animContext.state.Set(PlayerMannequin.tagIDs.nw, true);
-			//Здесь нужно выбрать руки и записать предыдущее оружие при атаке
-		}
-		else
-		{
-			Select(true);
-			m_isDeselecting = false;
-		}
-	}
-
-	return true;
-}
-
-
-//---------------------------------------------------------
-//Controller input (primary fire)
 bool CWeapon::OnActionAttackPrimary(EntityId actorId, const ActionId& actionId, int activationMode, float value)
 {
 	if (activationMode == eAAM_OnPress && (!gEnv->bMultiplayer || m_weaponNextShotTimer <= 0.f))
 	{
-		if (PreActionAttack(true))
+		if(PreActionAttack(true))
 			return true;
 
-		StartFire(1/*horizontal*/);
+		StartFire();
 	}
-	else if (activationMode == eAAM_OnHold)
+	else if(activationMode == eAAM_OnHold)
 	{
-		if ((!gEnv->bMultiplayer || m_weaponNextShotTimer <= 0.f) && m_fm && m_fm->CanFire() && !m_fm->IsFiring() && !IsDeselecting() && !CheckSprint())
+		if((!gEnv->bMultiplayer || m_weaponNextShotTimer <= 0.f) && m_fm && m_fm->CanFire() && !m_fm->IsFiring() && !IsDeselecting() && !CheckSprint())
 		{
 			StartFire();
-		}
+		}		
 	}
 	else
 	{
@@ -372,7 +273,6 @@ bool CWeapon::OnActionAttackPrimary(EntityId actorId, const ActionId& actionId, 
 
 	return true;
 }
-//~TTN
 //---------------------------------------------------------
 //Controller input (secondary fire)
 bool CWeapon::OnActionAttackSecondary(EntityId actorId, const ActionId& actionId, int activationMode, float value)

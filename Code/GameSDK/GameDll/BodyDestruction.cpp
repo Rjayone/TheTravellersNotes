@@ -134,7 +134,7 @@ void CBodyDestructibilityProfile::PreparePartsAndEventsBeforeLoad( const XmlNode
 			const char* eventName = eventNode->getAttr("name");
 			if (eventName)
 			{
-				destructionEvent.eventId = HashString(eventName);
+				destructionEvent.eventId = CryStringUtils::HashString(eventName);
 				destructionEvent.name = eventName;
 
 				if (!stl::find(m_destructionEvents, destructionEvent))
@@ -221,7 +221,7 @@ void CBodyDestructibilityProfile::PreparePartsAndEventsBeforeLoad( const XmlNode
 	{
 		bodyPart.name = *cit;
 		m_attachments.push_back(bodyPart);
-		parsingHelper.attachmentIndices.insert(TNameHashToIdxMap::value_type(HashString(bodyPart.name.c_str()), (int)(m_attachments.size() - 1)));
+		parsingHelper.attachmentIndices.insert(TNameHashToIdxMap::value_type(CryStringUtils::HashString(bodyPart.name.c_str()), (int)(m_attachments.size() - 1)));
 	}
 
 	m_bones.reserve(boneList.size());
@@ -229,7 +229,7 @@ void CBodyDestructibilityProfile::PreparePartsAndEventsBeforeLoad( const XmlNode
 	{
 		bodyPart.name = *cit;
 		m_bones.push_back(bodyPart);
-		parsingHelper.boneIndices.insert(TNameHashToIdxMap::value_type(HashString(bodyPart.name.c_str()), (int)(m_bones.size() - 1)));
+		parsingHelper.boneIndices.insert(TNameHashToIdxMap::value_type(CryStringUtils::HashString(bodyPart.name.c_str()), (int)(m_bones.size() - 1)));
 	}
 }
 
@@ -268,7 +268,7 @@ void CBodyDestructibilityProfile::LoadDestructibleParts( const XmlNodeRef& destr
 
 				if (pCurrentBodyPart)
 				{
-					pCurrentBodyPart->hashId = HashString(partName);
+					pCurrentBodyPart->hashId = CryStringUtils::HashString(partName);
 
 					LoadPart(partNode, *pCurrentBodyPart, parsingHelper);
 				}
@@ -761,7 +761,7 @@ void CBodyDestructibilityProfile::CacheMaterial( const char* materialName )
 
 		if (pReplacement)
 		{
-			const CryHash materialHash = HashString(materialName);
+			const CryHash materialHash = CryStringUtils::HashString(materialName);
 			if (m_replacementMaterials.find(materialHash) == m_replacementMaterials.end())
 			{
 				m_replacementMaterials.insert(TReplacementMaterials::value_type(materialHash, IMaterialSmartPtr(pReplacement)));
@@ -779,7 +779,7 @@ void CBodyDestructibilityProfile::CacheCharacter( const char* characterName )
 	const bool isValidName = (characterName != NULL) && (characterName[0]);
 	if (isValidName)
 	{
-		const CryHash characterHash = HashString(characterName);
+		const CryHash characterHash = CryStringUtils::HashString(characterName);
 		if (m_cachedCharacterInstaces.find(characterHash) == m_cachedCharacterInstaces.end())
 		{
 			ICharacterInstance *pCharacterInstance = gEnv->pCharacterManager->CreateInstance(characterName);
@@ -833,7 +833,7 @@ void CBodyDestructibilityProfile::ProcessDestructiblesHit( IEntity& characterEnt
 		if (hitInfo.partId >= PHYSICS_ATTACHMENT_BASE_ID)
 		{
 			IAttachment* pAttachment = pAttachmentManager->GetInterfaceByIndex(hitInfo.partId - PHYSICS_ATTACHMENT_BASE_ID);
-			if ((pAttachment != NULL) && GetDestructibleAttachment(HashString(pAttachment->GetName()), bodyPart))
+			if ((pAttachment != NULL) && GetDestructibleAttachment(CryStringUtils::HashString(pAttachment->GetName()), bodyPart))
 			{
 				pPartStatus = instance.GetAttachmentStatus(bodyPart.index);
 				effectAttachmentBone = rIDefaultSkeleton.GetJointNameByID(pAttachment->GetJointID());
@@ -843,7 +843,7 @@ void CBodyDestructibilityProfile::ProcessDestructiblesHit( IEntity& characterEnt
 		else if (hitInfo.partId >= 0)
 		{
 			const char* boneName = rIDefaultSkeleton.GetJointNameByID(pSkeletonPose->getBonePhysParentOrSelfIndex(hitInfo.partId));
-			if ((boneName != NULL)  && GetDestructibleBone(HashString(boneName), bodyPart))
+			if ((boneName != NULL)  && GetDestructibleBone(CryStringUtils::HashString(boneName), bodyPart))
 			{
 				pPartStatus = instance.GetBoneStatus(bodyPart.index);
 				effectAttachmentBone = boneName;
@@ -1134,7 +1134,7 @@ void CBodyDestructibilityProfile::ProcessDestructionEventByName( const char* eve
 	if (pCharacterInstance != NULL)
 	{
 		TDestructionEventId eventId;
-		CryHash eventNameId = HashString(eventName);
+		CryHash eventNameId = CryStringUtils::HashString(eventName);
 
 		const int eventCount = (int)m_destructionEvents.size();
 		for(eventId = 0; eventId< eventCount; ++eventId)
@@ -1207,7 +1207,7 @@ void CBodyDestructibilityProfile::ProcessDeathByExplosion( IEntity& characterEnt
 		IAttachmentManager* pAttachmentManager = pCharacterInstance->GetIAttachmentManager();
 		CRY_ASSERT(pAttachmentManager);
 
-		const bool shouldGib = (hitInfo.damage > m_gibDeath.minExplosionDamage) && (Random(0.0f, 1.0f) < m_gibDeath.gibProbability);
+		const bool shouldGib = (hitInfo.damage > m_gibDeath.minExplosionDamage) && (cry_random(0.0f, 1.0f) < m_gibDeath.gibProbability);
 
 		if (shouldGib)
 		{
@@ -1285,7 +1285,7 @@ void CBodyDestructibilityProfile::ProcessDeathByHit( IEntity& characterEntity, I
 	CRY_ASSERT(pAttachmentManager);
 
 	// Add some random destruction to the mix, when death by some kind of electrical hit :)
-	const uint32 randomize = (hitInfo.type == CGameRules::EHitType::Electricity) ? (Random(100) + 10) : 0;
+	const uint32 randomize = (hitInfo.type == CGameRules::EHitType::Electricity) ? cry_random(10, 109) : 0;
 
 	LogMessage(characterEntity, "Deadly Hit!");
 
@@ -1301,7 +1301,7 @@ void CBodyDestructibilityProfile::ProcessDeathByHit( IEntity& characterEntity, I
 		{
 			const float inflictedDamage = pPartStatus->GetInitialHealth() - pPartStatus->GetHealth();
 
-			if( ((inflictedDamage > pPartStatus->GetOnDeathHealthThreshold()) || (Random(100) < randomize) ) && 
+			if( ((inflictedDamage > pPartStatus->GetOnDeathHealthThreshold()) || (cry_random(0, 99) < randomize) ) && 
 				instance.CanTriggerEvent(destructionEventId) && 
 				CheckAgainstScriptCondition(characterEntity, destructionEventId))
 			{
@@ -1328,7 +1328,7 @@ void CBodyDestructibilityProfile::ProcessDeathByHit( IEntity& characterEntity, I
 		{
 			const float inflictedDamage = pPartStatus->GetInitialHealth() - pPartStatus->GetHealth();
 
-			if( ((inflictedDamage > pPartStatus->GetOnDeathHealthThreshold()) || (Random(100) < randomize) ) && 
+			if( ((inflictedDamage > pPartStatus->GetOnDeathHealthThreshold()) || (cry_random(0, 99) < randomize) ) && 
 				instance.CanTriggerEvent(destructionEventId) && 
 				CheckAgainstScriptCondition(characterEntity, destructionEventId))
 			{
@@ -1453,7 +1453,7 @@ IMaterial* CBodyDestructibilityProfile::GetMaterial( const char* materialName ) 
 	const bool isValidName = (materialName != NULL) && (materialName[0]);
 	if (isValidName)
 	{
-		TReplacementMaterials::const_iterator cit = m_replacementMaterials.find(HashString(materialName));
+		TReplacementMaterials::const_iterator cit = m_replacementMaterials.find(CryStringUtils::HashString(materialName));
 		
 		return (cit != m_replacementMaterials.end()) ? cit->second.get() : NULL; 
 	}

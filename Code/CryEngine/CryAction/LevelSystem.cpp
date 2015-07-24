@@ -27,14 +27,8 @@
 
 #include <IGameVolumes.h>
 
-#include "LoadSeq.h"
-
 #ifdef WIN32
 #include <CryWindows.h>
-#endif
-
-#if defined(IS_PROSDK)
-#include "LibSDKEvaluationWrapper.h"
 #endif
 
 #define LOCAL_WARNING(cond, msg)  do { if (!(cond)) { CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, msg); } } while(0)
@@ -492,8 +486,6 @@ void CLevelRotation::ChangeLevel(IConsoleCmdArgs* pArgs)
 		First();
 }
 
-static CRndGen g_randomGenerator;
-
 //------------------------------------------------------------------------
 void CLevelRotation::Initialise( int nSeed )
 {
@@ -504,8 +496,8 @@ void CLevelRotation::Initialise( int nSeed )
 	
 	if( nSeed >= 0 )
 	{
-		g_randomGenerator.Seed(nSeed);
-		Log_LevelRotation( " Called g_randomGenerator.seed( %d )", nSeed );
+		cry_random_seed(nSeed);
+		Log_LevelRotation( " Called cry_random_seed( %d )", nSeed );
 	}
 
 	if( ! m_rotation.empty() && m_randFlags & ePRF_Shuffle )
@@ -538,8 +530,8 @@ void CLevelRotation::ModeShuffle()
 
 			for( int iMode = 0; iMode < nModes; ++iMode )
 			{
-				int idx = g_randomGenerator.GenerateUint32() % nModes;
-				Log_LevelRotation( "Called g_randomGenerator.Generate()" );
+				int idx = cry_random(0, nModes - 1);
+				Log_LevelRotation( "Called cry_random()" );
 				std::swap( gameModesShuffle[ iMode ], gameModesShuffle[ idx ] );
 			}
 
@@ -565,7 +557,7 @@ void CLevelRotation::ShallowShuffle()
 
 	for( int i = 0; i < nEntries; ++i )
 	{
-		m_shuffle[ i ] = i;
+		m_shuffle[i] = i;
 	}
 
 	if( m_randFlags & ePRF_MaintainPairs )
@@ -574,26 +566,25 @@ void CLevelRotation::ShallowShuffle()
 		CRY_ASSERT_MESSAGE( nEntries % 2 == 0, "CLevelRotation::Shuffle Set to maintain pairs shuffle, require even number of entries, but we have odd. Should have been handled during initialisation" );
 
 		//swap, but only even indices with even indices, and the ones after the same
-		int halfEntries = nEntries / 2;
+		int nPairs = nEntries / 2;
 
-		for( int i = 0; i < nEntries; i+=2 )
+		for( int i = 0; i < nPairs; ++i )
 		{
-			int idx = (g_randomGenerator.GenerateUint32() % halfEntries) * 2;
-			Log_LevelRotation( "Called g_randomGenerator.GenerateUint32()" );
-			std::swap( m_shuffle[ i ], m_shuffle[ idx ] );
-			std::swap( m_shuffle[ i+1 ], m_shuffle[idx+1 ] );
+			int idx = cry_random(0, nPairs - 1);
+			Log_LevelRotation( "Called cry_random()" );
+			std::swap(m_shuffle[2 * i    ], m_shuffle[2 * idx     ]);
+			std::swap(m_shuffle[2 * i + 1], m_shuffle[2 * idx + 1 ]);
 		}
 	}
 	else
 	{
 		for( int i = 0; i < nEntries; ++i )
 		{
-			int idx = g_randomGenerator.GenerateUint32() % nEntries;
-			Log_LevelRotation( "Called g_randomGenerator.GenerateUint32()" );
-			std::swap( m_shuffle[i], m_shuffle[idx] );
+			int idx = cry_random(0, nEntries - 1);
+			Log_LevelRotation( "Called cry_random()" );
+			std::swap(m_shuffle[i], m_shuffle[idx]);
 		}
 	}
-
 
 	Log_LevelRotation( "ShallowShuffle new order:" );
 
@@ -601,8 +592,6 @@ void CLevelRotation::ShallowShuffle()
 	{
 		Log_LevelRotation( " %d - %s", m_shuffle[ iShuff ], m_rotation[ m_shuffle[ iShuff ] ].levelName.c_str() );
 	}
-
-	
 }
 
 //------------------------------------------------------------------------
@@ -687,16 +676,6 @@ bool CLevelInfo::GetAttribute(const char* name, TFlowInputData& val) const
 bool CLevelInfo::ReadInfo()
 {
 	string levelPath = m_levelPath;
-	//string paks = levelPath + string("/*.pak");
-
-#if defined(IS_FREESDK) || defined(IS_PROSDK)
-	bool bEncrypted = false;
-	bool bHasError = false;
-	CHECK_ENCRYTPED_LEVEL_PAK(levelPath.c_str(), bEncrypted, bHasError);
-	if (bEncrypted && bHasError)
-		return false;
-#endif
-
 	string xmlFile = levelPath + string("/LevelInfo.xml");
 	XmlNodeRef rootNode = GetISystem()->LoadXmlFromFile(xmlFile.c_str());
 
@@ -868,7 +847,8 @@ void CLevelInfo::ReadMetaData()
 				const char *pTag = NULL;
 				if (rulesNode->getAttr("Value", &pTag))
 				{
-					strncpy((char*)&m_levelTag, pTag, 4);
+					m_levelTag = 0;
+					memcpy(&m_levelTag, pTag, std::min(sizeof(m_levelTag), strlen(pTag)));
 				}
 			}
 			else if (!stricmp(name, "Attributes"))
@@ -1253,14 +1233,8 @@ ILevel *CLevelSystem::LoadLevel(const char *_levelName)
 
 	char levelName[256];
 	string sNextLevel(_levelName);
-	strcpy_s(levelName,sizeof(levelName),_levelName);
+	cry_strcpy(levelName, _levelName);
 
-#ifdef PS3
-	if(gPS3Env->bForce10HzFlip==1 && gEnv->pRenderer)
-	{
-		gEnv->pRenderer->ForceSwapBuffers();		
-	}
-#endif
 	// Not remove a scope!!!
 	{
 		LOADING_TIME_PROFILE_SECTION;
@@ -1311,6 +1285,8 @@ ILevel *CLevelSystem::LoadLevel(const char *_levelName)
 		// Reset the camera to (0,0,0) which is the invalid/uninitialised state
 		CCamera defaultCam;
 		m_pSystem->SetViewCamera(defaultCam);
+		IGameTokenSystem* pGameTokenSystem = CCryAction::GetCryAction()->GetIGameTokenSystem();
+		pGameTokenSystem->Reset();
 
 		m_pLoadingLevelInfo = pLevelInfo;
 		OnLoadingStart(pLevelInfo);
@@ -1345,10 +1321,8 @@ ILevel *CLevelSystem::LoadLevel(const char *_levelName)
 			pSpamDelay->Set(0.0f);
 		}
 
-		IGameTokenSystem* pGameTokenSystem = CCryAction::GetCryAction()->GetIGameTokenSystem();
 
 		// load all GameToken libraries this level uses incl. LevelLocal
-		pGameTokenSystem->Reset();
 		pGameTokenSystem->LoadLibs( pLevelInfo->GetPath() + string("/GameTokens/*.xml"));
 
 		if (gEnv->pEntitySystem)
@@ -1645,12 +1619,6 @@ void CLevelSystem::PrecacheLevelRenderData()
 //------------------------------------------------------------------------
 void CLevelSystem::PrepareNextLevel(const char *levelName)
 {
-#ifdef PS3
-	if(gEnv->pRenderer && gPS3Env->bForce10HzFlip == 2)
-	{
-		gEnv->pRenderer->ForceSwapBuffers();
-	}
-#endif
 	m_levelLoadStartTime = gEnv->pTimer->GetAsyncTime();
 	CLevelInfo *pLevelInfo = GetLevelInfoInternal(levelName);
 	if (!pLevelInfo)
@@ -1683,12 +1651,6 @@ void CLevelSystem::PrepareNextLevel(const char *levelName)
 	//string filename = PathUtil::Make( pLevelInfo->GetPath(),"resourcelist.txt" );
 	//gEnv->pCryPak->GetResourceList(ICryPak::RFOM_NextLevel)->Load( filename.c_str() );
 
-#ifdef PS3
-	if(gEnv->pRenderer && gPS3Env->bForce10HzFlip == 1)
-	{
-		gEnv->pRenderer->ForceSwapBuffers();
-	}
-#endif
 }
 
 //------------------------------------------------------------------------
@@ -1728,8 +1690,6 @@ void CLevelSystem::OnLoadingStart(ILevelInfo *pLevelInfo)
 	{
 		(*it)->OnLoadingStart(pLevelInfo);
 	}
-
-	BEGIN_LOADING(pLevelInfo->GetName());
 }
 
 //------------------------------------------------------------------------
@@ -1762,8 +1722,6 @@ void CLevelSystem::OnLoadingError(ILevelInfo *pLevelInfo, const char *error)
 	{
 		(*it)->OnLoadingError(pLevelInfo, error);
 	}
-
-	END_LOADING(pLevelInfo->GetName());
 
 	((CLevelInfo*)pLevelInfo)->CloseLevelPak();
 }
@@ -1835,8 +1793,6 @@ void CLevelSystem::OnLoadingComplete(ILevel *pLevelInfo)
     SEntityEvent loadingCompleteEvent(ENTITY_EVENT_LEVEL_LOADED);
     gEnv->pEntitySystem->SendEventToAll( loadingCompleteEvent );
 	}
-
-	END_LOADING(pLevelInfo->GetLevelInfo()->GetName());
 }
 
 //------------------------------------------------------------------------
@@ -1893,7 +1849,7 @@ void CLevelSystem::LogLoadingTime()
 	if (!GetISystem()->IsDevMode())
 		return;
 
-#if defined(WIN32) && !defined(XENON)		
+#if defined(WIN32)
 	CDebugAllowFileAccess ignoreInvalidFileAccess;
 
 	string filename = gEnv->pSystem->GetRootFolder();
@@ -2095,15 +2051,6 @@ void CLevelSystem::UnLoadLevel()
 	if (!m_pLoadingLevelInfo)
 		return;
 
-#ifdef PS3
-	bool flipIssued = false;		//enable flipping for PS3 TRC
-	if(gEnv->pRenderer)
-	{
-		gPS3Env->bForce10HzFlip = 0;
-		gEnv->pRenderer->ForceSwapBuffers();
-		flipIssued = true;
-	}
-#endif
 	CryLog( "UnLoadLevel Start" );
 	INDENT_LOG_DURING_SCOPE();
 
@@ -2122,7 +2069,7 @@ void CLevelSystem::UnLoadLevel()
 		IDeferredPhysicsEventManager* pPhysEventManager = p3DEngine->GetDeferredPhysicsEventManager();
 		if ( pPhysEventManager )
 		{
-			// clear deferred physics queues before renderer, since we could have spu jobs running
+			// clear deferred physics queues before renderer, since we could have jobs running
 			// which access a rendermesh
 			pPhysEventManager->ClearDeferredEvents();
 		}
@@ -2149,11 +2096,6 @@ void CLevelSystem::UnLoadLevel()
 	// will be reenabled when we get back to the IIS (frontend directly)
 	// or after level loading is finished (via system event system)
 	gEnv->pSystem->GetPlatformOS()->AllowOpticalDriveUsage(false);
-
-#ifdef XENON
-	// suspend the device and when renderer restored resume it to meet TCR: 022
-	gEnv->pRenderer->SuspendDevice();
-#endif
 
 	if (gEnv->pScriptSystem)
 	{
@@ -2327,14 +2269,6 @@ void CLevelSystem::UnLoadLevel()
 	CTimeValue tUnloadTime = gEnv->pTimer->GetAsyncTime() - tBegin;
 	CryLog( "UnLoadLevel End: %.1f sec", tUnloadTime.GetSeconds() );
 
-#ifdef PS3
-	if(flipIssued && gEnv->pRenderer)
-	{
-		gEnv->pRenderer->ForceSwapBuffers();	//disable flipping for PS3 TRC
-		gPS3Env->bForce10HzFlip = 2;//flag for upcoming level load to reenable
-	}
-#endif
-
 	// Must be sent last.
 	// Cleanup all containers 
 	GetISystem()->GetISystemEventDispatcher()->OnSystemEvent(ESYSTEM_EVENT_LEVEL_POST_UNLOAD, 0, 0);
@@ -2425,6 +2359,4 @@ DynArray<string>* CLevelSystem::GetLevelTypeList()
 
 #undef LOCAL_WARNING
 
-#include UNIQUE_VIRTUAL_WRAPPER(ILevelSystem)
-#include UNIQUE_VIRTUAL_WRAPPER(ILevelInfo)
-#include UNIQUE_VIRTUAL_WRAPPER(ILevelRotation)
+

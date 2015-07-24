@@ -11,13 +11,17 @@
 #endif
 
 #ifdef DEBUG_MODULAR_BEHAVIOR_TREE
-#  define USING_BEHAVIOR_TREE_DEBUG_EVENTS
+#  define USING_BEHAVIOR_TREE_EVENT_DEBUGGING
 #  define USING_BEHAVIOR_TREE_LOG
 #  define USING_BEHAVIOR_TREE_VISUALIZER
 #  define USING_BEHAVIOR_TREE_NODE_CUSTOM_DEBUG_TEXT
-#  define USING_BEHAVIOR_TREE_DEBUG_TIMESTAMPS
-#  define STORE_BLACKBOARD_VARIABLE_NAMES
+#  define USING_BEHAVIOR_TREE_TIMESTAMP_DEBUGGING
+#  define USING_BEHAVIOR_TREE_EXECUTION_STACKS_FILE_LOG
 //#  define USING_BEHAVIOR_TREE_DEBUG_MEMORY_USAGE
+#endif
+
+#if defined( DEBUG_MODULAR_BEHAVIOR_TREE ) || defined( USING_BEHAVIOR_TREE_EDITOR )
+#  define STORE_BLACKBOARD_VARIABLE_NAMES
 #endif
 
 #include <VectorMap.h>
@@ -65,7 +69,7 @@ namespace BehaviorTree
 		LoadSuccess,
 	};
 
-#if defined( USING_BEHAVIOR_TREE_DEBUG_EVENTS ) || defined( USING_BEHAVIOR_TREE_SERIALIZATION )
+#if defined( USING_BEHAVIOR_TREE_EVENT_DEBUGGING ) || defined( USING_BEHAVIOR_TREE_SERIALIZATION )
 #define STORE_EVENT_NAME
 #endif
 
@@ -105,7 +109,7 @@ namespace BehaviorTree
 			, m_name(name)
 #endif
 		{
-			m_nameCRC32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32(name);
+			m_nameCRC32 = CCrc32::Compute(name);
 		}
 
 		bool operator == (const Event& rhs) const
@@ -339,13 +343,13 @@ namespace BehaviorTree
 			m_typeId = Serialization::TypeID::get<Type>();
 		}
 
-		virtual Serialization::TypeID GetDataTypeId() const	OVERRIDE { return m_typeId; }
+		virtual Serialization::TypeID GetDataTypeId() const override { return m_typeId; }
 
 	private:
 		BlackboardVariable() {};
 
-		virtual void* GetDataVoidPointer() OVERRIDE { return &m_value; }
-		virtual const void* GetDataVoidPointer() const OVERRIDE { return &m_value; }
+		virtual void* GetDataVoidPointer() override { return &m_value; }
+		virtual const void* GetDataVoidPointer() const override { return &m_value; }
 
 		Serialization::TypeID m_typeId;
 		Type m_value;
@@ -357,33 +361,31 @@ namespace BehaviorTree
 			: id( 0 ) 
 		{};
 
+		BlackboardVariableId( const char* _name )
+		{
+			id = GetIdValueFromName( _name );
 #ifdef STORE_BLACKBOARD_VARIABLE_NAMES
-		BlackboardVariableId( uint32 _id, const char* _name )
-			: id( _id )
-			, name( _name ) 
-		{};
-#else
-		BlackboardVariableId( uint32 id, const char* name )
-			: id( id ) 
-		{};
+			name = _name;
 #endif
+		};
 
 		operator uint32() const	{	return id; };
+
+		static inline uint32 GetIdValueFromName( const char* name )
+		{
+			return CCrc32::Compute( name );
+		}
 
 		uint32 id;
 #ifdef STORE_BLACKBOARD_VARIABLE_NAMES
 		string name;
 #endif
+
 	};
 
 	class Blackboard
 	{
 	public:
-		static inline BlackboardVariableId GetBlackboardVariableId( const char* name )
-		{
-			return BlackboardVariableId( gEnv->pSystem->GetCrc32Gen()->GetCRC32( name ), name );
-		}
-
 		template <typename Type>
 		bool SetVariable( BlackboardVariableId id, const Type& value )
 		{
@@ -579,6 +581,10 @@ namespace BehaviorTree
 #ifdef USING_BEHAVIOR_TREE_LOG
 		MessageQueue behaviorLog;
 #endif // USING_BEHAVIOR_TREE_LOG
+
+#ifdef USING_BEHAVIOR_TREE_EVENT_DEBUGGING
+		MessageQueue eventsLog;
+#endif // USING_BEHAVIOR_TREE_EVENT_DEBUGGING
 	};
 
 	DECLARE_BOOST_POINTERS(BehaviorTreeInstance);
@@ -682,7 +688,7 @@ namespace BehaviorTree
 		{
 		}
 
-		virtual INodePtr Create() OVERRIDE
+		virtual INodePtr Create() override
 		{
 			MEMSTAT_CONTEXT_FMT(EMemStatContextTypes::MSC_Other, 0, "Modular Behavior Tree Node Factory: %s", m_typeName);
 
@@ -719,17 +725,17 @@ namespace BehaviorTree
 			return sizeof(NodeType);
 		}
 
-		virtual size_t GetSizeOfImmutableDataForAllAllocatedNodes() const OVERRIDE
+		virtual size_t GetSizeOfImmutableDataForAllAllocatedNodes() const override
 		{
 			return m_nodeCount * (sizeof(NodeType) + sizeof(INodePtr));
 		}
 
-		virtual size_t GetSizeOfRuntimeDataForAllAllocatedNodes() const OVERRIDE
+		virtual size_t GetSizeOfRuntimeDataForAllAllocatedNodes() const override
 		{
 			return m_runtimeDataCollection.size() * sizeof(RuntimeDataType);
 		}
 
-		virtual void* AllocateRuntimeData(const RuntimeDataID runtimeDataID) OVERRIDE
+		virtual void* AllocateRuntimeData(const RuntimeDataID runtimeDataID) override
 		{
 			FUNCTION_PROFILER(gEnv->pSystem, PROFILE_AI);
 			void* pointer = m_nodeFactory->AllocateRuntimeDataMemory(sizeof(RuntimeDataType));
@@ -739,7 +745,7 @@ namespace BehaviorTree
 			return runtimeData;
 		}
 
-		virtual void* GetRuntimeData(const RuntimeDataID runtimeDataID) const OVERRIDE
+		virtual void* GetRuntimeData(const RuntimeDataID runtimeDataID) const override
 		{
 			FUNCTION_PROFILER(gEnv->pSystem, PROFILE_AI);
 			typename RuntimeDataCollection::const_iterator it = m_runtimeDataCollection.find(runtimeDataID);
@@ -751,7 +757,7 @@ namespace BehaviorTree
 			return NULL;
 		}
 
-		virtual void FreeRuntimeData(const RuntimeDataID runtimeDataID) OVERRIDE
+		virtual void FreeRuntimeData(const RuntimeDataID runtimeDataID) override
 		{
 			FUNCTION_PROFILER(gEnv->pSystem, PROFILE_AI);
 			typename RuntimeDataCollection::iterator it = m_runtimeDataCollection.find(runtimeDataID);
@@ -765,7 +771,7 @@ namespace BehaviorTree
 			}
 		}
 
-		virtual void SetNodeFactory(INodeFactory* nodeFactory) OVERRIDE
+		virtual void SetNodeFactory(INodeFactory* nodeFactory) override
 		{
 			m_nodeFactory = nodeFactory;
 		}
@@ -786,13 +792,14 @@ namespace BehaviorTree
 	}
 
 #ifdef USING_BEHAVIOR_TREE_SERIALIZATION
-	#define REGISTER_BEHAVIOR_TREE_NODE_WITH_SERIALIZATION( manager, nodetype, label) \
+	#define REGISTER_BEHAVIOR_TREE_NODE_WITH_SERIALIZATION( manager, nodetype, label, color) \
 		{ \
 			REGISTER_BEHAVIOR_TREE_NODE( manager, nodetype ); \
 			SERIALIZATION_CLASS_NAME_FOR_FACTORY(manager.GetNodeSerializationFactory(), INode, nodetype, #nodetype, label); \
+			SERIALIZATION_CLASS_ANNOTATION_FOR_FACTORY(manager.GetNodeSerializationFactory(), INode, nodetype, "color", color); \
 		}
 #else
-	#define REGISTER_BEHAVIOR_TREE_NODE_WITH_SERIALIZATION( manager, nodetype, label) \
+	#define REGISTER_BEHAVIOR_TREE_NODE_WITH_SERIALIZATION( manager, nodetype, label, color) \
 		{ \
 			REGISTER_BEHAVIOR_TREE_NODE( manager, nodetype ); \
 		}
@@ -811,7 +818,7 @@ namespace BehaviorTree
 		{
 		}
 
-		Serialization::ClassFactory<INode>& factoryOverride() const OVERRIDE
+		Serialization::ClassFactory<INode>& factoryOverride() const override
 		{
 			return gEnv->pAISystem->GetIBehaviorTreeManager()->GetNodeSerializationFactory();
 		}

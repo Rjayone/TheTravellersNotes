@@ -435,7 +435,7 @@ namespace stl
 
 		inline size_t operator () (const string &rhs) const
 		{
-			return gEnv->pSystem->GetCrc32Gen()->GetCRC32(rhs.c_str());
+			return CCrc32::Compute(rhs.c_str());
 		}
 
 		inline bool operator() (const string &lhs, const string &rhs) const

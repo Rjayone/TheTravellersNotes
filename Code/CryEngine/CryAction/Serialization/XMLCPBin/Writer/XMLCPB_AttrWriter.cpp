@@ -62,14 +62,12 @@ void CAttrWriter::Set( const char* pName, const char* pDataString )
 {
 	assert(pDataString);
 	
-	#if !defined(XENON) && !defined(PS3)
 	int size = strlen( pDataString );
 	if (size>MAX_SIZE_FOR_A_DATASTRING)
 	{
-		Set( pName, (const uint8*)pDataString, size+1, true ); // store as raw data instead of pooled string  (+1 to include the ending 0). Uses inmediateCopy to mymic the behaviour of the normal strings, which are not guaranteed to be permanent (they can be local)
+		Set( pName, (const uint8*)pDataString, size+1, true ); // store as raw data instead of pooled string  (+1 to include the ending 0). Uses immediateCopy to mimic the behavior of the normal strings, which are not guaranteed to be permanent (they can be local)
 		return;
 	}
-	#endif
 
 	ASSERT_INITIALIZED(pDataString[0], pName);
 	SetName( pName );
@@ -339,13 +337,9 @@ void CAttrWriter::Set( const char* pAttrName, const uint8* data, uint32 len, boo
 	}
 	else
 	{
-		#if defined(XENON) || defined(PS3)
-		CryWarning(VALIDATOR_MODULE_GAME,VALIDATOR_ERROR, "Error: rawdata serialization with inmediate copy is not allowed in consoles" );
-		#else	
 		m_data.m_rawData.allocatedData = new uint8[m_data.m_rawData.size];
 		memcpy( m_data.m_rawData.allocatedData, data, m_data.m_rawData.size );
 		m_data.m_rawData.data = NULL;
-		#endif
 	}
 }
 

@@ -57,7 +57,7 @@ protected:
 protected:
 	INetChannel *m_pNetChannel;
 	CGameContext *m_pContext;
-	std::auto_ptr<CPhysicsSync> m_pPhysicsSync;
+	std::unique_ptr<CPhysicsSync> m_pPhysicsSync;
 
 	EntityId m_playerId;
 };

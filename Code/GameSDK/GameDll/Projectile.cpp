@@ -230,7 +230,7 @@ bool CProjectile::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 		}
 
 		Vec3 spin(m_pAmmoParams->spin);
-		Vec3 spinRandom(BiRandom(m_pAmmoParams->spinRandom.x), BiRandom(m_pAmmoParams->spinRandom.y), BiRandom(m_pAmmoParams->spinRandom.z));
+		Vec3 spinRandom = cry_random_componentwise(-m_pAmmoParams->spinRandom, m_pAmmoParams->spinRandom);
 		spin += spinRandom;
 		spin = DEG2RAD(spin);
 
@@ -1264,7 +1264,6 @@ void CProjectile::Explode(const SExplodeDesc& explodeDesc)
 
 				if(g_pGame->GetIGameFramework()->GetNetworkSafeClassId(projectileNetClassId, GetEntity()->GetClass()->GetName()))
 				{
-					CIntToFloat damageConv(m_damage);
 					SProjectileExplosionParams pep(
 							m_ownerId,
 							m_weaponId,
@@ -1274,7 +1273,7 @@ void CProjectile::Explode(const SExplodeDesc& explodeDesc)
 							dir,
 							explodeDesc.impact ? explodeDesc.normal : FORWARD_DIRECTION,
 							explodeDesc.impact ? explodeDesc.vel : ZERO,
-							damageConv.Convert(),
+							static_cast<float>(m_damage),
 							projectileNetClassId,
 							explodeDesc.impact,
 							CheckAnyProjectileFlags(ePFlag_firedViaProxy));
@@ -1614,7 +1613,7 @@ void CProjectile::Ricochet(EventPhysCollision *pCollision)
 
 	matPierceability&=sf_pierceable_mask;
 	float probability=0.25f+0.25f*(max(0.0f,7.0f-(float)matPierceability)/7.0f);
-	if (matPierceability>=8 || Random()>probability)
+	if (matPierceability>=8 || cry_random(0.0f, 1.0f)>probability)
 		return;
 
 	f32 cosine = dir.Dot(-pCollision->n);
@@ -1629,8 +1628,8 @@ void CProjectile::Ricochet(EventPhysCollision *pCollision)
 
 	Ang3 angles=Ang3::GetAnglesXYZ(Matrix33::CreateRotationVDir(ricochetDir));
 
-	float rx=Random()-0.5f;
-	float rz=Random()-0.5f;
+	float rx=cry_random(-0.5f, 0.5f);
+	float rz=cry_random(-0.5f, 0.5f);
 
 	angles.x+=rx*DEG2RAD(10.0f);
 	angles.z+=rz*DEG2RAD(10.0f);

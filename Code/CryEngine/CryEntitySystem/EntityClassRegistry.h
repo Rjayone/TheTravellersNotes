@@ -30,8 +30,8 @@ public:
 	CEntityClassRegistry();
 	~CEntityClassRegistry();
 
-	bool RegisterClass( IEntityClass *pClass );
-	bool UnregisterClass( IEntityClass *pClass );
+	bool RegisterEntityClass( IEntityClass *pClass ) override;
+	bool UnregisterEntityClass( IEntityClass *pClass ) override;
 
 	IEntityClass* FindClass( const char *sClassName ) const;
 	IEntityClass* GetDefaultClass() const;

@@ -18,12 +18,8 @@
 #include <CryThreadImpl_pthreads.h>
 #elif defined(WIN32) || defined(WIN64)
 #include <CryThreadImpl_windows.h>
-#elif defined(XENON)
-#include <CryThreadImpl_windows.h>
 #elif defined(DURANGO)
 #include <CryThreadImpl_windows.h>
-#elif defined(PS3)
-#include "CryThreadImpl_ps3.h"
 #else
 // Put other platform specific includes here!
 #endif

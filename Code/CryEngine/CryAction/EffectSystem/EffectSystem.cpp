@@ -112,4 +112,4 @@ void CEffectSystem::GetMemoryStatistics(ICrySizer * s)
 		s->AddObject(iter->first);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEffectSystem)
+

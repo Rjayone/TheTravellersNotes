@@ -68,7 +68,7 @@ struct SChainDesc
 public:
 	const char* name;
 	IAnimationPoseAlignerChain::EType eType;
-	const char* solver;
+	LimbIKDefinitionHandle solver;
 	int targetBlendJointIndex;
 
 	Vec3 offsetMin;

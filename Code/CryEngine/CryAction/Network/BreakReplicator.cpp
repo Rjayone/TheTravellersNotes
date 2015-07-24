@@ -694,6 +694,5 @@ void CBreakReplicator::AddListener( IBreakReplicatorListenerPtr pListener, int n
 	m_listenerInfos.push_back( SListenerInfo(pListener, nFrames) );
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IBreakReplicator)
 
 #endif // !NET_USE_SIMPLE_BREAKAGE

@@ -333,12 +333,6 @@ namespace CryMT
 	};
 
 	
-	//////////////////////////////////////////////////////////////////////////
-	// Class implementation are in the platform specific headers
-	// ex Xenon_MT.h
-	//////////////////////////////////////////////////////////////////////////
-
-#if !defined(XENON)
 	///////////////////////////////////////////////////////////////////////////////
 	// 
 	// Multi-thread safe lock-less FIFO queue container for passing pointers between threads.
@@ -388,7 +382,6 @@ namespace CryMT
 		return val;
 	}
 
-#endif
 }; // namespace CryMT
 
 namespace stl
@@ -402,10 +395,6 @@ namespace stl
 		v.free_memory();
 	}
 }
-
-#ifdef XENON
-#	include <Xenon_MT.h>
-#endif
 
 
 #endif // __MultiThread_Containters_h__

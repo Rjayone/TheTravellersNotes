@@ -1,16 +1,9 @@
-#include DEVIRTUALIZE_HEADER_FIX(ISystem.h)
-
-#ifndef _CRY_SYSTEM_H_
-#define _CRY_SYSTEM_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #ifdef CRYSYSTEM_EXPORTS
-	#define CRYSYSTEM_API DLL_EXPORT
+#define CRYSYSTEM_API DLL_EXPORT
 #else
-	#define CRYSYSTEM_API DLL_IMPORT
+#define CRYSYSTEM_API DLL_IMPORT
 #endif
 
 #include <platform.h> // Needed for LARGE_INTEGER (for consoles).
@@ -28,10 +21,6 @@
 #include "smartptr.h"
 #include <IMemory.h> // <> required for Interfuscator
 #include <ISystemScheduler.h> // <> required for Interfuscator
-
-
-
-
 
 struct ISystem;
 struct ILog;
@@ -76,6 +65,7 @@ struct INameTable;
 struct IBudgetingSystem;
 struct IFlowSystem;
 struct IDialogSystem;
+namespace DRS { struct IDynamicResponseSystem; }
 struct IMaterialEffects;
 struct IParticleManager;
 class IOpticsManager;
@@ -92,7 +82,6 @@ struct IThreadTaskManager;
 struct IResourceManager;
 struct ITextModeConsole;
 struct IAVI_Reader;
-class Crc32Gen; 
 class CPNoise3;
 struct IFileChangeMonitor;
 struct IVisualLog;
@@ -105,10 +94,12 @@ struct IZLibDecompressor;
 struct ILZ4Decompressor;
 struct IOutputPrintSink;
 struct IPhysicsDebugRenderer;
+struct IPhysRenderer;
 struct IOverloadSceneManager;
 struct IFlashUI;
 struct IServiceNetwork;
 struct IRemoteCommandManager;
+struct IWindowMessageHandler;
 
 class CBootProfilerRecord;
 
@@ -182,8 +173,8 @@ enum ESystemConfigSpec
 	// Summary:
 	//	 Specialized detail config setting.
 	CONFIG_DETAIL_SPEC  = 7,
-	
-	
+
+
 	END_CONFIG_SPEC_ENUM, // MUST BE LSAT VALUE. USED FOR ERROR CHECKING.
 };
 
@@ -209,14 +200,6 @@ struct sUpdateTimes
 	uint64 streamingWaitTime;
 	uint64 animationWaitTime;
 }; 
-
-#ifdef PS3
-	#define PS3_MEMORY_LIMIT (256*1024*1024)
-	#define PS3_DEV_KIT_EXTENDED_MEMORY (256*1024*1024)
-	#define PS3_MEMORY_BUDGET_CONSOLE_MODE (213*1024*1024)
-	#define PS3_MEMORY_BUDGET_TOOL_MODE    (407*1024*1024)
-	#define PS3_RSX_MEMORY_BUDGET          (249*1024*1024)
-#endif
 
 enum ESystemGlobalState	
 {
@@ -297,10 +280,10 @@ enum ESystemEvent
 	//	 Sent when loading screen is active
 	ESYSTEM_EVENT_LEVEL_LOAD_LOADINGSCREEN_ACTIVE,
 
-  // Description:
-  //	 Sent before starting loading a new level.
-  //	 Used for a more efficient resource management.
-  ESYSTEM_EVENT_LEVEL_LOAD_START,
+	// Description:
+	//	 Sent before starting loading a new level.
+	//	 Used for a more efficient resource management.
+	ESYSTEM_EVENT_LEVEL_LOAD_START,
 
 	// Description:
 	//	 Sent after loading a level finished.
@@ -398,7 +381,7 @@ enum ESystemEvent
 	// Description:
 	//		Sent when game mode switch ends
 	ESYSTEM_EVENT_GAME_MODE_SWITCH_END,
-	
+
 	// Description:
 	//	 Video notifications
 	//	 wparam=[0/1/2/3] : [stop/play/pause/resume]
@@ -435,11 +418,11 @@ enum ESystemEvent
 	// Description:
 	//		Sent when frontend is reloaded
 	ESYSTEM_EVENT_FRONTEND_RELOADED,
-	
+
 	// Description:
 	//		Sent before triggering a force loading of specified segments 
 	ESYSTEM_EVENT_SW_FORCE_LOAD_START,
-	
+
 	// Description:
 	//		Sent after triggering a force loading of specified segments
 	ESYSTEM_EVENT_SW_FORCE_LOAD_END,
@@ -507,18 +490,24 @@ enum ESystemEvent
 	//		Sent when the online services are initialized.
 	ESYSTEM_EVENT_ONLINE_SERVICES_INITIALISED,
 
+	// Description:
+	//		Sent when a new audio implementation is loaded
+	ESYSTEM_EVENT_AUDIO_IMPLEMENTATION_LOADED,
+
 	ESYSTEM_EVENT_USER = 0x1000,
+
+	ESYSTEM_BEAM_PLAYER_TO_CAMERA_POS
 };
 
 // Description:
 //	 User defined callback, which can be passed to ISystem.
 struct ISystemUserCallback
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISystemUserCallback(){}
 	// Description:
 	//	 This method is called at the earliest point the ISystem pointer can be used
-    //	 the log might not be yet there.
+	//	 the log might not be yet there.
 	virtual void OnSystemConnect( ISystem *pSystem ) {}
 
 	// Summary:
@@ -534,7 +523,7 @@ struct ISystemUserCallback
 #if defined(WIN32) || defined(WIN64)
 	virtual bool OnSaveDocument() = 0;
 #endif
-	
+
 	// Description:
 	//	 Notifies user that system wants to switch out of current process.
 	// Example:
@@ -573,25 +562,25 @@ struct ISystemUserCallback
 	// Description:
 	//	 Collects the memory information in the user program/application.
 	virtual void GetMemoryUsage( ICrySizer* pSizer ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //	 Interface used for getting notified when a system event occurs.
 struct ISystemEventListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISystemEventListener(){}
 	virtual void OnSystemEventAnyThread( ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam ) {}
 	virtual void OnSystemEvent( ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
 //	 Structure used for getting notified when a system event occurs.
-UNIQUE_IFACE struct ISystemEventDispatcher
+struct ISystemEventDispatcher
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISystemEventDispatcher(){}
 	virtual bool RegisterListener(ISystemEventListener *pListener) = 0;
 	virtual bool RemoveListener(ISystemEventListener *pListener) = 0;
@@ -600,16 +589,16 @@ UNIQUE_IFACE struct ISystemEventDispatcher
 	virtual void Update() = 0;
 
 	//virtual void OnLocaleChange() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IErrorObserver
 {
-
-		virtual ~IErrorObserver() {}
-    virtual void OnAssert(const char* condition, const char* message, const char* fileName, unsigned int fileLineNumber) = 0;
-    virtual void OnFatalError(const char* message) = 0;
-
+	// <interfuscator:shuffle>
+	virtual ~IErrorObserver() {}
+	virtual void OnAssert(const char* condition, const char* message, const char* fileName, unsigned int fileLineNumber) = 0;
+	virtual void OnFatalError(const char* message) = 0;
+	// </interfuscator:shuffle>
 };
 
 enum ESystemProtectedFunctions
@@ -632,10 +621,10 @@ struct SCvarsDefault
 #if defined(CVARS_WHITELIST)
 struct ICVarsWhitelist
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICVarsWhitelist() {};
 	virtual bool IsWhiteListed(const string& command, bool silent) = 0;
-
+	// </interfuscator:shuffle>
 };
 #endif // defined(CVARS_WHITELIST)
 
@@ -667,57 +656,57 @@ struct SControllerPairingChanged
 //  Structure passed to Init method of ISystem interface.
 struct SSystemInitParams
 {
-	void *hInstance;								//
-	void *hWnd;										//
-	ILog *pLog;										// You can specify your own ILog to be used by System.
-	ILogCallback *pLogCallback;						// You can specify your own ILogCallback to be added on log creation (used by Editor).
-	ISystemUserCallback *pUserCallback;				//
+	void *hInstance;
+	void *hWnd;
+	ILog *pLog;													// You can specify your own ILog to be used by System.
+	ILogCallback *pLogCallback;					// You can specify your own ILogCallback to be added on log creation (used by Editor).
+	ISystemUserCallback *pUserCallback;	
 #if defined(CVARS_WHITELIST)
 	ICVarsWhitelist* pCVarsWhitelist;		// CVars whitelist callback
 #endif // defined(CVARS_WHITELIST)
 	const char* sLogFileName;						// File name to use for log.
 	IValidator *pValidator;							// You can specify different validator object to use by System.
 	IOutputPrintSink *pPrintSync;				// Print Sync which can be used to catch all output from engine
-	char szSystemCmdLine[2048];						// Command line.
-	char szUserPath[256];						      // User alias path relative to My Documents folder.
+	char szSystemCmdLine[2048];					// Command line.
+	char szUserPath[256];						    // User alias path relative to My Documents folder.
 	char szBinariesDir[256];
 
 	bool bEditor;									// When running in Editor mode.
-	bool bPreview;									// When running in Preview mode (Minimal initialization).
-	bool bTestMode;									// When running in Automated testing mode.
-	bool bDedicatedServer;							// When running a dedicated server.
-	bool bExecuteCommandLine;						// can be switched of to suppress the feature or do it later during the initialization.
+	bool bPreview;								// When running in Preview mode (Minimal initialization).
+	bool bTestMode;								// When running in Automated testing mode.
+	bool bDedicatedServer;				// When running a dedicated server.
+	bool bExecuteCommandLine;			// can be switched of to suppress the feature or do it later during the initialization.
 	bool bUIFramework;
-	bool bSkipFont;										// Don't load CryFont.dll
-	bool bSkipRenderer;									// Don't load Renderer
-	bool bSkipConsole;									// Don't create console
-	bool bSkipNetwork;									// Don't create Network
-	bool bSkipLiveCreate;									// Don't create LiveCreate
+	bool bSkipFont;								// Don't load CryFont.dll
+	bool bSkipRenderer;						// Don't load Renderer
+	bool bSkipConsole;						// Don't create console
+	bool bSkipNetwork;						// Don't create Network
+	bool bSkipLiveCreate;					// Don't create LiveCreate
 	bool bSkipWebsocketServer;		// Don't create the WebSocket server
 	bool bMinimal;								// Don't load banks
 	bool bSkipInput;							// do not load CryInput
 	bool bTesting;								// CryUnit
 	bool bNoRandom;								//use fixed generator init/seed
 	bool bShaderCacheGen;					// When running in shadercache gen mode
-	bool bUnattendedMode;							// When running as part of a build on build-machines: Prevent popping up of any dialog
+	bool bUnattendedMode;					// When running as part of a build on build-machines: Prevent popping up of any dialog
 
-	#ifdef DURANGO
+#ifdef DURANGO
 	const EPLM_Event* pLastPLMEvent;
-	#endif
+#endif
 
 	ISystem *pSystem;											// Pointer to existing ISystem interface, it will be reused if not NULL.
 	IGameStartup *pGameStartup;						// Pointer to the calling GameStartup instance, to allow use of some game specific data during engine init.
-//	char szLocalIP[256];									// local IP address (needed if we have several servers on one machine)
+	//	char szLocalIP[256];							// local IP address (needed if we have several servers on one machine)
 #if defined(LINUX) || defined(APPLE)
 	void (*pCheckFunc)(void*);						// Authentication function (must be set).
 #else
-	void *pCheckFunc;								// Authentication function (must be set).
+	void *pCheckFunc;											// Authentication function (must be set).
 #endif
 
 	typedef void* (*ProtectedFunction)( void *param1,void *param2 );
 	ProtectedFunction pProtectedFunctions[eProtectedFuncsLast];			// Protected functions.
 
-	SCvarsDefault	*pCvarsDefault;				// to override the default value of some cvar
+	SCvarsDefault	*pCvarsDefault;					// to override the default value of some cvar
 
 	// Summary:
 	//  Initialization defaults.
@@ -786,11 +775,11 @@ typedef void (*FrameProfilerSectionCallback)( class CFrameProfilerSection *pSect
 //	 LoadConfiguration()
 struct ILoadConfigurationEntrySink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ILoadConfigurationEntrySink(){}
 	virtual void OnLoadConfigurationEntry( const char *szKey, const char *szValue, const char *szGroup )=0;
 	virtual void OnLoadConfigurationEntry_End() {}
-
+	// </interfuscator:shuffle>
 };
 
 struct SPlatformInfo
@@ -895,6 +884,7 @@ struct SSystemGlobalEnvironment
 	IFlashUI*                     pFlashUI;
 	IServiceNetwork*              pServiceNetwork;
 	IRemoteCommandManager*        pRemoteCommandManager;
+	DRS::IDynamicResponseSystem*  pDynamicResponseSystem;
 
 #if defined(DURANGO)
 	void*                      pWindow;
@@ -1114,9 +1104,9 @@ public:
 #endif
 
 
-UNIQUE_IFACE struct IProfilingSystem
+struct IProfilingSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IProfilingSystem(){}
 	//////////////////////////////////////////////////////////////////////////
 	// VTune Profiling interface.
@@ -1128,16 +1118,7 @@ UNIQUE_IFACE struct IProfilingSystem
 	//	 Pauses vtune data collection.
 	virtual void VTunePause() = 0;
 	//////////////////////////////////////////////////////////////////////////
-
-	// XBox360 Profiling interface
-	// Summary:
-	//	 Start data collection.
-	// Argument: Filename for captured data. 
-	virtual void StartProfilingX360(const char * fileName) = 0;
-	// Summary:
-	//	 Stop data collection and write to a hard drive.
-	virtual void StopProfilingX360() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1145,14 +1126,14 @@ UNIQUE_IFACE struct IProfilingSystem
 // Description:
 //	 Main Engine Interface.
 //	 Initialize and dispatch all engine's subsystems. 
-UNIQUE_IFACE struct ISystem
+struct ISystem
 { 
 	struct ILoadingProgressListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~ILoadingProgressListener(){}
 		virtual void OnLoadingProgress(int steps) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 #ifndef _RELEASE
@@ -1172,6 +1153,7 @@ UNIQUE_IFACE struct ISystem
 	};
 #endif
 
+	// <interfuscator:shuffle>
 	virtual ~ISystem(){}
 	// Summary:
 	//	 Releases ISystem.
@@ -1276,7 +1258,7 @@ UNIQUE_IFACE struct ISystem
 	//	 Reports a bug using the crash handler.
 	//	 Logs an error to the console and launches the crash handler, then continues execution.
 	virtual void ReportBug( const char *sFormat, ... ) PRINTF_PARAMS(2, 3) = 0;
-	
+
 	// Description:
 	//	 Report warning to current Validator object.
 	//	 Doesn't terminate the execution.
@@ -1314,6 +1296,7 @@ UNIQUE_IFACE struct ISystem
 	virtual IFrameProfileSystem *GetIProfileSystem() = 0;	
 	virtual IValidator *GetIValidator() = 0;
 	virtual IPhysicsDebugRenderer* GetIPhysicsDebugRenderer() = 0;
+	virtual IPhysRenderer* GetIPhysRenderer() = 0;
 	virtual ICharacterManager *GetIAnimationSystem() = 0;
 	virtual IStreamEngine *GetStreamEngine() = 0;
 	virtual ICmdLine *GetICmdLine() = 0;
@@ -1388,7 +1371,7 @@ UNIQUE_IFACE struct ISystem
 	//////////////////////////////////////////////////////////////////////////
 	// IXmlNode interface.
 	//////////////////////////////////////////////////////////////////////////
-	
+
 	// Summary:
 	//	 Creates new xml node.
 	virtual XmlNodeRef CreateXmlNode( const char *sNodeName="", bool bReuseStrings = false ) = 0;
@@ -1434,9 +1417,9 @@ UNIQUE_IFACE struct ISystem
 	virtual void SetFrameProfiler(bool on, bool display, char *prefix) = 0;
 
 
-  //////////////////////////////////////////////////////////////////////////
-  // Loading time/memory profiling
-  //////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	// Loading time/memory profiling
+	//////////////////////////////////////////////////////////////////////////
 
 	// Summary:
 	//	 Starts function loading stats profiling.
@@ -1478,19 +1461,16 @@ UNIQUE_IFACE struct ISystem
 	// Summary:
 	//	 Gets file version.
 	virtual const SFileVersion& GetFileVersion() = 0;
-  // Summary:
-  //	 Gets product version.
-  virtual const SFileVersion& GetProductVersion() = 0;
-  // Summary:
-  //	 Gets build version.
-  virtual const SFileVersion& GetBuildVersion() = 0;
-	
 	// Summary:
-	//	 Compressed file read & write
+	//	 Gets product version.
+	virtual const SFileVersion& GetProductVersion() = 0;
+	// Summary:
+	//	 Gets build version.
+	virtual const SFileVersion& GetBuildVersion() = 0;
+
+	// Summary:
+	//	 Data compression
 	//##@{
-	virtual bool WriteCompressedFile(const char *filename, void *data, unsigned int bitlen) = 0;
-	virtual unsigned int ReadCompressedFile(const char *filename, void *data, unsigned int maxbitlen) = 0;
-	virtual unsigned int GetCompressedFileSize(const char *filename)=0;
 	virtual bool CompressDataBlock( const void * input, size_t inputSize, void * output, size_t& outputSize, int level = 3 ) = 0;
 	virtual bool DecompressDataBlock( const void * input, size_t inputSize, void * output, size_t& outputSize ) = 0;
 	//##@}
@@ -1518,7 +1498,7 @@ UNIQUE_IFACE struct ISystem
 	// Arguments:
 	//   bClient - If true returns local client config spec, if false returns server config spec.
 	virtual ESystemConfigSpec GetConfigSpec( bool bClient=true ) = 0;
-	
+
 	virtual ESystemConfigSpec GetMaxConfigSpec() const = 0;
 
 	// Summary:
@@ -1563,17 +1543,8 @@ UNIQUE_IFACE struct ISystem
 	virtual void GFxAmpAdvanceFrame() = 0;
 
 	// Summary:
-	//	Gets instance of a head mounted display device.
-	//	It is currently possible to have only one device per type, so far.
-	//	To choose which device will be your current one, use the console 
-	//	variable sys_CurrentHMDType = IHMDDevice::DeviceType.
-	virtual IHMDDevice* GetHMDDevice() const = 0;
-
-	// Summary:
-	//	Test if specified HMD device type is available.
-	//	Parameter "type" should have value from IHMDDevice::DeviceType enum.
-	//	(using unsigned int so we don't pollute ISystem.h with IHMDDevice.h)
-	virtual bool HasHMDDevice(unsigned int type) const = 0;
+	//	Gets the head mounted display manager.
+	virtual struct IHMDManager* GetHMDManager() = 0;
 
 	// Summary:
 	//	 Creates an instance of the AVI Reader class.
@@ -1582,10 +1553,6 @@ UNIQUE_IFACE struct ISystem
 	virtual void ReleaseAVIReader(IAVI_Reader *pAVIReader) = 0;
 
 	virtual ITextModeConsole * GetITextModeConsole() = 0;
-
-	// Summary:
-	//	 Retrieves the crc32 singleton instance.
-	virtual Crc32Gen* GetCrc32Gen() = 0;
 
 	// Summary:
 	//	 Retrieves the perlin noise singleton instance.
@@ -1624,7 +1591,7 @@ UNIQUE_IFACE struct ISystem
 	// some events such as mouse movement in a CryPhysics assert.
 	// OBS2: it will always return false, if asserts are disabled or ignored.
 	virtual bool IsAssertDialogVisible() const = 0;
-	
+
 	// Summary:
 	// Sets the AssertVisisble internal variable.
 	// Typically it should only be called by CryAssert.
@@ -1694,10 +1661,6 @@ UNIQUE_IFACE struct ISystem
 	virtual ESystemGlobalState	GetSystemGlobalState(void) = 0;
 	virtual void SetSystemGlobalState(const ESystemGlobalState systemGlobalState) = 0;
 
-	// Description:
-	//	Reset the watchdog timer
-	virtual void ResetWatchdogTimer() = 0;
-
 	// Summary:
 	//		Add a PlatformOS create flag
 	virtual void AddPlatformOSCreateFlag( const uint8 createFlag ) = 0;
@@ -1709,11 +1672,9 @@ UNIQUE_IFACE struct ISystem
 	// tied to the same sync variable, therefore it's advised to wait for completion with
 	// while(*sync) (yield());
 	virtual void AsyncMemcpy(void* dst, const void* src, size_t size, int nFlags, volatile int* sync) = 0;
+	// </interfuscator:shuffle>
 
-	
-	virtual struct ILevelEncrypter *GetLevelEncrypter() = 0;
 	virtual struct IEvaluationManager* GetEvaluationManager() = 0;
-	virtual char* GetDeveloperName(char* devName) = 0;
 
 #if defined(CVARS_WHITELIST)
 	virtual ICVarsWhitelist* GetCVarsWhiteList() const = 0;
@@ -1723,12 +1684,6 @@ UNIQUE_IFACE struct ISystem
 	virtual void GetCheckpointData(ICheckpointData& data) = 0;
 	virtual void IncreaseCheckpointLoadCount() = 0;
 	virtual void SetLoadOrigin(LevelLoadOrigin origin) = 0;
-#endif
-
-#ifndef _LIB
-	// Just for DLL based version: implementation for CryStringUtils::HashString[Lower]Seed
-	virtual uint32 HashStringSeed( const char* string, const uint32 seed ) = 0;
-	virtual uint32 HashStringLowerSeed( const char* string, const uint32 seed ) = 0;
 #endif
 
 #ifdef DURANGO
@@ -1746,6 +1701,39 @@ UNIQUE_IFACE struct ISystem
 	//		Loads a dynamic library, creates and initializes an instance of the module class
 	//		Note: HintEaaS is used to load EaaS release configuration, it's ignored in all other configurations; pass true if the sourcecode for the module is available to EaaS users.
 	virtual bool InitializeEngineModule(const char *dllName, const char *moduleClassName, const SSystemInitParams &initParams, bool bQuitIfNotFound, bool bHintEaaS) = 0;
+
+	// Summary:
+	//		Unloads a dynamic library as well as the corresponding instance of the module class
+	virtual bool UnloadEngineModule(const char *dllName, const char *moduleClassName) = 0;
+
+	// Summary:
+	//		Gets the root window message handler function
+	//		The returned pointer is platform-specific:
+	//		For Windows OS, the pointer is of type WNDPROC
+	virtual void *GetRootWindowMessageHandler() = 0;
+	
+	// Summary:
+	//		Register a IWindowMessageHandler that will be informed about window messages
+	//		The delivered messages are platform-specific
+	virtual void RegisterWindowMessageHandler(IWindowMessageHandler *pHandler) = 0;
+
+	// Summary:
+	//		Unregister an IWindowMessageHandler that was previously registered using RegisterWindowMessageHandler
+	virtual void UnregisterWindowMessageHandler(IWindowMessageHandler *pHandler) = 0;
+
+	// Summary:
+	//		Pumps window messages, informing all registered IWindowMessageHandlers
+	//		If bAll is true, all available messages will be pumped
+	//		If hWnd is not NULL, only messages for the given window are processed (ignored on non-windows platforms)
+	//		Returns the number of messages pumped, or -1 if the OS indicated the application should quit
+	//		Note: Calling GetMessage or PeekMessage yourself will skip the pre-process handling required for IME support
+	virtual int PumpWindowMessage(bool bAll, WIN_HWND hWnd = 0) = 0;
+
+	// Summary:
+	//		Check if IME is supported on the current platform
+	//		Note: This flag depends on compile-time settings, it cannot be enabled or disabled at runtime
+	//		However, the support itself can typically be enabled/disabled through CVar
+	virtual bool IsImeSupported() const = 0;
 };
 
 //JAT - this is a very important function for the dedicated server - it lets us run >1000 players per piece of server hardware
@@ -1795,32 +1783,25 @@ struct DiskOperationInfo
 
 struct CLoadingTimeProfiler
 {
-  CLoadingTimeProfiler (ISystem * pSystem, const char * szFuncName) : m_pSystem (pSystem)
-  {
-    m_pSystem = pSystem;
-    m_pTimeContainer = m_pSystem->StartLoadingSectionProfiling(this, szFuncName);
-  }
+	CLoadingTimeProfiler (ISystem * pSystem, const char * szFuncName) : m_pSystem (pSystem)
+	{
+		m_pSystem = pSystem;
+		m_pTimeContainer = m_pSystem->StartLoadingSectionProfiling(this, szFuncName);
+	}
 
-  ~CLoadingTimeProfiler ()
-  {
-    m_pSystem->EndLoadingSectionProfiling(this);
-  }
+	~CLoadingTimeProfiler ()
+	{
+		m_pSystem->EndLoadingSectionProfiling(this);
+	}
 
-  struct SLoadingTimeContainer * m_pTimeContainer;
-  double m_fConstructorTime;
-  double m_fConstructorMemUsage;
+	struct SLoadingTimeContainer * m_pTimeContainer;
+	double m_fConstructorTime;
+	double m_fConstructorMemUsage;
 
 	DiskOperationInfo m_constructorInfo;
 
-  ISystem* m_pSystem;
+	ISystem* m_pSystem;
 };
-
-//#	if defined(PS3) // for PS3 use __PRETTY_FUNCTION__, since __FUNC__ is overloaded with a macro
-//#		define LOADING_TIME_PROFILE_SECTION PREFAST_SUPPRESS_WARNING(6246); CLoadingTimeProfiler __section_loading_time_auto_profiler(gEnv->pSystem, __PRETTY_FUNCTION__);
-//#else
-//#		define LOADING_TIME_PROFILE_SECTION PREFAST_SUPPRESS_WARNING(6246); CLoadingTimeProfiler __section_loading_time_auto_profiler(gEnv->pSystem, __FUNC__);
-//#	endif
-//#	define LOADING_TIME_PROFILE_SECTION_NAMED(sectionName) PREFAST_SUPPRESS_WARNING(6246); CLoadingTimeProfiler __section_loading_time_auto_profiler(gEnv->pSystem, sectionName);
 
 class CSYSBootProfileBlock
 {
@@ -1865,9 +1846,9 @@ typedef ISystem* (*PFNCREATESYSTEMINTERFACE)( SSystemInitParams &initParams );
 // Global environment variable.
 //////////////////////////////////////////////////////////////////////////
 #if defined(SYS_ENV_AS_STRUCT)
-	extern SSystemGlobalEnvironment gEnv;
+extern SSystemGlobalEnvironment gEnv;
 #else
-	extern SC_API SSystemGlobalEnvironment* gEnv;
+extern SC_API SSystemGlobalEnvironment* gEnv;
 #endif
 
 // Summary:
@@ -1904,7 +1885,6 @@ extern "C"
 //	 Displays error message.
 //	 Logs it to console and file and error message box.
 //	 Then terminates execution.
-#if !defined (__SPU__)
 void CryFatalError(const char *, ...) PRINTF_PARAMS(1, 2);
 inline void CryFatalError( const char *format,... )
 { 
@@ -1921,11 +1901,6 @@ inline void CryFatalError( const char *format,... )
 
 	gEnv->pSystem->FatalError( "%s",szBuffer );
 }
-#else 
-#ifndef CryFatalError 
-#define CryFatalError printf
-#endif 
-#endif 
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -1946,55 +1921,150 @@ inline void CryWarning( EValidatorModule module,EValidatorSeverity severity,cons
 }
 
 #ifdef EXCLUDE_CVARHELP
-	#define CVARHELP(_comment)	0
+#define CVARHELP(_comment)	0
 #else
-	#define CVARHELP(_comment)	_comment
+#define CVARHELP(_comment)	_comment
 #endif
 
 //Provide macros for fixing cvars for release mode on consoles to enums to allow for code stripping
 //Do not enable for PC, apply VF_CHEAT there if required
 #if defined(CONSOLE)
-	#define CONST_CVAR_FLAGS (VF_CHEAT)
-#else // #if (defined(XENON) || defined(PS3))
-	#define CONST_CVAR_FLAGS (VF_NULL)
-#endif // #if (defined(XENON) || defined(PS3))
+#define CONST_CVAR_FLAGS (VF_CHEAT)
+#else 
+#define CONST_CVAR_FLAGS (VF_NULL)
+#endif 
 
 #if defined(_RELEASE) && defined(CONSOLE)
+#ifndef LOG_CONST_CVAR_ACCESS
+#error LOG_CONST_CVAR_ACCESS should be defined in ProjectDefines.h
+#endif
 
-	# define CONSOLE_CONST_CVAR_MODE
-	# define DeclareConstIntCVar(name, defaultValue) enum { name = (defaultValue) }
-	# define DeclareStaticConstIntCVar(name, defaultValue) enum { name = (defaultValue) }
-	# define DefineConstIntCVarName(strname, name, defaultValue, flags, help) { COMPILE_TIME_ASSERT((int)(defaultValue) == (int)(name)); }
-	# define DefineConstIntCVar(name, defaultValue, flags, help) { COMPILE_TIME_ASSERT((int)(defaultValue) == (int)(name));}
-	# define DefineConstIntCVar2(name, _var_, defaultValue, flags, help)
-	# define DefineConstIntCVar3(name, _var_, defaultValue, flags, help) \
-		{ COMPILE_TIME_ASSERT((int)(defaultValue) == (int)(_var_));}
-	# define AllocateConstIntCVar(scope,name)
+#include "IConsole.h"
+namespace Detail
+{
+	template<typename T>
+	struct SQueryTypeEnum;
+	template<>
+	struct SQueryTypeEnum<int>
+	{
+		static const int type = CVAR_INT;
+		static int ParseString(const char *s) { return atoi(s); }
+	};
+	template<>
+	struct SQueryTypeEnum<float>
+	{
+		static const int type = CVAR_FLOAT;
+		static float ParseString(const char *s) { return (float)atof(s); }
+	};
 
-	# define DefineConstFloatCVar(name, flags, help)
-	# define DeclareConstFloatCVar(name)
-	# define DeclareStaticConstFloatCVar(name)
-	# define AllocateConstFloatCVar(scope,name)
+	template<typename T>
+	struct SDummyCVar : ICVar
+	{
+		const T value;
+#if LOG_CONST_CVAR_ACCESS
+		mutable bool bWasRead;
+		mutable bool bWasChanged;
+		SDummyCVar(T value) : value(value), bWasChanged(false), bWasRead(false) {}
+#else
+		SDummyCVar(T value) : value(value) {}
+#endif
+
+		void WarnUse() const
+		{
+#if LOG_CONST_CVAR_ACCESS
+			if (!bWasRead)
+			{
+				CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_WARNING, "[CVAR] Read from const CVar '%s' via name look-up, this is non-optimal", GetName());
+				bWasRead = true;
+			}
+#endif
+		}
+
+		void InvalidAccess() const
+		{
+#if LOG_CONST_CVAR_ACCESS
+			if (!bWasChanged)
+			{
+				CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_ERROR, "[CVAR] Write to const CVar '%s' with wrong value '%f' was ignored. This indicates a bug in code or a config file", GetName(), GetFVal());
+				bWasChanged = true;
+			}
+#endif
+		}
+
+		void Release() {} 
+		int GetIVal() const { WarnUse(); return static_cast<int>(value); }
+		int64 GetI64Val() const { WarnUse(); return static_cast<int64>(value); }
+		float GetFVal() const { WarnUse(); return static_cast<float>(value); }
+		const char *GetString() const { return ""; }
+		const char *GetDataProbeString() const { return ""; }
+		void Set(const char* s) { if (SQueryTypeEnum<T>::ParseString(s) != value) InvalidAccess(); }
+		void ForceSet(const char* s) { Set(s); }
+		void Set(const float f) { if (static_cast<T>(f) != value) InvalidAccess(); }
+		void Set(const int i) { if (static_cast<T>(i) != value) InvalidAccess(); }
+		void ClearFlags (int flags) {}
+		int GetFlags() const { return VF_CONST_CVAR | VF_READONLY; }
+		int SetFlags( int flags ) { return 0; }
+		int GetType() { return SQueryTypeEnum<T>::type; }
+		const char* GetHelp() { return NULL; }
+		bool IsConstCVar() const { return true; }
+		void SetOnChangeCallback(ConsoleVarFunc pChangeFunc) { (void)pChangeFunc; }
+		void AddOnChangeFunctor(const SFunctor& pChangeFunctor) { (void)pChangeFunctor; }
+		uint64 GetNumberOfOnChangeFunctors() const { return 0; }
+		const SFunctor& GetOnChangeFunctor(uint64 nFunctorIndex) const { InvalidAccess(); return *(const SFunctor *)NULL;}
+		bool RemoveOnChangeFunctor(const uint64 nElement) { return true; }
+		ConsoleVarFunc GetOnChangeCallback() const { InvalidAccess(); return NULL; }
+		void GetMemoryUsage(class ICrySizer* pSizer) const {}
+		int GetRealIVal() const { return GetIVal(); }
+		void SetDataProbeString(const char* pDataProbeString) { InvalidAccess(); }
+	};
+}
+
+#define REGISTER_DUMMY_CVAR(type, name, value) \
+	do { \
+		static struct DummyCVar : Detail::SDummyCVar<type> \
+		{ \
+			DummyCVar() : Detail::SDummyCVar<type>(value) {} \
+			const char* GetName() const { return name; } \
+		} DummyStaticInstance; \
+		if (!(gEnv->pConsole != 0 ? gEnv->pConsole->Register(&DummyStaticInstance) : 0)) \
+		{ \
+			DEBUG_BREAK; \
+			CryFatalError("Can not register dummy CVar"); \
+		} \
+	} while(0)
+
+# define CONSOLE_CONST_CVAR_MODE
+# define DeclareConstIntCVar(name, defaultValue) enum { name = (defaultValue) }
+# define DeclareStaticConstIntCVar(name, defaultValue) enum { name = (defaultValue) }
+# define DefineConstIntCVarName(strname, name, defaultValue, flags, help) { COMPILE_TIME_ASSERT((int)(defaultValue) == (int)(name)); REGISTER_DUMMY_CVAR(int, strname, defaultValue); }
+# define DefineConstIntCVar(name, defaultValue, flags, help) { COMPILE_TIME_ASSERT((int)(defaultValue) == (int)(name)); REGISTER_DUMMY_CVAR(int, (#name), defaultValue); }
+// DefineConstIntCVar2 is deprecated, any such instance can be converted to the 3 variant by removing the quotes around the first parameter
+# define DefineConstIntCVar3(name, _var_, defaultValue, flags, help) { COMPILE_TIME_ASSERT((int)(defaultValue) == (int)(_var_)); REGISTER_DUMMY_CVAR(int, name, defaultValue); }
+# define AllocateConstIntCVar(scope,name)
+
+# define DefineConstFloatCVar(name, flags, help) { REGISTER_DUMMY_CVAR(float, (#name), name ## Default); }
+# define DeclareConstFloatCVar(name)
+# define DeclareStaticConstFloatCVar(name)
+# define AllocateConstFloatCVar(scope,name)
 
 #else
 
-	# define DeclareConstIntCVar(name, defaultValue) int name
-	# define DeclareStaticConstIntCVar(name, defaultValue) static int name
-	# define DefineConstIntCVarName(strname, name, defaultValue, flags, help) \
-		(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register(strname, &name, defaultValue, flags|CONST_CVAR_FLAGS, CVARHELP(help)))
-	# define DefineConstIntCVar(name, defaultValue, flags, help) \
-		(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register((#name), &name, defaultValue, flags|CONST_CVAR_FLAGS, CVARHELP(help), 0, false))
-	# define DefineConstIntCVar2(_name, _var, _def_val, _flags, help) \
-		(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register(_name, _var, (_def_val), (_flags)|CONST_CVAR_FLAGS, CVARHELP(help), 0, false))
-	# define DefineConstIntCVar3(_name, _var, _def_val, _flags, help) \
-		(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register(_name, &(_var), (_def_val), (_flags)|CONST_CVAR_FLAGS, CVARHELP(help), 0, false))
-	# define AllocateConstIntCVar(scope,name) int scope:: name
+# define DeclareConstIntCVar(name, defaultValue) int name
+# define DeclareStaticConstIntCVar(name, defaultValue) static int name
+# define DefineConstIntCVarName(strname, name, defaultValue, flags, help) \
+	(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register(strname, &name, defaultValue, flags|CONST_CVAR_FLAGS, CVARHELP(help)))
+# define DefineConstIntCVar(name, defaultValue, flags, help) \
+	(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register((#name), &name, defaultValue, flags|CONST_CVAR_FLAGS, CVARHELP(help), 0, false))
+// DefineConstIntCVar2 is deprecated, any such instance can be converted to the 3 variant by removing the quotes around the first parameter
+# define DefineConstIntCVar3(_name, _var, _def_val, _flags, help) \
+	(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register(_name, &(_var), (_def_val), (_flags)|CONST_CVAR_FLAGS, CVARHELP(help), 0, false))
+# define AllocateConstIntCVar(scope,name) int scope:: name
 
-	# define DefineConstFloatCVar(name, flags, help) \
-		(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register((#name), &name, name ## Default, flags|CONST_CVAR_FLAGS, CVARHELP(help), 0, false))
-	# define DeclareConstFloatCVar(name) float name
-	# define DeclareStaticConstFloatCVar(name) static float name
-	# define AllocateConstFloatCVar(scope,name) float scope:: name
+# define DefineConstFloatCVar(name, flags, help) \
+	(gEnv->pConsole == 0 ? 0 : gEnv->pConsole->Register((#name), &name, name ## Default, flags|CONST_CVAR_FLAGS, CVARHELP(help), 0, false))
+# define DeclareConstFloatCVar(name) float name
+# define DeclareStaticConstFloatCVar(name) static float name
+# define AllocateConstFloatCVar(scope,name) float scope:: name
 #endif
 
 #if defined(USE_CRY_ASSERT)
@@ -2138,9 +2208,9 @@ static void AssertConsoleExists(void)
 
 #ifdef EXCLUDE_NORMAL_LOG				// setting this removes a lot of logging to reduced code size (useful for consoles)
 
-	#define CryLog(...) ((void)0)
-	#define CryComment(...) ((void)0)
-	#define CryLogAlways(...) ((void)0)
+#define CryLog(...) ((void)0)
+#define CryComment(...) ((void)0)
+#define CryLogAlways(...) ((void)0)
 
 #else // EXCLUDE_NORMAL_LOG
 
@@ -2184,8 +2254,8 @@ inline void CryLogAlways( const char *format,... )
 
 	if (gEnv && gEnv->pSystem && gEnv->pLog)
 	{
-//		assert(gEnv);
-//		assert(gEnv->pSystem);
+		//		assert(gEnv);
+		//		assert(gEnv->pSystem);
 
 		va_list args;
 		va_start(args,format);
@@ -2238,6 +2308,3 @@ CRY_ASYNC_MEMCPY_API void cryAsyncMemcpy(
 // Additional headers.
 //////////////////////////////////////////////////////////////////////////
 #include <FrameProfiler.h>
-
-#endif //_CRY_SYSTEM_H_
-

@@ -109,7 +109,7 @@ int CPhysicsEventListener::OnPostStep( const EventPhys *pEvent )
 		}
 		if (gEnv->p3DEngine->GetWaterLevel()!=WATER_LEVEL_UNKNOWN)
 		{
-			// Deferred updating ignore ocean flag as the SPUs are busy updating the octree at this point
+			// Deferred updating ignore ocean flag as the Jobs are busy updating the octree at this point
 			m_physVisAreaUpdateVector.push_back(PhysVisAreaUpdate(pRndNode, pPostStep->pEntity));
 		}
 		bFaraway = bEnableOpt & isneg(sqr(maxDist)+
@@ -620,8 +620,6 @@ int CPhysicsEventListener::OnJointBreak( const EventPhys *pEvent )
 		}
 	}
 
-	IStatObj::SSubObject *pSubObj;
-	const char *ptr,*peff;
 	IStatObj *pStatObjEnt = pStatObj;
 	if (pStatObj)
 		while(pStatObj->GetCloneSourceObject())
@@ -650,9 +648,13 @@ int CPhysicsEventListener::OnJointBreak( const EventPhys *pEvent )
 			//pBreakMgr->CreateSurfaceEffect( pObj2,tm,sEffectType );
 	}
 
+	IStatObj::SSubObject *pSubObj;
+
 	if (pStatObj && (pSubObj=pStatObj->GetSubObject(pBreakEvent->idJoint)) && 
 			pSubObj->nType==STATIC_SUB_OBJECT_DUMMY && !strncmp(pSubObj->name,"$joint",6))
 	{
+		const char *ptr;
+
 		if (ptr=strstr(pSubObj->properties,"effect"))
 		{
 		
@@ -660,9 +662,9 @@ int CPhysicsEventListener::OnJointBreak( const EventPhys *pEvent )
 			if (*ptr)
 			{
 				char strEff[256];
-				for (peff = ptr++; *ptr && *ptr != '\n'; ptr++);	
-				strncpy(strEff, peff, min(255, (int)(ptr - peff)));
-				strEff[min(255, (int)(ptr - peff))] = 0;
+				const char* const peff = ptr;
+				while (*ptr && *ptr != '\n') ++ptr;
+				cry_strcpy(strEff, peff, (size_t)(ptr - peff));
 				IParticleEffect* pEffect = gEnv->pParticleManager->FindEffect(strEff);
 				pEffect->Spawn(true, IParticleEffect::ParticleLoc(pBreakEvent->pt, pBreakEvent->n));
 			}

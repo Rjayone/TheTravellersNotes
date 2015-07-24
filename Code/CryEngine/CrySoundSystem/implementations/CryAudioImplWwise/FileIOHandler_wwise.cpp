@@ -16,12 +16,10 @@
 //////////////////////////////////////////////////////////////////////////
 AkFileHandle GetFileHandle(FILE* const pFile)
 {
-#if defined(WIN32) || defined(WIN64) || defined(DURANGO)
+#if defined(WIN32) || defined(WIN64) || defined(DURANGO) || defined(LINUX) || defined(APPLE)
 	return reinterpret_cast<AkFileHandle>(pFile);
 #elif defined(ORBIS) 
 	return static_cast<AkFileHandle>(reinterpret_cast<INT_PTR>(pFile));
-#elif defined(LINUX) || defined(APPLE)
-	return static_cast<AkFileHandle>(0); // TODO!
 #else
 #error "Undefined platform!"
 #endif
@@ -38,7 +36,6 @@ CFileIOHandler_wwise::CFileIOHandler_wwise()
 //////////////////////////////////////////////////////////////////////////
 CFileIOHandler_wwise::~CFileIOHandler_wwise()
 {
-	bool const bStop = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,24 +105,54 @@ AKRESULT CFileIOHandler_wwise::Open(AkOSChar const* sFileName, AkOpenMode eOpenM
 
 		char* sTemp = NPTR;
 		CONVERT_OSCHAR_TO_CHAR(sFinalFilePath, sTemp);
+		char const* sOpenMode = NPTR;
 
-		size_t const nFileSize = gEnv->pCryPak->FGetSize(sTemp);
-
-		if (nFileSize > 0)
+		switch (eOpenMode)
 		{
-			FILE* const pFile = gEnv->pCryPak->FOpen(sTemp, "rbx", ICryPak::FOPEN_HINT_DIRECT_OPERATION);
-
-			if (pFile != NPTR)
+		case AK_OpenModeRead:
 			{
-				rFileDesc.iFileSize					= static_cast<AkInt64>(nFileSize);
-				rFileDesc.hFile							= GetFileHandle(pFile);
-				rFileDesc.uSector						= 0;
-				rFileDesc.deviceID					= m_nDeviceID;
-				rFileDesc.pCustomParam			= NPTR;
-				rFileDesc.uCustomParamSize	= 0;
+				sOpenMode = "rbx";
 
-				eResult = AK_Success;
+				break;
 			}
+		case AK_OpenModeWrite:
+			{
+				sOpenMode = "wbx";
+
+				break;
+			}
+		case AK_OpenModeWriteOvrwr:
+			{
+				sOpenMode = "w+bx";
+
+				break;
+			}
+		case AK_OpenModeReadWrite:
+			{
+				sOpenMode = "abx";
+
+				break;
+			}
+		default:
+			{
+				AKASSERT(!"Unknown file open mode!");
+
+				break;
+			}
+		}
+
+		FILE* const pFile = gEnv->pCryPak->FOpen(sTemp, sOpenMode, ICryPak::FOPEN_HINT_DIRECT_OPERATION);
+
+		if (pFile != NPTR)
+		{
+			rFileDesc.iFileSize					= static_cast<AkInt64>(gEnv->pCryPak->FGetSize(sTemp));
+			rFileDesc.hFile							= GetFileHandle(pFile);
+			rFileDesc.uSector						= 0;
+			rFileDesc.deviceID					= m_nDeviceID;
+			rFileDesc.pCustomParam			= NPTR;
+			rFileDesc.uCustomParamSize	= 0;
+
+			eResult = AK_Success;
 		}
 	}
 
@@ -207,16 +234,30 @@ AKRESULT CFileIOHandler_wwise::Read(AkFileDesc& rFileDesc, AkIoHeuristics const&
 }
 
 //////////////////////////////////////////////////////////////////////////
-AKRESULT CFileIOHandler_wwise::Write(AkFileDesc& in_fileDesc, AkIoHeuristics const& in_heuristics, void* in_pData, AkIOTransferInfo& io_transferInfo)
+AKRESULT CFileIOHandler_wwise::Write(AkFileDesc& rFileDesc, AkIoHeuristics const& rHeuristics, void* pBuffer, AkIOTransferInfo& rTransferInfo)
 {
-	return AK_Success;
+	AKASSERT(pBuffer != NPTR && rFileDesc.hFile != AkFileHandle(INVALID_HANDLE_VALUE));
+
+	FILE* const pFile = reinterpret_cast<FILE*>(rFileDesc.hFile);
+	long const nCurrentFileWritePos	= gEnv->pCryPak->FTell(pFile);
+	long const nWantedFileWritePos	= static_cast<long>(rTransferInfo.uFilePosition);
+
+	if (nCurrentFileWritePos != nWantedFileWritePos)
+	{
+		gEnv->pCryPak->FSeek(pFile, nWantedFileWritePos, SEEK_SET);
+	}
+
+	size_t const nBytesWritten = gEnv->pCryPak->FWrite(pBuffer, 1, static_cast<size_t>(rTransferInfo.uRequestedSize), pFile);
+	AKASSERT(nBytesWritten == static_cast<size_t>(rTransferInfo.uRequestedSize));
+
+	return (nBytesWritten > 0) ? AK_Success : AK_Fail;
 }
 
 //////////////////////////////////////////////////////////////////////////
 AKRESULT CFileIOHandler_wwise::Close(AkFileDesc& rFileDesc)
 {
 	AKRESULT eResult = AK_Fail;
-
+	
 	if (!gEnv->pCryPak->FClose(reinterpret_cast<FILE*>(rFileDesc.hFile)))
 	{
 		eResult = AK_Success;
@@ -239,7 +280,6 @@ AkUInt32 CFileIOHandler_wwise::GetBlockSize(AkFileDesc& in_fileDesc)
 //////////////////////////////////////////////////////////////////////////
 void CFileIOHandler_wwise::GetDeviceDesc(AkDeviceDesc& out_deviceDesc)
 {
-	bool const bStop = true;
 }
 
 //////////////////////////////////////////////////////////////////////////

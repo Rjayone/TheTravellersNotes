@@ -2038,7 +2038,6 @@ NET_IMPLEMENT_SIMPLE_ATSYNC_MESSAGE( CBreakReplicator, SvRecvGlassBreak, eNRT_Re
 	return true;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IBreakReplicator)
 
 /*
 ====================================================================================================================================================

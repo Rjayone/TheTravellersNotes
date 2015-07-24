@@ -76,19 +76,15 @@
 
 #define _CRY_DEFAULT_MALLOC_ALIGNMENT 4
 
-#if !defined(PS3) && !defined(CAFE) && !defined(APPLE) && !defined(ORBIS)
+#if !defined(APPLE) && !defined(ORBIS)
 	#include <malloc.h>
 #endif
 
 #if defined(__cplusplus)
-#if defined(PS3) || defined(LINUX) || defined(APPLE) || defined(ORBIS)
+#if defined(LINUX) || defined(APPLE) || defined(ORBIS)
 	#include <new>
 #else
 	#include <new.h>
-#endif
-// required for the inclusion of annotated CryXXX Memory Methods
-#if defined(__CRYCG__)
-  #include "PS3CryCache.h"
 #endif
 #endif
 
@@ -106,7 +102,7 @@
 	#endif
 #endif //DEBUG_MEMORY_MANAGER
 
-#if defined(_DEBUG) && !defined(PS3) && !defined(LINUX) && !defined(APPLE) && !defined(ORBIS)
+#if defined(_DEBUG) && !defined(LINUX) && !defined(APPLE) && !defined(ORBIS)
 	#include <crtdbg.h>
 #endif //_DEBUG
 
@@ -114,7 +110,7 @@
 // returns non-0 if it's valid and 0 if not valid
 ILINE int IsHeapValid()
 {
-#if (defined(_DEBUG) && !defined(RELEASE_RUNTIME) && !defined(PS3) && !defined(APPLE) && !defined(ORBIS)) || (defined(DEBUG_MEMORY_MANAGER))
+#if (defined(_DEBUG) && !defined(RELEASE_RUNTIME) && !defined(APPLE) && !defined(ORBIS)) || (defined(DEBUG_MEMORY_MANAGER))
 	return _CrtCheckMemory();
 #else
 	return true;
@@ -136,16 +132,6 @@ class IGeneralMemoryHeap;
 class IPageMappingHeap;
 class IDefragAllocator;
 class IMemoryAddressRange;
-
-#if (defined(_LIB) && defined(XENON)) || defined(PS3)
-#define MEMMAN_STATIC
-#endif
-
-#ifdef MEMMAN_STATIC
-#define MEMMAN_METHOD(...) static __VA_ARGS__
-#else
-#define MEMMAN_METHOD(...) virtual __VA_ARGS__ = 0
-#endif
 
 // Description:
 //	 Interfaces that allow access to the CryEngine memory manager.
@@ -176,88 +162,73 @@ struct IMemoryManager
 	enum EAllocPolicy
 	{
 		eapDefaultAllocator,
-		eapGPU,
 		eapPageMapped,
-		eapGPUEternal,
 		eapCustomAlignment,
 #if defined(DURANGO)
 		eapAPU,
 #endif // DURANGO
 	};
 
-#ifdef MEMMAN_STATIC
-	static IMemoryManager* GetInstance();
-#else
 	virtual ~IMemoryManager(){}
-#endif
 
-	MEMMAN_METHOD( bool GetProcessMemInfo( SProcessMemInfo &minfo ) );
+	virtual bool GetProcessMemInfo( SProcessMemInfo &minfo ) =0;
 
 	// Description:
 	//	 Used to add memory block size allocated directly from the crt or OS to the memory manager statistics.
-	MEMMAN_METHOD( void FakeAllocation( long size ) );
+	virtual void FakeAllocation( long size ) =0;
 
 	// Initialise the level heap.
-	MEMMAN_METHOD( void InitialiseLevelHeap() );
+	virtual void InitialiseLevelHeap() =0;
 
 	// Switch the default heap to the level heap.
-	MEMMAN_METHOD( void SwitchToLevelHeap() );
+	virtual void SwitchToLevelHeap() =0;
 
 	// Switch the default heap to the global heap.
-	MEMMAN_METHOD( void SwitchToGlobalHeap() );
+	virtual void SwitchToGlobalHeap() =0;
 
 	// Enable the global heap for this thread only. Returns previous heap selection, which must be passed to LocalSwitchToHeap.
-	MEMMAN_METHOD( int LocalSwitchToGlobalHeap() );
+	virtual int LocalSwitchToGlobalHeap() =0;
 
 	// Enable the level heap for this thread only. Returns previous heap selection, which must be passed to LocalSwitchToHeap.
-	MEMMAN_METHOD( int LocalSwitchToLevelHeap() );
+	virtual int LocalSwitchToLevelHeap() =0;
 
 	// Switch to a specific heap for this thread only. Usually used to undo a previous LocalSwitchToGlobalHeap
-	MEMMAN_METHOD( void LocalSwitchToHeap(int heap) );
+	virtual void LocalSwitchToHeap(int heap) =0;
 
 	// Fetch the violation status of the level heap
-	MEMMAN_METHOD( bool GetLevelHeapViolationState(bool& usingLevelHeap, size_t& numAllocs, size_t& allocSize) );
+	virtual bool GetLevelHeapViolationState(bool& usingLevelHeap, size_t& numAllocs, size_t& allocSize) =0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Heap Tracing API
-	MEMMAN_METHOD( HeapHandle TraceDefineHeap( const char *heapName,size_t size,const void* pBase ) );
-	MEMMAN_METHOD( void TraceHeapAlloc( HeapHandle heap,void* mem, size_t size, size_t blockSize, const char *sUsage,const char *sNameHint=0 ) );
-	MEMMAN_METHOD( void TraceHeapFree( HeapHandle heap,void* mem, size_t blockSize ) );
-	MEMMAN_METHOD( void TraceHeapSetColor( uint32 color ) );
-	MEMMAN_METHOD( uint32 TraceHeapGetColor() );
-	MEMMAN_METHOD( void TraceHeapSetLabel( const char *sLabel ) );
+	virtual HeapHandle TraceDefineHeap( const char *heapName,size_t size,const void* pBase ) =0;
+	virtual void TraceHeapAlloc( HeapHandle heap,void* mem, size_t size, size_t blockSize, const char *sUsage,const char *sNameHint=0 ) =0;
+	virtual void TraceHeapFree( HeapHandle heap,void* mem, size_t blockSize ) =0;
+	virtual void TraceHeapSetColor( uint32 color ) =0;
+	virtual uint32 TraceHeapGetColor() =0;
+	virtual void TraceHeapSetLabel( const char *sLabel ) =0;
 	//////////////////////////////////////////////////////////////////////////
 
 	// Retrieve access to the MemReplay implementation class.
-	MEMMAN_METHOD( struct IMemReplay* GetIMemReplay() );
+	virtual struct IMemReplay* GetIMemReplay() =0;
 
 	// Create an instance of ICustomMemoryHeap
-	MEMMAN_METHOD( ICustomMemoryHeap* const CreateCustomMemoryHeapInstance(EAllocPolicy const eAllocPolicy) );
+	virtual ICustomMemoryHeap* const CreateCustomMemoryHeapInstance(EAllocPolicy const eAllocPolicy) =0;
 
-	MEMMAN_METHOD( IGeneralMemoryHeap* CreateGeneralExpandingMemoryHeap(size_t upperLimit, size_t reserveSize, const char* sUsage) );
-	MEMMAN_METHOD( IGeneralMemoryHeap* CreateGeneralMemoryHeap(void* base, size_t sz,const char *sUsage) );
+	virtual IGeneralMemoryHeap* CreateGeneralExpandingMemoryHeap(size_t upperLimit, size_t reserveSize, const char* sUsage) =0;
+	virtual IGeneralMemoryHeap* CreateGeneralMemoryHeap(void* base, size_t sz,const char *sUsage) =0;
 
-	MEMMAN_METHOD( IMemoryAddressRange* ReserveAddressRange(size_t capacity, const char* sName) );
-	MEMMAN_METHOD( IPageMappingHeap* CreatePageMappingHeap(size_t addressSpace, const char* sName) );
+	virtual IMemoryAddressRange* ReserveAddressRange(size_t capacity, const char* sName) =0;
+	virtual IPageMappingHeap* CreatePageMappingHeap(size_t addressSpace, const char* sName) =0;
 
-	MEMMAN_METHOD( IDefragAllocator* CreateDefragAllocator() );
+	virtual IDefragAllocator* CreateDefragAllocator() =0;
 
-	MEMMAN_METHOD( void* AllocPages(size_t size) );
-	MEMMAN_METHOD( void FreePages(void* p, size_t size) );
+	virtual void* AllocPages(size_t size) =0;
+	virtual void FreePages(void* p, size_t size) =0;
 };
 
-#undef MEMMAN_METHOD
 
 // Global function implemented in CryMemoryManager_impl.h
-#ifdef MEMMAN_STATIC
-inline IMemoryManager* CryGetIMemoryManager()
-{
-	extern IMemoryManager g_memoryManager;
-	return &g_memoryManager;
-}
-#else
 IMemoryManager *CryGetIMemoryManager();
-#endif
 
 class STraceHeapAllocatorAutoColor
 {
@@ -302,8 +273,6 @@ struct CryReplayInfo
 //////////////////////////////////////////////////////////////////////////
 // Extern declarations of globals inside CrySystem.
 //////////////////////////////////////////////////////////////////////////
-#if !defined(__SPU__)
-
 #ifdef __cplusplus 
 extern "C" {
 #endif //__cplusplus
@@ -333,7 +302,7 @@ void CryGetMemoryInfoForModule(CryModuleMemoryInfo * pInfo);
 }
 #endif //__cplusplus
 
-#endif //!defined(__SPU__)
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -359,7 +328,6 @@ void CryGetMemoryInfoForModule(CryModuleMemoryInfo * pInfo);
 #endif
 
 #if defined(NOT_USE_CRY_MEMORY_MANAGER)
-	#if !defined(__SPU__)
 		CRYMM_INLINE void* CryModuleMalloc(size_t size)
 		{
 			MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CryMalloc);
@@ -390,23 +358,6 @@ void CryGetMemoryInfoForModule(CryModuleMemoryInfo * pInfo);
 			MEMREPLAY_SCOPE_FREE(memblock);
 		}
 		
-		#if defined(PS3) || defined(XENON) // redirect alignment functions only if supported, if not go to the non aligned variants
-			CRYMM_INLINE void* CryModuleReallocAlign( void *memblock, size_t size,size_t alignment )
-			{
-				MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CryMalloc);
-				void* ret = reallocalign(memblock,size,alignment);
-				MEMREPLAY_SCOPE_REALLOC(memblock, ret, size, alignment);
-				return ret;
-			}
-			
-			CRYMM_INLINE void* CryModuleMemalign( size_t size,size_t alignment )
-			{
-				MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CryMalloc);
-				void* ret = memalign(alignment,size);
-				MEMREPLAY_SCOPE_ALLOC(ret, size, alignment);
-				return ret;
-			}
-		#else
 			CRYMM_INLINE void* CryModuleReallocAlign( void *memblock, size_t size,size_t alignment )
 			{
 				MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CryMalloc);
@@ -458,18 +409,7 @@ void CryGetMemoryInfoForModule(CryModuleMemoryInfo * pInfo);
 				MEMREPLAY_SCOPE_ALLOC(ret, size, alignment);
 				return ret;
 			}
-		#endif
-	#else //__SPU__
-#if !defined(__CRYCG__)
-	// size compilation for multi-page spu jobs requires forwarded declarations of CryModuleMalloc functions
-		void  CryModuleFree(void *p);
-		void* CryModuleMalloc(size_t n);
-		void* CryModuleRealloc(void *, size_t n);
-#endif
-		#define malloc        CryModuleMalloc
-		#define realloc       CryModuleRealloc
-		#define free          CryModuleFree
-	#endif //__SPU__
+
 #else //NOT_USE_CRY_MEMORY_MANAGER
 
 /////////////////////////////////////////////////////////////////////////
@@ -516,50 +456,10 @@ CRYMM_INLINE void CryModuleCRTFree(void* p)
 
 #endif //NOT_USE_CRY_MEMORY_MANAGER
 
-#if !defined(__SPU__)
 CRY_MEM_USAGE_API void CryModuleGetMemoryInfo( CryModuleMemoryInfo *pMemInfo );
-#endif
 
 #if !defined(NOT_USE_CRY_MEMORY_MANAGER)
 	#if defined(_LIB) && !defined(NEW_OVERRIDEN)
-				#if defined(PS3) && !defined(JOB_LIB_COMP)
-                    void * operator new(_CSTD size_t size) throw (std::bad_alloc);
-
-
-                    void* operator new (_CSTD size_t size, const std::nothrow_t &nothrow) throw();
-
-                    void* operator new[](_CSTD size_t size) throw (std::bad_alloc);
-
-
-                    void* operator new[] (_CSTD size_t size, const std::nothrow_t &nothrow) throw();
-
-
-                    void *operator new(_CSTD size_t size, _CSTD size_t cAlignment) throw (std::bad_alloc);
-
-
-                    void *operator new(_CSTD size_t size, _CSTD size_t cAlignment, const std::nothrow_t&) throw();
-
-
-                    void *operator new[](_CSTD size_t size, _CSTD size_t cAlignment) throw (std::bad_alloc);
-
-
-                    void *operator new[](_CSTD size_t size, _CSTD size_t cAlignment, const std::nothrow_t&) throw();
-
-                    void operator delete(void *p) throw();
-
-
-                    void operator delete(void *p, const std::nothrow_t&) throw();
-
-                    void operator delete[](void *p) throw();
-
-                    void operator delete[](void *p, const std::nothrow_t&) throw();
-
-				#else
-
-					#if !defined(XENON)
-						//ILINE void * __cdecl operator new   (size_t size) throw () { return CryModuleMalloc(size, eCryModule); }
-					#endif // !defined(XENON)
-
                     void * __cdecl operator new   (size_t size);
 
                     void * __cdecl operator new[] (size_t size);
@@ -575,7 +475,6 @@ CRY_MEM_USAGE_API void CryModuleGetMemoryInfo( CryModuleMemoryInfo *pMemInfo );
 					
                     void operator delete[](void *p, const std::nothrow_t&) CRYMM_THROW;
 					#endif // defined(ORBIS)
-				#endif // else defined(PS3)
 
 	#endif // defined(_LIB) && !defined(NEW_OVERRIDEN)
 #endif // !defined(NOT_USE_CRY_MEMORY_MANAGER)
@@ -586,12 +485,8 @@ size_t CryCrtFree(void *p);
 // wrapper for _msize on PC
 size_t CryCrtSize(void * p);
 
-#if !defined( NOT_USE_CRY_MEMORY_MANAGER) && !defined(JOB_LIB_COMP) // && !defined(_STLP_BEGIN_NAMESPACE) // Avoid non STLport version
+#if !defined( NOT_USE_CRY_MEMORY_MANAGER)
 #include "CryMemoryAllocator.h"
-#elif defined(__SPU__)
-// The include statements below are required to make SPUJob.h implied CryCG
-// filters compatible between memman/no-memman configurations.
-#include <algorithm>
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -677,27 +572,5 @@ public:
 	ILINE ScopedSwitchToLevelHeap() {}
 #endif
 };
-
-#ifdef XENON
-
-#ifndef _LIB
-
-LPVOID XTrackedPhysicalAlloc(SIZE_T dwSize, ULONG_PTR ulPhysicalAddress, ULONG_PTR ulAlignment, DWORD flProtect);
-LPVOID XTrackedPhysicalAllocEx(SIZE_T dwSize, ULONG_PTR ulLowestAcceptableAddress, ULONG_PTR ulHighestAcceptableAddress, ULONG_PTR ulAlignment, DWORD flProtect);
-VOID XTrackedPhysicalFree(LPVOID lpAddress);
-LPVOID XTrackedEncryptedAlloc(SIZE_T dwSize);
-VOID XTrackedEncryptedFree(LPVOID lpAddress);
-VOID XTrackedSetFileCacheSize(SIZE_T dwSize);
-
-#define XPhysicalAlloc(dwSize, ulPhysicalAddress, ulAlignment, flProtect) XTrackedPhysicalAlloc(dwSize, ulPhysicalAddress, ulAlignment, flProtect)
-#define XPhysicalAllocEx(dwSize, ulLowestAcceptableAddress, ulHighestAcceptableAddress, ulAlignment, flProtect) XTrackedPhysicalAllocEx(dwSize, ulLowestAcceptableAddress, ulHighestAcceptableAddress, ulAlignment, flProtect)
-#define XPhysicalFree(lpAddress) XTrackedPhysicalFree(lpAddress)
-#define XEncryptedAlloc(dwSize) XTrackedEncryptedAlloc(dwSize)
-#define XEncryptedFree(lpAddress) XTrackedEncryptedFree(lpAddress)
-#define XSetFileCacheSize(dwSize) XTrackedSetFileCacheSize(dwSize)
-
-#endif 
-
-#endif
 
 #endif // __CryMemoryManager_h__

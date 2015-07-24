@@ -1,0 +1,958 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Enable for all projects to avoid NVIDIA TEGRA auto updater dialog -->
+  <PropertyGroup Label="NsightTegraProject">
+    <NsightTegraProjectRevisionNumber>9</NsightTegraProjectRevisionNumber>
+  </PropertyGroup>
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="[GameSDK] Debug|Win32">
+			<Configuration>[GameSDK] Debug</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Debug|x64">
+			<Configuration>[GameSDK] Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Profile|Win32">
+			<Configuration>[GameSDK] Profile</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Profile|x64">
+			<Configuration>[GameSDK] Profile</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Performance|Win32">
+			<Configuration>[GameSDK] Performance</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Performance|x64">
+			<Configuration>[GameSDK] Performance</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Release|Win32">
+			<Configuration>[GameSDK] Release</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Release|x64">
+			<Configuration>[GameSDK] Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Debug|Win32">
+			<Configuration>[GameSDK Server] Debug</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Debug|x64">
+			<Configuration>[GameSDK Server] Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Profile|Win32">
+			<Configuration>[GameSDK Server] Profile</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Profile|x64">
+			<Configuration>[GameSDK Server] Profile</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Performance|Win32">
+			<Configuration>[GameSDK Server] Performance</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Performance|x64">
+			<Configuration>[GameSDK Server] Performance</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Release|Win32">
+			<Configuration>[GameSDK Server] Release</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Release|x64">
+			<Configuration>[GameSDK Server] Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>{B87B6253-072C-48C4-B0DF-BAF373DAF36C}</ProjectGuid>
+		<Keyword>MakeFileProj</Keyword>
+		<ProjectName>CryCommon</ProjectName>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="ExtensionSettings">
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug build_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug build_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile build_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile build_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance build_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance build_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release build_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release build_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug build_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug build_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile build_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile build_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance build_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance build_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release build_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release build_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<ItemGroup>
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AABBSV.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AIFormationDescriptor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AISystemListener.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AgePriorityQueue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AgentParams.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Allocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AndroidSpecific.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AnimKey.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AnimTime.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\AppleSpecific.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Base64.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BaseTypes.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Action.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Composite.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Decorator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\IBehaviorTree.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\IBehaviorTreeGraft.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Node.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\NodeFactory.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\Readme.txt' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\TimestampCollection.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BehaviorTree\XmlLoader.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Bezier.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Bezier_impl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BitFiddling.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BitmapDilation.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BoostHelpers.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BucketAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BucketAllocatorImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\BucketAllocatorPolicy.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CGFContent.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CGFContent_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREBaseCloud.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREBreakableGlass.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREBreakableGlassConfig.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREBreakableGlassHelpers.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREFarTreeSprites.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREFogVolume.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREGameEffect.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREGeomCache.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREImposter.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CRELightPropagationVolume.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREMesh.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREOcclusionQuery.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREParticle.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREPostProcess.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CRESky.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREVolumeObject.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREWaterOcean.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CREWaterVolume.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CheatProtection.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CoherentValue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Common_TypeInfo.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Common_TypeInfo2.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CompileTimeAssert.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CompileTimeUtils.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CopyProtection.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CountedValue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CrtDebugStats.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryArray.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_Android.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_IOS.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_Linux.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_Mac.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryAssert_impl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryBufferedFileReader.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCharAnimationParams.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCharMorphParams.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCommon.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCrc32.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryCustomTypes.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryDLMalloc.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryEndian.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryEngineDecalInfo.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\CryCreateClassInstance.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\CryGUID.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\CryTypeID.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\ICryFactory.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\ICryFactoryRegistry.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\ICryUnknown.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\ClassWeaver.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\Conversion.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\CryGUIDHelper.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\ICryFactoryRegistryImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\RegFactoryNode.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryExtension\Impl\TypeList.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryFile.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryFixedArray.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryFixedString.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryFlags.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryHalf.inl' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryHalf_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryHeaders.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryHeaders_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryLibrary.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryListenerSet.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryLobbyEvent.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryLobbyPacket.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemBlock.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemReplay.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemReplayTrackedPtr.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemoryAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemoryManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryMemoryManager_impl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryModuleDefs.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryName.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryParticleSpawnInfo.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPath.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPhysics.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.Darwin.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.Linux.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.Win32.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.Win64.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.fwd.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPlatform.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPodArray.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Allocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Container.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Defrag.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Fallback.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Inspector.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\List.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\Memory.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\PAUnitTest.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\PoolAlloc.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\STLWrapper.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\ThreadSafe.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPool\example.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryProfileMarker.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryProfileMarker_impl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryProfileMarker_impl.pc.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryPtrArray.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryRandomInternal.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CrySizer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CrySocks.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryString.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryStructPack.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryStructPack.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThread.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadImpl_pthreads.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadImpl_windows.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadSafeRendererContainer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThreadSafeWorkerContainer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThread_dummy.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThread_pthreads.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryThread_windows.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryTypeInfo.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryTypeInfo.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryUnitTest.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryVersion.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryWindows.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CryZlib.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Camera.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Color.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Geo.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_GeoDistance.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_GeoIntersect.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_GeoOverlap.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_HWMatrix.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_HWVector3.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Math.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Matrix33.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Matrix34.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Matrix44.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_MatrixDiag.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Quat.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_ValidNumber.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Vector2.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Vector3.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_Vector4.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Cry_XOptimise.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\CustomMemoryHeap.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\DeferredActionQueue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\EntityDesc.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ExtensionDefines.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FinalizingSpline.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FindZeroRanges.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FixedAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FixedPoint.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Force.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FrameProfiler.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FunctorBaseFunction.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\FunctorBaseMember.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\GameUtils.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\GenericParam.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\GeomCacheFileFormat.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\GeomQuery.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HardwareBreakpoint.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HashGrid.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HashedString.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HeapAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HeapContainer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\HidespotQueryContext.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\I3DEngine.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\I3DEngine_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\I3DSampler.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIAction.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIActionSequence.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIActor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIActorProxy.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIDebugRenderer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIGroup.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIGroupProxy.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIMannequin.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIObject.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIObjectManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIRateOfDeathHandler.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAIRecorder.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAISystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAVI_Reader.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAgent.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAnimEventPlayer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAnimationPoseModifier.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAntiCheatManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAttachment.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAudioInterfacesCommonData.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IAudioSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBitStream.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBlackBoard.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBreakableGlassSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBreakableManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IBudgetingSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IChunkFile.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IClusterDetector.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICmdLine.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICodeCheckpointMgr.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IColorGradingController.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICommunicationManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IComponent.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IConsole.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICoverSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryAnimation.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryFriends.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryFriendsManagement.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryLobby.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryLobbyUI.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryMatchMaking.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryMiniGUI.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryOnlineStorage.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryPak.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryReward.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICrySignIn.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryStats.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryTCPService.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICryVoice.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICrysis3Lobby.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICustomActions.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ICustomEvents.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDMap.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDataProbe.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDebugHistory.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDeferredCollisionEvent.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDefragAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDialogSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDiskProfiler.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDynamicResponseAction.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDynamicResponseCondition.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IDynamicResponseSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEdgeConnectivityBuilder.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEditorGame.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEngineModule.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntity.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityAttributesProxy.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityClass.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityPoolManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityProxy.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityRenderState.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntityRenderState_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntitySerialize.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IEntitySystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFaceGen.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFacialAnimation.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFactionMap.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFileChangeMonitor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlares.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlashPlayer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlashUI.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlowGraphDebugger.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlowGraphModuleManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFlowSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFont.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFuncVariable.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IFunctorBase.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGame.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameFramework.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameFrameworkExtension.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameRef.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameStartup.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameStatistics.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameTokens.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGameVolumes.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGeneralMemoryHeap.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGeomCache.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IGoalPipe.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IHMDDevice.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IHMDManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IHardwareMouse.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IImage.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IIndexedMesh.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IIndexedMesh_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IInput.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IInterestSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IJobManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IJobManager_JobDelegator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IJoystick.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILMSerializationManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILZ4Decompressor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILipSync.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILipSyncProvider.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILiveCreateCommon.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILiveCreateHost.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILiveCreateManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILiveCreatePlatform.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILocalMemoryUsage.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILocalizationManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ILog.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMNM.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMaterial.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMaterialEffects.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMemory.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMeshBaking.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMiniLog.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMovementActor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMovementSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMovieSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IMusicSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INavigation.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INavigationSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INetwork.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INetworkService.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INetworkingState.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\INotificationNetwork.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IOffMeshNavigationManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IOverloadSceneManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IParticles.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPathfinder.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPerceptionHandler.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPerceptionHandlerModifier.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPerfHud.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPhysics.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPhysicsDebugRenderer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IPlatformOS.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IProcess.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IReadWriteXMLSink.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRealtimeRemoteUpdate.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRemoteCommand.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRemoteControl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRenderAuxGeom.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRenderMesh.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IRenderer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IResourceCollector.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IResourceManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IScriptSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISelectionTreeManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISerialize.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISerializeHelper.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISerialize_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IServiceNetwork.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IShader.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IShaderParamCallback.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IShader_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISimpleHttpServer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISoftCodeMgr.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISplines.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStatObj.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStatoscope.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStereoRenderer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStreamEngine.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStreamEngineDefs.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IStreamPersist.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISurfaceType.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ISystemScheduler.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITacticalPointSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITargetTrackManager.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITelemetrySystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITestSystem.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITextModeConsole.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITexture.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IThreadTask.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ITimer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IValidator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IVertexAnimation.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IVisionMap.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IVisualLog.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IWindowMessageHandler.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IXml.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IZLibCompressor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IZlibDecompressor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\InplaceFactory.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\InterpolationHelpers.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\IntersectionTestQueue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\LCGRandom.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\LevelHeap.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\LineStreamBuffer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Linux32Specific.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Linux64Specific.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\LinuxSpecific.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Linux_Win32Wrapper.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MSVCspecific.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MTPseudoRandom.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MTPseudoRandom.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MacSpecific.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MemoryAccess.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MetaUtils.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MiniQueue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementBlock.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementRequest.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementRequestID.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementStyle.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MovementUpdateContext.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MultiThread.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\MultiThread_Containers.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\NameCRCHelper.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Name_TypeInfo.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\NetHelpers.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Options.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\PNoise3.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ParseEngineConfig.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ParticleParams.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ParticleParams_TypeInfo.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ParticleParams_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Pipe.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\PoolAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ProfileLog.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ProjectDefines.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ProjectDefinesInclude.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\QTangent.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Random.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Range.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\RayCastQueue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\RendElement.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\RenderObjectDefines.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ResourceCompilerHelper.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ResourceCompilerHelper.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SFunctor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\STLGlobalAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\STLPoolAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\STLPoolAllocator_ManyElems.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\STLPortConfig.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ScopedVariableSetter.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ScreenPlotter.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ScriptHelpers.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SerializationTypes.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Assert.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\BitVector.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\BitVectorImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\BlackBox.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\BoostSharedPtr.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CRCRef.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CRCRefImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Callback.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ClassFactory.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ClassFactoryImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Color.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ColorImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryExtension.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryExtensionImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryName.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryNameImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryStrings.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\CryStringsImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ActionButton.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\BitFlags.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\BitFlagsImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\JointName.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\JointNameImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\LocalFrame.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\LocalFrameImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\OutputFilePath.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\OutputFilePathImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\Range.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\RangeImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceFilePath.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceFilePathImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceFolderPath.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceFolderPathImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourceSelector.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\Resources.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\ResourcesAudio.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\Slider.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\SliderImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\TagList.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Decorators\TagListImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\DynArray.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\DynArrayImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Enum.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\EnumImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\IArchive.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\IArchiveHost.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\IClassFactory.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ITextInputArchive.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\ITextOutputArchive.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\IntrusiveFactory.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\KeyValue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Math.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\MathImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Object.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\STL.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\STLImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Serializer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\SerializerImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\SmartPtr.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\SmartPtrImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\StringList.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\StringListImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\Strings.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\TypeID.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\TypeInfo.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Serialization\TypeInfoImpl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SerializeBuffer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SerializeFwd.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SimpleHashLookUp.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\SimpleSerialize.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StackContainer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StaticInstanceList.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StlDbgAlloc.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StlUtils.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\StringUtils.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Synchronization.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Tarray.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TelemetryConfig.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TelemetryFormat.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TelemetryParams.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\ThreadProfilerSupport.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TimeValue.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TimeValue_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Timer.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TypeInfo_decl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TypeInfo_impl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TypeLibrary.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Typelist.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\TypelistUtils.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\UnicodeBinding.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\UnicodeEncoding.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\UnicodeFunctions.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\UnicodeIterator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VariableCollection.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VariadicParams.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VectorMap.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VectorSet.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Version.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Version_override.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VertexFormats.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\VisionMapTypes.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Win32specific.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\Win64specific.h' />
+		<ClCompile Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\WinBase.cpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\WindowsUtils.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\XMLAttrReader.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\XMLBinaryHeaders.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\branchmask.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\crycommon.waf_files' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\functor.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\intrusive_list.hpp' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\physinterface.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\platform.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\platform_impl.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\primitives.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\primitives_info.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\smartptr.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\stl\STLAlignedAlloc.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\stridedptr.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CryCommon\wscript' />
+	</ItemGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+	<Import Project="$(MSBuildProjectDirectory)\..\..\_WAF_\msbuild\waf_build.targets" />
+	<ImportGroup Label="ExtensionTargets">
+	</ImportGroup>
+</Project>

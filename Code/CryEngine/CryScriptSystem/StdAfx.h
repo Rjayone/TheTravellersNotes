@@ -30,7 +30,6 @@
 #include <StlUtils.h>
 #include <CrySizer.h>
 #include <PoolAllocator.h>
-#include <auto_vector.h>
 //////////////////////////////////////////////////////////////////////////
 //! Reports a Game Warning to validator with WARNING severity.
 #ifdef _RELEASE

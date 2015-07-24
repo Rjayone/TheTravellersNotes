@@ -28,6 +28,8 @@
 
 template <typename F> struct Vec4_tpl
 {
+	typedef F value_type;
+	enum { component_count = 4 };
 
 	F x,y,z,w;
 
@@ -45,7 +47,7 @@ template <typename F> struct Vec4_tpl
 
 	}
 #else
-	ILINE Vec4_tpl()	{};
+	ILINE Vec4_tpl() {}
 #endif
 
 	template<typename F2>
@@ -57,6 +59,8 @@ template <typename F> struct Vec4_tpl
 
 	ILINE Vec4_tpl( F vx, F vy, F vz, F vw ) { x=vx; y=vy; z=vz; w=vw; };
 	ILINE Vec4_tpl( const Vec3_tpl<F> &v, F vw ) {  x=v.x; y=v.y; z=v.z; w=vw; };
+	explicit ILINE Vec4_tpl( F m ) { x = y = z = w = m; }
+	ILINE Vec4_tpl(type_zero) { x = y = z = w = F(0); }
 
 	ILINE void operator () ( F vx, F vy, F vz, F vw ) { x=vx; y=vy; z=vz; w=vw; };
 	ILINE void operator () ( const Vec3_tpl<F>& v, F vw ) {  x=v.x; y=v.y; z=v.z; vw=vw; };
@@ -64,6 +68,8 @@ template <typename F> struct Vec4_tpl
 	ILINE F &operator [] (int index)		  { assert(index>=0 && index<=3);  return ((F*)this)[index]; }
 	ILINE F operator [] (int index) const { assert(index>=0 && index<=3);  return ((F*)this)[index]; }
 	template <class T> ILINE  Vec4_tpl( const Vec4_tpl<T>& v ) : x((F)v.x), y((F)v.y), z((F)v.z), w((F)v.w) { assert(this->IsValid()); }
+
+	ILINE Vec4_tpl& zero() { x=y=z=w=0; return *this; }
 
 	ILINE bool IsEquivalent(const Vec4_tpl<F>& v1, F epsilon=VEC_EPSILON) const 
 	{
@@ -114,9 +120,15 @@ template <typename F> struct Vec4_tpl
 	{ 
 		return x*vec2.x + y*vec2.y + z*vec2.z + w*vec2.w; 
 	}
+
 	ILINE F GetLength() const 
 	{ 
 		return sqrt_tpl(Dot(*this)); 
+	}
+
+	ILINE F GetLengthSquared() const 
+	{ 
+		return Dot(*this);
 	}
 
 

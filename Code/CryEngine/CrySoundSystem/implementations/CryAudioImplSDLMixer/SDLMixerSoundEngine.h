@@ -33,7 +33,10 @@ namespace SDLMixer
 		// Events
 		SSDLMixerEventStaticData* CreateEventData(const TSDLMixerID nEventID);
 		bool ExecuteEvent(SSDLMixerAudioObjectData* const pAudioObject, SSDLMixerEventStaticData const* const pEventStaticData, SSDLMixerEventInstanceData* const pEventInstance);
-		bool StopEvent(SSDLMixerAudioObjectData* const pAudioObject, SSDLMixerEventInstanceData const* const pEventInstance);
+		// stops an specific event instance
+		bool StopEvent(SSDLMixerEventInstanceData const* const pEventInstance);
+		// stops all the events of this type
+		bool StopEvents(const SDLMixer::TSDLMixerID nEventID);
 
 		// Listeners
 		bool SetListenerPosition(const TSDLMixerID nListenerID, const SATLWorldPosition& position);

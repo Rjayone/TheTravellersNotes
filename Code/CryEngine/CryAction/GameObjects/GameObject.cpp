@@ -591,7 +591,7 @@ bool CGameObject::IsAspectDelegatable(NetworkAspectType aspect)
 void CGameObject::Done()
 {
 	// cannot release extensions while Physics is in a CB.
-	AquireMutex();
+	AcquireMutex();
 
 	// Before deleting the extension, disable receiving any physics events.
 	// Mutex prevents 
@@ -1411,7 +1411,6 @@ IGameObjectExtension *CGameObject::QueryExtension(IGameObjectSystem::ExtensionID
 
 	SExtension ext;
 	ext.id = id;
-
 	if (m_pEntity && (ext.id != IGameObjectSystem::InvalidExtensionID))
 	{
 		// locate the extension
@@ -1520,7 +1519,7 @@ IGameObjectExtension * CGameObject::ChangeExtension( const char * name, EChangeE
 		}
 		m_justExchanging = false;
 	}
-	else // init has not been called... we simply make a temporary extensions array, and fill in the details later
+	else if(ext.id != IGameObjectSystem::InvalidExtensionID) // init has not been called... we simply make a temporary extensions array, and fill in the details later
 	{
 		// only safe to Activate at this stage
 		CRY_ASSERT( change == eCE_Activate );
@@ -2299,18 +2298,14 @@ void CGameObject::PostRemoteSpawn()
 		m_extensions[i].pExtension->PostRemoteSpawn();
 }
 
-void CGameObject::AquireMutex()
+void CGameObject::AcquireMutex()
 {
-#ifndef PS3
 	m_mutex.Lock();
-#endif
 }
 
 void CGameObject::ReleaseMutex()
 {
-#ifndef PS3
 	m_mutex.Unlock();
-#endif
 }
 
 void CGameObject::GetMemoryUsage(ICrySizer * s) const

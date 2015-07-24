@@ -352,13 +352,13 @@ void CDeflectorShield::ShootDeflectedEnergy(const CDeflectorShield::SDeflectedEn
 	const Vec3 worldSpreadU = worldReflectDir.GetOrthogonal();
 	const Vec3 worldSpreadV = worldReflectDir.Cross(worldSpreadU);
 
-	const float spreadOffset = cry_frand() * m_spread;
+	const float spreadOffset = cry_random(0.0f, m_spread);
 	
 	const Vec3 position = worldReflectPos + worldReflectDir * positionBias;
 	Vec3 direction = 
 		worldReflectDir + 
-		(worldSpreadU * (cry_frand() * m_spread)) + 
-		(worldSpreadV * (cry_frand() * m_spread));
+		(worldSpreadU * cry_random(0.0f, m_spread)) + 
+		(worldSpreadV * cry_random(0.0f, m_spread));
 	direction.Normalize();
 
 	CProjectile::SProjectileDesc projectileDesc(

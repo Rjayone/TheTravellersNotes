@@ -1,35 +1,16 @@
 #ifndef _CryThread_pthreads_h_
 #define _CryThread_pthreads_h_ 1
 
-#ifdef ORBIS
-#include "OrbisPThreads.h"
-#else
-#ifndef __SPU__
-#  include <sys/types.h>
-#  include <sys/time.h>
-#  include <pthread.h>
-#  include <semaphore.h>
-#  include <sched.h>
-#endif
-#endif
+#include <sys/types.h>
+#include <sys/time.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <sched.h>
 
 #include <ISystem.h>
 #include <ILog.h>
 
-#if defined(PS3)
-	#ifdef __SPU__
-		#define pthread_t void*
-	#endif			
-	#ifndef __SPU__
-		#include <time.h>
-		#include <sys/ppu_thread.h>
-		#include <sys/time_util.h>
-		#include <sys/sys_time.h>
- 	  #include <sys/synchronization.h>
-	#endif
-	extern void RegisterThreadName(pthread_t, const char*);
-	extern void UnRegisterThreadName(pthread_t);
-#elif defined(ORBIS)
+#if defined(ORBIS)
 	#define PTHREAD_MUTEX_FAST_NP PTHREAD_MUTEX_NORMAL
 	#define RegisterThreadName(id,name) scePthreadRename(id, name)
 	#define UnRegisterThreadName(id)
@@ -38,13 +19,13 @@
 	#define UnRegisterThreadName(id)
 #endif
 
-#if defined(PS3) || defined(APPLE) || defined(ANDROID)
-    // PTHREAD_MUTEX_FAST_NP is only defined by Pthreads-w32, thus not on PS3 nor on MAC
+#if defined(APPLE) || defined(ANDROID)
+    // PTHREAD_MUTEX_FAST_NP is only defined by Pthreads-w32, thus not on MAC
 	#define PTHREAD_MUTEX_FAST_NP PTHREAD_MUTEX_NORMAL
 #endif
 
 // Define LARGE_THREAD_STACK to use larger than normal per-thread stack
-#if defined(_DEBUG) && (defined(PS3) || defined(MAC) || defined(LINUX))
+#if defined(_DEBUG) && (defined(MAC) || defined(LINUX))
 #define LARGE_THREAD_STACK
 #endif
 
@@ -328,19 +309,13 @@ public:
 	void Release();
 	
 private:
-#if defined(__SPU__)
-	void* m_Semaphore;
-#else
 	sem_t m_Semaphore;
-#endif
 };
 
 //////////////////////////////////////////////////////////////////////////
 inline CrySemaphore::CrySemaphore(int nMaximumCount, int nInitialCount)
 {
-#if defined(__SPU__)
-	snPause(); // not supported on SPU
-#elif defined(ORIS_SCE_THREADS)
+#if defined(ORIS_SCE_THREADS)
 	ORBIS_TO_IMPLEMENT;
 #else	
 	sem_init(&m_Semaphore,0,nInitialCount);
@@ -350,9 +325,7 @@ inline CrySemaphore::CrySemaphore(int nMaximumCount, int nInitialCount)
 //////////////////////////////////////////////////////////////////////////
 inline CrySemaphore::~CrySemaphore()
 {
-#if defined(__SPU__)
-	snPause(); // not supported on SPU
-#elif defined(ORIS_SCE_THREADS)
+#if defined(ORIS_SCE_THREADS)
 	ORBIS_TO_IMPLEMENT;
 #else	
 	sem_destroy(&m_Semaphore);
@@ -362,9 +335,7 @@ inline CrySemaphore::~CrySemaphore()
 //////////////////////////////////////////////////////////////////////////
 inline void CrySemaphore::Acquire()
 {
-#if defined(__SPU__)
-	__spu_send_ppu_event(JOBMANAGER_SPU_REQUEST_ACQUIRE_SEMAPHORE, alias_cast<uint32>(this) );
-#elif defined(ORIS_SCE_THREADS)
+#if defined(ORIS_SCE_THREADS)
 	ORBIS_TO_IMPLEMENT;
 #else	
 	sem_wait(&m_Semaphore);
@@ -374,9 +345,7 @@ inline void CrySemaphore::Acquire()
 //////////////////////////////////////////////////////////////////////////
 inline void CrySemaphore::Release()
 {
-#if defined(__SPU__)
-	__spu_send_ppu_event(JOBMANAGER_SPU_REQUEST_RELEASE_SEMAPHORE, alias_cast<uint32>(this) );
-#elif defined(ORIS_SCE_THREADS)
+#if defined(ORIS_SCE_THREADS)
 	ORBIS_TO_IMPLEMENT;
 #else	
 	sem_post(&m_Semaphore);
@@ -388,13 +357,6 @@ inline void CrySemaphore::Release()
 // except that this version uses C-A-S only until a blocking call is needed
 // -> No kernel call if there are object in the semaphore
 
-// forward declarations needed for friend function
-namespace JobManager {
-	class CJobDelegator;
-	struct SJobStringHandle;
-	typedef SJobStringHandle* TJobHandle;
-}
-
 class CryFastSemaphore
 {
 public:
@@ -404,9 +366,6 @@ public:
 	void Release();	
 
 private:
-	// allow SPU job submission function access to internal functions to not need to expose then for all clients
-	friend void AddJobtoJobQueueJobs(JobManager::CJobDelegator& crJob, const unsigned int cOpMode, const JobManager::TJobHandle cJobHandle);
-
 	CrySemaphore m_Semaphore;
 	volatile int32 m_nCounter;	
 };
@@ -453,7 +412,7 @@ inline void CryFastSemaphore::Release()
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if !defined _CRYTHREAD_HAVE_RWLOCK && !defined __SPU__
+#if !defined _CRYTHREAD_HAVE_RWLOCK 
 class CryRWLock
 {
 	pthread_rwlock_t m_Lock;
@@ -614,86 +573,7 @@ private:
 	volatile bool m_flag;
 };
 
-#define PS3_USE_SEMAPHORE	1
-
-#if PS3 && PS3_USE_SEMAPHORE
-//a semaphore based implementation, do not use on spu executed code
-class CryEvent
-{
-public:
-	ILINE CryEvent() {Init();}
-	ILINE ~CryEvent()
-	{
-#if !defined( __SPU__ )
-		if( CELL_OK != sys_semaphore_destroy(m_semaphore) )
-#endif
-			snPause();
-	}
-
-	// Reset the event to the unsignalled state.
-	ILINE void Reset() {}
-
-	// Set the event to the signalled state.
-	ILINE void Set( int count = 1 )
-	{
-#if !defined( __SPU__ )
-		if( CELL_OK != sys_semaphore_post(m_semaphore, (sys_semaphore_value_t)count) )
-		{
-			snPause();
-		}
-#else
-		if (count != 1)
-		{
-			snPause();
-		}
-		__spu_send_ppu_event(JOBMANAGER_SPU_REQUEST_SET_EVENT, alias_cast<uint32>(this) );
-#endif
-	}
-	
-	// Wait indefinitely for the object to become signalled.
-	ILINE void Wait()
-	{
-#if !defined( __SPU__ )
-		if( CELL_OK != sys_semaphore_wait(m_semaphore, 0 ) )
-#endif
-			snPause();
-	}
-	
-	// Wait with timeout for the object to become signalled.
-	ILINE bool Wait(const uint32 timeoutMillis)
-	{
-		bool bInTime = true;
-#if !defined( __SPU__ )
-		usecond_t microTimeout = timeoutMillis*1000;
-		int ret = sys_semaphore_wait(m_semaphore, microTimeout );
-		if (ret == ETIMEDOUT)
-		{	
-			//-- To be consistent with CryEventTimed, return false if the wait timed out.
-			bInTime = false;
-		}
-		if( CELL_OK != ret && ETIMEDOUT != ret )
-#endif
-			snPause();
-		return bInTime;
-	}
-
-private:
-	sys_semaphore_t m_semaphore;
-
-	NO_INLINE void Init()
-	{
-#if !defined( __SPU__ )
-		sys_semaphore_attribute_t attr;
-		sys_semaphore_attribute_initialize(attr);
-		sys_semaphore_attribute_name_set(attr.name, "Semaphore" );
-		if( CELL_OK != sys_semaphore_create(&m_semaphore, &attr, 0, 0x7fffffff) )
-#endif
-			snPause();
-	}
-};
-#else
-	typedef CryEventTimed CryEvent;
-#endif
+typedef CryEventTimed CryEvent;
 
 #if !PLATFORM_SUPPORTS_THREADLOCAL
 TLS_DECLARE(class CrySimpleThreadSelf *, g_CrySimpleThreadSelf);
@@ -764,7 +644,6 @@ protected:
 	}
 
 private:
-#ifndef __SPU__
 #if !defined(NO_THREADINFO)
 	static void SetThreadInfo(CrySimpleThread<Runnable> *self)
 	{
@@ -777,19 +656,7 @@ private:
 #else
 	static void SetThreadInfo(CrySimpleThread<Runnable> *self) { }
 #endif
-
-  static inline void SetThreadLocalData()
-  {
-#if defined(PS3)
-    sys_ppu_thread_stack_t stack_info;
-    sys_ppu_thread_get_stack_information(&stack_info); 
-#if defined PS3_CRYENGINE
-    __thread_stacksize = stack_info.pst_size;
-    __thread_stackptr = (void*)stack_info.pst_addr;
-#endif
-#endif
-  }
-
+  
 	static void *PthreadRunRunnable(void *thisPtr)
 	{
 		CrySimpleThread<Runnable> *const self = (CrySimpleThread<Runnable> *)thisPtr;
@@ -801,7 +668,6 @@ private:
 		self->m_bIsRunning = false;
 		self->Terminate();
 		SetSelf(NULL);
-    SetThreadLocalData();
 		return NULL;
 	}
 
@@ -816,10 +682,9 @@ private:
 		self->m_bIsRunning = false;
 		self->Terminate();
 		SetSelf(NULL);
-    SetThreadLocalData();
 		return NULL;
 	}
-#endif
+
 	CrySimpleThread(const CrySimpleThread<Runnable>&);
 	void operator = (const CrySimpleThread<Runnable>&);
 
@@ -830,9 +695,7 @@ public:
 		m_ThreadFunction.m_ThreadFunction = NULL;
 		m_ThreadFunction.m_ThreadParameter = NULL;
 #if !defined(NO_THREADINFO)
-#if !defined(__SPU__)
 		m_Info.m_Name = "<Thread>";
-#endif
 		m_Info.m_ID = 0;
 #endif
 		memset(&m_ThreadID, 0, sizeof m_ThreadID);
@@ -841,7 +704,6 @@ public:
 
   virtual ~CrySimpleThread()
 	{
-#ifndef __SPU__
 		if (IsStarted())
 		{
 			// Note: We don't want to cache a pointer to ISystem and/or ILog to
@@ -851,25 +713,18 @@ public:
 			ILog *pLog = NULL;
 			if (pSystem != NULL)
 				pLog = pSystem->GetILog();
-#if defined(PS3_CRYENGINE)
 			if (pLog != NULL)
 				pLog->LogError("Runaway thread %s", GetName());
-#endif
 			Cancel();
 			WaitForThread();
 		}
-#endif
 	}
 
 #if !defined(NO_THREADINFO)
 	CryThreadInfo &GetInfo() { return m_Info; }
 	const char *GetName()
 	{
-#if !defined(__SPU__)
 		return m_Info.m_Name.c_str();
-#else
-		return "";
-#endif
 	}
 
 	// Set the name of the called thread.
@@ -886,12 +741,10 @@ public:
 	void SetName(const char *Name)
 	{
 		CryThreadSetName(THREADID_NULL, Name);
-#if !defined(__SPU__)
 		if (Name != NULL)
 		{
 			m_Info.m_Name = Name;
 		}
-#endif
 #if defined(WIN32)
 		if (IsStarted())
 		{
@@ -967,7 +820,6 @@ public:
 #if defined(LARGE_THREAD_STACK)
 		StackSize *= 4;//debug code needs a lot more than profile 
 #endif
-#ifndef __SPU__
     assert(m_ThreadID == 0);
     pthread_attr_t threadAttr;
     pthread_attr_init(&threadAttr);
@@ -1004,7 +856,6 @@ public:
 				this);
 		RegisterThreadName(m_ThreadID, name);
     assert(err == 0);
-#endif
   }
 
 	virtual void Start(unsigned cpuMask = 0, const char* name = NULL,int32 Priority=THREAD_PRIORITY_NORMAL, int32 StackSize=(SIMPLE_THREAD_STACK_SIZE_KB*1024))
@@ -1012,7 +863,6 @@ public:
 #if defined(LARGE_THREAD_STACK)
 		StackSize *= 4;//debug code needs a lot more than profile 
 #endif
-#ifndef __SPU__
     assert(m_ThreadID == 0);
     pthread_attr_t threadAttr;
 		sched_param schedParam;
@@ -1056,7 +906,6 @@ public:
 		err = pthread_setprio(m_ThreadID, Priority);
 #endif
     assert(err == 0);
-#endif
 	}
 
 	void StartFunction(
@@ -1077,19 +926,16 @@ public:
 
   void Exit()
   {
-#ifndef __SPU__
     assert(m_ThreadID == pthread_self());
 		m_bIsRunning = false;
 		Terminate();
 		SetSelf(NULL);
     pthread_exit(NULL);
 		UnRegisterThreadName(m_ThreadID);
-#endif
   }
 
   void WaitForThread()
   {
-#ifndef __SPU__
 		if( pthread_self() != m_ThreadID )
 		{
 			int err = pthread_join(m_ThreadID, NULL);
@@ -1097,7 +943,6 @@ public:
 		}
 		m_bIsStarted = false;
 		memset(&m_ThreadID, 0, sizeof m_ThreadID);
-#endif
   }
 
 	unsigned SetCpuMask(unsigned cpuMask)
@@ -1171,7 +1016,6 @@ namespace detail {
 	///////////////////////////////////////////////////////////////////////////////
 	inline void SingleProducerSingleConsumerQueueBase::Push( void *pObj, volatile uint32 &rProducerIndex, volatile uint32 &rComsumerIndex, uint32 nBufferSize, void *arrBuffer, uint32 nObjectSize )
 	{
-#if !defined(__SPU__)
 		MemoryBarrier();
 		// spin if queue is full
 		int iter = 0;
@@ -1182,23 +1026,16 @@ namespace detail {
 
 		char *pBuffer = alias_cast<char*>(arrBuffer);
 		uint32 nIndex = rProducerIndex % nBufferSize;
-#if defined(PS3)
-		IF( IsAligned( nObjectSize, 16 ), 1)		
-			mymemcpy16( pBuffer + (nIndex * nObjectSize), pObj, nObjectSize );
-		else
-#endif
-			memcpy( pBuffer + (nIndex * nObjectSize), pObj, nObjectSize );
+		memcpy( pBuffer + (nIndex * nObjectSize), pObj, nObjectSize );
 
 		MemoryBarrier();
 		rProducerIndex += 1;
 		MemoryBarrier();
-#endif
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 	inline void SingleProducerSingleConsumerQueueBase::Pop( void *pObj, volatile uint32 &rProducerIndex, volatile uint32 &rComsumerIndex, uint32 nBufferSize, void *arrBuffer, uint32 nObjectSize )
 	{
-#if !defined(__SPU__)
 		MemoryBarrier();
 		// busy-loop if queue is empty
 		int iter = 0;
@@ -1207,17 +1044,11 @@ namespace detail {
 		char *pBuffer = alias_cast<char*>(arrBuffer);
 		uint32 nIndex = rComsumerIndex % nBufferSize;
 
-#if defined(PS3)
-		IF( IsAligned( nObjectSize, 16 ), 1)		
-			mymemcpy16( pObj, pBuffer + (nIndex * nObjectSize), nObjectSize );		
-		else
-#endif
-			memcpy( pObj, pBuffer + (nIndex * nObjectSize), nObjectSize );		
+		memcpy( pObj, pBuffer + (nIndex * nObjectSize), nObjectSize );		
 
 		MemoryBarrier();
 		rComsumerIndex += 1;
 		MemoryBarrier();
-#endif
 	}
 
 
@@ -1246,7 +1077,6 @@ namespace detail {
 	///////////////////////////////////////////////////////////////////////////////
 	inline void N_ProducerSingleConsumerQueueBase::Push( void *pObj, volatile uint32 &rProducerIndex, volatile uint32 &rComsumerIndex, volatile uint32 &rRunning, void *arrBuffer, uint32 nBufferSize, uint32 nObjectSize, volatile uint32*	arrStates )
 	{
-#if !defined(__SPU__)
 		MemoryBarrier();
 		uint32 nProducerIndex;
 		uint32 nComsumerIndex;
@@ -1278,30 +1108,19 @@ namespace detail {
 		char *pBuffer = alias_cast<char*>(arrBuffer);
 		uint32 nIndex = nProducerIndex % nBufferSize;
 
-#if defined(PS3)
-		IF( IsAligned( nObjectSize, 16 ), 1)		
-			mymemcpy16( pBuffer + (nIndex * nObjectSize), pObj, nObjectSize);
-		else
-#endif
-			memcpy( pBuffer + (nIndex * nObjectSize), pObj, nObjectSize);
+		memcpy( pBuffer + (nIndex * nObjectSize), pObj, nObjectSize);
 
 		MemoryBarrier();
 		arrStates[nIndex] = 1;
 		MemoryBarrier();
-#endif
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 	inline bool N_ProducerSingleConsumerQueueBase::Pop( void *pObj, volatile uint32 &rProducerIndex, volatile uint32 &rComsumerIndex, volatile uint32 &rRunning, void *arrBuffer, uint32 nBufferSize, uint32 nObjectSize, volatile uint32 *arrStates )
 	{
-#if !defined(__SPU__)
 		MemoryBarrier();		
 		// busy-loop if queue is empty
 		int iter = 0;
-#if EMBED_PHYSICS_AS_FIBER
-		if (rRunning && rProducerIndex - rComsumerIndex == 0)
-			JobManager::Fiber::SwitchFiberDirect();
-#endif
 		do		
 		{ 
 			SFallbackList *pFallback = (SFallbackList *)CryInterlockedPopEntrySList(fallbackList);
@@ -1330,10 +1149,6 @@ namespace detail {
 			return false;
 		}
 
-#if EMBED_PHYSICS_AS_FIBER
-		if (rRunning && rProducerIndex - rComsumerIndex == 0)
-			JobManager::Fiber::SwitchFiberDirect();
-#endif
 		iter = 0;
 		while(arrStates[rComsumerIndex % nBufferSize] == 0) {
 			Sleep(iter++ > 10 ? 1 : 0);
@@ -1342,28 +1157,19 @@ namespace detail {
 		char *pBuffer = alias_cast<char*>(arrBuffer);
 		uint32 nIndex = rComsumerIndex % nBufferSize;
 
-#if defined(PS3)
-		IF( IsAligned( nObjectSize, 16 ), 1)
-			mymemcpy16(pObj, pBuffer + (nIndex * nObjectSize), nObjectSize);		
-		else
-#endif
-			memcpy(pObj, pBuffer + (nIndex * nObjectSize), nObjectSize);		
+		memcpy(pObj, pBuffer + (nIndex * nObjectSize), nObjectSize);		
 
 		MemoryBarrier();
 		arrStates[nIndex] = 0;
 		MemoryBarrier();
 		rComsumerIndex += 1;
 		MemoryBarrier();
-#endif
+
 		return true;
 	}
 
 } // namespace detail
 } // namespace CryMT
-
-#ifdef __SPU__
-	#include "CryThreadImpl_ps3.h"
-#endif
 
 #endif
 

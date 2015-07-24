@@ -32,9 +32,9 @@ CDedicatedInput::CDedicatedInput(CPlayer* pPlayer) :
 
 	m_spawnPosition = pos;
 	m_targetPosition = pos;
-	m_timeUntilDie = (cry_frand() * 60.f) + 30.f;
-	m_timeUntilRequestRespawn = (cry_frand() * 6.f) + 1.f;
-	m_timeUntilChangeWeapon = (cry_frand() * 5.f) + 10.f;
+	m_timeUntilDie = cry_random(30.0f, 90.0f);
+	m_timeUntilRequestRespawn = cry_random(1.0f, 7.0f);
+	m_timeUntilChangeWeapon = cry_random(10.0f, 15.0f);
 
 	m_explosiveItemsIdx = 0;
 	m_itemIdx = 0;
@@ -79,16 +79,16 @@ void CDedicatedInput::PreUpdate()
 	if (shouldChangeWeapon)
 	{
 		// Only change weapon between 10->15seconds
-		m_timeUntilChangeWeapon = (cry_frand() * 5.f) + 10.f;
+		m_timeUntilChangeWeapon = cry_random(10.0f, 15.0f);
 
 		GiveItems();
 	}
 
 	if (m_timeBeforeChangeMode <= 0.f)
 	{
-		m_timeBeforeChangeMode = (cry_frand() * 7.f) + 0.5f;
+		m_timeBeforeChangeMode = cry_random(0.5f, 7.5f);
 
-		m_mode = rand() % (NUM_MODES-(shouldFireNoExplosives?1:0));
+		m_mode = cry_random(0, NUM_MODES-(shouldFireNoExplosives?2:1));
 		if(shouldFireNoExplosives && m_mode>=E_EXPLOSIVE)
 			m_mode++;
 		IItem* pItem = m_pPlayer->GetCurrentItem();
@@ -112,7 +112,7 @@ void CDedicatedInput::PreUpdate()
 				break;
 			case E_SMALLMEDIUM:
 				{
-					int looptimes = (rand() % 2) + 1;
+					int looptimes = cry_random(1, 2);
 					while(looptimes--)
 						m_pPlayer->SelectNextItem(1, true, eICT_Primary | eICT_Secondary);
 					break;
@@ -125,14 +125,14 @@ void CDedicatedInput::PreUpdate()
 
 		if (shouldMove == true)
 		{
-			if (m_pPlayer->IsClient() && ((rand() & 3) != 0))
+			if (m_pPlayer->IsClient() && (cry_random(0, 3) != 0))
 			{
 				IEntityClass* pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Binoculars");
 				CItem * binItem = pClass ? m_pPlayer->GetItemByClass(pClass) : NULL;
 				IWeapon * binWeapon = binItem ? binItem->GetIWeapon() : NULL;
 				if (binWeapon)
 				{
-					int whichMode = rand() % (sizeof(s_visionModes) / sizeof(s_visionModes[0]));
+					int whichMode = cry_random(0, (int)(sizeof(s_visionModes) / sizeof(s_visionModes[0])) - 1);
 					binWeapon->OnAction(m_pPlayer->GetEntityId(), ActionId(s_visionModes[whichMode]), eAAM_OnPress, 1.f);
 				}
 			}
@@ -151,14 +151,14 @@ void CDedicatedInput::PreUpdate()
 		m_interpolateToNewMoveLookInputs = 1.f;
 		m_deltaMovement = m_targetDeltaMovement;
 		m_deltaRotation = m_targetDeltaRotation;
-		m_interpolationSpeed = cry_frand() + 0.2f;
-		m_targetDeltaMovement.Set((cry_frand() * 10.f) - 5.f, (cry_frand() * 10.f) - 2.f, (cry_frand() * 10.f) - 5.f);
-		m_targetDeltaRotation.Set(THETA * (cry_frand() - 0.5f), 0.f, THETA * 5.f * (cry_frand() - 0.5f));
+		m_interpolationSpeed = cry_random(0.2f, 1.2f);
+		m_targetDeltaMovement.Set(cry_random(-5.0f, 5.0f), cry_random(-2.0f, 8.0f), cry_random(-5.0f, 5.0f));
+		m_targetDeltaRotation.Set(THETA * cry_random(-0.5f, 0.5f), 0.f, THETA * cry_random(-2.5f, 2.5f));
 
-		m_targetDeltaRotation *= cry_frand();
-		m_targetDeltaMovement *= cry_frand();
+		m_targetDeltaRotation *= cry_random(0.0f, 1.0f);
+		m_targetDeltaMovement *= cry_random(0.0f, 1.0f);
 
-		if ((rand() & 1) == 0)
+		if (cry_random(0, 1) == 0)
 		{
 			if (m_stance == STANCE_STAND)
 			{					
@@ -169,7 +169,7 @@ void CDedicatedInput::PreUpdate()
 				m_stance = STANCE_STAND;
 			}
 		}
-		m_jump = (m_stance == STANCE_STAND) ? (cry_frand() < g_pGameCVars->g_dummyPlayersJump) : 0;
+		m_jump = (m_stance == STANCE_STAND) ? (cry_random(0.0f, 1.0f) < g_pGameCVars->g_dummyPlayersJump) : 0;
 	}
 	else
 	{
@@ -235,7 +235,7 @@ void CDedicatedInput::GiveItems()
 	}
 	else
 	{
-		nameIdx = rand() % numberItems;
+		nameIdx = cry_random(0, numberItems - 1);
 	}
 
 	IGameFramework *pGameFramework = gEnv->pGame->GetIGameFramework();
@@ -272,7 +272,7 @@ void CDedicatedInput::GiveItems()
 	}
 	else
 	{
-		nameIdx = rand() % numberExplosiveItems;
+		nameIdx = cry_random(0, numberExplosiveItems - 1);
 	}
 
 	itemName = (const char*)(pItemSystem->Query(eISQ_Find_Item_By_Name, explosiveItemNames[nameIdx]));
@@ -391,7 +391,7 @@ void CDedicatedInput::Update()
 								pWeapon->StartZoom(m_pPlayer->GetEntityId());
 							}
 
-							if ((rand() & 1))
+							if (cry_random(0, 1))
 							{
 								m_timeBeforeChangeMode = 0.f;
 							}
@@ -455,7 +455,7 @@ void CDedicatedInput::Update()
 					if (! pItem->IsBusy() && !pWeapon->IsZoomingInOrOut() && pItem->IsSelected())
 					{
 						pWeapon->MeleeAttack();
-						if ((rand() & 1))
+						if (cry_random(0, 1))
 						{
 							m_timeBeforeChangeMode = 0.f;
 						}
@@ -526,9 +526,9 @@ void CDedicatedInput::HandleDeathAndSuicide(CGameRules* const pGameRules)
 				pSpawningModule->ClRequestRevive(m_pPlayer->GetEntityId());
 			}
 
-			m_timeUntilRequestRespawn = (cry_frand() * 6.f) + 1.f;	
+			m_timeUntilRequestRespawn = cry_random(1.0f, 7.0f);
 		}
-		m_timeUntilDie = (cry_frand() * 60.f) + 30.f;
+		m_timeUntilDie = cry_random(30.0f, 90.0f);
 	}
 	else if (g_pGameCVars->g_dummyPlayersCommitSuicide)
 	{

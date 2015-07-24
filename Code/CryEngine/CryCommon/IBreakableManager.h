@@ -1,5 +1,3 @@
-#include DEVIRTUALIZE_HEADER_FIX(IBreakableManager.h)
-
 #ifndef __IBreakableManager_h__
 #define __IBreakableManager_h__
 #pragma once
@@ -101,7 +99,7 @@ enum EProcessImpactResult
 };
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IBreakableManager
+struct IBreakableManager
 {
 	virtual ~IBreakableManager(){}
 	enum EBReakageType

@@ -12,7 +12,6 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(CryName.h)
 
 #ifndef __CryName_h__
 #define __CryName_h__
@@ -21,27 +20,15 @@
 #include <ISystem.h>
 #include <StlUtils.h>
 #include <CrySizer.h>
-
-#if defined PS3OPT
-	#define USE_WRONLY_NAMETABLE 1
-#endif
+#include <CryCrc32.h>
 
 class CNameTable;
 
 
-UNIQUE_IFACE struct INameTable
+struct INameTable
 {
 	virtual ~INameTable(){}
-#if defined USE_WRONLY_NAMETABLE
-	struct SNameEntry
-	{
-    const char *GetStr() { return reinterpret_cast<const char*>(this); }
-    void AddRef() { }
-    int Release() { return 1; }
-    int GetMemoryUsage() { return strlen(GetStr()); }
-		int	GetLength(){return strlen(GetStr());}
-  };
-#else
+
 	// Name entry header, immediately after this header in memory starts actual string data.
 	struct SNameEntry
 	{
@@ -60,7 +47,7 @@ UNIQUE_IFACE struct INameTable
     int   GetMemoryUsage() { return sizeof(SNameEntry)+strlen(GetStr()); }
 		int		GetLength(){return nLength;}
 	};
-#endif
+
 
 	// Finds an existing name table entry, or creates a new one if not found.
 	virtual INameTable::SNameEntry* GetEntry( const char *str ) = 0;
@@ -76,210 +63,6 @@ UNIQUE_IFACE struct INameTable
 
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const  =0;
 };
-
-#if defined USE_WRONLY_NAMETABLE
-
-
-#ifdef PS3
-	#define CNAMETABLE_BLOCKSIZE (64<<10)
-#else
-	#define CNAMETABLE_BLOCKSIZE (4096)
-#endif
-
-// If a block has less than CLOSE_THRESHOLD bytes left, then we'll close it
-// (move it to the closed block list).
-#define CNAMETABLE_CLOSE_THRESHOLD (64)
-#include "STLPoolAllocator.h"
-
-class CNameTable : public INameTable
-{
-  typedef std::set<char*, stl::less_stricmp<char*>, stl::STLPoolAllocator<char*> > TableT;
-	static inline int compare(const char *s1, const char *s2)
-	{ return stricmp(s1, s2); }
-
-	TableT m_Table;
-
-  struct SNameTableBlock
-  {
-    SNameTableBlock *m_pNext;
-    size_t m_Size;
-    char *Data() { return reinterpret_cast<char *>(this + 1); }
-  };
-
-  SNameTableBlock *m_pBlocks;
-  SNameTableBlock *m_pClosedBlocks;
-
-  char *Alloc(const char *str)
-  {
-    SNameTableBlock *pBlock = m_pBlocks, *pPrevBlock = NULL;
-    size_t len = strlen(str) + 1;
-
-    if (len >= CNAMETABLE_BLOCKSIZE)
-    {
-      pBlock = reinterpret_cast<SNameTableBlock *>(
-      malloc(sizeof(SNameTableBlock) + len));
-      pBlock->m_pNext = m_pClosedBlocks;
-      m_pClosedBlocks = pBlock;
-      pBlock->m_Size = len;
-      char *data = pBlock->Data();
-      memcpy(data, str, len);
-      return data;
-    }
-    while (pBlock != NULL)
-    {
-      if (len <= CNAMETABLE_BLOCKSIZE - pBlock->m_Size)
-        break;
-      pPrevBlock = pBlock;
-      pBlock = pBlock->m_pNext;
-    }
-    if (pBlock == NULL)
-    {
-      pBlock = reinterpret_cast<SNameTableBlock *>(
-      malloc(sizeof(SNameTableBlock) + CNAMETABLE_BLOCKSIZE));
-      pBlock->m_pNext = m_pBlocks;
-      m_pBlocks = pBlock;
-      pBlock->m_Size = len;
-      char *data = pBlock->Data();
-      memcpy(data, str, len);
-      return data;
-    }
-    size_t size = pBlock->m_Size;
-    assert(pBlock != NULL && len <= CNAMETABLE_BLOCKSIZE - size);
-    char *data = pBlock->Data() + size;
-    size += len;
-    pBlock->m_Size = size;
-    if (CNAMETABLE_BLOCKSIZE - size < CNAMETABLE_CLOSE_THRESHOLD)
-    {
-      if (pPrevBlock != NULL)
-			{
-				assert(pPrevBlock->m_pNext == pBlock);
-        pPrevBlock->m_pNext = pBlock->m_pNext;
-			}
-      else
-			{
-				assert(m_pBlocks == pBlock);
-        m_pBlocks = pBlock->m_pNext;
-			}
-      pBlock->m_pNext = m_pClosedBlocks;
-      m_pClosedBlocks = pBlock;
-    }
-    memcpy(data, str, len);
-    return data;
-  }
-
-public:
-  CNameTable() : m_pBlocks(NULL), m_pClosedBlocks(NULL) { }
-
-	VIRTUAL ~CNameTable()
-	{
-		for (SNameTableBlock *pBlock = m_pBlocks; pBlock != NULL; )
-		{
-			void *p = (void*)pBlock;
-			pBlock = pBlock->m_pNext;
-			free(p);
-		}
-		for (SNameTableBlock *pBlock = m_pClosedBlocks; pBlock != NULL; )
-		{
-			void *p = (void*)pBlock;
-			pBlock = pBlock->m_pNext;
-			free(p);
-		}
-	}
-
-  VIRTUAL INameTable::SNameEntry *FindEntry(const char *str)
-  {
-    TableT &table = m_Table;
-
-    if (table.empty())
-      return NULL;
-    TableT::const_iterator it = table.find(const_cast<char *>(str));
-    if (it == table.end())
-      return NULL;
-    return reinterpret_cast<INameTable::SNameEntry *>(*it);
-  }
-
-  VIRTUAL INameTable::SNameEntry *GetEntry(const char *str)
-  {
-		ScopedSwitchToGlobalHeap useGlobalHeap;
-
-    TableT &table = m_Table;
-
-    if (table.empty())
-    {
-      char *entry = Alloc(str);
-      table.insert(entry);
-      return reinterpret_cast<INameTable::SNameEntry *>(entry);
-    }
-    TableT::iterator it = table.lower_bound(const_cast<char *>(str));
-    if (it == table.end() || compare(str, *it))
-    {
-      char *entry = Alloc(str);
-      table.insert(it, entry);
-      return reinterpret_cast<INameTable::SNameEntry *>(entry);
-    }
-    return reinterpret_cast<INameTable::SNameEntry *>(*it);
-  }
-
-  VIRTUAL void Release(INameTable::SNameEntry *pEntry) 
-	{
-		if (!m_Table.empty())	m_Table.erase((char*)pEntry);
-	}
-
-  VIRTUAL int GetNumberOfEntries()
-  {
-    return m_Table.size();
-  }
-
-  VIRTUAL int GetMemoryUsage()
-  {
-    const TableT &table = m_Table;
-    int size = sizeof(TableT) + table.size() * sizeof(char *);
-    for (SNameTableBlock *pBlock = m_pBlocks;pBlock != NULL; pBlock = pBlock->m_pNext)
-    {
-      size += sizeof *pBlock
-        + std::max(
-            pBlock->m_Size,
-            static_cast<size_t>(CNAMETABLE_BLOCKSIZE));
-    }
-    for (SNameTableBlock *pBlock = m_pClosedBlocks;
-        pBlock != NULL; pBlock = pBlock->m_pNext)
-    {
-      size += sizeof *pBlock
-        + std::max(
-            pBlock->m_Size,
-            static_cast<size_t>(CNAMETABLE_BLOCKSIZE));
-    }
-    return size;
-  }
-	VIRTUAL void GetMemoryUsage( ICrySizer *pSizer ) const
-	{
-		pSizer->AddObject(this, sizeof(*this));
-		pSizer->AddContainer(m_Table);		
-		for (SNameTableBlock *pBlock = m_pBlocks;pBlock != NULL; pBlock = pBlock->m_pNext)
-		{
-			pSizer->AddObject(pBlock, sizeof *pBlock + std::max(pBlock->m_Size, static_cast<size_t>(CNAMETABLE_BLOCKSIZE)));			
-		}
-		for (SNameTableBlock *pBlock = m_pClosedBlocks;
-			pBlock != NULL; pBlock = pBlock->m_pNext)
-		{
-			pSizer->AddObject(pBlock, sizeof *pBlock + std::max(pBlock->m_Size, static_cast<size_t>(CNAMETABLE_BLOCKSIZE)));			
-		}
-	}
-
-	// Log all names inside CryName table.
-	VIRTUAL void LogNames()
-	{
-#ifndef __SPU__
-    TableT &table = m_Table;
-		for (TableT::const_iterator it=table.begin(); it!=table.end(); ++it)
-		{
-			INameTable::SNameEntry *const pNameEntry = reinterpret_cast<INameTable::SNameEntry*>(*it);
-			CryLog( "[%4d] %s",pNameEntry->GetLength(),pNameEntry->GetStr() );
-		}
-#endif
-	}
-};
-#else // else if defined USE_WRONLY_NAMETABLE
 
 //////////////////////////////////////////////////////////////////////////
 class CNameTable : public INameTable
@@ -300,14 +83,14 @@ public:
 	}
 
 	// Only finds an existing name table entry, return 0 if not found.
-	VIRTUAL INameTable::SNameEntry* FindEntry( const char *str )
+	virtual INameTable::SNameEntry* FindEntry( const char *str )
 	{
 		SNameEntry *pEntry = stl::find_in_map( m_nameMap,str,0 );
 		return pEntry;
 	}
 
 	// Finds an existing name table entry, or creates a new one if not found.
-	VIRTUAL INameTable::SNameEntry* GetEntry( const char *str )
+	virtual INameTable::SNameEntry* GetEntry( const char *str )
 	{
 		SNameEntry *pEntry = stl::find_in_map( m_nameMap,str,0 );
 		if (!pEntry)
@@ -331,13 +114,13 @@ public:
 	}
 
 	// Release existing name table entry.
-	VIRTUAL void Release( SNameEntry *pEntry )
+	virtual void Release( SNameEntry *pEntry )
 	{
 		assert(pEntry);
 		m_nameMap.erase( pEntry->GetStr() );
 		free(pEntry);
 	}
-  VIRTUAL int GetMemoryUsage()
+  virtual int GetMemoryUsage()
   {
     int nSize = 0;
     NameMap::iterator it;
@@ -352,18 +135,18 @@ public:
 
     return nSize;
   }
-	VIRTUAL void GetMemoryUsage( ICrySizer *pSizer ) const
+	virtual void GetMemoryUsage( ICrySizer *pSizer ) const
 	{
 		pSizer->AddObject(this, sizeof(*this));
 		pSizer->AddObject(m_nameMap);
 	}
-  VIRTUAL int GetNumberOfEntries()
+  virtual int GetNumberOfEntries()
   {
     return m_nameMap.size();
   }
 
 	// Log all names inside CryName table.
-	VIRTUAL void LogNames()
+	virtual void LogNames()
 	{
 		NameMap::iterator it;
 		for (it=m_nameMap.begin(); it!=m_nameMap.end(); ++it)
@@ -374,7 +157,6 @@ public:
 	}
 
 };
-#endif // end else if defined USE_WRONLY_NAMETABLE
 
 ///////////////////////////////////////////////////////////////////////////////
 // Class CCryName.
@@ -405,13 +187,7 @@ public:
   void	addref()	{	_addref(m_str); }
 	
 	const	char*	c_str() const { 
-#if defined(__SPU__)
-		// to create an empty in in main memory, assume that the object itself lies there, than cast the 
-		// 0 ptr to a char array containing '\0' (the empty string)
-		return (m_str) ? m_str: SPU_MAIN_PTR( (char*)&(m_str) );
-#else
 		return (m_str) ? m_str: ""; 
-#endif
 	}
 	int	length() const { return _length(); };
 
@@ -473,16 +249,6 @@ private:
   }
 #endif
 
-#ifdef USE_WRONLY_NAMETABLE
-  SNameEntry *_entry( const char *pBuffer ) const
-  {
-    assert(pBuffer);
-    return reinterpret_cast<SNameEntry *>(const_cast<char *>(pBuffer));
-  }
-  void _release( const char *pBuffer) { }
-	int  _length() const { return (m_str) ? strlen(m_str) + 1 : 0; };
-	void _addref( const char *pBuffer ) { }
-#else
 	SNameEntry* _entry( const char *pBuffer ) const { assert(pBuffer); return ((SNameEntry*)pBuffer)-1; }
 	void _release( const char *pBuffer ) {
 		if (pBuffer && _entry(pBuffer)->Release() <= 0)
@@ -490,7 +256,7 @@ private:
 	}
 	int  _length() const { return (m_str) ? _entry(m_str)->nLength : 0; };
 	void _addref( const char *pBuffer ) { if (pBuffer) _entry(pBuffer)->AddRef(); }
-#endif
+
 
 	const char *m_str;
 };
@@ -612,7 +378,6 @@ inline bool	operator!=( const char *s,const CCryName &n ) {
 	return n != s;
 }
 
-#include <crc32.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Class CCryNameCRC.
@@ -692,8 +457,7 @@ inline CCryNameCRC&	CCryNameCRC::operator=( const char *s )
   assert(s);
   if (*s) // if not empty
   {
-    Crc32Gen *pGen = GetISystem()->GetCrc32Gen();
-    m_nID = pGen->GetCRC32Lowercase(s);
+    m_nID = CCrc32::ComputeLowercase(s);
   }
   return *this;
 }
@@ -713,8 +477,7 @@ inline bool	CCryNameCRC::operator==( const char* str ) const
   assert(str);
   if (*str) // if not empty
   {
-    Crc32Gen *pGen = GetISystem()->GetCrc32Gen();
-    uint32 nID = pGen->GetCRC32Lowercase(str);
+    uint32 nID = CCrc32::ComputeLowercase(str);
     return m_nID == nID;
   }
   return m_nID == 0;
@@ -725,8 +488,7 @@ inline bool	CCryNameCRC::operator!=( const char* str ) const {
     return true;
   if (*str) // if not empty
   {
-    Crc32Gen *pGen = GetISystem()->GetCrc32Gen();
-    uint32 nID = pGen->GetCRC32Lowercase(str);
+    uint32 nID = CCrc32::ComputeLowercase(str);
     return m_nID != nID;
   }
   return false;

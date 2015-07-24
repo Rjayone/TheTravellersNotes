@@ -796,9 +796,6 @@ void CItem::ProcessEvent(SEntityEvent &event)
 				}
 				else
 				{
-					if(GetIWeapon() && !GetParentId())
-						Drop(0,false,false);
-
 					SetOwnerId(0);
 
 					RemoveAllAccessories();
@@ -1365,7 +1362,6 @@ void CItem::Select(bool select)
 	{
 		select = false;
 	}
-
 
 	CActor* pOwnerActor = GetOwnerActor();
 
@@ -2405,10 +2401,8 @@ bool CItem::IsSelected() const
 //------------------------------------------------------------------------
 void CItem::UpdateTags(const IActionController *pActionController, class CTagState &tagState, bool selected) const
 {
-	Crc32Gen* pGen = gEnv->pSystem->GetCrc32Gen();
-
-	uint32 weaponClassCrC = pGen->GetCRC32Lowercase(GetParams().itemClass.c_str());
-	uint32 weaponTypeCrC  = pGen->GetCRC32Lowercase(GetParams().tag.c_str());
+	uint32 weaponClassCrC = CCrc32::ComputeLowercase(GetParams().itemClass.c_str());
+	uint32 weaponTypeCrC  = CCrc32::ComputeLowercase(GetParams().tag.c_str());
 	
 	tagState.SetByCRC(weaponClassCrC, selected);
 	tagState.SetByCRC(weaponTypeCrC, selected);
@@ -2533,14 +2527,12 @@ void CItem::UpdateAccessoryTags(const SMannequinItemParams* pParams, CTagState &
 
 	if(selected)
 	{
-		Crc32Gen* pGen = gEnv->pSystem->GetCrc32Gen();
-
 		int numAccessories = m_accessories.size();
 		for(int i = 0; i < numAccessories; i++)
 		{
 			if(CItem* pAccessory = static_cast<CItem*>(m_pItemSystem->GetItem(m_accessories[i].accessoryId)))
 			{
-				if(uint32 accessoryTypeCrC = pGen->GetCRC32Lowercase(pAccessory->GetParams().tag.c_str()))
+				if(uint32 accessoryTypeCrC = CCrc32::ComputeLowercase(pAccessory->GetParams().tag.c_str()))
 				{
 					tagState.SetByCRC(accessoryTypeCrC, true);
 				}

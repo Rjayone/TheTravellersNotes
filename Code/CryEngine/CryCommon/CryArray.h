@@ -7,16 +7,6 @@
 #define _CRY_ARRAY_H_
 #pragma once
 
-#if defined __CRYCG__
-	#ifndef SPU_NO_INLINE
-			#define SPU_NO_INLINE __attribute__ ((crycg_attr ("noinline")))
-	#endif
-#else
-	#ifndef SPU_NO_INLINE
-		#define SPU_NO_INLINE 
-	#endif
-#endif
-
 #include <IGeneralMemoryHeap.h> // <> required for Interfuscator
 
 //---------------------------------------------------------------------------
@@ -34,8 +24,8 @@
 // Stack array helper
 #define ALIGNED_STACK_ARRAY(T, name, size, alignment) \
 	PREFAST_SUPPRESS_WARNING(6255) \
-	T* name = SPU_LOCAL_PTR( (T*) alloca((size) * sizeof(T) + alignment - 1) ); \
-	name = SPU_LOCAL_PTR( Align(name, alignment) );
+	T* name = (T*) alloca((size) * sizeof(T) + alignment - 1); \
+	name = Align(name, alignment);
 
 #define STACK_ARRAY(T, name, size) \
 	ALIGNED_STACK_ARRAY(T, name, size, alignof(T)) \
@@ -940,7 +930,7 @@ struct DynArray: Array< T,I,STORE >
 	{
 		push_back(a);
 	}
-	SPU_NO_INLINE self_type& operator =(Array<const T,I> a)
+	self_type& operator =(Array<const T,I> a)
 	{
 		if (a.begin() >= begin() && a.end() <= end())
 		{
@@ -1047,7 +1037,7 @@ struct DynArray: Array< T,I,STORE >
 		S::resize_raw(size());
 	}
 
-	SPU_NO_INLINE void resize(size_type new_size)
+	void resize(size_type new_size)
 	{
 		size_type s = size();
 		if (new_size > s)
@@ -1055,7 +1045,7 @@ struct DynArray: Array< T,I,STORE >
 		else
 			pop_back(s - new_size, false);
 	}
-	SPU_NO_INLINE void resize(size_type new_size, const T& val)
+	void resize(size_type new_size, const T& val)
 	{
 		size_type s = size();
 		if (new_size > s)
@@ -1088,7 +1078,7 @@ struct DynArray: Array< T,I,STORE >
 		return append_raw(array.size(), false).init(array);
 	}
 
-	SPU_NO_INLINE Array<T,I> insert_raw(iterator pos, size_type count = 1)
+	Array<T,I> insert_raw(iterator pos, size_type count = 1)
 	{
 		// Grow array, return iterator to inserted raw elems.
 		assert(pos >= begin() && pos <= end());
@@ -1108,7 +1098,11 @@ struct DynArray: Array< T,I,STORE >
 	}
 	iterator insert(iterator it, const_iterator start, const_iterator finish)
 	{
-		return insert( it, Array<T,I>(start, finish) );
+		return insert( it, Array<const T,I>(start, finish) );
+	}
+	iterator insert(iterator it, Array<const T,I> array)
+	{
+		return insert_raw(it, array.size()).init(array);
 	}
 
 	iterator insert(size_type pos)
@@ -1133,7 +1127,7 @@ struct DynArray: Array< T,I,STORE >
 		S::resize_raw(new_size, allow_slack);
 	}
 
-	SPU_NO_INLINE iterator erase(iterator start, iterator finish)
+	iterator erase(iterator start, iterator finish)
 	{
 		assert(start >= begin() && finish >= start && finish <= end());
 
@@ -1194,8 +1188,8 @@ struct StaticDynArray: DynArray< T, I, NArray::StaticDynStorage<nSIZE> >
 };
 
 
-#if !defined(__SPU__) || defined(__CRYCG__)
-	#include "CryPodArray.h"
-#endif
+
+#include "CryPodArray.h"
+
 
 #endif

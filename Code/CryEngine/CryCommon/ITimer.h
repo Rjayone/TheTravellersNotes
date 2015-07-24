@@ -26,7 +26,8 @@ struct ITimer
 		eTSC_Trackview = 0,
 		eTSC_GameStart
 	};
-
+	
+	// <interfuscator:shuffle>
 	virtual ~ITimer() {};
 
 	// Summary:
@@ -159,7 +160,7 @@ struct ITimer
 	//	Create a new timer of the same type
 	//
 	virtual ITimer* CreateNewTimer() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:

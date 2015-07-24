@@ -26,7 +26,7 @@ enum EStimulusHandlerResult
 
 struct IPerceptionHandlerModifier
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IPerceptionHandlerModifier() {}
 
 	// Debug drawing
@@ -36,7 +36,7 @@ struct IPerceptionHandlerModifier
 	// Return false if stimulus should be ignored
 	virtual EStimulusHandlerResult OnVisualStimulus(SAIEVENT* pAIEvent, IAIObject *pReceiver, EntityId targetId) = 0;
 	virtual EStimulusHandlerResult OnSoundStimulus(SAIEVENT* pAIEvent, IAIObject *pReceiver, EntityId targetId) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__I_PERCEPTIONHANDLER_MODIFIER_H__

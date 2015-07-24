@@ -114,6 +114,15 @@ public:
     return -1;;
   }
 
+	int FindReverse(const T & p)
+	{
+		for(int i=m_nCount-1; i>=0; i--)
+			if(p == (*this)[i])
+				return i;
+
+		return -1;;
+	}
+
   inline void AddList(const PodArray<T> & lstAnother)
   {
     PreAllocate(m_nCount + lstAnother.Count());
@@ -142,26 +151,14 @@ public:
 			size_t nOldSizeInBytes = (m_nAllocatedCount*sizeof(T)) + overAllocBytes;
       m_nAllocatedCount = m_nCount*2 + 8;
 
-			//keep alignment requirement of T if memory man is used on PS3
+			//keep alignment requirement of T
 			m_pElements = InternalRealloc(m_pElements, (m_nAllocatedCount*sizeof(T)) + overAllocBytes, nOldSizeInBytes );
 			assert(m_pElements!=NULL);
 
 			MEMSTAT_BIND_TO_CONTAINER(this, m_pElements);
     }
 
-		//this is twice as fast on PS3, on PC there is no call to memcpy so no performance win
-#if defined(PS3)
-		if(sizeof(T)==1)
-			*(uint8*)&m_pElements[m_nCount]=*(uint8*)&p;
-		else
-		if(sizeof(T)==2)
-			*(uint16*)&m_pElements[m_nCount]=*(uint16*)&p;
-		else
-		if(sizeof(T)==4)
-			*(uint32*)&m_pElements[m_nCount]=*(uint32*)&p;
-		else
-#endif
-	    memcpy(&m_pElements[m_nCount],&p,sizeof(m_pElements[m_nCount]));
+		memcpy(&m_pElements[m_nCount],&p,sizeof(m_pElements[m_nCount]));
     m_nCount++;
 		MEMSTAT_USAGE(begin(), (sizeof(T) * size()) + overAllocBytes);
   }
@@ -189,14 +186,15 @@ public:
   {
     assert( nBefore>=0 && nBefore<=(unsigned int)m_nCount );
 		T tmp; Add(tmp); // add empty object to increase memory buffer
-#if defined(__SPU__)
-		for( int i = 0 ; i < m_nCount-nBefore-1 ; ++i )
-			m_pElements[nBefore+1+i] = m_pElements[nBefore+i];
-#else
     memmove(&(m_pElements[nBefore+1]), &(m_pElements[nBefore]), sizeof(T)*(m_nCount-nBefore-1));
-#endif
     m_pElements[nBefore] = p;
   }
+
+	void CheckAllocated(int elem_count)
+	{
+		int nElemNum = (m_nCount>elem_count) ? m_nCount : elem_count;
+		PreAllocate(nElemNum, nElemNum);
+	}
 
   void PreAllocate(int elem_count, int nNewCount = -1)
   {
@@ -223,12 +221,7 @@ public:
   inline void Delete(const int nElemId, const int nElemCount = 1)
   {
     assert( nElemId >= 0 && nElemId+nElemCount <= m_nCount );
-#if defined(__SPU__)
-		for( int i = 0 ; i < m_nCount-nElemId-nElemCount ; ++i )
-			m_pElements[nElemId+i] = m_pElements[nElemId+nElemCount+i];
-#else
     memmove(&(m_pElements[nElemId]), &(m_pElements[nElemId+nElemCount]), sizeof(T)*(m_nCount-nElemId-nElemCount));
-#endif
     m_nCount-=nElemCount;
 		MEMSTAT_USAGE(begin(), (sizeof(T) * size()) + overAllocBytes);
   }
@@ -236,12 +229,7 @@ public:
   inline void DeleteFastUnsorted(const int nElemId, const int nElemCount = 1)
   {
 		assert( nElemId >= 0 && nElemId+nElemCount <= m_nCount );
-#if defined(__SPU__)
-		for( int i = 0 ; i < nElemCount ; ++i )
-			m_pElements[nElemId+i] = m_pElements[m_nCount-nElemCount+i];
-#else
 		memmove(&(m_pElements[nElemId]), &(m_pElements[m_nCount-nElemCount]), sizeof(T)*nElemCount);
-#endif
 		m_nCount-=nElemCount;
 		MEMSTAT_USAGE(begin(), (sizeof(T) * size()) + overAllocBytes);
   }
@@ -309,19 +297,6 @@ private:
 	T* InternalRealloc( T* pBuffer,size_t nNewSize, size_t nOldSize )
 	{
 		PREFAST_SUPPRESS_WARNING (6326)
-#if defined(__SPU__)		
-		T* pNewArray = (T*)CryModuleMemalign(nNewSize, __alignof__(T));
-		if(pBuffer)
-		{
-			if(pNewArray && nOldSize)
-			{				
-				int nBytesToCopy = nNewSize < nOldSize ? nNewSize : nOldSize;
-				memcpy( SPU_MAIN_PTR(pNewArray), SPU_MAIN_PTR(pBuffer), nBytesToCopy);
-			}
-			CryModuleMemalignFree(pBuffer);
-		}
-		return pNewArray;
-#else
 		if (alignof(T) > _CRY_DEFAULT_MALLOC_ALIGNMENT)
 		{
 			return (T*)CryModuleReallocAlign(pBuffer, nNewSize,alignof(T));
@@ -330,7 +305,6 @@ private:
 		{
 			return (T*)CryModuleRealloc( pBuffer,nNewSize );
 		}
-#endif
 	}
 
 };

@@ -634,7 +634,7 @@ void CWeapon::OnDroppedByAI(IInventory* pAIInventory)
 						if (pDefaultBonusAmmo)
 						{
 							SetInventoryAmmoCount(pFiremodeAmmo, 0);
-							SWeaponAmmoUtils::SetAmmo(m_bonusammo, pFiremodeAmmo, max(minAmmoDrop, (int)Random(pDefaultBonusAmmo->count)));
+							SWeaponAmmoUtils::SetAmmo(m_bonusammo, pFiremodeAmmo, std::max(minAmmoDrop, cry_random(0, pDefaultBonusAmmo->count - 1)));
 						}
 					}
 				}

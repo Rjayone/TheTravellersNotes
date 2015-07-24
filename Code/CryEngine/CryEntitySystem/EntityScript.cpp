@@ -210,6 +210,19 @@ bool CEntityScript::Init( const char *sTableName,const char *sScriptFilename )
 }
 
 //////////////////////////////////////////////////////////////////////////
+bool CEntityScript::Init( const char *sTableName, IScriptTable* pScriptTable )
+{
+	m_sTableName = sTableName;
+	m_pEntityTable = pScriptTable;
+
+	LoadEvents();
+
+	DelegateProperties();
+
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
 bool CEntityScript::LoadScript( bool bForceReload )
 {
 	if (m_pEntityTable && !bForceReload)
@@ -227,12 +240,7 @@ bool CEntityScript::LoadScript( bool bForceReload )
 		return false;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	// Delegate call from entity script table to the global entity binded methods.
-	//////////////////////////////////////////////////////////////////////////
-	GetIEntitySystem()->GetScriptBindEntity()->DelegateCalls( m_pEntityTable );
-
-	m_pEntityTable->GetValue(SCRIPT_PROPERTIES_TABLE,m_pPropertiesTable);
+	DelegateProperties();
 
 	// Precache of OnReset function.
 	m_pEntityTable->GetValue( SCRIPT_ONRESET,m_pOnReset );
@@ -248,6 +256,22 @@ bool CEntityScript::LoadScript( bool bForceReload )
 
 	m_bScriptLoaded = true;
 	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CEntityScript::DelegateProperties()
+{
+	//////////////////////////////////////////////////////////////////////////
+	// Delegate call from entity script table to the global entity binded methods.
+	//////////////////////////////////////////////////////////////////////////
+	GetIEntitySystem()->GetScriptBindEntity()->DelegateCalls( m_pEntityTable );
+
+	m_pPropertiesTable = m_pScriptSystem->CreateTable(true);
+	m_pPropertiesTable->AddRef();
+	if (!m_pEntityTable->GetValue(SCRIPT_PROPERTIES_TABLE,m_pPropertiesTable))
+	{
+		SAFE_RELEASE(m_pPropertiesTable);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -663,10 +687,9 @@ void CEntityScript::CallEvent( IScriptTable *pThis,const char *sEvent,bool bValu
 			if (m_events[i].bOldEvent)
 			{
 				char temp[1024];
-				assert( strlen(sEvent) < 1000 );
-				strcpy( temp, "Event_" );
-				strncat( temp, sEvent, 1000 );
-				temp[1023] = 0;
+				assert(6 + strlen(sEvent) < sizeof(temp));
+				cry_strcpy(temp, "Event_");
+				cry_strcat(temp, sEvent);
 				Script::CallMethod( pThis, temp );
 			}
 			else

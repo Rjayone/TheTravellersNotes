@@ -14,11 +14,14 @@
 #include "StdAfx.h"
 
 #include <Cry_Camera.h>
+#include <IHMDDevice.h>
+#include <IHMDManager.h>
 #include "View.h"
 #include "GameObjects/GameObject.h"
 #include "IGameSessionHandler.h"
 
 //FIXME:not very pretty
+
 static ICVar *pCamShakeMult = 0;
 
 //------------------------------------------------------------------------
@@ -44,6 +47,7 @@ CView::~CView()
 	if (m_pAudioListener != NULL)
 	{
 		gEnv->pEntitySystem->RemoveEntityEventListener(m_pAudioListener->GetId(), ENTITY_EVENT_DONE, this);
+		gEnv->pEntitySystem->RemoveEntity(m_pAudioListener->GetId(), true);
 		m_pAudioListener = NULL;
 	}
 }
@@ -114,9 +118,23 @@ void CView::Update(float frameTime,bool isActive)
 		//see if the view have to use a custom near clipping plane
 		const float nearPlane = (m_viewParams.nearplane >= 0.01f) ? (m_viewParams.nearplane) : fNearZ;
 		const float farPlane = gEnv->p3DEngine->GetMaxViewDistance();
-		const float fov = (m_viewParams.fov < 0.001) ? DEFAULT_FOV : m_viewParams.fov;
+		float fov = (m_viewParams.fov < 0.001f) ? DEFAULT_FOV : m_viewParams.fov;
+
+		// [VR] specific
+		// Modify FOV based on the HDM device configuration
+		IHMDManager * pHmdManager = gEnv->pSystem->GetHMDManager();
+		if (pHmdManager->IsStereoSetupOk())
+		{
+			const IHMDDevice* pDev = pHmdManager->GetHMDDevice();
+			const HMDTrackingState& sensorState = pDev->GetTrackingState();
+			if (sensorState.CheckStatusFlags(HS_IsUsable))
+			{
+				float arf_notUsed;
+				pDev->GetCameraSetupInfo(fov, arf_notUsed);
+			}
+		}
 		
-		m_camera.SetFrustum(pSysCam->GetViewSurfaceX(),pSysCam->GetViewSurfaceZ(),fov,nearPlane,farPlane, pSysCam->GetPixelAspectRatio());
+		m_camera.SetFrustum(pSysCam->GetViewSurfaceX(), pSysCam->GetViewSurfaceZ(), fov, nearPlane, farPlane, pSysCam->GetPixelAspectRatio());
 
     //TODO: (14, 06, 2010, "the player view should always get updated, this due to the hud being visable, without shocking, in cutscenes - todo is to see if we can optimise this code");
     IActor * pActor = gEnv->pGame->GetIGameFramework()->GetClientActor();
@@ -160,9 +178,36 @@ void CView::Update(float frameTime,bool isActive)
 		// Blending between cameras needs to happen after Camera space rendering calculations have been applied
 		// so that the m_viewParams.position is in World Space again
 		m_viewParams.UpdateBlending(frameTime);
+		
+		// [VR] specific
+		// Add HMD's pose tracking on top of current camera pose
+		// Each game-title can decide whether to keep this functionality here or (most likely)
+		// move it somewhere else.
 
-		Matrix34 viewMtx(m_viewParams.rotation);
-		viewMtx.SetTranslation(m_viewParams.position);
+		Quat q = m_viewParams.rotation;
+		Vec3 p = Vec3(ZERO);
+
+		if (pHmdManager->IsStereoSetupOk())
+		{
+			const HMDTrackingState& sensorState = pHmdManager->GetHMDDevice()->GetTrackingState();
+			if (sensorState.CheckStatusFlags(HS_IsUsable))
+			{
+				const Vec3 hmdHeadPos = sensorState.pose.position;
+				p = q * Vec3(hmdHeadPos.x, -hmdHeadPos.z, hmdHeadPos.y);
+
+				const Matrix33 ori = Matrix33(sensorState.pose.orientation);
+
+				Matrix33 oriFixed;
+				oriFixed.SetColumn(0,  ori.GetColumn0());
+				oriFixed.SetColumn(1, -ori.GetColumn2());
+				oriFixed.SetColumn(2,  ori.GetColumn1());
+
+				q = q * Quat::CreateRotationX(DEG2RAD(90.0f)) * Quat(oriFixed);
+			}
+		}
+
+		Matrix34 viewMtx(q);
+		viewMtx.SetTranslation(m_viewParams.position + p);
 		m_camera.SetMatrix(viewMtx);
 	}
 	else
@@ -214,8 +259,6 @@ void CView::SetViewShake(Ang3 shakeAngle,Vec3 shakeShift,float duration,float fr
 	SetViewShakeEx( params );
 }
 
-
-#define RANDOM() ((((float)cry_rand()/(float)CRY_RAND_MAX)*2.0f)-1.0f)
 
 //------------------------------------------------------------------------
 void CView::SetViewShakeEx( const SShakeParams& params )
@@ -395,7 +438,8 @@ void CView::GetRandomQuat( Quat &quat, SShake *pShake )
   float randomAmt(pShake->randomness);
   float len(fabs(pShake->amount.x) + fabs(pShake->amount.y) + fabs(pShake->amount.z));
   len /= 3.f;
-  quat *= Quat::CreateRotationXYZ(Ang3(RANDOM()*len*randomAmt,RANDOM()*len*randomAmt,RANDOM()*len*randomAmt));
+  float r = len * randomAmt;
+  quat *= Quat::CreateRotationXYZ(Ang3(cry_random(-r, r), cry_random(-r, r), cry_random(-r, r)));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -405,7 +449,8 @@ void CView::GetRandomVector( Vec3 &vec, SShake *pShake )
   float randomAmt(pShake->randomness);
   float len = fabs(pShake->amountVector.x) + fabs(pShake->amountVector.y) + fabs(pShake->amountVector.z);
   len /= 3.f;
-  vec += Vec3(RANDOM()*len*randomAmt,RANDOM()*len*randomAmt,RANDOM()*len*randomAmt);
+  float r = len * randomAmt;
+  vec += Vec3(cry_random(-r, r), cry_random(-r, r), cry_random(-r, r));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -552,12 +597,14 @@ void CView::ProcessShakeNormal_DoShaking( SShake *pShake, float frameTime)
 		float randomAmt(pShake->randomness);
 		float len(fabs(pShake->amount.x) + fabs(pShake->amount.y) + fabs(pShake->amount.z));
 		len /= 3.0f;
-		pShake->goalShake *= Quat::CreateRotationXYZ(Ang3(RANDOM()*len*randomAmt,RANDOM()*len*randomAmt,RANDOM()*len*randomAmt));
+		float r = len * randomAmt;
+		pShake->goalShake *= Quat::CreateRotationXYZ(Ang3(cry_random(-r, r), cry_random(-r, r), cry_random(-r, r)));
 
 		//translational randomization
 		len = fabs(pShake->amountVector.x) + fabs(pShake->amountVector.y) + fabs(pShake->amountVector.z);
 		len /= 3.0f;
-		pShake->goalShakeVector += Vec3(RANDOM()*len*randomAmt,RANDOM()*len*randomAmt,RANDOM()*len*randomAmt);
+		r = len * randomAmt;
+		pShake->goalShakeVector += Vec3(cry_random(-r, r), cry_random(-r, r), cry_random(-r, r));
 
 		//damp & bounce it in a non linear fashion
 		t = 1.0f-(pShake->ratio*pShake->ratio);
@@ -673,7 +720,7 @@ void CView::OnEntityEvent(IEntity* pEntity, SEntityEvent& event)
 	case ENTITY_EVENT_DONE:
 		{
 			// In case something destroys our listener entity before we had the chance to remove it.
-			if (pEntity->GetId() == m_pAudioListener->GetId())
+			if ((m_pAudioListener != NULL) && (pEntity->GetId() == m_pAudioListener->GetId()))
 			{
 				gEnv->pEntitySystem->RemoveEntityEventListener(m_pAudioListener->GetId(), ENTITY_EVENT_DONE, this);
 				m_pAudioListener = NULL;
@@ -694,16 +741,17 @@ void CView::CreateAudioListener()
 	if (m_pAudioListener == NULL)
 	{
 		SEntitySpawnParams oEntitySpawnParams;
-		oEntitySpawnParams.sName  = "SoundListener";
-		oEntitySpawnParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("SoundListener");
+		oEntitySpawnParams.sName  = "AudioListener";
+		oEntitySpawnParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("AudioListener");
 		m_pAudioListener = gEnv->pEntitySystem->SpawnEntity(oEntitySpawnParams, true);
 
 		if (m_pAudioListener != NULL)
 		{
+			m_pAudioListener->SetFlags(m_pAudioListener->GetFlags() | ENTITY_FLAG_TRIGGER_AREAS);
 			m_pAudioListener->SetFlagsExtended(m_pAudioListener->GetFlagsExtended() | ENTITY_FLAG_EXTENDED_AUDIO_LISTENER);
 			gEnv->pEntitySystem->AddEntityEventListener(m_pAudioListener->GetId(), ENTITY_EVENT_DONE, this);
 			CryFixedStringT<64> sTemp;
-			sTemp.Format("SoundListener(%d)", static_cast<int>(m_pAudioListener->GetId()));
+			sTemp.Format("AudioListener(%d)", static_cast<int>(m_pAudioListener->GetId()));
 			m_pAudioListener->SetName(sTemp.c_str());
 
 			IEntityAudioProxyPtr pIEntityAudioProxy = crycomponent_cast<IEntityAudioProxyPtr>(m_pAudioListener->CreateProxy(ENTITY_PROXY_AUDIO));
@@ -711,19 +759,22 @@ void CView::CreateAudioListener()
 		}
 		else
 		{
-			CryFatalError("<Sound>: audio listener creation failed in CView ctor!");
+			CryFatalError("<Audio>: Audio listener creation failed in CView::CreateAudioListener!");
 		}
+	}
+	else
+	{
+		m_pAudioListener->SetFlagsExtended(m_pAudioListener->GetFlagsExtended() | ENTITY_FLAG_EXTENDED_AUDIO_LISTENER);
+		m_pAudioListener->InvalidateTM(ENTITY_XFORM_POS);
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CView::UpdateAudioListener(Matrix34 const& rMatrix, bool bInvalidateListener)
+void CView::UpdateAudioListener(Matrix34 const& rMatrix)
 {
 	if (m_pAudioListener != NULL)
 	{
 		m_pAudioListener->SetWorldTM(rMatrix);
-		if (bInvalidateListener)
-			m_pAudioListener->InvalidateTM(ENTITY_XFORM_POS);
 	}
 }
 
@@ -735,6 +786,11 @@ void CView::SetActive(bool const bActive)
 		// Make sure we have a valid audio listener entity on an active view!
 		CreateAudioListener();
 	}
+	else if (m_pAudioListener != NULL && (m_pAudioListener->GetFlags() & ENTITY_FLAG_TRIGGER_AREAS) != 0)
+	{
+		gEnv->pEntitySystem->GetAreaManager()->ExitAllAreas(m_pAudioListener);
+		m_pAudioListener->SetFlagsExtended(m_pAudioListener->GetFlagsExtended() & ~ENTITY_FLAG_EXTENDED_AUDIO_LISTENER);
+	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IView)
+

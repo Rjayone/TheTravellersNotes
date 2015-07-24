@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////
 //
 //  Crytek CryENGINE Source code
@@ -10,14 +9,9 @@
 //  -: Taken over by Andrey Khonich
 //
 //////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IRenderer.h)
 
-#ifndef _IRENDERER_H
-#define _IRENDERER_H
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
 #include "Cry_Geo.h"  
 #include <IFlares.h> // <> required for Interfuscator
 
@@ -33,22 +27,19 @@ typedef void (*GpuCallbackFunc)(DWORD context);
 // Callback for shadercache miss
 typedef void (*ShaderCacheMissCallback)(const char* acShaderRequest);
 
-UNIQUE_IFACE struct ICaptureFrameListener 
+struct ICaptureFrameListener 
 {
 	virtual ~ICaptureFrameListener (){}
 	virtual bool OnNeedFrameData(unsigned char*& pConvertedTextureBuf) = 0;
-	virtual uint32 OnNeedFrameDataRSXOffset(void) = 0; //Offset to mapped memory for an asynchronous RSX push from the DXPS device. PS3 only.
 	virtual void OnFrameCaptured(void) = 0;
 	virtual int OnGetFrameWidth(void) = 0;
-	virtual int OnGetFrameHeight(void) = 0;
-	virtual int OnGetCaptureFlags(void) = 0;
+	virtual int OnGetFrameHeight(void) = 0;	
 	virtual int OnCaptureFrameBegin(int *pTexHandle) = 0;
 
 	enum ECaptureFrameFlags
 	{
 		eCFF_NoCaptureThisFrame = (0 << 1),
 		eCFF_CaptureThisFrame = (1 << 1),
-		eCFF_AsyncRSXPush = (1 << 2),		//This is PS3 only.
 	}; 
 };
 
@@ -149,9 +140,11 @@ enum ERenderQueryTypes
 	EFQ_HDRModeEnabled,
 	EFQ_ParticlesTessellation,
 	EFQ_WaterTessellation,
+	EFQ_MeshTessellation,
 	EFQ_GetShadowPoolFrustumsNum,
 	EFQ_GetShadowPoolAllocThisFrameNum,
 	EFQ_GetShadowMaskChannelsNum,
+	EFQ_GetTiledShadingSkippedLightsNum,
 
 	// Description:
 	//		Query will return all textures in the renderer,
@@ -177,10 +170,7 @@ enum ERenderQueryTypes
 	EFQ_TextureStreamingEnabled,
 	EFQ_MSAAEnabled,
 	EFQ_AAMode,
-
-	// Summary:
-	//		Pointer to struct with PS3 lowlevel render-api usage stats.
-	EFQ_PS3_Resource_Stats,
+	
 	EFQ_Fullscreen,
 	EFQ_GetTexStreamingInfo,
 	EFQ_GetMeshPoolInfo,
@@ -214,6 +204,7 @@ enum ERenderQueryTypes
 	EFQ_SetDynTexSourceLayerInfo,
 	EFQ_SetDynTexSourceSharedRTDim,
   EFQ_GetViewportDownscaleFactor,
+	EFQ_ReverseDepthEnabled,
 
 	EFQ_GetLastD3DDebugMessage
 };
@@ -798,29 +789,43 @@ enum PublicRenderPrimitiveType
 //////////////////////////////////////////////////////////////////////
 // Render features
 
-#define RFT_HW_R2VB				1		// Render to vertex buffer supported.
-#define RFT_ALLOW_RECTTEX  2
-#define RFT_OCCLUSIONQUERY 4
-#define RFT_HWGAMMA      0x10
-#define RFT_HW_TXAA				0x20	
-#define RFT_COMPRESSTEXTURE  0x40
-#define RFT_ALLOWANISOTROPIC 0x100		// Allows anisotropic texture filtering.
-#define RFT_SUPPORTZBIAS     0x200
-#define RFT_OCCLUSIONTEST     0x8000	// Support hardware occlusion test.
+#define RFT_FREE_0x1          0x1
+#define RFT_ALLOW_RECTTEX     0x2
+#define RFT_OCCLUSIONQUERY    0x4
+#define RFT_FREE_0x8          0x8
+#define RFT_HWGAMMA           0x10
+#define RFT_FREE_0x20         0x20
+#define RFT_COMPRESSTEXTURE   0x40
+#define RFT_FREE_0x80         0x80
+#define RFT_ALLOWANISOTROPIC  0x100      // Allows anisotropic texture filtering.
+#define RFT_SUPPORTZBIAS      0x200
+#define RFT_FREE_0x400        0x400
+#define RFT_FREE_0x800        0x800
+#define RFT_FREE_0x1000       0x1000
+#define RFT_FREE_0x2000       0x2000
+#define RFT_FREE_0x4000       0x4000
+#define RFT_OCCLUSIONTEST     0x8000     // Support hardware occlusion test.
 
-#define RFT_HW_ATI		    0x20000		// Unclassified ATI hardware.
-#define RFT_HW_NVIDIA     0x40000		// Unclassified NVidia hardware.
-#define RFT_HW_MASK       0x70000		// Graphics chip mask.
+#define RFT_HW_INTEL          0x10000    // Unclassified intel hardware.
+#define RFT_HW_ATI            0x20000    // Unclassified ATI hardware.
+#define RFT_HW_NVIDIA         0x40000    // Unclassified NVidia hardware.
+#define RFT_HW_MASK           0x70000    // Graphics chip mask.
 
-#define RFT_HW_HDR        0x80000		// Hardware supports high dynamic range rendering.
+#define RFT_HW_HDR            0x80000    // Hardware supports high dynamic range rendering.
 
-#define RFT_HW_SM20       0x100000		// Shader model 2.0
-#define RFT_HW_SM2X       0x200000		// Shader model 2.X
-#define RFT_HW_SM30       0x400000		// Shader model 3.0
-#define RFT_HW_SM40       0x800000		// Shader model 4.0
-#define RFT_HW_SM50       0x1000000		// Shader model 5.0
+#define RFT_HW_SM20           0x100000   // Shader model 2.0
+#define RFT_HW_SM2X           0x200000   // Shader model 2.X
+#define RFT_HW_SM30           0x400000   // Shader model 3.0
+#define RFT_HW_SM40           0x800000   // Shader model 4.0
+#define RFT_HW_SM50           0x1000000  // Shader model 5.0
 
-#define RFT_RGBA          0x20000000 // RGBA order (otherwise BGRA).
+#define RFT_FREE_0x2000000    0x2000000
+#define RFT_FREE_0x4000000    0x4000000
+#define RFT_FREE_0x8000000    0x8000000
+#define RFT_FREE_0x10000000   0x10000000
+
+#define RFT_RGBA              0x20000000 // RGBA order (otherwise BGRA).
+#define RFT_FREE_0x40000000   0x40000000
 #define RFT_HW_VERTEXTEXTURES 0x80000000 // Vertex texture fetching supported.
 
 //====================================================================
@@ -1387,7 +1392,7 @@ struct SSF_GlobalDrawParams
 #endif // #ifndef EXCLUDE_SCALEFORM_SDK
 
 //////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IRendererEventListener
+struct IRendererEventListener
 {
 	virtual void OnPostCreateDevice	() = 0;
 	virtual void OnPostResetDevice	() = 0;
@@ -1414,10 +1419,10 @@ enum ERenderType
 {
 	eRT_Undefined,
 	eRT_Null,
-	eRT_DX9,
 	eRT_DX11,
 	eRT_XboxOne,
-	eRT_PS4	
+	eRT_PS4,
+	eRT_OpenGL,
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -1439,10 +1444,7 @@ struct SCustomRenderInitArgs
 	bool appStartedFromMediaCenter;
 };
 
-#if defined(XENON)
-enum{CULL_SIZEX=128};
-enum{CULL_SIZEY=64};
-#elif defined(PS3)
+#if defined(ANDROID)
 enum{CULL_SIZEX=128};
 enum{CULL_SIZEY=64};
 #else
@@ -1464,11 +1466,7 @@ struct SHWOccZBuffer
 	uint32 pad[2];	// Keep 32 byte aligned
 	SHWOccZBuffer() : pHardwareZBuffer(NULL), pZBufferVMem(NULL), ZBufferSizeX(CULL_SIZEX), ZBufferSizeY(CULL_SIZEY),
 		ZBufferVMemRSXOff(0), HardwareZBufferRSXOff(0){}
-} 
-#if defined(PS3)
-	__attribute__ ((aligned(32)))
-#endif
-;
+};
 
 struct MTRenderInfo 
 {
@@ -1479,8 +1477,6 @@ struct MTRenderInfo
 	float fGPUFrameTime;
 	float fFrameTime;
 	float fRenderTime;
-	float fSpuMainLoad;
-	float fSpuDXPSLoad;
 };
 
 class ITextureStreamListener
@@ -1538,6 +1534,21 @@ enum ERenderPipelineProfilerStats
 	eRPPSTATS_ZCullReload,
 	eRPPSTATS_CoverageBuffer,
 	eRPPSTATS_AmbientPass,
+	eRPPSTATS_TI_INJECT_CLEAR,
+	eRPPSTATS_TI_VOXELIZE,
+	eRPPSTATS_TI_INJECT_AIR,
+	eRPPSTATS_TI_INJECT_LIGHT,
+	eRPPSTATS_TI_INJECT_REFL0,
+	eRPPSTATS_TI_INJECT_REFL1,
+	eRPPSTATS_TI_INJECT_DYNL,
+	eRPPSTATS_TI_NID_DIFF,
+	eRPPSTATS_TI_GEN_DIFF,
+	eRPPSTATS_TI_GEN_SPEC,
+	eRPPSTATS_TI_GEN_AIR,
+	eRPPSTATS_TI_DEMOSAIC_DIFF,
+	eRPPSTATS_TI_DEMOSAIC_SPEC,
+	eRPPSTATS_TI_UPSCALE_DIFF,
+	eRPPSTATS_TI_UPSCALE_SPEC,
 	eRPPSTATS_SSDO,
 	eRPPSTATS_SSREFL,
 	eRPPSTATS_GI,
@@ -1552,9 +1563,20 @@ enum ERenderPipelineProfilerStats
 struct RPProfilerStats
 {
 	float   gpuTime;
+	float   gpuTimeAverCur;
+	float   gpuTimeAverFin;
+	float   gpuTimeMaxCur;
+	float   gpuTimeMaxFin;
 	float   cpuTime;
 	uint32  numDIPs;
 	uint32  numPolys;
+};
+
+struct ISvoRenderer
+{
+	virtual bool IsShaderItemUsedForVoxelization( SShaderItem& rShaderItem, IRenderNode * pRN ){ return false; }
+	virtual void SetEditingHelper(const Sphere & sp){}
+	virtual void Release(){}
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -1588,8 +1610,7 @@ struct IRenderer//: public IRendererCallbackServer
 	virtual void GetCurrentNumberOfDrawCalls(int &nGeneral,int &nShadowGen)=0;
 	//Sums DIP counts for the EFSLIST_* passes that match the submitted mask.
 	//Compose the mask with bitwise arithmetic, use (1 << EFSLIST_*) per list.
-	//e.g. to sum general and transparent, pass in ( (1 << EFSLIST_GENERAL) | (1 << EFSLIST_TRANSP) )
-	//Please note that this doesn't subtract the global count of DIPs skipped on the PS3 due to conditional rendering 3 as it isn't per-pass information
+	//e.g. to sum general and transparent, pass in ( (1 << EFSLIST_GENERAL) | (1 << EFSLIST_TRANSP) )	
 	virtual int GetCurrentNumberOfDrawCalls(const uint32 EFSListMask)=0;
 	virtual float GetCurrentDrawCallRTTimes(const uint32 EFSListMask)=0;
 
@@ -1603,7 +1624,7 @@ struct IRenderer//: public IRendererCallbackServer
 	virtual void MakeMainContextActive()=0;
 	virtual WIN_HWND GetCurrentContextHWND()=0;
 
-#if defined(XENON) || defined(DURANGO)
+#if defined(DURANGO)
 	virtual void SuspendDevice() = 0;
 	virtual void ResumeDevice() = 0;
 #endif
@@ -1864,8 +1885,8 @@ struct IRenderer//: public IRendererCallbackServer
 	/////////////////////////////////////////////////////////////////////////////////
 	//Replacement functions for Font
 
-	virtual bool FontUploadTexture(class CFBitmap*, ETEX_Format eTF=eTF_A8R8G8B8)=0;
-	virtual int  FontCreateTexture(int Width, int Height, byte *pData, ETEX_Format eTF=eTF_A8R8G8B8, bool genMips=false)=0;
+	virtual bool FontUploadTexture(class CFBitmap*, ETEX_Format eTF=eTF_R8G8B8A8)=0;
+	virtual int  FontCreateTexture(int Width, int Height, byte *pData, ETEX_Format eTF=eTF_R8G8B8A8, bool genMips=false)=0;
 	virtual bool FontUpdateTexture(int nTexId, int X, int Y, int USize, int VSize, byte *pData)=0;
 	virtual void FontReleaseTexture(class CFBitmap *pBmp)=0;
 	virtual void FontSetTexture(class CFBitmap*, int nFilterMode)=0;
@@ -1875,7 +1896,7 @@ struct IRenderer//: public IRendererCallbackServer
 	virtual void FontRestoreRenderingState()=0;
 
 	virtual bool FlushRTCommands(bool bWait, bool bImmediatelly, bool bForce)=0;
-	virtual void DrawStringW(IFFont_RenderProxy* pFont, float x, float y, float z, const wchar_t* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) const = 0;
+	virtual void DrawStringU(IFFont_RenderProxy* pFont, float x, float y, float z, const char* pStr, const bool asciiMultiLine, const STextDrawContext& ctx) const = 0;
 
 	virtual int  RT_CurThreadList()=0;
 	virtual void RT_FlashRender(IFlashPlayer_RenderProxy* pPlayer, bool stereo) = 0;
@@ -2156,8 +2177,11 @@ struct IRenderer//: public IRendererCallbackServer
 	//////////////////////////////////////////////////////////////////////
 	// Summary: 
 	//	Interface for auxiliary geometry (for debugging, editor purposes, etc.)
-	virtual IRenderAuxGeom* GetIRenderAuxGeom() = 0;
+	virtual IRenderAuxGeom* GetIRenderAuxGeom(void* jobID = 0) = 0;
 	//////////////////////////////////////////////////////////////////////
+
+	//	Interface for renderer side SVO
+	virtual ISvoRenderer* GetISvoRenderer() { return 0; }
 
 	virtual IColorGradingController* GetIColorGradingController() = 0;
 	virtual IStereoRenderer* GetIStereoRenderer() = 0;
@@ -2172,6 +2196,7 @@ struct IRenderer//: public IRendererCallbackServer
 	virtual void ClearBuffer(uint32 nFlags, ColorF *vColor, float depth = 1.0f)=0;
 	virtual void ReadFrameBuffer(unsigned char * pRGB, int nImageX, int nSizeX, int nSizeY, ERB_Type eRBType, bool bRGBA, int nScaledX=-1, int nScaledY=-1)=0;
 	virtual void ReadFrameBufferFast(uint32* pDstARGBA8, int dstWidth, int dstHeight)=0;
+
 	// Note:
 	//	The following functions will be removed.
 	virtual void EnableVSync(bool enable)=0;
@@ -2181,12 +2206,12 @@ struct IRenderer//: public IRendererCallbackServer
 	virtual void CreateResourceAsync(SResourceAsync* Resource)=0;
 	virtual void ReleaseResourceAsync(SResourceAsync* Resource)=0;
 	virtual unsigned int DownLoadToVideoMemory(unsigned char *data,int w, int h, ETEX_Format eTFSrc, ETEX_Format eTFDst, int nummipmap, bool repeat=true, int filter=FILTER_BILINEAR, int Id=0, const char *szCacheName=NULL, int flags=0, EEndian eEndian = eLittleEndian, RectI * pRegion = NULL, bool bAsynDevTexCreation = false)=0;
-	virtual void UpdateTextureInVideoMemory(uint32 tnum, unsigned char *newdata,int posx,int posy,int w,int h,ETEX_Format eTFSrc=eTF_R8G8B8)=0; 
+	virtual unsigned int DownLoadToVideoMemory3D(unsigned char *data,int w, int h, int d, ETEX_Format eTFSrc, ETEX_Format eTFDst, int nummipmap, bool repeat=true, int filter=FILTER_BILINEAR, int Id=0, const char *szCacheName=NULL, int flags=0, EEndian eEndian = eLittleEndian, RectI * pRegion = NULL, bool bAsynDevTexCreation = false)=0;
+	virtual unsigned int DownLoadToVideoMemoryCube(unsigned char *data,int w, int h, ETEX_Format eTFSrc, ETEX_Format eTFDst, int nummipmap, bool repeat=true, int filter=FILTER_BILINEAR, int Id=0, const char *szCacheName=NULL, int flags=0, EEndian eEndian = eLittleEndian, RectI * pRegion = NULL, bool bAsynDevTexCreation = false)=0;
+	virtual void UpdateTextureInVideoMemory(uint32 tnum, unsigned char *newdata,int posx,int posy,int w,int h,ETEX_Format eTFSrc=eTF_B8G8R8,int posz=0, int sizez=1)=0; 
     // Remarks:
 	//	 Without header.
-	// Arguments:
-	//   vLumWeight - 0,0,0 if default should be used.
-	virtual bool DXTCompress( byte *raw_data,int nWidth,int nHeight,ETEX_Format eTF, bool bUseHW, bool bGenMips, int nSrcBytesPerPix, const Vec3 vLumWeight, MIPDXTcallback callback )=0;
+	virtual bool DXTCompress(byte *raw_data, int nWidth, int nHeight, ETEX_Format eTF, bool bUseHW, bool bGenMips, int nSrcBytesPerPix, MIPDXTcallback callback) = 0;
 	virtual bool DXTDecompress(byte *srcData, const size_t srcFileSize, byte *dstData, int nWidth,int nHeight,int nMips,ETEX_Format eSrcTF, bool bUseHW, int nDstBytesPerPix)=0;
 	virtual void RemoveTexture(unsigned int TextureId)=0;
 
@@ -2280,6 +2305,11 @@ struct IRenderer//: public IRendererCallbackServer
 	virtual int ScreenToTexture(int nTexID)=0;
 	virtual void EnableSwapBuffers(bool bEnable) = 0;
 	virtual WIN_HWND GetHWND() = 0;
+
+	// Set the window icon to be displayed on the output window.
+	// The parameter is the path to a DDS texture file to be used as the icon.
+	// For best results, pass a square power-of-two sized texture, with a mip-chain.
+	virtual bool SetWindowIcon(const char* path) = 0;
 
 	virtual void OnEntityDeleted(struct IRenderNode * pRenderNode)=0;
 
@@ -2384,9 +2414,7 @@ struct IRenderer//: public IRendererCallbackServer
 		float breakdowns[eArtProfileDetail_Max];
 
 		int batches, drawcalls, processedLights;
-#if defined(ENABLE_ACCURATE_RSX_PROFILING)
-		int nRSXStallReleases;
-#endif
+
 #if defined(ENABLE_ART_RT_TIME_ESTIMATE)
 		int numStandardBatches;
 		int numStandardDrawCalls;
@@ -2395,10 +2423,6 @@ struct IRenderer//: public IRendererCallbackServer
 		float actualRenderTimePost;
 		float actualMiscRTTime;
 		float actualTotalRTTime;
-		float ps3EstimatedRenderTimeMinusPost;
-		float ps3EstimatedPostTime;
-		float ps3EstimatedMiscRTTime;
-		float ps3EstimatedTotalRTTime;
 #endif
 	};
 
@@ -2426,9 +2450,8 @@ struct IRenderer//: public IRendererCallbackServer
 
 	virtual uint32 GetActiveGPUCount() const = 0;
 	virtual ShadowFrustumMGPUCache* GetShadowFrustumMGPUCache() = 0;
-
-	virtual bool GetImageCaps(const char* filename,int& width,int& height) const = 0;
-	virtual bool MergeImages(const char* output_filename,int out_width,int out_height,const char** files,int* offsetsX,int* offsetsY,int* widths,int* heights,int* src_offsetsX,int* src_offsetsY,int* src_width,int* src_height, int count) const = 0;
+	virtual const StaticArray<int, MAX_GSM_LODS_NUM>& GetCachedShadowsResolution() const = 0;
+	virtual void SetCachedShadowsResolution(const StaticArray<int, MAX_GSM_LODS_NUM>& arrResolutions) = 0;
 
 	virtual void SetTexturePrecaching( bool stat ) = 0;
 
@@ -2515,6 +2538,18 @@ struct IRenderer//: public IRendererCallbackServer
 		ti.flags = ((bFixedSize)?eDrawText_FixedSize:0) | ((bCenter)?eDrawText_Center:0) | eDrawText_800x600;
 		if (pfColor) { ti.color[0] = pfColor[0]; ti.color[1] = pfColor[1]; ti.color[2] = pfColor[2]; ti.color[3] = pfColor[3]; }
 		DrawTextQueued( pos,ti,label_text,args );
+		va_end(args);
+	}
+
+	void Draw2dLabelEx( float x,float y, float font_size, const ColorF &fColor, EDrawTextFlags flags, const char * label_text, ...) PRINTF_PARAMS(7, 8)
+	{
+		va_list args;
+		va_start(args,label_text);
+		SDrawTextInfo ti;
+		ti.xscale = ti.yscale = font_size;
+		ti.flags = flags;
+		{ ti.color[0] = fColor[0]; ti.color[1] = fColor[1]; ti.color[2] = fColor[2]; ti.color[3] = fColor[3]; }
+		DrawTextQueued( Vec3(x,y,0.5f),ti,label_text,args );
 		va_end(args);
 	}
 
@@ -2610,12 +2645,6 @@ struct IRenderer//: public IRendererCallbackServer
 private:
 	// use private for EF_Query to prevent client code to submit arbitary combinations of output data/size
 	virtual void EF_QueryImpl(ERenderQueryTypes eQuery, void *pInOut0, uint32 nInOutSize0, void *pInOut1, uint32 nInOutSize1)=0;
-
-public:
-#ifdef WIN32
-	// Used to inform the renderer of window messages
-	virtual void PeekWindowMessage(unsigned message, size_t wParam, size_t lParam) {};
-#endif
 };
 
 // util class to change wireframe mode
@@ -2921,7 +2950,3 @@ struct SRendererCloakParams
 	float fArmourPulseSpeedMultiplier;
 	float fMaxSuitPulseSpeedMultiplier;
 };
-
-#endif //_IRENDERER_H
-
-

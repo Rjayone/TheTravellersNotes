@@ -26,26 +26,23 @@ public:
 	virtual ~CSubtitleManager();
 
 	// ISubtitleManager
-	VIRTUAL void SetHandler(ISubtitleHandler* pHandler) { m_pHandler = pHandler; }
-	VIRTUAL ISubtitleHandler* GetHandler() { return m_pHandler ? m_pHandler : &m_dummyHandler; }
-	VIRTUAL void SetEnabled(bool bEnabled);
-	VIRTUAL void SetAutoMode(bool bOn);
-	//VIRTUAL void ShowSubtitle(ISound* pSound, bool bShow);
-	VIRTUAL void ShowSubtitle(const char* subtitleLabel, bool bShow);
+	virtual void SetHandler(ISubtitleHandler* pHandler) { m_pHandler = pHandler; }
+	virtual void SetEnabled(bool bEnabled);
+	virtual void SetAutoMode(bool bOn);
+	virtual void ShowSubtitle(const char* subtitleLabel, bool bShow);
 	// ~ISubtitleManager
-
+	
+	static void OnAudioTriggerStarted(const SAudioRequestInfo* const pAudioRequestInfo);
+	static void OnAudioTriggerFinished(const SAudioRequestInfo* const pAudioRequestInfo);
+	
 protected:
-	struct CSubtitleHandlerDummy : public ISubtitleHandler
-	{
-		CSubtitleHandlerDummy() {}
-		//void ShowSubtitle(ISound* pSound, bool bShow) {}
-		void ShowSubtitle(const char* subtitleLabel, bool bShow) {}
-	};
-	CSubtitleHandlerDummy m_dummyHandler;
+	void ShowSubtitle(const SAudioRequestInfo* const pAudioRequestInfo, bool bShow);
+
 	ISubtitleHandler* m_pHandler;
 	bool m_bEnabled;
 	bool m_bAutoMode;
 
+	static CSubtitleManager* s_Instance;
 };
 
 #endif // __SUBTITLEMANAGER_H__

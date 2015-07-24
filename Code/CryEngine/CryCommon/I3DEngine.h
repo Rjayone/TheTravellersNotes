@@ -12,14 +12,11 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(I3DEngine.h)
 
-#ifndef CRY3DENGINEINTERFACE_H
-#define CRY3DENGINEINTERFACE_H
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+// The maximum number of unique surface types that can be used per node
+#define MMRM_MAX_SURFACE_TYPES 16
 
 // !!! Do not add any headers here !!!
 #include "CryEngineDecalInfo.h" 
@@ -86,6 +83,14 @@ enum E3DEngineParameter
 	E3DPARAM_VOLFOG_SHADOW_RANGE,
 	E3DPARAM_VOLFOG_SHADOW_DARKENING,
 	E3DPARAM_VOLFOG_SHADOW_ENABLE,
+
+	E3DPARAM_VOLFOG2_CTRL_PARAMS,
+	E3DPARAM_VOLFOG2_SCATTERING_PARAMS,
+	E3DPARAM_VOLFOG2_RAMP,
+	E3DPARAM_VOLFOG2_COLOR,
+	E3DPARAM_VOLFOG2_GLOBAL_DENSITY,
+	E3DPARAM_VOLFOG2_HEIGHT_DENSITY,
+	E3DPARAM_VOLFOG2_HEIGHT_DENSITY2,
 
 	E3DPARAM_SKYLIGHT_SUN_INTENSITY,
 
@@ -210,10 +215,6 @@ struct SMeshLodInfo
 
 	void Clear()
 	{
-		for (uint i = 0; i < s_nMaxLodCount; ++i)
-		{
-			fDistances[i] = FLT_MAX;
-		}
 		fGeometricMean = 0.f;
 		nFaceCount = 0;
 		nFrameLodID = 0;
@@ -239,33 +240,19 @@ struct SMeshLodInfo
 			nFaceCount = nTotalCount;
 		}
 	}
-	
-	void ComputeDistances(const SFrameLodInfo& frameLodInfo)
-	{
-		const float fDistance = sqrt(fGeometricMean);
-
-		for (uint i = 0; i < s_nMaxLodCount; ++i)
-		{
-			fDistances[i] = fDistance * ( i + 1 );
-		}
-
-		nFrameLodID = frameLodInfo.nID;
-	}
-
-	float fDistances[s_nMaxLodCount];
 };
 
 // Summary:
 //     Physics material enumerator, allows for 3dengine to get material id from game code.
 struct IPhysMaterialEnumerator
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IPhysMaterialEnumerator(){}
   virtual int EnumPhysMaterial(const char * szPhysMatName) = 0;
 	virtual bool IsCollidable(int nMatId) = 0;
 	virtual int	GetMaterialCount() = 0;
 	virtual const char* GetMaterialNameByIndex( int index ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -293,7 +280,7 @@ enum EOceanRenderFlags
 
 // Summary:
 //		Structure to pass vegetation group properties.
-UNIQUE_IFACE struct IStatInstGroup
+struct IStatInstGroup
 {
 	enum EPlayerHideable
 	{
@@ -338,10 +325,11 @@ UNIQUE_IFACE struct IStatInstGroup
 		fVariance = 0.6f; 
 		fAirResistance = 1.f;
 		bRandomRotation = false;
+		nRotationRangeToTerrainNormal = 0;
     nMaterialLayers = 0;
 		bAllowIndoor = false;
 		bUseTerrainColor = false;
-		bAlignToTerrain = false; 
+		fAlignToTerrainCoefficient = 0.f;
 		bAutoMerged = false;
 		minConfigSpec = (ESystemConfigSpec)0;
 		nTexturesAreStreamedIn = 0;
@@ -366,7 +354,9 @@ UNIQUE_IFACE struct IStatInstGroup
 	float	fBrightness;
   bool  bUseSprites;
 	bool  bRandomRotation;
-	bool  bAlignToTerrain;
+	int32 nRotationRangeToTerrainNormal;
+	//bool bAlignToTerrain;
+	float fAlignToTerrainCoefficient;
   bool  bUseTerrainColor;
 	bool  bAllowIndoor;
 	bool  bAutoMerged; 
@@ -411,7 +401,7 @@ UNIQUE_IFACE struct IStatInstGroup
 //     Interface to water volumes.
 struct IWaterVolume
 {
-
+	// <interfuscator:shuffle>
 //DOC-IGNORE-BEGIN
 	virtual ~IWaterVolume(){}
 	virtual void UpdatePoints(const Vec3 * pPoints, int nCount, float fHeight) = 0;
@@ -433,7 +423,7 @@ struct IWaterVolume
 	// Summary:
 	//     Sets a new water level.
 	virtual void SetPositionOffset(const Vec3 & vNewOffset) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SClipVolumeBlendInfo
@@ -444,7 +434,7 @@ struct SClipVolumeBlendInfo
 	struct IClipVolume* blendVolumes[BlendPlaneCount];
 };
 
-UNIQUE_IFACE struct IClipVolume
+struct IClipVolume
 {
 	enum EClipVolumeFlags
 	{
@@ -466,9 +456,9 @@ UNIQUE_IFACE struct IClipVolume
 
 // Summary:
 //     Provides information about the different VisArea volumes.
-UNIQUE_IFACE struct IVisArea : public IClipVolume
+struct IVisArea : public IClipVolume
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IVisArea(){}
 	// Summary:
 	//     Gets the last rendered frame id.
@@ -594,7 +584,7 @@ UNIQUE_IFACE struct IVisArea : public IClipVolume
 
 	virtual void GetShapePoints(const Vec3 *&pPoints, size_t &nPoints) = 0;
 	virtual float GetHeight() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Water level unknown.
@@ -680,7 +670,7 @@ struct STerrainInfo
 	AUTO_STRUCT_INFO
 };
 
-#define TERRAIN_CHUNK_VERSION 25
+#define TERRAIN_CHUNK_VERSION 28
 #define VISAREAMANAGER_CHUNK_VERSION 6
 
 #define SERIALIZATION_FLAG_BIG_ENDIAN 1
@@ -726,7 +716,7 @@ struct SOcTreeNodeChunk
 
 struct IGetLayerIdAtCallback
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGetLayerIdAtCallback(){}
   virtual uint32 GetLayerIdAtPosition( const int x, const int y ) const = 0;
   virtual uint32 GetSurfaceTypeIdAtPosition( const int x, const int y ) const = 0;
@@ -734,14 +724,14 @@ struct IGetLayerIdAtCallback
   virtual ColorB GetColorAtPosition( const float x, const float y, bool bBilinear ) = 0;
   virtual float GetElevationAtPosition( const float x, const float y ) = 0;
   virtual float GetRGBMultiplier( ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //	Summary:
 //     Interface to terrain engine
 struct IVoxTerrain
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IVoxTerrain(){}
 	virtual bool SetCompiledData(byte * pData, int nDataSize, bool bUpdateMesh, EEndian eEndian, AABB * pAreaBox, int nSID=0) = 0;
 	virtual IMemoryBlock * GetCompiledData(bool bSaveMesh, EEndian eEndian, bool bSaveForEditing, AABB * pAreaBox, int nSID=0) = 0;
@@ -752,7 +742,7 @@ struct IVoxTerrain
 	virtual void SetLayerData(void * pData, int nDataSize) = 0;
 	virtual void GetLayerData(void ** pData, int & nDataSize) = 0;
 	virtual void SetTextureArea(Vec3 * pPoints, int nPointsCount, int nShapePartId) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #define TERRAIN_DEFORMATION_MAX_DEPTH 3.f
@@ -777,7 +767,7 @@ struct SHotUpdateInfo
   AUTO_STRUCT_INFO
 };
 
-UNIQUE_IFACE struct ITerrain
+struct ITerrain
 {
   struct SExportInfo
   {
@@ -791,6 +781,7 @@ UNIQUE_IFACE struct ITerrain
     AABB areaBox;
   };
 
+	// <interfuscator:shuffle>
 	virtual ~ITerrain(){}
    // Summary:
 	//	 Loads data into terrain engine from memory block.
@@ -989,20 +980,20 @@ struct ISegmentsManager {
 	virtual bool FindSegmentCoordByID(int nSID, int &x, int &y) = 0;
 	virtual void ForceLoadSegments(unsigned int flags) = 0;
 	virtual bool PushEntityToSegment(unsigned int id, bool bLocal = true) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IVisAreaCallback
+struct IVisAreaCallback
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IVisAreaCallback(){}
 	virtual void OnVisAreaDeleted( IVisArea* pVisArea ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IVisAreaManager
+struct IVisAreaManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IVisAreaManager(){}
 	// Summary:
 	//	 Loads data into VisAreaManager engine from memory block.
@@ -1045,7 +1036,7 @@ UNIQUE_IFACE struct IVisAreaManager
 	// Summary:
 	//	 Removes all vis areas in a region of the level.
 	virtual void ClearRegion(const AABB& region) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
@@ -1053,12 +1044,37 @@ UNIQUE_IFACE struct IVisAreaManager
 // 
 struct IMergedMeshesManager
 {
+	enum CLUSTER_FLAGS
+	{
+		// Uses the samples themselves to calculate the bounds of the areacluster
+		// If not set, it will use the bounds of the patches to calculate the cluster
+		CLUSTER_BOUNDARY_FROM_SAMPLES = 1<<0,
+		// Create the cluster-area boundary by computing the convex hull of either 
+		// the samples or the bounds of the patches via graham scan
+		CLUSTER_CONVEXHULL_GRAHAMSCAN = 1<<1,
+		// Create the cluster-area boundary by computing the convex hull of either 
+		// the samples or the bounds of the patches via giftwrapping (also knows as 
+		// Jarvis march). 
+		// Note: this might not be as stable as the graham scan method above, 
+		// especially in terms of collinear points or otherwise degenerate data. 
+		CLUSTER_CONVEXHULL_GIFTWRAP = 1<<2,
+	}; 
+
 	struct SInstanceSector 
 	{
 		DynArray<uint8> data;   // memory stream of internally compiled data 
 		string id;							// unique identifier string identifing this sector
 	};
 
+	struct SMeshAreaCluster 
+	{
+		// The extents (in worldspace) of the cluster
+		AABB extents; 
+		// The vertices of the boundary points (in the xy-plane, worldspace) of this 
+		DynArray<Vec2> boundary_points;
+	};
+
+	// <interfuscator:shuffle>
 	virtual ~IMergedMeshesManager() {}
 
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -1068,6 +1084,27 @@ struct IMergedMeshesManager
 	// Note:
 	//		The caller is responsible for freeing the allocated memory (both the array and the sectors)
 	virtual bool CompileSectors(DynArray<SInstanceSector>& pSectors, std::vector<struct IStatInstGroup*> *pVegGroupTable) = 0;
+
+	///////////////////////////////////////////////////////////////////////////////////////
+	// Compilation
+	// Summary:
+	//	 Returns a list of cluster hulls 
+	// Note:
+	//		The caller is responsible for freeing the allocated memory (both the cluster array and the contents)
+	virtual bool CompileAreas(DynArray<SMeshAreaCluster>& clusters, int flags) = 0;
+
+
+	///////////////////////////////////////////////////////////////////////////////////////
+	// Compilation
+	// Summary:
+	//	Query the sample density grid. Returns the number of surface types filled into the surface types list
+	virtual size_t QueryDensity(const Vec3 &pos, ISurfaceType *(&surfaceTypes)[MMRM_MAX_SURFACE_TYPES], float (&density)[MMRM_MAX_SURFACE_TYPES]) = 0;
+
+	///////////////////////////////////////////////////////////////////////////////////////
+	// Compilation
+	// Summary:
+	//	Fill in the density values 
+	virtual void CalculateDensity() = 0;
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	// Compilation
@@ -1104,7 +1141,7 @@ struct IMergedMeshesManager
 	// Summary:
 	//	 The number of visible instances last frame
 	virtual size_t VisibleInstances() const = 0;
-
+	// </interfuscator:shuffle>
 
 	virtual void PrepareSegmentData(const AABB &aabb) = 0;
 
@@ -1120,7 +1157,7 @@ struct ITimeOfDayUpdateCallback;
 
 // Summary:
 //	 Interface to the Time Of Day functionality.
-UNIQUE_IFACE struct ITimeOfDay
+struct ITimeOfDay
 {
 	enum ETimeOfDayParamID
 	{
@@ -1158,6 +1195,22 @@ UNIQUE_IFACE struct ITimeOfDay
 		PARAM_VOLFOG_SHADOW_DARKENING_SUN,
 		PARAM_VOLFOG_SHADOW_DARKENING_AMBIENT,
 		PARAM_VOLFOG_SHADOW_RANGE,
+
+		PARAM_VOLFOG2_COLOR,
+		PARAM_VOLFOG2_HEIGHT,
+		PARAM_VOLFOG2_DENSITY,
+		PARAM_VOLFOG2_HEIGHT2,
+		PARAM_VOLFOG2_DENSITY2,
+		PARAM_VOLFOG2_GLOBAL_DENSITY,
+		PARAM_VOLFOG2_RAMP_START,
+		PARAM_VOLFOG2_RAMP_END,
+
+		PARAM_VOLFOG2_RANGE,
+		PARAM_VOLFOG2_INSCATTER,
+		PARAM_VOLFOG2_EXTINCTION,
+		PARAM_VOLFOG2_ANISOTROPIC,
+		PARAM_VOLFOG2_GLOBAL_FOG_VISIBILITY,
+		PARAM_VOLFOG2_FINAL_DENSITY_CLAMP,
 
 		PARAM_SKYLIGHT_SUN_INTENSITY,
 		PARAM_SKYLIGHT_SUN_INTENSITY_MULTIPLIER,
@@ -1277,6 +1330,7 @@ UNIQUE_IFACE struct ITimeOfDay
 		float sunRotationLongitude;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ITimeOfDay(){}
 	//////////////////////////////////////////////////////////////////////////
 	// Access to variables that control time of the day appearance.
@@ -1330,22 +1384,22 @@ UNIQUE_IFACE struct ITimeOfDay
 	// LiveCreate
 	virtual void SaveInternalState(struct IDataWriteStream& writer) = 0;
 	virtual void LoadInternalState(struct IDataReadStream& reader) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct ITimeOfDayUpdateCallback
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITimeOfDayUpdateCallback(){}
 	virtual void BeginUpdate() = 0;
 	virtual bool GetCustomValue(ITimeOfDay::ETimeOfDayParamID paramID, int dim, float* pValues, float& blendWeight) = 0;
 	virtual void EndUpdate() = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IFoliage
+struct IFoliage
 {
-
+	// <interfuscator:shuffle>
 	virtual void AddRef() = 0;
   virtual void Release() = 0;
 	virtual ~IFoliage(){}
@@ -1357,7 +1411,7 @@ UNIQUE_IFACE struct IFoliage
 	virtual int GetBranchCount() = 0;
 	virtual IPhysicalEntity *GetBranchPhysics(int iBranch) = 0;
 	virtual SSkinningData* GetSkinningData(const Matrix34& RenderMat34, const SRenderingPassInfo &passInfo) =  0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SSkyLightRenderParams
@@ -1533,16 +1587,16 @@ struct SSnowParams
 
 struct IScreenshotCallback
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IScreenshotCallback(){}
 	virtual void SendParameters(void* data, uint32 width, uint32 height, f32 minx, f32 miny, f32 maxx, f32 maxy) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 class IStreamedObjectListener
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual void OnCreatedStreamedObject(const char* filename, void* pHandle) = 0;
 	virtual void OnRequestedStreamedObject(void* pHandle) = 0;
 	virtual void OnReceivedStreamedObject(void* pHandle) = 0;
@@ -1550,7 +1604,7 @@ public:
 	virtual void OnBegunUsingStreamedObjects(void** pHandles, size_t numHandles) = 0;
 	virtual void OnEndedUsingStreamedObjects(void** pHandles, size_t numHandles) = 0;
 	virtual void OnDestroyedStreamedObject(void* pHandle) = 0;
-
+	// </interfuscator:shuffle>
 protected:
 	virtual ~IStreamedObjectListener() {}
 };
@@ -1584,10 +1638,8 @@ struct SLightVolume
 
 // Summary:
 //     Interface to the 3d Engine.
-UNIQUE_IFACE struct I3DEngine : public IProcess
+struct I3DEngine : public IProcess
 {	
-	
-	DEVIRTUALIZATION_VTABLE_FIX
 	
 	struct SObjectsStreamingStatus
 	{
@@ -1617,6 +1669,7 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 		eStreamingSubsystem_Audio,
 	};
 
+	// <interfuscator:shuffle>
 	// Summary:
 	//     Initializes the 3D Engine.
 	// See Also:
@@ -1744,9 +1797,7 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 	//     A pointer to an object derived from IStatObj.
 	virtual IStatObj * FindStatObjectByFilename(const char * filename) = 0;
 
-	virtual void SetCoverageBufferDepthReady() = 0;
 	virtual void ResetCoverageBufferSignalVariables() = 0;
-	virtual void DrawDeferredCoverageBufferDebug() = 0;
 
 	// Summary:
 	//     Gets the amount of loaded objects.
@@ -1971,7 +2022,7 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 
 	// Summary:
 	//		Gets current snow surface parameters.
-	VIRTUAL bool GetSnowSurfaceParams( Vec3 & vCenter, float & fRadius, float & fSnowAmount, float & fFrostAmount, float & fSurfaceFreezing ) = 0;
+	virtual bool GetSnowSurfaceParams( Vec3 & vCenter, float & fRadius, float & fSnowAmount, float & fFrostAmount, float & fSurfaceFreezing ) = 0;
 
 	// Summary:
 	//		Sets current snow parameters.
@@ -1979,7 +2030,7 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 
 	// Summary:
 	//		Gets current snow parameters.
-	VIRTUAL bool GetSnowFallParams( int & nSnowFlakeCount, float & fSnowFlakeSize, float & fSnowFallBrightness, float & fSnowFallGravityScale, float & fSnowFallWindScale, float & fSnowFallTurbulence, float & fSnowFallTurbulenceFreq ) = 0;
+	virtual bool GetSnowFallParams( int & nSnowFlakeCount, float & fSnowFlakeSize, float & fSnowFallBrightness, float & fSnowFallGravityScale, float & fSnowFallWindScale, float & fSnowFallTurbulence, float & fSnowFallTurbulenceFreq ) = 0;
 
 	// Summary:
 	//     Sets the view distance scale.
@@ -2389,13 +2440,13 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 	//   Creates a ClipVolume.
 	// Return Value:
 	//   A pointer to a newly created ClipVolume object
-	VIRTUAL IClipVolume* CreateClipVolume() = 0;
+	virtual IClipVolume* CreateClipVolume() = 0;
 		
 	// Summary:
 	//   Deletes a ClipVolume.
 	// Arguments:
 	//   pClipVolume - A pointer to the ClipVolume to delete
-	VIRTUAL void DeleteClipVolume(IClipVolume* pClipVolume) = 0;
+	virtual void DeleteClipVolume(IClipVolume* pClipVolume) = 0;
 
 	// Summary:
 	//   Updates a ClipVolume
@@ -2404,7 +2455,7 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 	//   pRenderMesh - Pointer to new render mesh
 	//   worldTM - Updated world transform
 	//   szName - Updated ClipVolume name
-	VIRTUAL void UpdateClipVolume(IClipVolume* pClipVolume, _smart_ptr<IRenderMesh> pRenderMesh, IBSPTree3D* pBspTree, const Matrix34& worldTM, bool bActive, const char* szName) = 0;
+	virtual void UpdateClipVolume(IClipVolume* pClipVolume, _smart_ptr<IRenderMesh> pRenderMesh, IBSPTree3D* pBspTree, const Matrix34& worldTM, bool bActive, const char* szName) = 0;
 
 //mat: todo
 
@@ -2523,8 +2574,8 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 	virtual void ResetPostEffects(bool bOnSpecChange = false) const = 0;
 
 	virtual void SetShadowsGSMCache(bool bCache) = 0;
-	virtual void SetStaticShadowBounds(const AABB& shadowBounds) = 0;
-	virtual void SetRecomputeStaticShadows(bool bRecompute) = 0;
+	virtual void SetCachedShadowBounds(const AABB& shadowBounds, float fAdditionalCascadesScale) = 0;
+	virtual void SetRecomputeCachedShadows(uint nUpdateStrategy) = 0;
 
 	// Summary:
 	//	 Physicalizes area if not physicalized yet.
@@ -2827,6 +2878,69 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 	virtual void SaveInternalState(struct IDataWriteStream& writer, const AABB& filterArea, const bool bTerrain, const uint32 objectMask) = 0;
 	virtual void LoadInternalState(struct IDataReadStream& reader, const uint8* pVisibleLayersMasks, const uint16* pLayerIdTranslation) = 0;
 
+#if defined(FEATURE_SVO_GI)
+
+	struct SSvoStaticTexInfo
+	{
+		SSvoStaticTexInfo()
+		{
+			ZeroStruct(*this);
+		}
+
+		// SVO data pools
+		ITexture * pTexTree;
+		ITexture * pTexOpac;
+#ifdef FEATURE_SVO_GI_ALLOW_HQ
+		ITexture * pTexTris;
+		ITexture * pTexRgb0;
+		ITexture * pTexRgb1;
+		ITexture * pTexDynl;
+		ITexture * pTexRgb2;
+		ITexture * pTexRgb3;
+		ITexture * pTexRgb4;
+		ITexture * pTexNorm;
+		ITexture * pTexAldi;
+
+		// mesh tracing data atlases
+		ITexture * pTexTriA;
+		ITexture * pTexTexA;
+		ITexture * pTexIndA;
+
+		ITexture * pGlobalSpecCM;
+#endif
+		
+		float fGlobalSpecCM_Mult;
+		int nTexDimXY;
+		int nTexDimZ; 
+		int nBrickSize;
+		bool bSvoReady;
+		bool bSvoFreeze;
+		Sphere helperInfo;
+	};
+
+	struct SLightTI
+	{
+		Vec4 vPosR;
+		Vec4 vDirF;
+		Vec4 vCol;
+		float fSortVal;
+		class ITexture * pCM;
+	};
+
+	virtual bool GetSvoStaticTextures(I3DEngine::SSvoStaticTexInfo & svoInfo, PodArray<I3DEngine::SLightTI> * pLightsTI_S, PodArray<I3DEngine::SLightTI> * pLightsTI_D) = 0;
+
+	struct SSvoNodeInfo
+	{
+		AABB wsBox;
+		AABB tcBox;
+		int nAtlasOffset;
+	};
+
+	virtual void GetSvoBricksForUpdate(PodArray<SSvoNodeInfo> & arrNodeInfo, float fNodeSize, PodArray<SVF_P3F_C4B_T2F> * pVertsOut) = 0;
+
+#endif
+
+
 #if defined(USE_GEOM_CACHES)
 	// Summary:
 	//     Loads a geometry cache from a CAX file.
@@ -2854,6 +2968,7 @@ UNIQUE_IFACE struct I3DEngine : public IProcess
 	//     szBinaryStream - decoded stream + size
 	virtual IStatObj* LoadDesignerObject(int nVersion, const char* szBinaryStream, int size) = 0;
 
+	// </interfuscator:shuffle>
 };
 
 //==============================================================================================
@@ -2916,7 +3031,7 @@ struct STerrainTextureLayerFileHeader
 {
 	uint16			nSectorSizePixels;	//
 	uint16			nReserved;					// ensure padding and for later usage
-	ETEX_Format eTexFormat;					// typically eTF_DXT1, eTF_A4R4G4B4 or eTF_R5G6B5
+	ETEX_Format eTexFormat;					// typically eTF_BC3
 	uint32			nSectorSizeBytes;		// redundant information for more convenient loading code
 
   AUTO_STRUCT_INFO
@@ -2933,18 +3048,11 @@ struct SRenderingPassInfo
 	enum EShadowMapType
 	{
 		SHADOW_MAP_NONE = 0,
-		SHADOW_MAP_GSM0,
-		SHADOW_MAP_GSM1,
-		SHADOW_MAP_GSM2,
-		SHADOW_MAP_GSM3,
-		SHADOW_MAP_GSM4,
-		SHADOW_MAP_GSM5,
-		SHADOW_MAP_GSM6,
-		SHADOW_MAP_GSM7,
+		SHADOW_MAP_GSM,
 		SHADOW_MAP_LOCAL,
 		SHADOW_MAP_REFLECTIVE,
-		SHADOW_MAP_STATIC,
-		SHADOW_MAP_STATIC_MGPU_COPY
+		SHADOW_MAP_CACHED,
+		SHADOW_MAP_CACHED_MGPU_COPY
 	};
 
 	// enum flags to identify which objects to skip for this pass
@@ -2960,23 +3068,25 @@ struct SRenderingPassInfo
 		DECALS = BIT(7),
 		TERRAIN_DETAIL_MATERIALS = BIT(8),
 		FAR_SPRITES = BIT(9),
+		MERGED_MESHES = BIT(10),
 		WATER_WAVES = BIT(12),
 		ROADS = BIT(13),
 		WATER_VOLUMES = BIT(14),
 		CLOUDS = BIT(15),
 		CUBEMAP_GEN = BIT(16),
 		GEOM_CACHES = BIT(17),
+		DISABLE_RENDER_CHUNK_MERGE = BIT(18),
+
 		// below are precombined flags
 		STATIC_OBJECTS = BRUSHES | VEGETATION,
-		DEFAULT_FLAGS = SHADOWS | BRUSHES | VEGETATION | ENTITIES | TERRAIN | WATEROCEAN | PARTICLES | DECALS | TERRAIN_DETAIL_MATERIALS | FAR_SPRITES | WATER_WAVES | ROADS | WATER_VOLUMES | CLOUDS | GEOM_CACHES, 
-		DEFAULT_RECURSIVE_FLAGS = BRUSHES | VEGETATION | ENTITIES | TERRAIN | WATEROCEAN | PARTICLES | DECALS | TERRAIN_DETAIL_MATERIALS | FAR_SPRITES | WATER_WAVES | ROADS | WATER_VOLUMES | CLOUDS | GEOM_CACHES
+		DEFAULT_FLAGS = SHADOWS | BRUSHES | VEGETATION | ENTITIES | TERRAIN | WATEROCEAN | PARTICLES | DECALS | TERRAIN_DETAIL_MATERIALS | FAR_SPRITES | MERGED_MESHES | WATER_WAVES | ROADS | WATER_VOLUMES | CLOUDS | GEOM_CACHES, 
+		DEFAULT_RECURSIVE_FLAGS = BRUSHES | VEGETATION | ENTITIES | TERRAIN | WATEROCEAN | PARTICLES | DECALS | TERRAIN_DETAIL_MATERIALS | FAR_SPRITES | MERGED_MESHES | WATER_WAVES | ROADS | WATER_VOLUMES | CLOUDS | GEOM_CACHES
 	};
 	
 	// creating function for RenderingPassInfo, the create functions will fetch all other necessary
 	// information like thread id/frame id, etc
 	static SRenderingPassInfo CreateGeneralPassRenderingInfo( const CCamera &rCamera, uint32 nRenderingFlags = DEFAULT_FLAGS, bool bAuxWindow = false );
 	static SRenderingPassInfo CreateRecursivePassRenderingInfo( const CCamera &rCamera, uint32 nRenderingFlags = DEFAULT_RECURSIVE_FLAGS  );
-	static SRenderingPassInfo CreateShadowPassRenderingInfo( const CCamera &rCamera, SRenderingPassInfo::EShadowMapType eShadowMapType, uint32 nRenderingFlags = DEFAULT_FLAGS  );
 	static SRenderingPassInfo CreateShadowPassRenderingInfo( const CCamera &rCamera, int nLightFlags, int nShadowMapLod, bool bExtendedLod, bool bIsMGPUCopy, uint32 *pShadowGenMask, uint32 nSide, uint32 nShadowFrustumID, uint32 nRenderingFlags = DEFAULT_FLAGS  );	
 	static SRenderingPassInfo CreateTempRenderingInfo( const CCamera &rCamera, const SRenderingPassInfo &rPassInfo );
 	static SRenderingPassInfo CreateTempRenderingInfo( uint32 nRenderingFlags, const SRenderingPassInfo &rPassInfo );
@@ -2990,6 +3100,7 @@ struct SRenderingPassInfo
 	bool IsShadowPass() const;
 	bool IsStaticShadowPass() const;
 	EShadowMapType GetShadowMapType() const;
+	bool IsDisableRenderChunkMerge() const;
 
 	bool IsAuxWindow() const;
 
@@ -3016,6 +3127,7 @@ struct SRenderingPassInfo
 	bool RenderDecals() const;
 	bool RenderTerrainDetailMaterial() const;
 	bool RenderFarSprites() const;
+	bool RenderMergedMeshes() const;
 	bool RenderWaterWaves() const;
 	bool RenderRoads() const;
 	bool RenderWaterVolumes() const;
@@ -3027,13 +3139,15 @@ struct SRenderingPassInfo
 	uint32* ShadowGenMaskAddress() const;
 	uint32 ShadowFrustumID() const;
 	uint8 ShadowFrustumSide() const;
+	uint8 ShadowFrustumLod() const;
 
 private:
 
 	// private constructor, creation is only allowed with create functions
 	SRenderingPassInfo()
 		: pShadowGenMask(NULL)
-		, nSide(0)
+		, nShadowSide(0)
+		, nShadowLod(0)
 		, nShadowFrustumId(0)
 		, m_bAuxWindow(0)
 		, m_nRenderStackLevel(0)
@@ -3072,7 +3186,8 @@ private:
 	// members used only in shadow pass
 	uint32 *pShadowGenMask;	
 	uint32 nShadowFrustumId;	
-	uint8 nSide;
+	uint8 nShadowSide : 4;
+	uint8 nShadowLod  : 4;
 	uint8 m_nZoomInProgress;
 	uint8 m_nZoomMode;
 	uint8 m_bAuxWindow;
@@ -3106,8 +3221,8 @@ inline bool SRenderingPassInfo::IsShadowPass() const
 inline bool SRenderingPassInfo::IsStaticShadowPass() const
 {
 	return IsShadowPass() && 
-		(GetShadowMapType() == SRenderingPassInfo::SHADOW_MAP_STATIC || 
-		 GetShadowMapType() == SRenderingPassInfo::SHADOW_MAP_STATIC_MGPU_COPY);
+		(GetShadowMapType() == SRenderingPassInfo::SHADOW_MAP_CACHED || 
+		 GetShadowMapType() == SRenderingPassInfo::SHADOW_MAP_CACHED_MGPU_COPY);
 }
 ///////////////////////////////////////////////////////////////////////////////
 inline SRenderingPassInfo::EShadowMapType SRenderingPassInfo::GetShadowMapType() const 
@@ -3232,6 +3347,12 @@ inline bool SRenderingPassInfo::RenderFarSprites() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+inline bool SRenderingPassInfo::RenderMergedMeshes() const
+{
+	return (m_nRenderingFlags & SRenderingPassInfo::MERGED_MESHES) != 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 inline bool SRenderingPassInfo::RenderTerrainDetailMaterial() const
 {
 	return (m_nRenderingFlags & SRenderingPassInfo::TERRAIN_DETAIL_MATERIALS) != 0;
@@ -3274,6 +3395,12 @@ inline bool SRenderingPassInfo::IsRenderingCubemap() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+inline bool SRenderingPassInfo::IsDisableRenderChunkMerge() const
+{
+	return (m_nRenderingFlags & SRenderingPassInfo::DISABLE_RENDER_CHUNK_MERGE) != 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 inline uint32* SRenderingPassInfo::ShadowGenMaskAddress() const
 {
 	assert(pShadowGenMask);
@@ -3289,7 +3416,13 @@ inline uint32 SRenderingPassInfo::ShadowFrustumID() const
 ////////////////////////////////////////////////////////////////////////////////
 inline uint8 SRenderingPassInfo::ShadowFrustumSide() const
 {
-	return nSide;
+	return nShadowSide;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+inline uint8 SRenderingPassInfo::ShadowFrustumLod() const
+{
+	return nShadowLod;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3322,6 +3455,7 @@ inline void SRenderingPassInfo::InitRenderingFlags(uint32 nRenderingFlags)
 	static ICVar *pRoads = gEnv->pConsole->GetCVar("e_Roads");
 	static ICVar *pClouds = gEnv->pConsole->GetCVar("e_Clouds");
 	static ICVar *pGeomCaches = gEnv->pConsole->GetCVar("e_GeomCaches");
+	static ICVar *pMergedMeshes = gEnv->pConsole->GetCVar("e_MergedMeshes");
 
 	if(pShadows->GetIVal() == 0)				m_nRenderingFlags &= ~SRenderingPassInfo::SHADOWS;
 	if(pBrushes->GetIVal() == 0)				m_nRenderingFlags &= ~SRenderingPassInfo::BRUSHES;
@@ -3336,6 +3470,7 @@ inline void SRenderingPassInfo::InitRenderingFlags(uint32 nRenderingFlags)
 	if(pWaterVolumes->GetIVal() == 0)		m_nRenderingFlags &= ~SRenderingPassInfo::WATER_VOLUMES;
 	if(pClouds->GetIVal() == 0)					m_nRenderingFlags &= ~SRenderingPassInfo::CLOUDS;
 	if(pGeomCaches->GetIVal() == 0)			m_nRenderingFlags &= ~SRenderingPassInfo::GEOM_CACHES;
+	if(pMergedMeshes->GetIVal() == 0)		m_nRenderingFlags &= ~SRenderingPassInfo::MERGED_MESHES;
 	
 	if(pDefaultMaterial->GetIVal() != 0 || pDetailMaterial->GetIVal() == 0)
 		m_nRenderingFlags &= ~SRenderingPassInfo::TERRAIN_DETAIL_MATERIALS;
@@ -3401,17 +3536,6 @@ inline SRenderingPassInfo SRenderingPassInfo::CreateRecursivePassRenderingInfo( 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-inline SRenderingPassInfo SRenderingPassInfo::CreateShadowPassRenderingInfo( const CCamera &rCamera, SRenderingPassInfo::EShadowMapType eShadowMapType, uint32 nRenderingFlags )
-{
-	SRenderingPassInfo passInfo;
-	passInfo.m_eShadowMapRendering = static_cast<uint8>(eShadowMapType);
-	passInfo.SetCamera(rCamera);
-	passInfo.InitRenderingFlags(nRenderingFlags);
-
-	return passInfo;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 inline SRenderingPassInfo SRenderingPassInfo::CreateShadowPassRenderingInfo( const CCamera &rCamera, int nLightFlags, int nShadowMapLod, bool bExtendedLod, bool bIsMGPUCopy, uint32 *pShadowGenMask, uint32 nSide, uint32 nShadowFrustumID, uint32 nRenderingFlags  )
 {
 	SRenderingPassInfo passInfo;
@@ -3423,9 +3547,9 @@ inline SRenderingPassInfo SRenderingPassInfo::CreateShadowPassRenderingInfo( con
 	{
 		assert(nShadowMapLod >= 0 && nShadowMapLod < 8);
 		if(bExtendedLod)
-			passInfo.m_eShadowMapRendering = bIsMGPUCopy ? SHADOW_MAP_STATIC_MGPU_COPY : SHADOW_MAP_STATIC;
+			passInfo.m_eShadowMapRendering = bIsMGPUCopy ? SHADOW_MAP_CACHED_MGPU_COPY : SHADOW_MAP_CACHED;
 		else
-			passInfo.m_eShadowMapRendering = static_cast<uint8>(EShadowMapType(SHADOW_MAP_GSM0 + nShadowMapLod));
+			passInfo.m_eShadowMapRendering = SHADOW_MAP_GSM;
 	}
 	else if (nLightFlags & DLF_REFLECTIVE_SHADOWMAP)
 		passInfo.m_eShadowMapRendering = static_cast<uint8>(SHADOW_MAP_REFLECTIVE);
@@ -3435,7 +3559,8 @@ inline SRenderingPassInfo SRenderingPassInfo::CreateShadowPassRenderingInfo( con
 		passInfo.m_eShadowMapRendering = static_cast<uint8>(SHADOW_MAP_NONE);
 	
 	passInfo.pShadowGenMask = pShadowGenMask;
-	passInfo.nSide = nSide;
+	passInfo.nShadowSide = nSide;
+	passInfo.nShadowLod = nShadowMapLod;
 	passInfo.nShadowFrustumId = nShadowFrustumID;
 
 	return passInfo;
@@ -3448,7 +3573,7 @@ inline SRenderingPassInfo SRenderingPassInfo::CreateTempRenderingInfo( const CCa
 	passInfo.SetCamera(rCamera);
 
 	passInfo.pShadowGenMask = NULL;
-	passInfo.nSide = 0;
+	passInfo.nShadowSide = 0;
 	passInfo.nShadowFrustumId = 0;
 
 	return passInfo;
@@ -3562,6 +3687,3 @@ inline SRendItemSorter SRendItemSorter::CreateDefaultRendItemSorter()
 	rendItemSorter.nValue = 0;
 	return rendItemSorter;
 }
-
-#endif //CRY3DENGINEINTERFACE_H
-

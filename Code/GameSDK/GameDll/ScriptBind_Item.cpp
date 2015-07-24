@@ -213,13 +213,11 @@ int CScriptBind_Item::GetUsableText(IFunctionHandler *pH)
 	if (!pItem)
 		return pH->EndFunction();
 
-	CryFixedWStringT<64> localizedString;
 	CryFixedStringT<64> finalString;
 	CryFixedStringT<64> tempString;
 
 	tempString.Format("@ui_item_pickup %s", pItem->GetSharedItemParams()->params.display_name.c_str());
-	localizedString = CHUDUtils::LocalizeStringW(tempString.c_str());
-	finalString.Format("%ls", localizedString.c_str());
+	finalString = CHUDUtils::LocalizeString(tempString.c_str());
 
 	return pH->EndFunction(finalString.c_str());
 }

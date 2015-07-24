@@ -13,7 +13,6 @@ from waflib.Configure import conf
 from waflib import Context, Utils, Logs
 from waflib import Errors
 
-from waf_branch_spec import RECODE_GLOBAL_VAR_EXCLUDE_LIST
 from waf_branch_spec import RECODE_LICENSE_KEY
 
 from waf_branch_spec import BINTEMP_FOLDER
@@ -23,11 +22,6 @@ from waf_branch_spec import COPYRIGHT
 
 from waf_branch_spec import PLATFORMS
 from waf_branch_spec import CONFIGURATIONS
-
-#############################################################################
-@conf 
-def get_recode_global_var_exclude_list(self):
-	return RECODE_GLOBAL_VAR_EXCLUDE_LIST
 
 #############################################################################	
 @conf 
@@ -189,7 +183,14 @@ def spec_visual_studio_name(ctx, spec_name = None):
 	assert( len(visual_studio_name) == 1 )
 	return visual_studio_name[0]
 
-
+@conf	
+def spec_output_folder_post_fix(ctx, spec_name = None):
+	""" get a list of all game projects in this spec """
+	output_folder_post_fix =  _spec_entry(ctx, 'output_folder_post_fix', spec_name)
+	
+	# _spec_entry always returns a list, but client code expects a single string
+	return output_folder_post_fix[0] if output_folder_post_fix else ""
+	
 @conf	
 def spec_valid_configurations(ctx, spec_name = None):
 	""" Get all a list of all valid configurations for this spec """

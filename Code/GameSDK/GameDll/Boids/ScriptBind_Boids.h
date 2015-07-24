@@ -26,10 +26,7 @@
 class CFlock;
 struct SBoidsCreateContext;
 
-// <title Boids>
-// Syntax: Boids
-// Description:
-//    Provides access to boids flock functionality.
+/*! <remarks>Provides access to boids flock functionality. These function will never be called from C-Code. They're script-exclusive.</remarks>*/
 class CScriptBind_Boids  : public CScriptableBase
 {
 public:
@@ -40,107 +37,76 @@ public:
 	{
 		pSizer->AddObject(this, sizeof(*this));	
 	}
-	// <title CreateFlock>
-	// Syntax: Boids.CreateFlock( entity,paramsTable )
-	// Description:
-	//    Creates a flock of boids and binds it to the given entity.
-	// Arguments:
-	//    entity - Valid entity table.
-	//    nType - Type of the flock, can be Boids.FLOCK_BIRDS,Boids.FLOCK_FISH,Boids.FLOCK_BUGS.
-	//    paramTable - Table with parameters for flock (Look at sample scripts).
+	//! <code>Boids.CreateFlock( entity,paramsTable )
+	//! <description>Creates a flock of boids and binds it to the given entity.</description>
+	//!		<param name="entity">Valid entity table.</param>
+	//!		<param name="nType">Type of the flock, can be Boids.FLOCK_BIRDS,Boids.FLOCK_FISH,Boids.FLOCK_BUGS.</param>
+	//!		<param name="paramTable">Table with parameters for flock (Look at sample scripts).
 	int CreateFlock( IFunctionHandler *pH, SmartScriptTable entity,int nType,SmartScriptTable paramTable );
 
-	// <title CreateFishFlock>
-	// Syntax: Boids.CreateFishFlock( entity,paramsTable )
-	// Description:
-	//    Creates a fishes flock and binds it to the given entity.
-	// Arguments:
-	//    entity - Valid entity table.
-	//    paramTable - Table with parameters for flock (Look at sample scripts).
+	//! <code>Boids.CreateFishFlock( entity,paramsTable )
+	//! <description>Creates a fishes flock and binds it to the given entity.</description>
+	//!		<param name="entity">Valid entity table.</param>
+	//!		<param name="paramTable">Table with parameters for flock (Look at sample scripts).</param>
 	int CreateFishFlock(IFunctionHandler *pH, SmartScriptTable entity,SmartScriptTable paramTable );
 
-	// <title CreateBugsFlock>
-	// Syntax: Boids.CreateBugsFlock( entity,paramsTable )
-	// Description:
-	//    Creates a bugs flock and binds it to the given entity.
-	// Arguments:
-	//    entity - Valid entity table.
-	//    paramTable - Table with parameters for flock (Look at sample scripts).
+	//! <code>Boids.CreateBugsFlock( entity,paramsTable )
+	//! <description>Creates a bugs flock and binds it to the given entity.</description>
+	//!		<param name="entity">Valid entity table.</param>
+	//!		<param name="paramTable">Table with parameters for flock (Look at sample scripts).</param>
 	int CreateBugsFlock(IFunctionHandler *pH, SmartScriptTable entity,SmartScriptTable paramTable );
 
-	// <title SetFlockParams>
-	// Syntax: Boids.SetFlockParams( entity,paramsTable )
-	// Description:
-	//    Modifies parameters of the existing flock in the specified enity.
-	// Arguments:
-	//    entity - Valid entity table containing flock.
-	//    paramTable - Table with parameters for flock (Look at sample scripts).
+	//! <code>Boids.SetFlockParams( entity,paramsTable )
+	//! <description>Modifies parameters of the existing flock in the specified entity.</description>
+	//!		<param name="entity">Valid entity table containing flock.</param>
+	//!		<param name="paramTable">Table with parameters for flock (Look at sample scripts).</param>
 	int SetFlockParams(IFunctionHandler *pH, SmartScriptTable entity,SmartScriptTable paramTable );
 
-	// <title EnableFlock>
-	// Syntax: Boids.EnableFlock( entity,paramsTable )
-	// Description:
-	//    Enables/Disables flock in the entity.
-	// Arguments:
-	//    entity - Valid entity table containing flock.
-	//    bEnable - true to enable or false to disable flock.
+	//! <code>Boids.EnableFlock( entity,paramsTable )
+	//! <description>Enables/Disables flock in the entity.</description>
+	//!		<param name="entity">Valid entity table containing flock.</param>
+	//!		<param name="bEnable">true to enable or false to disable flock.</param>
 	int EnableFlock(IFunctionHandler *pH,SmartScriptTable entity,bool bEnable );
 
-	// <title SetFlockPercentEnabled>
-	// Syntax: Boids.SetFlockPercentEnabled( entity,paramsTable )
-	// Description:
-	//    Used to gradually enable flock.
-	//    Depending on the percentage more or less boid objects will be rendered in flock.
-	// Arguments:
-	//    entity - Valid entity table containing flock.
-	//    nPercent - In range 0 to 100, 0 mean no boids will be rendered,if 100 then all boids will be rendered.
+	//! <code>Boids.SetFlockPercentEnabled( entity,paramsTable )
+	//! <description>
+	//! 	Used to gradually enable flock.
+	//!    Depending on the percentage more or less boid objects will be rendered in flock.
+	//! </description>
+	//!		<param name="entity">Valid entity table containing flock.</param>
+	//!		<param name="nPercent">In range 0 to 100, 0 mean no boids will be rendered,if 100 then all boids will be rendered.</param>
 	int SetFlockPercentEnabled(IFunctionHandler *pH,SmartScriptTable entity,int nPercent );
 
-	// <title SetAttractionPoint>
-	// Syntax: Boids.SetAttractionPoint( entity,paramsTable )
-	// Description:
-	//    Sets the one time attraction point for the boids
-	// Arguments:
-	//    entity - Valid entity table containing flock.
-	//    point - The one time attraction point
+	//! <code>Boids.SetAttractionPoint( entity,paramsTable )
+	//! <description>Sets the one time attraction point for the boids</description>
+	//!		<param name="entity">Valid entity table containing flock.</param>
+	//!		<param name="point">The one time attraction point</param>
 	int SetAttractionPoint(IFunctionHandler *pH,SmartScriptTable entity,Vec3 point );
 
-	// <title OnBoidHit>
-	// Syntax: Boids.OnBoidHit( flockEntity,boidEntity,hit )
-	// Description:
-	//    Events that occurs on boid hit.
-	// Arguments:
-	//    flockEntity - Valid entity table containing flock.
-	//    boidEntity - Valid entity table containing boid.
-	//	  hit - Valid entity table containing hit information..
+	//! <code>Boids.OnBoidHit( flockEntity,boidEntity,hit )
+	//! <description>Events that occurs on boid hit.</description>
+	//!		<param name="flockEntity">Valid entity table containing flock.</param>
+	//!		<param name="boidEntity">Valid entity table containing boid.</param>
+	//!		<param name="hit">Valid entity table containing hit information.</param>
 	int OnBoidHit(IFunctionHandler *pH, SmartScriptTable flockEntity, SmartScriptTable boidEntity, SmartScriptTable hit);
 
-	// <title CanPickup>
-	// Syntax: Boids.CanPickup( flockEntity, boidEntity )
-	// Description:
-	//    Checks if the boid is pickable
-	// Arguments:
-	//    flockEntity - Valid entity table containing flock.
-	//    boidEntity - Valid entity table containing boid.
+	//! <code>Boids.CanPickup( flockEntity, boidEntity )
+	//! <description>Checks if the boid is pickable</description>
+	//!		<param name="flockEntity">Valid entity table containing flock.</param>
+	//!		<param name="boidEntity">Valid entity table containing boid.</param>
 	int CanPickup(IFunctionHandler *pH, SmartScriptTable flockEntity, SmartScriptTable boidEntity);
 
-	// <title GetUsableMessage>
-	// Syntax: Boids.GetUsableMessage( flockEntity )
-	// Description:
-	//    Gets the appropriate localized UI message for this flock
-	// Arguments:
-	//    flockEntity - Valid entity table containing flock.
+	//! <code>Boids.GetUsableMessage( flockEntity )
+	//! <description>Gets the appropriate localized UI message for this flock</description>
+	//!		<param name="flockEntity">Valid entity table containing flock.</param>
 	int GetUsableMessage(IFunctionHandler *pH, SmartScriptTable flockEntity);
 
-	// <title OnPickup>
-	// Syntax: Boids.OnPickup( flockEntity, boidEntity, bPickup, fThrowSpeed )
-	// Description:
-	//    Forwards the appropriate pickup action to the boid object
-	// Arguments:
-	//    flockEntity - Valid entity table containing flock.
-	//    boidEntity - Valid entity table containing boid.
-	//    bPickup - Pickup or drop/throw?
-	//    fThrowSpeed - value > 5.f will kill the boid by default (no effect on pickup action)
+	//! <code>Boids.OnPickup( flockEntity, boidEntity, bPickup, fThrowSpeed )
+	//! <description>Forwards the appropriate pickup action to the boid object</description>
+	//!		<param name="flockEntity">Valid entity table containing flock.</param>
+	//!		<param name="boidEntity">Valid entity table containing boid.</param>
+	//!		<param name="bPickup">Pickup or drop/throw?</param>
+	//!		<param name="fThrowSpeed">value > 5.f will kill the boid by default (no effect on pickup action)</param>
 	int OnPickup(IFunctionHandler *pH, SmartScriptTable flockEntity, SmartScriptTable boidEntity, bool bPickup, float fThrowSpeed);
 
 private:

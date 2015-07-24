@@ -6,13 +6,12 @@
     * Created by Honich Andrey
 
 =============================================================================*/
-#include DEVIRTUALIZE_HEADER_FIX(IShader.h)
 
 #ifndef _ISHADER_H_
 #define _ISHADER_H_
 
 
-#if defined(LINUX) || defined(APPLE) || defined(PS3)
+#if defined(LINUX) || defined(APPLE)
   #include <platform.h>
 #endif
 
@@ -23,7 +22,6 @@
 #include "Cry_XOptimise.h"
 #include <CrySizer.h>
 
-#include "crc32.h"
 #include <CryThreadSafeRendererContainer.h>
 
 struct IMaterial;
@@ -33,10 +31,13 @@ struct IRenderMesh;
 struct IShader;
 struct IVisArea;
 class CShader;
+class CRendElement;
+class CRendElementBase;
 struct STexAnim;
 struct SShaderPass;
 struct SShaderItem;
 class ITexture;
+struct IMaterial;
 struct SParam;
 class CMaterial;
 struct SShaderSerializeContext;
@@ -102,7 +103,6 @@ enum ESrcPointer
   eSrcPointer_Tex,
   eSrcPointer_TexLM,
   eSrcPointer_Normal,
-  eSrcPointer_Binormal,
   eSrcPointer_Tangent,
   eSrcPointer_Max,
 };
@@ -122,7 +122,7 @@ struct SWaveForm2;
 #if (MAX_JOINT_AMOUNT<=256)
 typedef uint8 JointIdType;
 #else
-typedef uint16 JointIdType;				
+ typedef uint16 JointIdType;				
 #endif
 
 //=========================================================================
@@ -141,6 +141,13 @@ enum EParamType
   eType_VECTOR,
   eType_TEXTURE_HANDLE,
   eType_CAMERA,
+};
+
+enum ESamplerType
+{
+  eSType_UNKNOWN,
+  eSType_Sampler,
+  eSType_SamplerComp,
 };
 
 union UParamVal
@@ -284,9 +291,9 @@ struct SShaderParam
 // Description:
 //    IShaderPublicParams can be used to hold a collection of the shader public params.
 //    Manipulate this collection, and use them during rendering by submit to the SRendParams.
-UNIQUE_IFACE struct IShaderPublicParams
+struct IShaderPublicParams
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IShaderPublicParams(){}
   virtual void AddRef() = 0;
   virtual void Release() = 0;
@@ -343,7 +350,7 @@ UNIQUE_IFACE struct IShaderPublicParams
   //    Gets shader parameters.
   virtual DynArray<SShaderParam> *GetShaderParams() = 0;
   virtual const DynArray<SShaderParam> *GetShaderParams() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //=================================================================================
@@ -363,7 +370,7 @@ public:
 		for (int i = 0; i < EFTT_MAX; i++)
 			m_Channels[i][0] = 0.0f,
 			m_Channels[i][1] = 1.0f;
-		}
+  }
 
 	// scale & bias
 	ColorF m_Channels[EFTT_MAX][2];
@@ -693,7 +700,7 @@ struct SSkyInfo
 		return nSize;
 	}
 	SSkyInfo()
-	{
+{
 		memset(this, 0, sizeof(SSkyInfo));
 	}
 };
@@ -835,15 +842,6 @@ _MS_ALIGN(16) class CRenderObject
 public:
   CRenderObject()
   {
-    //m_ShaderParams = NULL;
-#ifdef XENON
-    XMemSet(this, 0, sizeof(CRenderObject));
-    m_nRenderQuality = 65535;
-    m_nObjDataId = -1;
-
-    m_nCBID = -1;
-		m_Id = ~0u;
-#else
     m_nRenderQuality = 65535;
     m_nRTMask = 0;
     m_nObjDataId = -1;
@@ -860,7 +858,6 @@ public:
     m_DissolveRef = 0;
     m_nCBID = -1;
 		m_bHasShadowCasters = false;
-#endif
   }
 
   ~CRenderObject();
@@ -871,7 +868,7 @@ public:
 	union
 	{
 		SLockFreeSingleLinkedListEntry m_LinkedListEntry;						// freelist object, reuse memory of m_fAlpha, needs to be the first element
-		float                       m_fAlpha;						// Object alpha.	
+	float                       m_fAlpha;						// Object alpha.
 	};
 	uint32                      m_ObjFlags;
 	uint32                      m_Id;
@@ -888,19 +885,19 @@ public:
 
 	uint16                      m_nMDV; 	            		// Vertex modificator flags.  	
 	uint16										  m_nRenderQuality;				// 65535 - full quality, 0 - lowest quality, used by CStatObj
-	int16												m_nTextureID;						// Custom texture id.
+	int16                     	m_nTextureID;						// Custom texture id.
 	int16                       m_nCBID;      				// Constant buffer id.
 
 	union
 	{
 		uint8											m_breakableGlassSubFragIndex;
-		uint8											m_bParticleHalfRes;
+		uint8											m_ParticleObjFlags;
 	};
 
   uint8                       m_nClipVolumeStencilRef;     // Per instance vis area stencil reference ID
   uint8												m_DissolveRef;								//
 	uint8		  									m_RState;									//	
-  
+
 	uint32											m_DynLMMask[RT_COMMAND_BUF_COUNT];
   uint32                      m_nMaterialLayers;          // Which mtl layers active and how much to blend them  
   uint32                      m_nRTMask;
@@ -1005,12 +1002,6 @@ public:
 
 	void GetMemoryUsage(ICrySizer *pSizer) const{}
 
-  //ILINE stl::aligned_vector<SInstanceInfo,16> *GetInstanceInfo(int nProcessID)
-  //{
-  //  return m_nObjDataId>=0 ? GetObjData(nProcessID)->m_pInstancingInfo : NULL;
-  //}
-
-#ifndef PS3
   void* operator new( size_t Size )
   {
     return CryModuleMemalign(Size, 16);
@@ -1043,7 +1034,6 @@ public:
   }
 
 	void operator delete( void *pPtr1, CRenderObject *pPtr2 ) {}
-#endif //PS3
 
 private:
 	// Disallow copy (potential bugs with PERMANENT objects)
@@ -1086,6 +1076,8 @@ struct SResourceAsync
     delete Name;
   }  
 };
+
+#include "IRenderer.h"
 
 //==============================================================================
 
@@ -1294,12 +1286,7 @@ struct SEfTexModificator
   {
 		return memcmp(this, &m, sizeof(*this)) != 0;
   }
-#ifdef PS3
-} ALIGN16;
-#else
 };
-#endif
-
 
 //////////////////////////////////////////////////////////////////////
 #define FILTER_NONE      -1
@@ -1416,7 +1403,7 @@ struct STexState
 };
 
 
-UNIQUE_IFACE struct IRenderTarget
+struct IRenderTarget
 {
 	virtual ~IRenderTarget(){}
   virtual void Release()=0;
@@ -1631,7 +1618,6 @@ struct STexSamplerRT
     return false;
   }
 };
-
 
 //===============================================================================================================================
 
@@ -1927,9 +1913,9 @@ struct SBaseShaderResources
   }
 };
 
-UNIQUE_IFACE struct IRenderShaderResources
+struct IRenderShaderResources
 {
-
+	// <interfuscator:shuffle>
   virtual void AddRef() = 0;
   virtual void UpdateConstants(IShader *pSH) = 0;
   virtual void CloneConstants(const IRenderShaderResources* pSrc) = 0;
@@ -1969,7 +1955,7 @@ UNIQUE_IFACE struct IRenderShaderResources
   virtual SDetailDecalInfo * GetDetailDecalInfo() = 0;
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const = 0;
-
+	// </interfuscator:shuffle>
 
 	inline bool IsGlowing() const
 	{
@@ -2092,8 +2078,8 @@ struct SInputShaderResources : public SBaseShaderResources
 #define SHGD_TEX_DECAL 0x4000
 #define SHGD_HW_GLES3   0x20000
 #define SHGD_USER_ENABLED 0x40000
-#define SHGD_HW_PS3     0x80000
-#define SHGD_HW_X360    0x100000
+// 0x80000
+// 0x100000
 #define SHGD_HW_DX10    0x200000
 #define SHGD_HW_DX11    0x400000
 #define SHGD_HW_GL4     0x800000
@@ -2339,8 +2325,10 @@ enum ERenderListID
 	EFSLIST_SKIN,										 // Skin rendering pre-process 
 	EFSLIST_HALFRES_PARTICLES,			 // Half resolution particles
 	EFSLIST_PARTICLES_THICKNESS,		 // Particles thickness passes
-	EFSLIST_LENSOPTICS            ,// Lens-optics processing
-	EFSLIST_EYE_OVERLAY			  ,// Eye overlay layer requires special processing
+	EFSLIST_LENSOPTICS,							 // Lens-optics processing
+	EFSLIST_VOXELIZE,								 // Mesh voxelization
+	EFSLIST_EYE_OVERLAY,						 // Eye overlay layer requires special processing
+	EFSLIST_FOG_VOLUME,							 // Fog density injection passes.
 
 	EFSLIST_NUM                 
 };
@@ -2446,10 +2434,10 @@ enum ERenderListID
 #define EF2_HW_TESSELLATION 0x40000000
 #define EF2_ALPHABLENDSHADOWS 0x80000000
 
-UNIQUE_IFACE struct IShader
+struct IShader
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IShader(){}
   virtual int GetID() = 0;
   virtual int AddRef()=0;
@@ -2480,7 +2468,7 @@ public:
   virtual uint32      GetVertexModificator() = 0;
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const=0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SShaderItem
@@ -2635,13 +2623,15 @@ enum eDynamicLightFlags
 	DLF_THIS_AREA_ONLY					=	BIT(20),	// Affects only current area/sector.
 	DLF_AMBIENT									=	BIT(21),	// Ambient light (has name indicates, used for replacing ambient)
 	DLF_INDOOR_ONLY							=	BIT(22),	// Do not affect height map.                            
+	DLF_VOLUMETRIC_FOG					=	BIT(23),	// Affects volumetric fog.
 	DLF_ALLOW_LPV 							=	BIT(24),	// Add only to  Light Propagation Volume if it's possible.
 	DLF_ATTACH_TO_SUN 					=	BIT(25),	// Add only to  Light Propagation Volume if it's possible.
 	DLF_TRACKVIEW_TIMESCRUBBING	=	BIT(26),	// Add only to  Light Propagation Volume if it's possible.
+	DLF_VOLUMETRIC_FOG_ONLY			= BIT(27),	// Affects only volumetric fog.
 
 	// Deprecated. Remove once deferred shading by default
 	DLF_DEFERRED_LIGHT				= BIT(29),
-
+	
 	// Deprecated. Remove all dependencies editor side, etc
 	DLF_SPECULAROCCLUSION			= BIT(30),
 	DLF_DIFFUSEOCCLUSION			= BIT(31),
@@ -2663,7 +2653,7 @@ struct IEntity;
 
 struct IAnimNode;
 
-UNIQUE_IFACE struct ILightAnimWrapper : public _i_reference_target_t
+struct ILightAnimWrapper : public _i_reference_target_t
 {
 public:
 	virtual bool Resolve() = 0;
@@ -2810,7 +2800,7 @@ struct SRenderLight
 		SAFE_RELEASE(m_pLightAnim);
 		SAFE_RELEASE(m_pLightAttenMap);
 		SAFE_RELEASE(m_pLightDynTexSource);
-	}
+		}
 
 	void SetAnimSpeed( float fAnimSpeed )
 	{
@@ -2861,15 +2851,15 @@ struct SRenderLight
 	uint8							m_nSortPriority;
 
 	// Shadow map fields
-	struct ILightSource* m_pOwner;
-	ShadowMapFrustum**  m_pShadowMapFrustums;	
-	float								m_fShadowBias;
-	float								m_fShadowSlopeBias;
+	struct ILightSource *			m_pOwner;
+	ShadowMapFrustum				**  m_pShadowMapFrustums;	
+	float							m_fShadowBias;
+	float							m_fShadowSlopeBias;
 	float								m_fShadowResolutionScale;
-	float								m_fShadowUpdateMinRadius;
+	float							m_fShadowUpdateMinRadius;
 	uint16							m_nShadowMinResolution;
 	uint16							m_nShadowUpdateRatio;
-	uint8								m_ShadowChanMask : 4;
+	uint8							m_ShadowChanMask : 4;
 	uint8								m_ShadowMaskIndex : 4;
 
 	// Projector
@@ -2878,18 +2868,18 @@ struct SRenderLight
 	ITexture*						m_pLightImage;
 	Matrix44						m_ProjMatrix;
 	Matrix34						m_ObjMatrix;
-	float								m_fLightFrustumAngle;
-	float								m_fProjectorNearPlane;
+	float							m_fLightFrustumAngle;
+	float							m_fProjectorNearPlane;
 
 	// Misc fields. todo: put in cold data struct (post c3 - touches quite some code)
 	const char*						m_sName;			// Optional name of the light source.
-	SShaderItem           m_Shader;
-	CRenderObject *       m_pObject[MAX_RECURSION_LEVELS];	// Object for light coronas and light flares.
-	IOpticsElementBase*		m_pLensOpticsElement;
-	ISoftOcclusionQuery*	m_pSoftOccQuery;	
+	SShaderItem                     m_Shader;
+	CRenderObject *                 m_pObject[MAX_RECURSION_LEVELS];	// Object for light coronas and light flares.
+	IOpticsElementBase*				m_pLensOpticsElement;
+	ISoftOcclusionQuery*			m_pSoftOccQuery;	
 	IRenderMesh*					m_pDeferredRenderMesh;	// <DEPRECATED>	Arbitrary render mesh. 
 	const char*						m_sDeferredGeom;	// <DEPRECATED>	Optional deferred geom file
-	ILightAnimWrapper*		m_pLightAnim;
+	ILightAnimWrapper*				m_pLightAnim;
 
 	Matrix34					m_ClipBox;
 	AABB							m_vFadeAABB; // TODO: Compress if possible with final implementation

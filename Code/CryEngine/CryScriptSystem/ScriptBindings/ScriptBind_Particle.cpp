@@ -176,10 +176,14 @@ void CScriptBind_Particle::CreateDecalInternal( IFunctionHandler *pH, const Vec3
 	decal.fSize = size;
 	decal.fLifeTime = lifeTime;
 
-	if( false != nameIsMaterial )
-		strncpy_s(decal.szMaterialName,name,sizeof(decal.szMaterialName));
+	if (nameIsMaterial)
+	{
+		cry_strcpy(decal.szMaterialName, name);
+	}
 	else
-    CryWarning(VALIDATOR_MODULE_3DENGINE, VALIDATOR_WARNING, "CScriptBind_Particle::CreateDecalInternal: Decal material name is not specified");
+	{
+		CryWarning(VALIDATOR_MODULE_3DENGINE, VALIDATOR_WARNING, "CScriptBind_Particle::CreateDecalInternal: Decal material name is not specified");
+	}
 
 	if ((pH->GetParamCount() > 5) && (pH->GetParamType(6) != svtNull))
 	{

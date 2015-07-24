@@ -69,12 +69,12 @@ void CRecoilOffset::TriggerRecoil(bool firstFire)
 	m_fireTime = m_staticParams.fireRecoilTime;
 
 	m_fireDirection = Vec3(0.0f, -1.0f, 0.0f);
-	m_fireDirection.x = (cry_frand() * 2.0f - 1.0f) * m_staticParams.randomness;
-	m_fireDirection.z = (cry_frand() * 2.0f - 1.0f) * m_staticParams.randomness;
+	m_fireDirection.x = cry_random(-1.0f, 1.0f) * m_staticParams.randomness;
+	m_fireDirection.z = cry_random(-1.0f, 1.0f) * m_staticParams.randomness;
 
 	Vec3 randAng;
 	randAng.x = std::abs(m_fireDirection.x);
-	randAng.y = (cry_frand() * 2.0f - 1.0f) * m_staticParams.randomness * 0.5f;
+	randAng.y = cry_random(-1.0f, 1.0f) * m_staticParams.randomness * 0.5f;
 	randAng.z = -m_fireDirection.z * 0.2f;
 
 	m_fireDirection.Normalize();

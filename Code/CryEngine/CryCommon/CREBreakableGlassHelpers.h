@@ -220,13 +220,8 @@ struct SBreakableGlassUpdateParams
 
 // Using a large size here, but most are just quads
 // Note: Should keep size in sync with PolygonMath2D::POLY_ARRAY_SIZE
-#if defined(XENON) || defined(PS3)
-typedef CryFixedArray<Vec2, 35> TGlassDefFragmentArray;	
-typedef CryFixedArray<int, 35> TGlassFragmentIndexArray;
-#else
 typedef CryFixedArray<Vec2, 45> TGlassDefFragmentArray;
 typedef CryFixedArray<int, 45> TGlassFragmentIndexArray;
-#endif
 
 struct SBreakableGlassPhysData
 {

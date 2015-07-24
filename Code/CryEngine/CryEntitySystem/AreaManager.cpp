@@ -580,7 +580,7 @@ void CAreaManager::ProcessArea(CArea* const __restrict pArea, SAreaCacheEntry& r
 
 	if (bIsPointWithin)
 	{
-		// was inside/near, now is is inside
+		// Was far/near but is inside now.
 		if (!rAreaCacheEntry.bInside)
 		{
 			// We're inside now and not near anymore.
@@ -619,27 +619,22 @@ void CAreaManager::ProcessArea(CArea* const __restrict pArea, SAreaCacheEntry& r
 		float const fGreatestFadeDistance = pArea->GetGreatestFadeDistance();
 		bool const isNear = ((fDistanceSq > 0) && (fDistanceSq < fGreatestFadeDistance*fGreatestFadeDistance));
 
-		// was inside/near, now is not inside anymore or is hidden
+		// Was near or inside but is either far or hidden now.
 		if (rAreaCacheEntry.bInside)
 		{
-			// We're outside now and near again if within the effect distance.
 			pArea->LeaveArea(pEntity);
 			rAreaCacheEntry.bInside = false;
-			rAreaCacheEntry.bNear = isNear;
 
-			if (!isNear)
-			{
-				// Make sure to leave near in case the position moved beyond the near margin (teleportation).
-				pArea->LeaveNearArea(pEntity);
-			}
+			// Needs to be temporarily near again.
+			rAreaCacheEntry.bNear = true;
 
 			// Notify possible lower priority areas about this event.
 			NotifyAreas(pArea, pAreaCache, pEntity);
 		}
 
-		if (isNear && !bIsPointWithin)
+		if (isNear)
 		{
-			if (rAreaCacheEntry.bNear == false)
+			if (!rAreaCacheEntry.bNear)
 			{
 				pArea->EnterNearArea(pEntity);
 				rAreaCacheEntry.bNear = true;
@@ -652,30 +647,16 @@ void CAreaManager::ProcessArea(CArea* const __restrict pArea, SAreaCacheEntry& r
 			if (!bExclusiveUpdate)
 			{
 				pArea->SetFade(1.0f);
-
-				if (rAreaCacheEntry.bNear)
-				{
-					CRY_ASSERT(!rAreaCacheEntry.bInside); // We must be near but not inside yet!
-					SEntityEvent event(nEntityID, 0, 0, 0, 0.0f, fDistanceSq);
-					event.event = ENTITY_EVENT_MOVENEARAREA;
-					pArea->AddCachedEvent(event);					
-				}
+				CRY_ASSERT(rAreaCacheEntry.bNear && !rAreaCacheEntry.bInside); // We must be near but not inside yet!
+				SEntityEvent event(nEntityID, 0, 0, 0, 0.0f, fDistanceSq);
+				event.event = ENTITY_EVENT_MOVENEARAREA;
+				pArea->AddCachedEvent(event);
 			}
 		}
-		else
+		else if (rAreaCacheEntry.bNear)
 		{
-			// was near or inside, now is far, or is hidden
-			if (rAreaCacheEntry.bInside)
-			{
-				pArea->LeaveArea(pEntity);
-				rAreaCacheEntry.bInside = false;
-			}
-
-			if (rAreaCacheEntry.bNear)
-			{
-				pArea->LeaveNearArea(pEntity);
-				rAreaCacheEntry.bNear = false;
-			}
+			pArea->LeaveNearArea(pEntity);
+			rAreaCacheEntry.bNear = false;
 		}
 	}
 }
@@ -870,13 +851,36 @@ void CAreaManager::ExitAllAreas(IEntity const* const pEntity)
 {
 	SAreasCache* const pAreaCache = GetAreaCache(pEntity->GetId());
 
-	if (pAreaCache != NULL)
+	if (pAreaCache != NULL && !pAreaCache->aoAreas.empty())
 	{
-		if (!pAreaCache->aoAreas.empty())
+		TAreaCacheVector::const_iterator Iter(pAreaCache->aoAreas.begin());
+		TAreaCacheVector::const_iterator const IterEnd(pAreaCache->aoAreas.end());
+
+		for (; Iter != IterEnd; ++Iter)
 		{
-			pAreaCache->aoAreas.erase(std::remove_if(pAreaCache->aoAreas.begin(), pAreaCache->aoAreas.end(), CAreaManager::SRemoveIfIsNearOrInside(pEntity, m_apAreas, m_apAreas.size())), pAreaCache->aoAreas.end());
+			SAreaCacheEntry const& rCacheEntry = *Iter;
+
+#if defined(DEBUG_AREAMANAGER)
+			if (!stl::find(rapAreas, rCacheEntry.pArea))
+			{
+				CryFatalError("<AreaManager>: area in entity-area-cache not found in overall areas list!");
+			}
+#endif // DEBUG_AREAMANAGER
+
+			if (rCacheEntry.bInside)
+			{
+				rCacheEntry.pArea->LeaveArea(pEntity);
+				rCacheEntry.pArea->LeaveNearArea(pEntity);
+			}
+			else if (rCacheEntry.bNear)
+			{
+				rCacheEntry.pArea->LeaveNearArea(pEntity);
+			}
+
+			rCacheEntry.pArea->OnRemovedFromAreaCache(pEntity);
 		}
-		
+
+		pAreaCache->aoAreas.clear();		
 		DeleteAreaCache(pEntity->GetId());
 	}
 
@@ -991,7 +995,7 @@ void CAreaManager::DrawAreas(ISystem const* const pSystem)
 						}
 
 						CryFixedStringT<16> const sState(bIsPointWithin ? "Inside" : (rAreaCacheEntry.bNear ? "Near" : "Far"));
-						gEnv->pRenderer->Draw2dLabel(30.0f, fDebugPosY, 1.3f, fColor, false, "AreaID: %d GroupID: %d Priority: %d Type: %s Distance: %.2f State: %s Entities: %d", pArea->GetID(), pArea->GetGroup(), pArea->GetPriority(), sAreaType.c_str(), sqrt_tpl(fDistanceSq > 0.0f ? fDistanceSq : 0.0f), sState.c_str(), static_cast<int>(pArea->GetCacheEntityCount()));
+						gEnv->pRenderer->Draw2dLabel(30.0f, fDebugPosY, 1.3f, fColor, false, "Name: %s AreaID: %d GroupID: %d Priority: %d Type: %s Distance: %.2f State: %s Entities: %d", pArea->GetAreaEntityName(), pArea->GetID(), pArea->GetGroup(), pArea->GetPriority(), sAreaType.c_str(), sqrt_tpl(fDistanceSq > 0.0f ? fDistanceSq : 0.0f), sState.c_str(), static_cast<int>(pArea->GetCacheEntityCount()));
 						fDebugPosY += 12.0f;
 					}
 
@@ -1138,7 +1142,7 @@ void CAreaManager::OnEvent( EEntityEvent event, EntityId TriggerEntityID, IArea 
 }
 
 //////////////////////////////////////////////////////////////////////////
-int CAreaManager::GetNumberOfPlayersInArea(CArea const* const pArea)
+int CAreaManager::GetNumberOfPlayersNearOrInArea(CArea const* const pArea)
 {
 	// Find the area index
 	TAreaPointers::const_iterator IterAreas(m_apAreas.begin());
@@ -1158,7 +1162,7 @@ int CAreaManager::GetNumberOfPlayersInArea(CArea const* const pArea)
 				SAreasCache& rAreaCache((*Iter).second);
 				SAreaCacheEntry* pAreaCacheEntry = NULL;
 
-				if (rAreaCache.GetCacheEntry(pArea, &pAreaCacheEntry) && (pAreaCacheEntry->bInside))
+				if (rAreaCache.GetCacheEntry(pArea, &pAreaCacheEntry) && (pAreaCacheEntry->bInside || pAreaCacheEntry->bNear))
 				{
 					++nPlayersInAreaCount;
 				}
@@ -1176,15 +1180,15 @@ int CAreaManager::GetNumberOfPlayersInArea(CArea const* const pArea)
 size_t CAreaManager::GetOverlappingAreas( const AABB& bb, PodArray<IArea*>& list ) const
 {
 	const CArea::TAreaBoxes &boxes = CArea::GetBoxHolders();
-  for (size_t i=0, end=boxes.size(); i<end; ++i)
-  {
-    const CArea::SBoxHolder &holder = boxes[i];
-    if (!holder.box.Overlaps2D(bb))
-      continue; 
-    list.push_back(holder.area);
-  }
+	for (size_t i=0, end=boxes.size(); i<end; ++i)
+	{
+		const CArea::SBoxHolder &holder = boxes[i];
+		if (!holder.box.Overlaps2D(bb))
+			continue; 
+		list.push_back(holder.area);
+	}
 
-  return list.Size();
+	return list.Size();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1202,33 +1206,6 @@ bool CAreaManager::SIsNotInGrid::operator()(SAreaCacheEntry const& rCacheEntry) 
 	if (!rCacheEntry.bInGrid)
 	{
 		rCacheEntry.pArea->OnRemovedFromAreaCache(pEntity);
-		bResult = true;
-	}
-
-	return bResult;
-}
-
-//////////////////////////////////////////////////////////////////////////
-bool CAreaManager::SRemoveIfIsNearOrInside::operator()(SAreaCacheEntry const& rCacheEntry) const
-{
-	bool bResult = false;
-
-#if defined(DEBUG_AREAMANAGER)
-	if (!stl::find(rapAreas, rCacheEntry.pArea))
-	{
-		CryFatalError("<AreaManager>: area in entity-area-cache not found in overall areas list!");
-	}
-#endif // DEBUG_AREAMANAGER
-
-	if (rCacheEntry.bInside)
-	{
-		rCacheEntry.pArea->LeaveArea(pEntity);
-		rCacheEntry.pArea->LeaveNearArea(pEntity);
-		bResult = true;
-	}
-	else if (rCacheEntry.bNear)
-	{
-		rCacheEntry.pArea->LeaveNearArea(pEntity);
 		bResult = true;
 	}
 
@@ -1265,6 +1242,7 @@ bool CAreaManager::SRemoveIfNoAreasLeft::operator()(VectorMap<EntityId, SAreasCa
 	return bResult;
 }
 
+//////////////////////////////////////////////////////////////////////////
 void CAreaManager::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam)
 {
 	switch(event)
@@ -1285,4 +1263,4 @@ void CAreaManager::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR l
 	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IAreaManager)
+

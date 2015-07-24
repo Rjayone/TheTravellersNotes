@@ -1,11 +1,4 @@
-#include DEVIRTUALIZE_HEADER_FIX(IAIRecorder.h)
-
-#ifndef _IAIRECORDER_H_
-#define _IAIRECORDER_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #if defined(LINUX) || defined(APPLE)
 #	include "platform.h"
@@ -53,20 +46,20 @@ enum EAIRecorderMode
 	eAIRM_Disk,
 };
 
-UNIQUE_IFACE struct IAIRecorderListener
+struct IAIRecorderListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIRecorderListener(){}
 	virtual void OnRecordingStart(EAIRecorderMode mode, const char *filename) {};
 	virtual void OnRecordingStop(const char *filename) {};
 	virtual void OnRecordingLoaded(const char *filename) {};
 	virtual void OnRecordingSaved(const char *filename) {};
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IAIRecorder
+struct IAIRecorder
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIRecorder(){}
 	virtual void Start(EAIRecorderMode mode, const char *filename = NULL) = 0;
 	virtual void Stop(const char *filename = NULL) = 0;
@@ -76,7 +69,7 @@ UNIQUE_IFACE struct IAIRecorder
 
 	virtual bool AddListener(IAIRecorderListener *pListener) = 0;
 	virtual bool RemoveListener(IAIRecorderListener *pListener) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 class CStream;
@@ -133,16 +126,17 @@ struct IAIRecordable
 		E_COUNT,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IAIRecordable(){}
 	virtual void	RecordEvent(e_AIDbgEvent event, const RecorderEventData* pEventData=NULL)=0;
 	virtual void	RecordSnapshot()=0;
 	virtual IAIDebugRecord* GetAIDebugRecord()=0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IAIDebugStream
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIDebugStream(){}
 	virtual void	Seek(float whereTo)=0;
 	virtual int		GetCurrentIdx()=0;	
@@ -155,16 +149,14 @@ struct IAIDebugStream
 	virtual bool	IsEmpty()=0;
 
 	virtual char const* GetName() const=0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IAIDebugRecord
+struct IAIDebugRecord
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIDebugRecord(){}
 	virtual IAIDebugStream* GetStream(IAIRecordable::e_AIDbgEvent streamTag)=0;
-
+	// </interfuscator:shuffle>
 };
 
-
-#endif //_IAIRECORDER_H_

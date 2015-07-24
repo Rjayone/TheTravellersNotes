@@ -67,36 +67,32 @@ inline bool Secondary_Free(void* pFree)
 	// and at the beginning the handle is saved.
 
 	// retrieve handle
-	bool bFreed = (pFree == NULL);//true by default when passing NULL
-#ifdef PS3
-	if(((uint32)pFree >= g_MemoryPoolSecondaryStart) && ((uint32)pFree < g_MemoryPoolSecondaryEnd))
-#endif
-	{
-		uint32 const nAllocHandle = g_AudioImplMemoryPoolSoundSecondary.AddressToHandle(pFree);
+	bool bFreed = (pFree == NULL);//true by default when passing NULL	
+	uint32 const nAllocHandle = g_AudioImplMemoryPoolSoundSecondary.AddressToHandle(pFree);
 
-		if (nAllocHandle > 0)
-		{
-			bFreed = g_AudioImplMemoryPoolSoundSecondary.Free(nAllocHandle);
-		}
+	if (nAllocHandle > 0)
+	{
+		bFreed = g_AudioImplMemoryPoolSoundSecondary.Free(nAllocHandle);
 	}
+
 	return bFreed;
 }
 #endif // PROVIDE_AUDIO_IMPL_SECONDARY_POOL
 
 // Win32 or Win64 or Durango
 //////////////////////////////////////////////////////////////////////////
-#if (defined(WIN32) || defined(WIN64) || defined(DURANGO)) && !defined(XENON) && !defined(PS3)
+#if (defined(WIN32) || defined(WIN64) || defined(DURANGO))
 #include <windows.h>
 #endif
 
 // Win32
 //////////////////////////////////////////////////////////////////////////
-#if defined(WIN32) && !defined(WIN64) && !defined(XENON) && !defined(PS3) && !defined(DURANGO) && !defined(ORBIS) && !defined(CAFE)	
+#if defined(WIN32) && !defined(WIN64) && !defined(DURANGO) && !defined(ORBIS)
 #endif // Win32
 
 // Win64 (Note: WIN32 is automatically defined as well!)
 //////////////////////////////////////////////////////////////////////////
-#if defined(WIN32) && defined(WIN64) && !defined(XENON) && !defined(PS3) && !defined(DURANGO) && !defined(ORBIS) && !defined(CAFE)	
+#if defined(WIN32) && defined(WIN64) && !defined(DURANGO) && !defined(ORBIS)
 #endif // Win64
 
 // DURANGO
@@ -109,11 +105,6 @@ inline bool Secondary_Free(void* pFree)
 #if defined(ORBIS)
 #define AK_PS4
 #endif // ORBIS
-
-// CAFE
-//////////////////////////////////////////////////////////////////////////
-#if defined(CAFE)
-#endif // CAFE
 
 // Mac
 //////////////////////////////////////////////////////////////////////////

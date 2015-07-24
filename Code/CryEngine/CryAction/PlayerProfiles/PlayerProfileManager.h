@@ -11,6 +11,7 @@
 
 #include <IPlayerProfiles.h>
 #include <ICryStats.h>
+#include <CryCrc32.h>
 
 class CPlayerProfile;
 struct ISaveGame;
@@ -160,58 +161,57 @@ public:
 	virtual ~CPlayerProfileManager();
 
 	// IPlayerProfileManager
-	VIRTUAL bool Initialize();
-	VIRTUAL bool Shutdown();
-	VIRTUAL int  GetUserCount();
-	VIRTUAL bool GetUserInfo(int index, IPlayerProfileManager::SUserInfo& outInfo);
-	VIRTUAL const char* GetCurrentUser();
-	VIRTUAL int GetCurrentUserIndex();
-	VIRTUAL void SetExclusiveControllerDeviceIndex(unsigned int exclusiveDeviceIndex);
-	VIRTUAL unsigned int GetExclusiveControllerDeviceIndex() const;
-	VIRTUAL bool LoginUser(const char* userId, bool& bOutFirstTime);
-	VIRTUAL bool LogoutUser(const char* userId);
-	VIRTUAL int  GetProfileCount(const char* userId);
-	VIRTUAL bool GetProfileInfo(const char* userId, int index, IPlayerProfileManager::SProfileDescription& outInfo);
-	VIRTUAL bool CreateProfile(const char* userId, const char* profileName, bool bOverrideIfPresent, IPlayerProfileManager::EProfileOperationResult& result);
-	VIRTUAL bool DeleteProfile(const char* userId, const char* profileName, IPlayerProfileManager::EProfileOperationResult& result);
-	VIRTUAL bool RenameProfile(const char* userId, const char* newName, IPlayerProfileManager::EProfileOperationResult& result);
-	VIRTUAL bool ModifyUserId(const char* userId, const char* newUserId, IPlayerProfileManager::EProfileOperationResult& result);
-	VIRTUAL bool SaveProfile(const char* userId, IPlayerProfileManager::EProfileOperationResult& result, unsigned int reason);
-	VIRTUAL bool SaveInactiveProfile(const char* userId, const char* profileName, EProfileOperationResult& result, unsigned int reason);
-	VIRTUAL bool IsLoadingProfile() const;
-	VIRTUAL bool IsSavingProfile() const;
-	VIRTUAL IPlayerProfile* ActivateProfile(const char* userId, const char* profileName);
-	VIRTUAL IPlayerProfile* GetCurrentProfile(const char* userId);
-	VIRTUAL bool ResetProfile(const char* userId);
-	VIRTUAL void ReloadProfile(IPlayerProfile* pProfile, unsigned int reason);
-	VIRTUAL IPlayerProfile* GetDefaultProfile();
-	VIRTUAL const IPlayerProfile* PreviewProfile(const char* userId, const char* profileName);
-	VIRTUAL void SetSharedSaveGameFolder(const char* sharedSaveGameFolder); 
-	VIRTUAL const char* GetSharedSaveGameFolder()
+	virtual bool Initialize();
+	virtual bool Shutdown();
+	virtual int  GetUserCount();
+	virtual bool GetUserInfo(int index, IPlayerProfileManager::SUserInfo& outInfo);
+	virtual const char* GetCurrentUser();
+	virtual int GetCurrentUserIndex();
+	virtual void SetExclusiveControllerDeviceIndex(unsigned int exclusiveDeviceIndex);
+	virtual unsigned int GetExclusiveControllerDeviceIndex() const;
+	virtual bool LoginUser(const char* userId, bool& bOutFirstTime);
+	virtual bool LogoutUser(const char* userId);
+	virtual int  GetProfileCount(const char* userId);
+	virtual bool GetProfileInfo(const char* userId, int index, IPlayerProfileManager::SProfileDescription& outInfo);
+	virtual bool CreateProfile(const char* userId, const char* profileName, bool bOverrideIfPresent, IPlayerProfileManager::EProfileOperationResult& result);
+	virtual bool DeleteProfile(const char* userId, const char* profileName, IPlayerProfileManager::EProfileOperationResult& result);
+	virtual bool RenameProfile(const char* userId, const char* newName, IPlayerProfileManager::EProfileOperationResult& result);
+	virtual bool SaveProfile(const char* userId, IPlayerProfileManager::EProfileOperationResult& result, unsigned int reason);
+	virtual bool SaveInactiveProfile(const char* userId, const char* profileName, EProfileOperationResult& result, unsigned int reason);
+	virtual bool IsLoadingProfile() const;
+	virtual bool IsSavingProfile() const;
+	virtual IPlayerProfile* ActivateProfile(const char* userId, const char* profileName);
+	virtual IPlayerProfile* GetCurrentProfile(const char* userId);
+	virtual bool ResetProfile(const char* userId);
+	virtual void ReloadProfile(IPlayerProfile* pProfile, unsigned int reason);
+	virtual IPlayerProfile* GetDefaultProfile();
+	virtual const IPlayerProfile* PreviewProfile(const char* userId, const char* profileName);
+	virtual void SetSharedSaveGameFolder(const char* sharedSaveGameFolder); 
+	virtual const char* GetSharedSaveGameFolder()
 	{
 		return m_sharedSaveGameFolder.c_str();
 	}
-	VIRTUAL void GetMemoryStatistics(ICrySizer * s);
+	virtual void GetMemoryStatistics(ICrySizer * s);
 
-	VIRTUAL void AddListener(IPlayerProfileListener* pListener, bool updateNow);
-	VIRTUAL void RemoveListener(IPlayerProfileListener* pListener);
-	VIRTUAL void AddOnlineAttributesListener(IOnlineAttributesListener* pListener);
-	VIRTUAL void RemoveOnlineAttributesListener(IOnlineAttributesListener* pListener);
-	VIRTUAL void EnableOnlineAttributes(bool enable);
-	VIRTUAL bool HasEnabledOnlineAttributes() const;
-	VIRTUAL bool CanProcessOnlineAttributes() const;
-	VIRTUAL void SetCanProcessOnlineAttributes(bool enable);
-	VIRTUAL bool RegisterOnlineAttributes();
-	VIRTUAL void GetOnlineAttributesState(const IOnlineAttributesListener::EEvent event, IOnlineAttributesListener::EState &state) const;
-	VIRTUAL bool IsOnlineOnlyAttribute(const char* name);
-	VIRTUAL void LoadOnlineAttributes(IPlayerProfile* pProfile);
-	VIRTUAL void SaveOnlineAttributes(IPlayerProfile* pProfile);
-	VIRTUAL int GetOnlineAttributesVersion() const;
-	VIRTUAL int GetOnlineAttributeIndexByName(const char *name);
-	VIRTUAL void GetOnlineAttributesDataFormat(SCryLobbyUserData *pData, uint32 numData);
-	VIRTUAL uint32 GetOnlineAttributeCount();
-	VIRTUAL void ClearOnlineAttributes();
-	VIRTUAL void SetProfileLastLoginTime(const char* userId, int index, time_t lastLoginTime);
+	virtual void AddListener(IPlayerProfileListener* pListener, bool updateNow);
+	virtual void RemoveListener(IPlayerProfileListener* pListener);
+	virtual void AddOnlineAttributesListener(IOnlineAttributesListener* pListener);
+	virtual void RemoveOnlineAttributesListener(IOnlineAttributesListener* pListener);
+	virtual void EnableOnlineAttributes(bool enable);
+	virtual bool HasEnabledOnlineAttributes() const;
+	virtual bool CanProcessOnlineAttributes() const;
+	virtual void SetCanProcessOnlineAttributes(bool enable);
+	virtual bool RegisterOnlineAttributes();
+	virtual void GetOnlineAttributesState(const IOnlineAttributesListener::EEvent event, IOnlineAttributesListener::EState &state) const;
+	virtual bool IsOnlineOnlyAttribute(const char* name);
+	virtual void LoadOnlineAttributes(IPlayerProfile* pProfile);
+	virtual void SaveOnlineAttributes(IPlayerProfile* pProfile);
+	virtual int GetOnlineAttributesVersion() const;
+	virtual int GetOnlineAttributeIndexByName(const char *name);
+	virtual void GetOnlineAttributesDataFormat(SCryLobbyUserData *pData, uint32 numData);
+	virtual uint32 GetOnlineAttributeCount();
+	virtual void ClearOnlineAttributes();
+	virtual void SetProfileLastLoginTime(const char* userId, int index, time_t lastLoginTime);
 	// ~IPlayerProfileManager
 
 	
@@ -235,7 +235,7 @@ public:
 
 	bool IsSaveGameFolderShared() const
 	{
-#if defined(XENON) || defined(PS3)
+#if defined(CONSOLE)
 		// TCR/TRC - don't use profile name in file names.
 		// Also, console saves are already keyed to a user profile.
 		return false;
@@ -253,9 +253,9 @@ public:
 	// only implemented for WIN32/WIN64
 	bool MoveFileHelper(const char* existingFileName, const char* newFileName);
 
-	VIRTUAL void SetOnlineAttributes(IPlayerProfile *pProfile, const SCryLobbyUserData *pData, const int32 onlineDataCount);
-	VIRTUAL uint32 GetOnlineAttributes(SCryLobbyUserData *pData, uint32 numData);
-	VIRTUAL uint32 GetDefaultOnlineAttributes(SCryLobbyUserData *pData, uint32 numData);
+	virtual void SetOnlineAttributes(IPlayerProfile *pProfile, const SCryLobbyUserData *pData, const int32 onlineDataCount);
+	virtual uint32 GetOnlineAttributes(SCryLobbyUserData *pData, uint32 numData);
+	virtual uint32 GetDefaultOnlineAttributes(SCryLobbyUserData *pData, uint32 numData);
 
 	void ApplyChecksums(SCryLobbyUserData* pData, uint32 numData);
 	bool ValidChecksums(const SCryLobbyUserData* pData, uint32 numData);
@@ -328,7 +328,7 @@ protected:
 	bool SetUserDataType(SCryLobbyUserData* data, const char* type);
 	void GetDefaultValue(const char* type, XmlNodeRef attributeNode, SCryLobbyUserData *pOutData);
 
-	bool RegisterOnlineAttribute(const char* name, const char* type, const bool onlineOnly, const SCryLobbyUserData &defaultValue);
+	bool RegisterOnlineAttribute(const char* name, const char* type, const bool onlineOnly, const SCryLobbyUserData &defaultValue, CCrc32& crc);
 	void ReadOnlineAttributes(IPlayerProfile* pProfile, const SCryLobbyUserData* pData, const uint32 numData);
 	static void ReadUserDataCallback(CryLobbyTaskID taskID, ECryLobbyError error, SCryLobbyUserData* pData, uint32 numData, void* pArg);
 	static void RegisterUserDataCallback(CryLobbyTaskID taskID, ECryLobbyError error, void* pArg);
@@ -338,7 +338,6 @@ protected:
 	void SendOnlineAttributeState(const IOnlineAttributesListener::EEvent event, const IOnlineAttributesListener::EState newState);
 
 	//Online attributes use checksums to check the validity of data loaded
-	void InsertChecksums();
 	int Checksum(const int checksum, const SCryLobbyUserData* pData, uint32 numData);
 	int ChecksumHash(const int hash, const int value) const;
 	int ChecksumHash(const int value0, const int value1, const int value2, const int value3, const int value4) const;

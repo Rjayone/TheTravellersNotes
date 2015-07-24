@@ -281,10 +281,6 @@ string CDevMode::TagFileName()
 	string path = pLevel->GetLevelInfo()->GetPath();
 	path = PathUtil::GetGameFolder()+ string("/") + path + "/tags.txt";
 
-#ifdef XENON
-	path = string("d:\\") + path;
-#endif //XENON
-
 	return path;
 }
 

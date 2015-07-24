@@ -284,7 +284,7 @@ public:
 	bool CheckLevelLoaded() const;
 
 	// GameChannel
-	virtual bool IsServer() const OVERRIDE { return false; }
+	virtual bool IsServer() const override { return false; }
 	//~GameChannel
 
 	// simple messages

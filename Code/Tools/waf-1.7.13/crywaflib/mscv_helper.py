@@ -601,12 +601,12 @@ def setup_msvc(conf, versions, arch = False):
 			targets = dict(versiondict [version])
 			for target in platforms:
 				try:
-					arch,(p1,p2,p3) = targets[target]
+					arch,(msvc_path, msvc_incdir, msvc_libdir) = targets[target]
 					compiler,revision = version.rsplit(' ', 1)
 					if arch:
-						return compiler,revision,p1,p2,p3,arch
+						return compiler,revision,msvc_path, msvc_incdir, msvc_libdir,arch
 					else:
-						return compiler,revision,p1,p2,p3
+						return compiler,revision,msvc_path, msvc_incdir, msvc_libdir
 				except KeyError: continue
 		except KeyError: continue
 		
@@ -614,12 +614,12 @@ def setup_msvc(conf, versions, arch = False):
 	for target in platforms:
 		if target == 'x64':
 			try:
-				arch,(p1,p2,p3) = targets['x86_amd64']
+				arch,(msvc_path, msvc_incdir, msvc_libdir) = targets['x86_amd64']
 				compiler,revision = version.rsplit(' ', 1)
 				if arch:
-					return compiler,revision,p1,p2,p3,arch
+					return compiler,revision,msvc_path, msvc_incdir, msvc_libdir,arch
 				else:
-					return compiler,revision,p1,p2,p3
+					return compiler,revision,msvc_path, msvc_incdir, msvc_libdir
 			except KeyError:
 				pass
 		
@@ -701,7 +701,7 @@ def gather_msvc_targets(conf, versions, version, vc_path):
 	if os.path.isfile(os.path.join(vc_path, 'vcvarsall.bat')):
 		for target,realtarget in all_msvc_platforms[::-1]:
 			try:
-				targets.append((target, (realtarget, conf.get_msvc_version('msvc', version, target, os.path.join(vc_path, 'vcvarsall.bat')))))				
+				targets.append((target, (realtarget, conf.get_msvc_version('msvc', version, target, os.path.join(vc_path, 'vcvarsall.bat')))))
 			except conf.errors.ConfigurationError:
 				pass
 	elif os.path.isfile(os.path.join(vc_path, 'Common7', 'Tools', 'vsvars32.bat')):

@@ -178,8 +178,10 @@ CFlowSystem::CFlowSystem()
 , m_graphs(GRAPH_RESERVED_CAPACITY)
 , m_nextFlowGraphId(0)
 , m_pModuleManager(NULL)
+, m_blacklistNode(NULL)
 , m_nextNodeTypeID(InvalidFlowNodeTypeId)
 {
+	LoadBlacklistedFlownodeXML();
 }
 
 void CFlowSystem::PreInit()
@@ -277,9 +279,9 @@ void CFlowSystem::LoadExtensions( string path )
 
 		do 
 		{
-			strcpy( filename, path.c_str() );
-			strcat( filename, "/" );
-			strcat( filename, fd.name );
+			cry_strcpy( filename, path.c_str() );
+			cry_strcat( filename, "/" );
+			cry_strcat( filename, fd.name );
 
 			XmlNodeRef root = GetISystem()->LoadXmlFromFile( filename );
 			if (root)
@@ -690,24 +692,26 @@ void CFlowSystem::UnregisterGraph( CFlowGraphBase *pGraph )
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool CFlowSystem::BlacklistedFlownode(const char **nodeName)
+void CFlowSystem::LoadBlacklistedFlownodeXML()
 {
-	static XmlNodeRef blacklistNode = NULL;
-
-	if(!blacklistNode)
+	if(!m_blacklistNode)
 	{
 		const string filename = BLACKLIST_FILE_PATH;
-		blacklistNode = gEnv->pSystem->LoadXmlFromFile(filename);
+		m_blacklistNode = gEnv->pSystem->LoadXmlFromFile(filename);
 	}
+}
 
-	if(blacklistNode)
+//////////////////////////////////////////////////////////////////////////
+bool CFlowSystem::BlacklistedFlownode(const char **nodeName)
+{
+	if(m_blacklistNode)
 	{
-		int childCount = blacklistNode->getChildCount();
+		int childCount = m_blacklistNode->getChildCount();
 		const char *attrKey;
 		const char *attrValue;
 		for(int n = 0; n < childCount; ++n)
 		{
-			XmlNodeRef child = blacklistNode->getChild(n);
+			XmlNodeRef child = m_blacklistNode->getChild(n);
 
 			if(!child->getAttributeByIndex(0, &attrKey, &attrValue))
 				continue;
@@ -1016,4 +1020,4 @@ void CFlowSystem::Serialize(TSerialize ser)
 	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IFlowSystem)
+

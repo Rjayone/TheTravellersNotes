@@ -24,17 +24,14 @@ class CAttrWriter
 		CAttrWriter(const CAttrWriter &other) : m_type( DT_INVALID ), m_Writer(other.m_Writer) { *this = other; }
 		~CAttrWriter()
 		{
-			#if !defined(XENON) && !defined(PS3)
 			if (m_type==DT_RAWDATA)
 				SAFE_DELETE_ARRAY( m_data.m_rawData.allocatedData );
-			#endif
 		}
 
 		CAttrWriter& operator =(const CAttrWriter &other)
 		{
 			if (this != &other)
 			{
-				#if !defined(XENON) && !defined(PS3)
 				if (m_type==DT_RAWDATA)
 					SAFE_DELETE_ARRAY( m_data.m_rawData.allocatedData );
 				m_data = other.m_data;
@@ -43,9 +40,6 @@ class CAttrWriter
 					m_data.m_rawData.allocatedData = new uint8[other.m_data.m_rawData.size];
 					memcpy( m_data.m_rawData.allocatedData, other.m_data.m_rawData.allocatedData, other.m_data.m_rawData.size );
 				}
-				#else
-				m_data = other.m_data;
-				#endif			
 
 				m_type = other.m_type;
 				m_nameID = other.m_nameID;

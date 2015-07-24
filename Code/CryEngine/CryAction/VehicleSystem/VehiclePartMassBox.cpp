@@ -152,9 +152,9 @@ void CVehiclePartMassBox::Update(const float frameTime)
   const SVehicleStatus& status = m_pVehicle->GetStatus();  
   EMassBoxDrivingType driving;
 
-  if ( status.health<1.0f )
+  if ( status.health == 0.0f )
   {
-		driving = eMASSBOXDRIVING_DESTOYED;
+		driving = eMASSBOXDRIVING_DESTROYED;
   }
   else if ( status.speed > 0.5f && status.passengerCount > 0 )
   {

@@ -18,7 +18,7 @@
 #include <stdlib.h> 
 #include <time.h>
 #include <pthread.h>
-#include MATH_H
+#include <math.h>
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
@@ -287,11 +287,8 @@ typedef union _LARGE_INTEGER
       DWORD LowPart;
       LONG HighPart;
   } u;
-#if defined(PS3)
-	uint64 QuadPart;
-#else
   long long QuadPart;
-#endif
+
 } LARGE_INTEGER;
 
 
@@ -386,19 +383,19 @@ typedef struct _SECURITY_ATTRIBUTES
 		return *pT;
 	}
 
+#if 0
+	template<typename S, typename T>
+	inline const S& min(const S& rS, const T& rT)
+	{
+		return (rS <= rT)? rS : rT;
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
+	template<typename S, typename T>
+	inline const S& max(const S& rS, const T& rT)
+	{
+		return (rS >= rT)? rS : rT;
+	}
+#endif
 
 	template<typename S, typename T>
 	inline S __min(const S& rS, const T& rT)
@@ -430,7 +427,7 @@ typedef struct _SECURITY_ATTRIBUTES
 		CHandle(INVALID_HANDLE_VALUE_ENUM) : m_Value(U){}//to be able to use a common value for all InvalidHandle - types
 #if defined(LINUX64) && !defined(__clang__)
 		//treat __null tyope also as invalid handle type
-		CHandle(typeof(__null)) : m_Value(U){}//to be able to use a common value for all InvalidHandle - types
+		CHandle(__typeof__(__null)) : m_Value(U){}//to be able to use a common value for all InvalidHandle - types
 #endif
 		operator HandleType(){return m_Value;}
 		bool operator!() const{return m_Value == sciInvalidHandleValue;}
@@ -475,13 +472,14 @@ inline int _CrtCheckMemory() { return 1; };
 
 inline char *_fullpath(char *absPath, const char *relPath, size_t maxLength)
 {
-  char path[PATH_MAX];
+	char path[PATH_MAX];
 
-  if (realpath(relPath, path) == NULL)
-    return NULL;
-  strncpy(absPath, path, maxLength - 1);
-  absPath[maxLength - 1] = 0;
-  return absPath;
+	if (realpath(relPath, path) == NULL)
+		return NULL;
+	const size_t len = std::min(strlen(path), maxLength - 1);
+	memcpy(absPath, path, len);
+	absPath[len] = 0;
+	return absPath;
 }
 
 typedef void *HGLRC;

@@ -329,7 +329,7 @@ void CStatsRecordingMgr::ProcessOnlinePermission(
 						}
 					}
 #endif					
-					const uint32 profileNameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( profileName );
+					const uint32 profileNameCrc = CCrc32::Compute( profileName );
 
 					const uint32 profileNameModulo = profileNameCrc % denominator;
 					permission = profileNameModulo < numerator;
@@ -574,7 +574,7 @@ void CStatsRecordingMgr::StateEndOfSessionStats()
 					
 					const char* szOnlineGUID = pGameLobby ? pGameLobby->GetGUIDFromActorID(itBonusXp->entityId) : "";
 #if defined( _RELEASE )
-					const uint32 guidHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32( szOnlineGUID );
+					const uint32 guidHash = CCrc32::Compute( szOnlineGUID );
 					stack_string clientHashStr;
 					clientHashStr.Format( "%lu", guidHash );
 					childNode->setAttr( "online_guid", clientHashStr.c_str() );
@@ -892,7 +892,7 @@ void CStatsRecordingMgr::StateCorePlayerStats(
 
 		tracker->StateValue( eGSS_OnlineGUID,	szOnlineGUID );
 #else
-		const uint32 guidHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32( szOnlineGUID );
+		const uint32 guidHash = CCrc32::Compute( szOnlineGUID );
 		stack_string guidHashStr;
 		guidHashStr.Format( "%lu", guidHash );
 
@@ -1544,24 +1544,15 @@ void CStatsRecordingMgr::OnHit(const HitInfo& hit)
 		IGameStatistics		*gs=pGameFrameWork->GetIGameStatistics();
 		if (IStatsTracker *tracker=GetStatsTracker(actor))
 		{
-			const int MaxLength = 128;
-			char weaponClassName[MaxLength+1];
-			if (pGameFrameWork->GetNetworkSafeClassName(weaponClassName, MaxLength, hit.weaponClassId))
+			char weaponClassName[128];
+			if (!pGameFrameWork->GetNetworkSafeClassName(weaponClassName, sizeof(weaponClassName), hit.weaponClassId))
 			{
-				weaponClassName[MaxLength] = 0;
+				cry_strcpy(weaponClassName, "unknown weapon");
 			}
-			else
+			char projectileClassName[128];
+			if (!pGameFrameWork->GetNetworkSafeClassName(projectileClassName, sizeof(projectileClassName), hit.projectileClassId))
 			{
-				strncpy(weaponClassName, "unknown weapon", MaxLength);
-			}
-			char projectileClassName[MaxLength+1];
-			if (pGameFrameWork->GetNetworkSafeClassName(projectileClassName, MaxLength, hit.projectileClassId))
-			{
-				projectileClassName[MaxLength] = 0;
-			}
-			else
-			{
-				strncpy(projectileClassName, "unknown projectile", MaxLength);
+				cry_strcpy(projectileClassName, "unknown projectile");
 			}
 
 			CGameRules		*gr=g_pGame->GetGameRules();

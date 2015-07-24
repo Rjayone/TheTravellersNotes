@@ -48,4 +48,4 @@ EEffectState CEffect::GetState()
 	return m_state;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEffect)
+

@@ -168,19 +168,6 @@ class CMovingPlatformMgr;
 class CGamePhysicsSettings;
 class CManualFrameStepManager;
 
-
-//Travellers Class Defenition
-class CRPGInventory;
-class CCraftSystem;
-class CCharacterDevelopmentSystem;
-class CUIDialogMenu;
-class CRPGInventoryManager;
-class CPlayerStatsManager;
-class CUIBuildMenu;
-class CEconomics;
-class CEventsDispatcher;
-//~
-
 namespace Graphics
 {
 	class CColorGradientManager;
@@ -255,8 +242,8 @@ enum EPlatform
 {
 	ePlatform_Unknown = 0,
 	ePlatform_PC,
-	ePlatform_Xbox,
-	ePlatform_PS3,
+	ePlatform_XBoxOne,
+	ePlatform_PS4,
 
 	ePlatform_COUNT,
 };
@@ -375,56 +362,53 @@ public:
 	virtual ~CGame();
 
 	// IGame
-	VIRTUAL bool  Init(IGameFramework *pFramework);
-	VIRTUAL bool  CompleteInit();
-	VIRTUAL void  Shutdown();
-	VIRTUAL int   Update(bool haveFocus, unsigned int updateFlags);
-	VIRTUAL void  EditorResetGame(bool bStart);
-	VIRTUAL void  PlayerIdSet(EntityId playerId);
+	virtual bool  Init(IGameFramework *pFramework);
+	virtual bool  CompleteInit();
+	virtual void  Shutdown();
+	virtual int   Update(bool haveFocus, unsigned int updateFlags);
+	virtual void  EditorResetGame(bool bStart);
+	virtual void  PlayerIdSet(EntityId playerId);
 	virtual bool IsReloading() { return m_bReload; }
-	VIRTUAL IGameFramework *GetIGameFramework() { return m_pFramework; }
+	virtual IGameFramework *GetIGameFramework() { return m_pFramework; }
 
-	VIRTUAL const char *GetLongName();
-	VIRTUAL const char *GetName();
+	virtual const char *GetLongName();
+	virtual const char *GetName();
 	virtual EPlatform GetPlatform() const;
 
 	virtual void UploadSessionTelemetry(void);
 	virtual void ClearSessionTelemetry(void);
-	VIRTUAL void GetMemoryStatistics(ICrySizer * s);
+	virtual void GetMemoryStatistics(ICrySizer * s);
 
-	VIRTUAL void OnClearPlayerIds();
+	virtual void OnClearPlayerIds();
 	//auto-generated save game file name
-	VIRTUAL TSaveGameName CreateSaveGameName();
+	virtual TSaveGameName CreateSaveGameName();
 	//level names were renamed without changing the file/directory
-	VIRTUAL const char* GetMappedLevelName(const char *levelName) const;
+	virtual const char* GetMappedLevelName(const char *levelName) const;
 	
 	void LoadMappedLevelNames( const char* xmlPath );
 
 	void LoadPatchLocalizationData();
 
 	// 
-	VIRTUAL IGameStateRecorder* CreateGameStateRecorder(IGameplayListener* pL);
+	virtual IGameStateRecorder* CreateGameStateRecorder(IGameplayListener* pL);
 
-	VIRTUAL const bool DoInitialSavegame() const { return true; }
+	virtual const bool DoInitialSavegame() const { return true; }
 
-	VIRTUAL THUDWarningId AddGameWarning(const char* stringId, const char* paramMessage, IGameWarningsListener* pListener = NULL);
-	VIRTUAL void RemoveGameWarning(const char* stringId);
-	VIRTUAL void RenderGameWarnings();
+	virtual THUDWarningId AddGameWarning(const char* stringId, const char* paramMessage, IGameWarningsListener* pListener = NULL);
+	virtual void RemoveGameWarning(const char* stringId);
+	virtual void RenderGameWarnings();
 
-	VIRTUAL void OnRenderScene(const SRenderingPassInfo &passInfo);
+	virtual void OnRenderScene(const SRenderingPassInfo &passInfo);
 
-	VIRTUAL bool GameEndLevel(const char* stringId);
+	virtual bool GameEndLevel(const char* stringId);
 	void SetUserProfileChanged(bool yesNo) { m_userProfileChanged = yesNo; }
 
-	VIRTUAL IGame::ExportFilesInfo ExportLevelData( const char* levelName, const char* missionName ) const;
-	VIRTUAL void   LoadExportedLevelData( const char* levelName, const char* missionName );
+	virtual IGame::ExportFilesInfo ExportLevelData( const char* levelName, const char* missionName ) const;
+	virtual void   LoadExportedLevelData( const char* levelName, const char* missionName );
+		
+	virtual void RegisterGameFlowNodes();
 
-	VIRTUAL const uint8* GetDRMKey(uint32 *pKeySize);
-	VIRTUAL const char* GetDRMFileList();
-	
-	VIRTUAL void RegisterGameFlowNodes();
-
-	VIRTUAL IGamePhysicsSettings* GetIGamePhysicsSettings();
+	virtual IGamePhysicsSettings* GetIGamePhysicsSettings();
 	// ~IGame
 
   // IGameFrameworkListener
@@ -451,7 +435,7 @@ public:
 
 	// IInputEventListener
 	bool OnInputEvent(const SInputEvent& inputEvent);
-	bool OnInputEventUI(const SInputEvent& inputEvent);
+	bool OnInputEventUI(const SUnicodeEvent& inputEvent);
 	// ~IInputEventListener
 
 	void SetInputEventListenerOverride(IInputEventListener *pListenerOverride) { m_pInputEventListenerOverride = pListenerOverride; }
@@ -481,10 +465,8 @@ public:
 	// Init editor related things
 	virtual void InitEditor(IGameToEditorInterface* pGameToEditor) {}
 
-	bool ShouldShowLanguageSelect();
-
 	static void SetRichPresenceCallback(CryLobbyTaskID taskID, ECryLobbyError error, void* pArg);
-	void RefreshRichPresence();
+
 	bool SetRichPresence(ERichPresenceState state);
 	void InitRichPresence();
 	void AddRichPresence( const char* path );
@@ -736,7 +718,7 @@ protected:
 		EPlatform	platformId;
 		BYTE		devices;				// Devices to use when registering actions
 
-		SPlatformInfo(EPlatform _platformId = ePlatform_Unknown) : platformId(_platformId), devices(eAID_KeyboardMouse|eAID_XboxPad|eAID_PS3Pad) {}
+		SPlatformInfo(EPlatform _platformId = ePlatform_Unknown) : platformId(_platformId), devices(eAID_KeyboardMouse|eAID_XboxPad|eAID_PS4Pad) {}
 	};
 	SPlatformInfo m_platformInfo;
 
@@ -1090,38 +1072,8 @@ private:
 #if ENABLE_MANUAL_FRAME_STEP
 	CManualFrameStepManager* m_pManualFrameStep;
 #endif
+};
 
-	private:
-		// Traveller Objects Defenition
-
-		CCraftSystem *pCraftSystem;
-		CRPGInventory *pRPGInventory;
-		CCharacterDevelopmentSystem *pCharDevSys;
-		CUIDialogMenu *pDialogMenu;
-		CRPGInventoryManager *pRPGInventoryManager;
-		CPlayerStatsManager *pPlayerStatsManager;
-		CUIBuildMenu *pBuildMenu;
-		CEconomics *pEconomics;
-		CEventsDispatcher *pEventsDispatcher;
-		// ~Traveller Objects Defenition
-
-public:
-	// Traveller Geters Defenition
-
-	CCraftSystem* GetCraftSystem(){ return pCraftSystem; }
-	CRPGInventory* GetRPGInventory(){ return pRPGInventory; }
-	CCharacterDevelopmentSystem* GetCharDevSys(){ return pCharDevSys; }
-	CUIDialogMenu* GetDialogSystem(){ return pDialogMenu; }
-	CRPGInventoryManager* GetRPGInventoryManager() { return pRPGInventoryManager; }
-	CPlayerStatsManager* GetPlayerStatsManager(){ return pPlayerStatsManager; }
-	CUIBuildMenu* GetBuildMenu(){ return pBuildMenu; }
-	CEconomics* GetEconomics(){ return pEconomics; }
-	CEventsDispatcher* GetEventDispatcher(){ return pEventsDispatcher; }
-	//~Traveller Defenition
-
-}; // ~CGame
-
-////////////////////////////////////////////////////////////////////////
 SC_API extern CGame *g_pGame;
 
 #define SAFE_HARDWARE_MOUSE_FUNC(func)\

@@ -468,11 +468,11 @@ public:
 		EOP_FIREMODENAME,
 		EOP_ISMELEE,
 
-		EOP_AMMO,
-		EOP_AMMOTYPE,
 		EOP_AMMONAME,
-		EOP_MAXAMMO,
+		EOP_AMMOCOUNT,
+		EOP_CLIPSIZE,
 		EOP_AMMOPOOL,
+
 		EOP_SPREAD,
 
 		EOP_ZOOMED,
@@ -491,33 +491,33 @@ public:
 			{0}
 		};
 		static const SOutputPortConfig outputs[] = {
-			OutputPortConfig_Void( "OnWeaponChange",	_HELP( "Triggers if weapon changed" ) ),
-			OutputPortConfig_Void( "OnFiremodeChange",	_HELP( "Triggers if weapon changed" ) ),
-			OutputPortConfig_Void( "OnShoot",	_HELP( "Triggers if weapon shoot" ) ),
-			OutputPortConfig_Void( "OnZoom",	_HELP( "Triggers if weapon zoom changed" ) ),
+			OutputPortConfig_Void( "OnWeaponChange",	_HELP( "Triggers if weapon is changed" ) ),
+			OutputPortConfig_Void( "OnFiremodeChange",	_HELP( "Triggers if firemode is changed" ) ),
+			OutputPortConfig_Void( "OnShoot",	_HELP( "Triggers if weapon is shot" ) ),
+			OutputPortConfig_Void( "OnZoom",	_HELP( "Triggers if weapon zoom is changed" ) ),
 			OutputPortConfig_Void( "OnReloaded",	_HELP( "Triggers if weapon was reloaded" ) ),
-			OutputPortConfig_Void( "OnOutOfAmmo",	_HELP( "Triggers if out of ammo" ) ),
+			OutputPortConfig_Void( "OnOutOfAmmo",	_HELP( "Triggers if current ammo clip is emptied" ) ),
 			OutputPortConfig_Void( "OnStartFire",	_HELP( "Triggers on start fire" ) ),
 			OutputPortConfig_Void( "OnStopFire",	_HELP( "Triggers on stop fire" ) ),
 			OutputPortConfig_Void( "OnAmmoPoolChanged",	_HELP( "Triggers on ammo pool changes" ) ),
 
-			OutputPortConfig<EntityId>( "WeaponId",	_HELP( "Weapon id" ) ),
+			OutputPortConfig<EntityId>( "WeaponId",	_HELP( "Weapon EntityID" ) ),
 			OutputPortConfig<string>  ( "WeaponName",	_HELP( "Weapon name" ) ),
-			OutputPortConfig<string>  ( "FireModeName",	_HELP( "Outputs the name of the current firemode" ) ),
+			OutputPortConfig<string>  ( "FireModeName",	_HELP( "Name of the current firemode" ) ),
 			OutputPortConfig<bool>    ( "IsMelee",	_HELP( "Is melee weapon" ) ),
 
-			OutputPortConfig<int>     ( "Ammo",	_HELP( "Current ammo count" ) ),
-			OutputPortConfig<int>     ( "AmmoType",	_HELP( "Ammo type" ) ),
-			OutputPortConfig<string>  ( "AmmoName",	_HELP( "Ammo name" ) ),
-			OutputPortConfig<int>     ( "MaxAmmo",	_HELP( "Max ammo of current weapon" ) ),
-			OutputPortConfig<int>     ( "AmmoPool",	_HELP( "CurrentAmmoPool" ) ),
+			OutputPortConfig<string>  ( "AmmoName",	_HELP( "Name of currently used ammo" ) ),
+			OutputPortConfig<int>     ( "AmmoCount",	_HELP( "Current ammo remaining in weapon (including chambered rounds)" ) ),
+			OutputPortConfig<int>     ( "ClipSize",	_HELP( "Amount of ammo the weapon clip can hold" ) ),
+			OutputPortConfig<int>     ( "AmmoPool",	_HELP( "Current amount of ammo remaining in player inventory" ) ),
+
 			OutputPortConfig<float>   ( "Spread",	_HELP( "Spread of current weapon" ) ),
 
 			OutputPortConfig<bool>    ( "Zoomed",	_HELP( "Is weapon zoomed" ) ),
-			OutputPortConfig<int>     ( "ZoomMode",	_HELP( "Weapons zoom mode" ) ),
-			OutputPortConfig<string>  ( "ZoomName",	_HELP( "Weapons zoom name" ) ),
-			OutputPortConfig<int>     ( "CurrZoomStep",	_HELP( "ZoomMode zoom name" ) ),
-			OutputPortConfig<int>     ( "MaxZoomStep",	_HELP( "Weapons zoom name" ) ),
+			OutputPortConfig<int>     ( "ZoomMode",	_HELP( "Weapon zoom mode number, as ordered in weapon script" ) ),
+			OutputPortConfig<string>  ( "ZoomName",	_HELP( "Weapon zoom mode name" ) ),
+			OutputPortConfig<int>     ( "CurrZoomStep",	_HELP( "Current zoom step, defined as Stages in ZoomMode params" ) ),
+			OutputPortConfig<int>     ( "MaxZoomStep",	_HELP( "Maximum zoom steps available" ) ),
 			{0}
 		};
 
@@ -653,7 +653,7 @@ public:
 	virtual void OnEndReload(IWeapon *pWeapon, EntityId shooterId, IEntityClass* pAmmoType)
 	{
 		IFireMode* pFireMode = pWeapon ? pWeapon->GetFireMode(pWeapon->GetCurrentFireMode()) : NULL;
-		ActivateOutput(&m_actInfo,EOP_AMMO, pFireMode ? pFireMode->GetAmmoCount() : 0);
+		ActivateOutput(&m_actInfo,EOP_AMMOCOUNT, pFireMode ? pFireMode->GetAmmoCount() : 0);
 		ActivateOutput(&m_actInfo,EOP_AMMOPOOL, pFireMode && pWeapon? pWeapon->GetInventoryAmmoCount(pFireMode->GetAmmoType()) : 0);
 		ActivateOutput(&m_actInfo, EOP_ONRELOAD, true);
 		ActivateOutput(&m_actInfo, EOP_ONAMMOPOOLCHANGE, true);
@@ -664,7 +664,7 @@ public:
 	{
 		m_bShot = true;
 		IFireMode* pFireMode = pWeapon ? pWeapon->GetFireMode(pWeapon->GetCurrentFireMode()) : NULL;
-		ActivateOutput(&m_actInfo,EOP_AMMO, pFireMode ? pFireMode->GetAmmoCount() : 0);
+		ActivateOutput(&m_actInfo,EOP_AMMOCOUNT, pFireMode ? pFireMode->GetAmmoCount() : 0);
 		ActivateOutput(&m_actInfo, EOP_ONSHOOT, true);
 		ActivateOutput(&m_actInfo, EOP_SPREAD, pFireMode ? pFireMode->GetSpreadForHUD() : 15.f);
 	}
@@ -702,17 +702,16 @@ private:
 		ActivateOutput(&m_actInfo,EOP_FIREMODENAME, pFireMode ? string(pFireMode->GetName()) : string(""));
 		ActivateOutput(&m_actInfo,EOP_ISMELEE,  pFireMode ? pFireMode->GetClipSize() == 0 ? true : false : true);
 
-		ActivateOutput(&m_actInfo,EOP_AMMOTYPE, iFireMode);
-		ActivateOutput(&m_actInfo,EOP_AMMONAME, pFireMode ? string(pFireMode->GetName()) : string(""));
-		ActivateOutput(&m_actInfo,EOP_AMMO, pFireMode ? pFireMode->GetAmmoCount() : 0);
-		ActivateOutput(&m_actInfo,EOP_MAXAMMO, pFireMode ? pFireMode->GetClipSize() : 0);
+		ActivateOutput(&m_actInfo,EOP_AMMONAME, pFireMode ? string(pFireMode->GetAmmoType()->GetName()) : string(""));
+		ActivateOutput(&m_actInfo,EOP_AMMOCOUNT, pFireMode ? pFireMode->GetAmmoCount() : 0);
+		ActivateOutput(&m_actInfo,EOP_CLIPSIZE, pFireMode ? pFireMode->GetClipSize() : 0);
 		ActivateOutput(&m_actInfo,EOP_AMMOPOOL, pFireMode && pWeapon? pWeapon->GetInventoryAmmoCount(pFireMode->GetAmmoType()) : 0);
 
 		ActivateOutput(&m_actInfo,EOP_ZOOMED, pWeapon ? pWeapon->IsZoomed() : false);
 		ActivateOutput(&m_actInfo,EOP_ZOOMMODE, iZoomMode);
 		ActivateOutput(&m_actInfo,EOP_ZOOMNAME, pWeapon ? string(pWeapon->GetZoomModeName(iZoomMode)) : string(""));
 		ActivateOutput(&m_actInfo,EOP_ZOOMSTEP, pZoomMode ? pZoomMode->GetCurrentStep() : 0);
-		ActivateOutput(&m_actInfo,EOP_ZOOMMAXSTEP, pZoomMode ? pZoomMode->GetMaxZoomSteps(): 0);
+		ActivateOutput(&m_actInfo,EOP_ZOOMMAXSTEP, pZoomMode ? pZoomMode->GetMaxZoomSteps() : 0);
 	}
 
 	void Enable(SActivationInfo* pActInfo)

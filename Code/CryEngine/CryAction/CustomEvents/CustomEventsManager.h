@@ -23,12 +23,12 @@ public:
 
 public:
 	// ICustomEventManager
-	VIRTUAL bool RegisterEventListener( ICustomEventListener* pListener, const TCustomEventId eventId );
-	VIRTUAL bool UnregisterEventListener( ICustomEventListener* pListener, const TCustomEventId eventId );
-	VIRTUAL bool UnregisterEvent( TCustomEventId eventId );
-	VIRTUAL void Clear();
-	VIRTUAL void FireEvent( const TCustomEventId eventId );
-	VIRTUAL TCustomEventId GetNextCustomEventId();
+	virtual bool RegisterEventListener( ICustomEventListener* pListener, const TCustomEventId eventId );
+	virtual bool UnregisterEventListener( ICustomEventListener* pListener, const TCustomEventId eventId );
+	virtual bool UnregisterEvent( TCustomEventId eventId );
+	virtual void Clear();
+	virtual void FireEvent( const TCustomEventId eventId );
+	virtual TCustomEventId GetNextCustomEventId();
 	// ~ICustomEventManager
 
 	void GetMemoryUsage(ICrySizer *pSizer ) const

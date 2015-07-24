@@ -132,8 +132,6 @@ bool CDialogSession::InternalPlay(int fromScriptLine, bool bNotify)
 		return false;
 	}
 
-	PrecacheSounds();
-
 	m_pDS->AddSession(this);
 	m_bPlaying       = true;
 	m_bReachedEnd    = true;  // will be set to false by DoPlay
@@ -433,8 +431,6 @@ bool CDialogSession::DoStop()
 	m_pDS->RemoveSession(this);
 	m_bPlaying = false;
 
-	UnCacheSounds();
-
 	if (m_bAutoDelete)
 	{
 		m_bAutoDelete = false;
@@ -493,6 +489,20 @@ CDialogSession::CDialogActorContextPtr CDialogSession::GetContext(CDialogScript:
 	CDialogActorContextPtr pContext = stl::find_in_map(m_actorContextMap, actorID, 0);
 	return pContext;
 }
+////////////////////////////////////////////////////////////////////////////
+
+CDialogSession::CDialogActorContextPtr CDialogSession::GetContext(CDialogSystem::ActorContextID contextID) const
+{
+	for (TActorContextMap::const_iterator it = m_actorContextMap.begin(); it != m_actorContextMap.end(); ++it)
+	{
+		if (it->second->GetContextID() == contextID)
+		{
+			return it->second;
+		}
+	}
+
+	return 0;
+}
 
 ////////////////////////////////////////////////////////////////////////////
 bool CDialogSession::Validate()
@@ -502,45 +512,6 @@ bool CDialogSession::Validate()
 	return m_bOK;
 }
 
-////////////////////////////////////////////////////////////////////////////
-void CDialogSession::PrecacheSounds()
-{
-	REINST("can this be removed?");
-	//if (CDialogSystem::sPrecacheSounds == 0)
-	//	return;
-
-	//ISoundSystem* pSoundSys = gEnv->pAudioSystem;
-
-	//const int numLines = m_pScript->GetNumLines();
-	//for (int i=0; i<numLines; ++i)
-	//{
-	//	const CDialogScript::SScriptLine* pLine = m_pScript->GetLine(i);
-	//	if (pLine->m_sound.empty())
-	//		continue;
-
-	//	const char* fullSoundPath = CDialogActorContext::GetSoundKey(pLine->m_sound);
-	//	bool ok = (pSoundSys->Precache(fullSoundPath, CDialogActorContext::SOUND_FLAGS, FLAG_SOUND_PRECACHE_DIALOG_DEFAULT) != ePrecacheResult_Error);
-	//	if (ok/* && (pSoundBuffer->Loaded() || pSoundBuffer->Loading() */)  // ISoundBuffer is not exposed from SoundSystem
-	//	{
-	//		// TODO: do something, maybe store for unprecaching?
-	//		DiaLOG::Log(DiaLOG::eAlways, "[DIALOG] CDialogSession::PrecacheSounds: %s [Script=%s] Sound '%s' precached", 
-	//			GetDebugName(), m_pScript->GetID().c_str(), fullSoundPath);
-	//	}
-	//	else
-	//	{
-	//		GameWarning("[DIALOG] CDialogSession::PrecacheSounds: %s [Script=%s] Cannot precache sound '%s'", 
-	//			GetDebugName(), m_pScript->GetID().c_str(), fullSoundPath);
-	//	}
-	//}
-}
-
-////////////////////////////////////////////////////////////////////////////
-void CDialogSession::UnCacheSounds()
-{
-	//ISoundSystem* pSoundSys = gEnv->pAudioSystem;
-
-	// TODO: really un-precache sounds!
-}
 
 ////////////////////////////////////////////////////////////////////////////
 const char* CDialogSession::GetEventName(EDialogSessionEvent event)

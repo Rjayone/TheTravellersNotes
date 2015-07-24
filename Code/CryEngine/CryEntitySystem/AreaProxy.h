@@ -62,49 +62,49 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IEntityAreaProxy interface.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetFlags( int nAreaProxyFlags ) { m_nFlags = nAreaProxyFlags; };
-	VIRTUAL int  GetFlags() { return m_nFlags; } 
+	virtual void SetFlags( int nAreaProxyFlags ) { m_nFlags = nAreaProxyFlags; };
+	virtual int  GetFlags() { return m_nFlags; } 
 
-	VIRTUAL EEntityAreaType GetAreaType() const { return m_pArea->GetAreaType(); };
+	virtual EEntityAreaType GetAreaType() const { return m_pArea->GetAreaType(); };
 
-	VIRTUAL void	SetPoints( const Vec3* const vPoints, const bool* const pabSoundObstructionSegments, int const nPointsCount, float const fHeight );
-	VIRTUAL void	SetBox( const Vec3& min,const Vec3& max, const bool* const pabSoundObstructionSides, size_t const nSideCount );
-	VIRTUAL void	SetSphere( const Vec3& center,float fRadius );
+	virtual void	SetPoints( const Vec3* const vPoints, const bool* const pabSoundObstructionSegments, int const nPointsCount, float const fHeight );
+	virtual void	SetBox( const Vec3& min,const Vec3& max, const bool* const pabSoundObstructionSides, size_t const nSideCount );
+	virtual void	SetSphere( const Vec3& center,float fRadius );
 
-	VIRTUAL void	BeginSettingSolid( const Matrix34& worldTM );
-	VIRTUAL void	AddConvexHullToSolid( const Vec3* verticesOfConvexHull, bool bObstruction, int numberOfVertices );
-	VIRTUAL void	EndSettingSolid();
+	virtual void	BeginSettingSolid( const Matrix34& worldTM );
+	virtual void	AddConvexHullToSolid( const Vec3* verticesOfConvexHull, bool bObstruction, int numberOfVertices );
+	virtual void	EndSettingSolid();
 	
-	VIRTUAL int   GetPointsCount() { return m_localPoints.size(); };
-	VIRTUAL const Vec3* GetPoints();
-	VIRTUAL float GetHeight() { return m_pArea->GetHeight(); };
-	VIRTUAL void	GetBox( Vec3& min,Vec3& max ) { m_pArea->GetBox(min,max); }
-	VIRTUAL void	GetSphere( Vec3& vCenter,float &fRadius ) { m_pArea->GetSphere(vCenter,fRadius); };
+	virtual int   GetPointsCount() { return m_localPoints.size(); };
+	virtual const Vec3* GetPoints();
+	virtual float GetHeight() { return m_pArea->GetHeight(); };
+	virtual void	GetBox( Vec3& min,Vec3& max ) { m_pArea->GetBox(min,max); }
+	virtual void	GetSphere( Vec3& vCenter,float &fRadius ) { m_pArea->GetSphere(vCenter,fRadius); };
 
-	VIRTUAL void SetGravityVolume(const Vec3 * pPoints, int nNumPoints, float fRadius, float fGravity, bool bDontDisableInvisible, float fFalloff, float fDamping);
+	virtual void SetGravityVolume(const Vec3 * pPoints, int nNumPoints, float fRadius, float fGravity, bool bDontDisableInvisible, float fFalloff, float fDamping);
 
-	VIRTUAL void	SetID( const int id ) { m_pArea->SetID(id); };
-	VIRTUAL int		GetID() const  { return m_pArea->GetID(); };
-	VIRTUAL void	SetGroup( const int id) { m_pArea->SetGroup(id); };
-	VIRTUAL int		GetGroup( ) const { return m_pArea->GetGroup(); };
-	VIRTUAL void	SetPriority( const int nPriority) { m_pArea->SetPriority(nPriority); };
-	VIRTUAL int		GetPriority( ) const { return m_pArea->GetPriority(); };
+	virtual void	SetID( const int id ) { m_pArea->SetID(id); };
+	virtual int		GetID() const  { return m_pArea->GetID(); };
+	virtual void	SetGroup( const int id) { m_pArea->SetGroup(id); };
+	virtual int		GetGroup( ) const { return m_pArea->GetGroup(); };
+	virtual void	SetPriority( const int nPriority) { m_pArea->SetPriority(nPriority); };
+	virtual int		GetPriority( ) const { return m_pArea->GetPriority(); };
 	
-	VIRTUAL void	SetSoundObstructionOnAreaFace( int unsigned const nFaceIndex, bool const bObstructs ) { m_pArea->SetSoundObstructionOnAreaFace(nFaceIndex, bObstructs); }
+	virtual void	SetSoundObstructionOnAreaFace( int unsigned const nFaceIndex, bool const bObstructs ) { m_pArea->SetSoundObstructionOnAreaFace(nFaceIndex, bObstructs); }
 
-	VIRTUAL void	AddEntity( EntityId id ) { m_pArea->AddEntity(id); };
-	VIRTUAL void	AddEntity( EntityGUID guid ) { m_pArea->AddEntity(guid); }
-	VIRTUAL void	ClearEntities() { m_pArea->ClearEntities(); };
+	virtual void	AddEntity( EntityId id ) { m_pArea->AddEntity(id); };
+	virtual void	AddEntity( EntityGUID guid ) { m_pArea->AddEntity(guid); }
+	virtual void	ClearEntities() { m_pArea->ClearEntities(); };
 
-	VIRTUAL void	SetProximity( float prx ) { m_pArea->SetProximity(prx); };
-	VIRTUAL float	GetProximity() { return m_pArea->GetProximity(); };
+	virtual void	SetProximity( float prx ) { m_pArea->SetProximity(prx); };
+	virtual float	GetProximity() { return m_pArea->GetProximity(); };
 
-	VIRTUAL float ClosestPointOnHullDistSq(EntityId const nEntityID, Vec3 const& Point3d, Vec3& OnHull3d) { return m_pArea->ClosestPointOnHullDistSq(nEntityID, Point3d, OnHull3d, false); };
-	VIRTUAL float CalcPointNearDistSq(EntityId const nEntityID, Vec3 const& Point3d, Vec3& OnHull3d) { return m_pArea->CalcPointNearDistSq(nEntityID, Point3d, OnHull3d, false); };
-	VIRTUAL bool	CalcPointWithin(EntityId const nEntityID, Vec3 const& Point3d, bool const bIgnoreHeight = false) const { return m_pArea->CalcPointWithin(nEntityID, Point3d, bIgnoreHeight); }
+	virtual float ClosestPointOnHullDistSq(EntityId const nEntityID, Vec3 const& Point3d, Vec3& OnHull3d) { return m_pArea->ClosestPointOnHullDistSq(nEntityID, Point3d, OnHull3d, false); };
+	virtual float CalcPointNearDistSq(EntityId const nEntityID, Vec3 const& Point3d, Vec3& OnHull3d) { return m_pArea->CalcPointNearDistSq(nEntityID, Point3d, OnHull3d, false); };
+	virtual bool	CalcPointWithin(EntityId const nEntityID, Vec3 const& Point3d, bool const bIgnoreHeight = false) const { return m_pArea->CalcPointWithin(nEntityID, Point3d, bIgnoreHeight); }
 	
-	VIRTUAL size_t GetNumberOfEntitiesInArea() const OVERRIDE;
-	VIRTUAL EntityId GetEntityInAreaByIdx(size_t index) const OVERRIDE;
+	virtual size_t GetNumberOfEntitiesInArea() const override;
+	virtual EntityId GetEntityInAreaByIdx(size_t index) const override;
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer )const
 	{

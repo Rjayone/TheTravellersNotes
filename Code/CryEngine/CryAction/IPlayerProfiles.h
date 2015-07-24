@@ -2,8 +2,6 @@
 // Copyright (C), Crytek, 1999-2014.
 
 
-#include DEVIRTUALIZE_HEADER_FIX(IPlayerProfiles.h)
-
 #ifndef __IPLAYERPROFILES_H__
 #define __IPLAYERPROFILES_H__
 
@@ -18,7 +16,7 @@ struct IActionMap;
 struct ISaveGame;
 struct ILoadGame;
 
-UNIQUE_IFACE struct ISaveGameThumbnail
+struct ISaveGameThumbnail
 {
 	virtual	~ISaveGameThumbnail(){}
 	// a thumbnail is a image in BGR or BGRA format
@@ -40,7 +38,7 @@ typedef _smart_ptr<ISaveGameThumbnail> ISaveGameThumbailPtr;
 
 #define SAVEGAME_LEVEL_NAME_UNDEFINED "<undefined>"
 
-UNIQUE_IFACE struct ISaveGameEnumerator
+struct ISaveGameEnumerator
 {
 	virtual ~ISaveGameEnumerator(){}
 	struct SGameMetaData
@@ -75,7 +73,7 @@ UNIQUE_IFACE struct ISaveGameEnumerator
 };
 typedef _smart_ptr<ISaveGameEnumerator> ISaveGameEnumeratorPtr;
 
-UNIQUE_IFACE struct IAttributeEnumerator
+struct IAttributeEnumerator
 {
 	virtual ~IAttributeEnumerator(){}
 	struct SAttributeDescription
@@ -137,7 +135,7 @@ public:
 
 #define INVALID_CONTROLLER_INDEX 0xFFFFFFFF
 
-UNIQUE_IFACE struct IPlayerProfileManager
+struct IPlayerProfileManager
 {
 	struct SProfileDescription
 	{
@@ -158,9 +156,7 @@ UNIQUE_IFACE struct IPlayerProfileManager
 	virtual void GetMemoryStatistics( ICrySizer * ) = 0;
 
 	// win32:    currently logged on user
-	// xbox360:  more than one user can be signed in
-	// ps3:      several connected pads possible
-
+	
 	// login the user
 	virtual int  GetUserCount() = 0;
 	virtual bool GetUserInfo(int index, IPlayerProfileManager::SUserInfo& outInfo) = 0;
@@ -194,9 +190,6 @@ UNIQUE_IFACE struct IPlayerProfileManager
 	// rename the current profile of the user
 	virtual bool RenameProfile(const char* userId, const char* newName, EProfileOperationResult& result) = 0;
 	
-	// change the userId of the current profile
-	virtual bool ModifyUserId(const char* userId, const char* newUserId, IPlayerProfileManager::EProfileOperationResult& result) = 0;
-
 	// save a profile
 	virtual bool SaveProfile(const char* userId, EProfileOperationResult& result, unsigned int reason) = 0;
 
@@ -341,7 +334,7 @@ UNIQUE_IFACE struct IPlayerProfileManager
 	//virtual bool WriteAttributeBlock(const char* userId, const char* attrBlockName, int reason) = 0;
 };
 
-UNIQUE_IFACE struct ILevelRotationFile
+struct ILevelRotationFile
 {
 	virtual ~ILevelRotationFile(){}
   virtual bool Save(XmlNodeRef r) = 0;
@@ -349,7 +342,7 @@ UNIQUE_IFACE struct ILevelRotationFile
   virtual void Complete() = 0;
 };
 
-UNIQUE_IFACE struct IPlayerProfile
+struct IPlayerProfile
 {
 	virtual ~IPlayerProfile(){}
 	// reset the profile

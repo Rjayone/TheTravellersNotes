@@ -13,15 +13,13 @@
 ////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "FlashUIElement.h"
-
+#include "UnicodeFunctions.h"
 #include <IHardwareMouse.h>
 #include <IFlashUI.h>
 #include <ICryPak.h>
 #include "FlashUI.h"
 
 #define FLASH_PLATFORM_PC       0
-#define FLASH_PLATFORM_X360     1
-#define FLASH_PLATFORM_PS3      2
 #define FLASH_PLATFORM_DURANGO  1
 #define FLASH_PLATFORM_ORBIS    2
 
@@ -620,12 +618,6 @@ bool CFlashUIElement::Init( bool bLoadAsset )
 		{
 			switch (m_pFlashUI->GetCurrentPlatform())
 			{
-			case IFlashUI::ePUI_X360:
-				m_pFlashplayer->Invoke1("cry_onSetup", FLASH_PLATFORM_X360);
-				break;
-			case IFlashUI::ePUI_PS3:
-				m_pFlashplayer->Invoke1("cry_onSetup", FLASH_PLATFORM_PS3);
-				break;
 			case IFlashUI::ePUI_Durango:
 				m_pFlashplayer->Invoke1("cry_onSetup", FLASH_PLATFORM_DURANGO);
 				break;
@@ -638,11 +630,7 @@ bool CFlashUIElement::Init( bool bLoadAsset )
 		}
 		else
 		{
-#if defined(XENON)
-			m_pFlashplayer->Invoke1("cry_onSetup", FLASH_PLATFORM_X360);
-#elif defined(PS3)
-			m_pFlashplayer->Invoke1("cry_onSetup", FLASH_PLATFORM_PS3);
-#elif defined(DURANGO)
+#if defined(DURANGO)
 			m_pFlashplayer->Invoke1("cry_onSetup", FLASH_PLATFORM_DURANGO);
 #elif defined(ORBIS)
 			m_pFlashplayer->Invoke1("cry_onSetup", FLASH_PLATFORM_ORBIS);
@@ -892,9 +880,8 @@ void CFlashUIElement::RenderLockless()
 	if (m_pFlashplayer == NULL) return;
 
 	if ( !HasExtTexture() )
-	{
-		m_pFlashplayer->RenderRecordLockless();
-		m_pFlashplayer->RenderPlaybackLockless(gEnv->pRenderer->IsStereoEnabled());
+	{		
+		m_pFlashplayer->Render(gEnv->pRenderer->IsStereoEnabled());
 	}
 }
 
@@ -1947,21 +1934,22 @@ bool CFlashUIElement::HandleInternalCommand( const char* sCommand, const SUIArgu
 	{
 		UIACTION_LOG( "%s (%i): UIElement received \"cry_virtualKeyboard\" from ActionScript", GetName(), m_iInstanceID);// args.GetAsString() );
 		string mode;
-		static wstring title; // make them static since IPlatformOS seems to not store the actual string!
-		static wstring initialInput;
+		string utf8Title;
+		string utf8InitialInput;
 		int maxchars;
 
 		bool ok = args.GetArg(0,mode);
-		ok &= args.GetArg(1, title);
-		ok &= args.GetArg(2, initialInput);
+		ok &= args.GetArg(1, utf8Title);
+		ok &= args.GetArg(2, utf8InitialInput);
 		ok &= args.GetArg(3, maxchars);
 
-		if (title.c_str()[0] == L'@') // this is a localization label
+		if (ok && utf8Title[0] == '@') // this is a localization label (label name stored in utf8Title)
 		{
-			string label;
-			const bool haslabel = args.GetArg(1, label);
-			CRY_ASSERT_MESSAGE( haslabel, "Unicode chars found in localization label, only ascii supported!");
-			gEnv->pSystem->GetLocalizationManager()->LocalizeLabel(label.c_str(), title);
+			string utf8Localized;
+			if (gEnv->pSystem->GetLocalizationManager()->LocalizeLabel(utf8Title.c_str(), utf8Localized))
+			{
+				utf8Title.swap(utf8Localized);
+			}
 		}
 
 
@@ -1976,12 +1964,19 @@ bool CFlashUIElement::HandleInternalCommand( const char* sCommand, const SUIArgu
 			else if (strcmpi(mode.c_str(), "Email") == 0)
 				flags &= IPlatformOS::KbdFlag_Email;
 
-			m_pFlashUI->DisplayVirtualKeyboard(flags, title, initialInput, maxchars, this);
+			m_pFlashUI->DisplayVirtualKeyboard(flags, utf8Title, utf8InitialInput, maxchars, this);
 		}
 		else
 		{
 			UIACTION_ERROR( "%s (%i): cry_virtualKeyboard received with wrong arguments! Args: %s", GetName(), m_iInstanceID, args.GetAsString() );
 		}
+		return true;
+	}
+	if (strcmp( sCommand, "cry_imeFocus" ) == 0 )
+	{
+		UIACTION_LOG( "%s (%i): UIElement received \"cry_imeFocus\" from ActionScript", GetName(), m_iInstanceID);
+		IFlashPlayer *pPlayer = GetFlashPlayer();
+		if (pPlayer) pPlayer->SetImeFocus();
 		return true;
 	}
 	return false;
@@ -2006,7 +2001,7 @@ void CFlashUIElement::KeyboardCancelled()
 }
 
 //------------------------------------------------------------------------------------
-void CFlashUIElement::KeyboardFinished(const wchar_t *pInString)
+void CFlashUIElement::KeyboardFinished(const char *pInString)
 {
 	if (!m_pFlashplayer)
 		return;
@@ -2404,5 +2399,4 @@ IUIElement* CUIElementIterator::Next()
 #undef SHOW_CURSOR
 #undef HIDE_CURSOR
 
-#include UNIQUE_VIRTUAL_WRAPPER(IUIElement)
-#include UNIQUE_VIRTUAL_WRAPPER(IUIElementIterator)
+

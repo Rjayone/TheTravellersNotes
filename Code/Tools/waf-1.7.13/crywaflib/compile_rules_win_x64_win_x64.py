@@ -76,10 +76,18 @@ def load_win_x64_win_x64_common_settings(conf):
 		v['CC'] = msvc_compiler_folder + '/bin/amd64/CL.exe'
 		v['CXX'] = msvc_compiler_folder + '/bin/amd64/CL.exe'
 		v['LINK'] = v['LINK_CC'] = v['LINK_CXX'] = msvc_compiler_folder + '/bin/amd64/LINK.exe'
+		
+		# Setup global include path
+		v['INCLUDES'] += [ 
+			conf.CreateRootRelativePath('Code/SDKs/Microsoft Windows SDK/V8.0/Include'),
+			conf.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/include'),
+			conf.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/include')
+		]
 			
 		# Setup global library search path
 		v['LIBPATH'] += [ 
 			msvc_compiler_folder + '/lib/amd64',
+			msvc_compiler_folder + '/atlmfc/lib/amd64',
 			ms_sdk_folder + '/V8.0/Lib/Win8/um/x64'
 		]		
 

@@ -11,14 +11,8 @@
   - 2:8:2004   10:53 : Created by Márcio Martins
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IGame.h)
 
-#ifndef __IGAME_H__
-#define __IGAME_H__
-
-#if _MSC_VER > 1000
-# pragma once
-#endif
+#pragma once
 
 #define CRY_SAVEGAME_FILENAME "CRYENGINE"
 #define CRY_SAVEGAME_FILE_EXT ".CSF"
@@ -47,7 +41,7 @@ struct IGameToEditorInterface;
 //		object.
 // See Also
 //		IEditorGame
-UNIQUE_IFACE struct IGame
+struct IGame
 {
 	struct ExportFilesInfo
 	{
@@ -84,6 +78,7 @@ UNIQUE_IFACE struct IGame
 	//   Type to represent saved game names, keeping the string on the stack if possible.
 	typedef CryStackStringT<char, 256> TSaveGameName;
 
+	// <interfuscator:shuffle>
 	virtual ~IGame(){}
 
 	// Description:
@@ -110,6 +105,10 @@ UNIQUE_IFACE struct IGame
 	// Description:
 	//		Shuts down the MOD and delete itself.
 	virtual void Shutdown() = 0;
+
+	// Description:
+	//		Notify game of pre-physics update.
+	virtual void PrePhysicsUpdate() {}
 
 	// Description:
 	//		Updates the MOD.
@@ -209,18 +208,7 @@ UNIQUE_IFACE struct IGame
 	virtual bool GameEndLevel(const char* stringId) = 0;
 
 	virtual void SetUserProfileChanged(bool yesNo){}
-
-	// Description:
-	//		Returns the DRM key data used to decrypt a key file in a PS3 HDD boot game. Sony TRCs require at least one encrypted file to be present for DRM to be effective.
-	//		This key is a 32 character user defined string and must match the key used to encrypt the list of files returned by GetDRMFileList
-	virtual const uint8* GetDRMKey(uint32 *pKeySize) { *pKeySize = 0; return NULL; }
-
-	// Description:
-	//		Returns a comma separated list of files to perform a DRM boot check on. You can return NULL to perform no checks but Sony TRCs require an encrypted HDD boot game
-	//		to have at least one NPDRM EDATA encrypted file in the package. If the file is not present or the user cannot decrypt them, the game will display a TRC compliant
-	//		error message and quit. Note that this is ONLY used on games that are specified as HDD Boot Games in their PARAM.SFO.
-	virtual const char* GetDRMFileList() { return NULL; }
-
+	
 	//    creates a GameStateRecorder instance in GameDll and passes its ownership to the caller (CryAction/GamePlayRecorder)
 	virtual IGameStateRecorder* CreateGameStateRecorder(IGameplayListener* pL) = 0;
 
@@ -247,8 +235,5 @@ UNIQUE_IFACE struct IGame
 	// Description:
 	//		Access to game interface
 	virtual void* GetGameInterface() = 0;
-
+	// </interfuscator:shuffle>
 };
-
-
-#endif //__IGAME_H__

@@ -12,7 +12,6 @@
 //  - August 28, 2001: Created by Marco Corbetta (as part of ISound)
 //
 //////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IMusicSystem.h)
 
 #ifndef CRYSOUND_IMUSICSYSTEM_H
 #define CRYSOUND_IMUSICSYSTEM_H
@@ -23,16 +22,16 @@
 
 //////////////////////////////////////////////////////////////////////////
 // String Iterator
-UNIQUE_IFACE struct IStringItVec
+struct IStringItVec
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IStringItVec(){}
 	virtual bool IsEnd() = 0;
 	virtual const char* Next() = 0;
 	virtual void MoveFirst() = 0;
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -493,11 +492,11 @@ struct SMusicSystemEventInfo
 //////////////////////////////////////////////////////////////////////////
 struct IMusicSystemEventListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMusicSystemEventListener(){}
 
 	virtual void OnMusicSystemEvent(SMusicSystemInfo const& rMusicSystemInfo) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -607,7 +606,7 @@ typedef uint32 TMusicLogicInputId;
 
 struct IMusicLogic
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMusicLogic(){}
 
 	virtual bool Init() = 0;
@@ -624,7 +623,7 @@ struct IMusicLogic
 	virtual void Serialize(TSerialize ser) = 0;
   virtual bool SetPreset(CCryNameCRC const& rNamePreset) = 0;
 	virtual void Reload() = 0;
-
+// </interfuscator:shuffle>
 
 #if !defined(_RELEASE)
   virtual void DrawInformation(IRenderer* pRenderer, float xpos, float ypos, int nSoundInfo) = 0;
@@ -637,7 +636,7 @@ struct IMusicLogic
 //////////////////////////////////////////////////////////////////////////
 struct IMusicSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMusicSystem(){}
 	
 	virtual void PostInit() = 0;
@@ -727,7 +726,7 @@ struct IMusicSystem
 	// Summary:
 	// To get music logic related data.
 	virtual IMusicLogic* const GetMusicLogic() const = 0;
-
+	// </interfuscator:shuffle>
 
 	// Summary:
 	// This music pattern instance will be preloaded so it plays immediately when called.
@@ -748,10 +747,10 @@ struct IMusicSystem
 //////////////////////////////////////////////////////////////////////////
 struct IMusicSystemSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMusicSystemSink(){}
 	virtual void ReleaseData(struct SMusicData *pData) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #define UPDATE_MUSICSYSTEM_IN_MS 250

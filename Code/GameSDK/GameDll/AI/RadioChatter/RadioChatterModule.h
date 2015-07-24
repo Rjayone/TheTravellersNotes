@@ -23,9 +23,9 @@ public:
 		return "RadioChatter";
 	}
 
-	virtual void Update(float updateTime) OVERRIDE;
-	virtual void Reset(bool bUnload) OVERRIDE;
-	virtual void Serialize(TSerialize ser) OVERRIDE;
+	virtual void Update(float updateTime) override;
+	virtual void Reset(bool bUnload) override;
+	virtual void Serialize(TSerialize ser) override;
 
 	void SetDefaultSilenceDuration();
 	void SetSilenceDuration(float min, float max);

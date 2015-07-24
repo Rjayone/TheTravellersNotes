@@ -156,8 +156,8 @@ bool CBinarySerializeHelper::Write(ISerializedObject *pObject, TSerializeFunc se
 
 		XMLCPB::CNodeLiveWriterRef writeNode = Writer.GetRoot()->AddChildNode(pBinaryObject->GetSectionName());
 
-		std::auto_ptr<CSerializeWriterXMLCPBin> pWriterXMLCPBin = std::auto_ptr<CSerializeWriterXMLCPBin>( new CSerializeWriterXMLCPBin(writeNode, Writer) );
-		std::auto_ptr<ISerialize> pWriter = std::auto_ptr<ISerialize>( new CSimpleSerializeWithDefaults<CSerializeWriterXMLCPBin>( *pWriterXMLCPBin ));
+		std::unique_ptr<CSerializeWriterXMLCPBin> pWriterXMLCPBin = std::unique_ptr<CSerializeWriterXMLCPBin>( new CSerializeWriterXMLCPBin(writeNode, Writer) );
+		std::unique_ptr<ISerialize> pWriter = std::unique_ptr<ISerialize>( new CSimpleSerializeWithDefaults<CSerializeWriterXMLCPBin>( *pWriterXMLCPBin ));
 
 		TSerialize stateWriter(pWriter.get());
 		if (serializeFunc(stateWriter, pArgument))
@@ -185,8 +185,8 @@ bool CBinarySerializeHelper::Read(ISerializedObject *pObject, TSerializeFunc ser
 			XMLCPB::CNodeLiveReaderRef readNode = Reader.GetRoot()->GetChildNode(pBinaryObject->GetSectionName());
 			assert(readNode.IsValid());
 
-			std::auto_ptr<CSerializeReaderXMLCPBin> pReaderXMLCPBin = std::auto_ptr<CSerializeReaderXMLCPBin>( new CSerializeReaderXMLCPBin(readNode, Reader) );
-			std::auto_ptr<ISerialize> pReader = std::auto_ptr<ISerialize>( new CSimpleSerializeWithDefaults<CSerializeReaderXMLCPBin>( *pReaderXMLCPBin ));
+			std::unique_ptr<CSerializeReaderXMLCPBin> pReaderXMLCPBin = std::unique_ptr<CSerializeReaderXMLCPBin>( new CSerializeReaderXMLCPBin(readNode, Reader) );
+			std::unique_ptr<ISerialize> pReader = std::unique_ptr<ISerialize>( new CSimpleSerializeWithDefaults<CSerializeReaderXMLCPBin>( *pReaderXMLCPBin ));
 
 			TSerialize stateReader(pReader.get());
 			if (serializeFunc(stateReader, pArgument))

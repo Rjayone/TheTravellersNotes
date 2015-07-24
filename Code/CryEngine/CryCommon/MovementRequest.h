@@ -73,6 +73,7 @@ struct MovementRequest
 	{
 		MoveTo,
 		Stop,
+		CountTypes,  // this has to stay the last one for places where the number of elements of this enum is relevant
 	};
 
 	MovementRequest()
@@ -85,6 +86,20 @@ struct MovementRequest
 		, lengthToTrimFromThePathEnd(0.0f)
 	{
 	}
+
+#ifdef COMPILE_WITH_MOVEMENT_SYSTEM_DEBUG
+	static const char* GetTypeAsDebugName(Type type)
+	{
+		COMPILE_TIME_ASSERT(CountTypes == 2);	// if this fails, then most likely a new value in the Type enum got introduced
+
+		if (type == MoveTo)
+			return "MoveTo";
+		else if(type == Stop)
+			return "Stop";
+
+		return "Undefined";
+	}
+#endif
 
 	MovementStyle style;
 	Vec3 destination;

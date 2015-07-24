@@ -318,10 +318,6 @@ void CVehiclePartBase::OnEvent(const SVehiclePartEvent& event)
         EVehiclePartState state = GetStateForDamageRatio(m_damageRatio);
         ChangeState(state, eVPSF_Physicalize);
       }
-      else if (m_damageRatio == 0.f)
-      {
-        ChangeState(eVGS_Default);
-      }      
 	  }  
     break;  
   case eVPE_Repair:

@@ -15,14 +15,14 @@ History:
 
 
 // This container is specialized for data which is generated in the 3DEngine and consumed by the renderer
-// in the following frame due to multithreaded rendering. To be useable by SPUs as well as other Threads
+// in the following frame due to multithreaded rendering. To be useable by Jobs as well as other Threads
 // some very specific desing choices were taken:
 // First of the underlying continous memory block is only resized during a call to 'CoalesceMemory'
 // to prevent freeing a memory block which could be used by another thread.
 // If new memory is requiered, a page of 4 KB is allocated and used as a temp storage till the next
 // call to 'CoalesceMemory' which then copies all page memory into one continous block.
 // Also all threading relevant functions are implemented LockLess to prevent lock contention and make
-// this container useable from SPU.
+// this container useable from Jobs
 //
 // Right now, the main usage pattern of this container is by the RenderThread, who calls at the beginning
 // of its frame 'CoalesceMemory', since then we can be sure that the 3DEngine has finished creating it's elements.
@@ -86,9 +86,6 @@ private:
 		// size of a page to allocate, the CMemoryPage is just the header,
 		// the actual object data is stored in the 4KB chunk right
 		// after the header (while keeping the requiered alignment and so on)
-		//
-		// NOTE: Please try to keep it to 4096 bytes, since this
-		// is the biggest allocation for SPUs which don't trigger a MainThreadAllocation
 		enum { nMemoryPageSize = 4096 };
 
 		CMemoryPage();
@@ -249,7 +246,7 @@ inline void CThreadSafeRendererContainer<T>::push_back( const T& rObj )
 {	
 	assert(m_bElementAccessSafe);
 	size_t nUnused = ~0;
-	T *pObj = SPU_MAIN_PTR( push_back_impl(nUnused) );
+	T *pObj = push_back_impl(nUnused);
 	*pObj = rObj;
 }
 
@@ -259,7 +256,7 @@ template<typename T>
 inline void CThreadSafeRendererContainer<T>::push_back( const T& rObj, size_t &nIndex )
 {	
 	assert(m_bElementAccessSafe);
-	T *pObj = SPU_MAIN_PTR( push_back_impl(nIndex) );
+	T *pObj = push_back_impl(nIndex);
 	*pObj = rObj;
 }
 
@@ -549,9 +546,6 @@ inline typename CThreadSafeRendererContainer<T>::CMemoryPage* CThreadSafeRendere
 
 	memset(pNewPageMemoryChunk,0,nMemoryPageSize);
 	CMemoryPage *pNewPage = new(pNewPageMemoryChunk) CMemoryPage();
-#if defined(__SPU__)
-	__spu_flush_cache_range(pNewPageMemoryChunk,nMemoryPageSize);
-#endif
 	return pNewPage;
 }
 

@@ -30,6 +30,50 @@ namespace Utils
 	{
 		return ::wcscmp(p0, p1);
 	}
+
+	// The function copies characters from src to dst one by one until any of
+	// the following conditions is met:
+	//   1) the end of the destination buffer (minus one character) is reached
+	//   2) the end of the source buffer is reached
+	//   3) zero character is found in the source buffer
+	//
+	// When any of 1), 2), 3) happens, the function writes the terminating zero
+	// character to the destination buffer and return.
+	//
+	// The function guarantees writing the terminating zero character to the
+	// destination buffer (if the buffer can fit at least one character).
+	//
+	// The function returns false when a null pointer is passed or when
+	// clamping happened (i.e. when the end of the destination buffer is
+	// reached but the source has some characters left).
+	inline bool strcpy_with_clamp(char* const dst, size_t const dst_size_in_bytes, const char* const src, size_t const src_size_in_bytes = (size_t)-1)
+	{
+		if (!dst || dst_size_in_bytes < sizeof(char))
+		{
+			return false;
+		}
+
+		if (!src || src_size_in_bytes < sizeof(char))
+		{
+			dst[0] = 0;
+			return src != 0;  // we return true for non-null src without characters
+		}
+
+		const size_t src_n = src_size_in_bytes;
+		const size_t n = (std::min)(dst_size_in_bytes - 1, src_n);
+
+		for (size_t i = 0; i < n; ++i)
+		{
+			dst[i] = src[i];
+			if (!src[i])
+			{
+				return true;
+			}
+		}
+
+		dst[n] = 0;
+		return n >= src_n || src[n] == 0;
+	}
 }
 
 
@@ -430,8 +474,6 @@ public:
 	void CallSettingsManagerExe(void* hParent);
 	void GetEditorExecutable(SettingsManagerHelpers::CWCharBuffer wbuffer);
 	bool CallEditor(void** pEditorWindow, void* hParent, const char* pWndName, const char* pFlag);
-
-	static bool Is64bitWindows();
 };
 
 #endif // #if defined(CRY_ENABLE_RC_HELPER)

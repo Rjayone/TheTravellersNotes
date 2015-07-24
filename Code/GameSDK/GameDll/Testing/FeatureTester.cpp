@@ -2831,7 +2831,7 @@ const char * CFeatureTester::StartTest(const SFeatureTest * test, const char * a
 				// [See JB/OF] - Adding this alloc to Global Heap - JIRA CRYIII-1032
 				ScopedSwitchToGlobalHeap useGlobalHeap;
 				m_iterateOverParams.m_currentParams[m_iterateOverParams.m_numParams] = new char[paramLength];
-				cry_strncpy(m_iterateOverParams.m_currentParams[m_iterateOverParams.m_numParams], curParams, paramLength);
+				cry_strcpy(m_iterateOverParams.m_currentParams[m_iterateOverParams.m_numParams], paramLength, curParams);
 				++ m_iterateOverParams.m_numParams;
 			}
 

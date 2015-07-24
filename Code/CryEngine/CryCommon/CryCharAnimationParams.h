@@ -5,7 +5,7 @@
 #include <Tarray.h>
 #include <ISerialize.h> // <> required for Interfuscator
 #include <CrySizer.h>
-#include "crc32.h"
+#include "CryCrc32.h"
 
 
 #define MAX_LMG_DIMENSIONS (4)
@@ -198,18 +198,18 @@ enum EMotionParamID
 	eMotionParamID_TurnSpeed,
 	eMotionParamID_TravelAngle,     //forward, backwards and sidestepping  
 	eMotionParamID_TravelSlope,
-	eMotionParamID_TurnAngle,				//Idle2Move and idle-rotations
+	eMotionParamID_TurnAngle,       //Idle2Move and idle-rotations
 	eMotionParamID_TravelDist,      //idle-steps 
-	eMotionParamID_StopLeg,				  //Move2Idle
-	eMotionParamID_BlendWeight,		  //custom parameter in the range [0...1]
+	eMotionParamID_StopLeg,         //Move2Idle
 
-	eMotionParamID_Duration, //Kiev ???
-	eMotionParamID_Height,   //Kiev ???
-	eMotionParamID_Scale,    //Kiev ???
-
-	eMotionParamID_TravelDistScale, //Obsolete
-	eMotionParamID_WeightShift,			//Obsolete
-	eMotionParamID_Curving,         //Obsolete
+	eMotionParamID_BlendWeight,     //custom parameters
+	eMotionParamID_BlendWeight2,
+	eMotionParamID_BlendWeight3,
+	eMotionParamID_BlendWeight4,
+	eMotionParamID_BlendWeight5,
+	eMotionParamID_BlendWeight6,
+	eMotionParamID_BlendWeight7,
+	eMotionParamID_BlendWeight_Last = eMotionParamID_BlendWeight7,
 
 	eMotionParamID_COUNT,
 };
@@ -286,7 +286,7 @@ public:
 	void SetName( const char* name )
 	{
 		m_strEventName = name;
-		m_nameLowercaseCRC32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( name );
+		m_nameLowercaseCRC32 = CCrc32::ComputeLowercase( name );
 	}
 
 	uint32 GetNameLowercaseCRC32() const { return m_nameLowercaseCRC32; }

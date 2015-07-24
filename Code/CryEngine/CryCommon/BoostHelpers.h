@@ -27,10 +27,7 @@ using std::type_info;
 #include <boost/weak_ptr.hpp>
 
 #include <boost/enable_shared_from_this.hpp>
-
-#ifndef __SPU__
 #include <boost/mem_fn.hpp>
-#endif
 
 #define DECLARE_BOOST_POINTERS(name) \
 	typedef boost::shared_ptr<name> name##Ptr; \

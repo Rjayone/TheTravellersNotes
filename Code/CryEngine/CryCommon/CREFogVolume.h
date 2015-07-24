@@ -24,7 +24,10 @@ public:
 	}
 
 	Vec3 m_center;
-	bool m_viewerInsideVolume;
+	uint32 m_viewerInsideVolume : 1;
+	uint32 m_affectsThisAreaOnly : 1;
+	uint32 m_stencilRef : 8;
+	uint32 m_reserved : 22;
 	AABB m_localAABB;
 	Matrix34 m_matWSInv;
 	float m_globalDensity;
@@ -36,6 +39,11 @@ public:
 	Vec3 m_heightFallOffBasePoint;
 	Vec3 m_eyePosInWS;
 	Vec3 m_eyePosInOS;
+	Vec3 m_rampParams;
+	Vec3 m_windOffset;
+	float m_noiseScale;
+	Vec3 m_noiseFreq;
+	float m_noiseOffset;
 };
 
 

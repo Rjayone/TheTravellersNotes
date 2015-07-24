@@ -39,10 +39,14 @@ CommunicationHandler::CommunicationHandler(CAIProxy& proxy, IEntity* entity)
 {
 	assert(entity);
 	Reset();
+
+	gEnv->pAudioSystem->AddRequestListener(&CommunicationHandler::TriggerFinishedCallback, this, eART_AUDIO_CALLBACK_MANAGER_REQUEST, eACMRT_REPORT_FINISHED_TRIGGER_INSTANCE);
 }
 
 CommunicationHandler::~CommunicationHandler()
 {
+	gEnv->pAudioSystem->RemoveRequestListener(&CommunicationHandler::TriggerFinishedCallback, this);
+
 	if (m_agState)
 		m_agState->RemoveListener(this);
 }
@@ -332,7 +336,8 @@ SCommunicationSound CommunicationHandler::PlaySound(CommPlayID playID, const cha
 					playingSound.playID = playID;
 				}
 
-				pIEntityAudioProxy->ExecuteTrigger(playCommunicationControlId, lipSyncMethod, &CommunicationHandler::TriggerFinishedCallback, reinterpret_cast<void*>(static_cast<UINT_PTR>(m_entityId)) );
+				SAudioCallBackInfos callbackInfos(this, reinterpret_cast<void*>(static_cast<UINT_PTR>(m_entityId)), this, eARF_PRIORITY_NORMAL | eARF_SYNC_FINISHED_CALLBACK);
+				pIEntityAudioProxy->ExecuteTrigger(playCommunicationControlId, lipSyncMethod, DEFAULT_AUDIO_PROXY_ID, callbackInfos);
 
 				SCommunicationSound soundInfo;
 				soundInfo.playSoundControlId = playCommunicationControlId;
@@ -349,9 +354,9 @@ SCommunicationSound CommunicationHandler::PlaySound(CommPlayID playID, const cha
 	return SCommunicationSound();
 }
 
-void CommunicationHandler::TriggerFinishedCallback(const TAudioObjectID nObjectID, const TAudioControlID nTriggerID, void* const pCookie)
+void CommunicationHandler::TriggerFinishedCallback(SAudioRequestInfo const* const pAudioRequestInfo)
 {
-	EntityId entityId = static_cast<EntityId>(reinterpret_cast<UINT_PTR>(pCookie));
+	EntityId entityId = static_cast<EntityId>(reinterpret_cast<UINT_PTR>(pAudioRequestInfo->pUserData));
 
 	if( IEntity* pEntity = gEnv->pEntitySystem->GetEntity(entityId) )
 	{
@@ -361,7 +366,7 @@ void CommunicationHandler::TriggerFinishedCallback(const TAudioObjectID nObjectI
 			{
 				if( IAICommunicationHandler* pCommunicationHandler = pAiProxy->GetCommunicationHandler() )
 				{
-					pCommunicationHandler->OnSoundTriggerFinishedToPlay(nTriggerID);
+					pCommunicationHandler->OnSoundTriggerFinishedToPlay(pAudioRequestInfo->nAudioControlID);
 				}
 			}
 		}

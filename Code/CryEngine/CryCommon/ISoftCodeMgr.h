@@ -18,14 +18,14 @@
 // Provides the generic interface for exchanging member values between SoftCode modules,
 struct IExchangeValue
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IExchangeValue() {}
 
 	// Allocates a new IExchangeValue with the underlying type
 	virtual IExchangeValue* Clone() const = 0;
 	// Returns the size of the underlying type (to check compatibility)
 	virtual size_t GetSizeOf() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 template <typename T>
@@ -85,13 +85,10 @@ template <typename T> void DefaultInitialize(Vec3_tpl<T>& vec) { vec.zero(); }
 template<typename F> struct Matrix33_tpl;
 template<typename F> struct Matrix34_tpl;
 template<typename F> struct Matrix44_tpl;
-//template<typename F, class A> struct Matrix34A_tpl;
-//template<typename F, class A> struct Matrix44A_tpl;
+
 template <typename F> void DefaultInitialize(Matrix33_tpl<F>& matrix) { matrix.SetIdentity(); }
 template <typename F> void DefaultInitialize(Matrix34_tpl<F>& matrix) { matrix.SetIdentity(); }
 template <typename F> void DefaultInitialize(Matrix44_tpl<F>& matrix) { matrix.SetIdentity(); }
-//template <typename F, class A> void DefaultInitialize(Matrix34A_tpl<F, A>& matrix) { matrix.SetIdentity(); }
-//template <typename F, class A> void DefaultInitialize(Matrix44A_tpl<F, A>& matrix) { matrix.SetIdentity(); }
 
 // Quat support
 template <typename F> struct Quat_tpl;
@@ -100,7 +97,7 @@ template <typename F> void DefaultInitialize(Quat_tpl<F>& quat) { quat.SetIdenti
 // Interface for performing an exchange of instance data
 struct IExchanger
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IExchanger() {}
 
 	// True if data is being read from instance members
@@ -111,7 +108,7 @@ struct IExchanger
 	virtual bool BeginInstance(void* pInstance) = 0;
 	virtual bool SetValue(const char* name, IExchangeValue& value) = 0;
 	virtual IExchangeValue* GetValue(const char* name, void* pTarget, size_t targetSize) = 0;
-
+	// </interfuscator:shuffle>
 
 	template <typename T>
 	void Visit(const char* name, T& instance);
@@ -176,14 +173,14 @@ struct InstanceTracker;
 
 struct ITypeRegistrar
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITypeRegistrar() {}
 
 	virtual const char* GetName() const = 0;
 
 	// Creates an instance of the type
 	virtual void* CreateInstance() = 0;
-
+	// </interfuscator:shuffle>
 
 #ifdef SOFTCODE_ENABLED
 	// How many active instances exist of this type?
@@ -201,12 +198,12 @@ struct ITypeRegistrar
 
 struct ITypeLibrary
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITypeLibrary() {}
 
 	virtual const char* GetName() = 0;
 	virtual void* CreateInstanceVoid(const char* typeName) = 0;
-
+	// </interfuscator:shuffle>
 
 #ifdef SOFTCODE_ENABLED
 	virtual void SetOverride(ITypeLibrary* pOverrideLib) = 0;
@@ -218,18 +215,18 @@ struct ITypeLibrary
 
 struct ISoftCodeListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISoftCodeListener() {}
 
 	// Called when an instance is replaced to allow managing systems to fixup pointers
 	virtual void InstanceReplaced(void* pOldInstance, void* pNewInstance) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 /// Interface for ...
 struct ISoftCodeMgr
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISoftCodeMgr() {}
 
 	// Used to register built-in libraries on first use
@@ -249,7 +246,7 @@ struct ISoftCodeMgr
 	
 	/// Frees this instance from memory
 	//virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __ISOFTCODE_MGR_H_

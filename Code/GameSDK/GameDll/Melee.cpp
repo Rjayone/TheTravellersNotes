@@ -42,9 +42,6 @@ History:
 
 #include "ActorImpulseHandler.h"
 
-//TTN
-#include "CombatStance.h"
-
 #if 0 && (defined(USER_claire) || defined(USER_tombe) || defined(USER_johnmichael)|| defined(USER_evgeny)) 
 #define MeleeDebugLog(...)				CryLogAlways("[MELEE DEBUG] " __VA_ARGS__)
 #else
@@ -333,7 +330,7 @@ SMeleeTags::SMeleeFragData CMelee::GenerateFragmentData( const SMeleeTags::TTagP
 	const size_t numTags  = tagContainer.size();
 	if( numTags > 0 )
 	{
-		const size_t tagIndex = rand()*100 % numTags;
+		const size_t tagIndex = cry_random((size_t)0, numTags - 1);
 		const SMeleeTags::STagParams& meleeTags = tagContainer[tagIndex];
 
 		SMeleeTags::SMeleeFragData fragData( tagIndex, meleeTags );
@@ -792,26 +789,11 @@ int CMelee::Hit(const Vec3 &pt, const Vec3 &dir, const Vec3 &normal, IPhysicalEn
 
 				if (pGameRules)
 				{
-					if (pTarget->GetId() == LOCAL_PLAYER_ENTITY_ID)
-					{
-						CItem* pItem = (CItem*)pTargetActor->GetCurrentItem();
-						if (pItem != NULL) {
-							CCombatStance* pCombatStance = pItem->GetCombatStance();
-							if (pCombatStance != NULL)
-							{
-								if (pCombatStance->GetStance() == e_CombatStanceDefence)
-								{
-									//TODO: Реализовать рассчет демага в отдельном классе на основе защиты
-									damage /= damage - 10;
-								}
-							}
-						}
-					}
 					hitTypeID = silentHit ? CGameRules::EHitType::SilentMelee : m_hitTypeID;
 					HitInfo info(m_pWeapon->GetOwnerId(), pTarget->GetId(), m_pWeapon->GetEntityId(),
 						damage * damageScale, 0.0f, surfaceIdx, partId, hitTypeID, pt, dir, normal);
 
-					if (m_pMeleeParams->meleeparams.knockdown_chance>0 && Random(100) < m_pMeleeParams->meleeparams.knockdown_chance)
+					if (m_pMeleeParams->meleeparams.knockdown_chance>0 && cry_random(0, 99) < m_pMeleeParams->meleeparams.knockdown_chance)
 						info.knocksDown = true;
 
 					info.remote = remote;

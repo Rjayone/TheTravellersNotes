@@ -864,9 +864,7 @@ void CDeathCameraMode::Activate(const CPlayer& clientPlayer)
 
 	// Set the Turn angle.
 	float const kTurnAngleMax = DEG2RAD(m_hitType==CGameRules::EHitType::VehicleDestruction?45.f:g_pGameCVars->g_tpdeathcam_maxTurn);
-	float const kTurnAngleRange = kTurnAngleMax*2.0f;
-	m_turnAngle = Random(kTurnAngleRange)-kTurnAngleMax;
-
+	m_turnAngle = cry_random(-kTurnAngleMax, kTurnAngleMax);
 
 	// Set the timeout.
 	IActor* pKillerActor = g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(m_killerEid);

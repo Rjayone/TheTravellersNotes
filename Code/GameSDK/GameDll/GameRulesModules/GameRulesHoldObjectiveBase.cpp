@@ -799,9 +799,8 @@ void CGameRulesHoldObjectiveBase::ReadAudioSignal( const XmlNodeRef node, const 
 {
 	if(node->haveAttr(name))
 	{
-		const static int k_maxAudioSignalLength = 32;
-		char signalName[k_maxAudioSignalLength];
-		cry_strncpy(signalName, node->getAttr(name), k_maxAudioSignalLength);
+		char signalName[32];
+		cry_strcpy(signalName, node->getAttr(name));
 		signalPlayer->SetSignal(signalName);
 	}
 }

@@ -38,7 +38,7 @@ struct SLayerPakStats
 //////////////////////////////////////////////////////////////////////////
 struct IResourceManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IResourceManager(){}
 	// Called by level system to set the level folder
 	virtual void PrepareLevel( const char *sLevelFolder,const char *sLevelName ) = 0;
@@ -72,7 +72,7 @@ struct IResourceManager
 	virtual CTimeValue GetLastLevelLoadTime() const = 0;
 
 	virtual void GetMemoryStatistics(ICrySizer *pSizer) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //_CRY_IRESOURCE_MANAGER_H_

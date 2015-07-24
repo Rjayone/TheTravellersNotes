@@ -16,7 +16,7 @@
 
 #include "LinuxInput.h"
 
-#include MATH_H
+#include <math.h>
 
 #include <IConsole.h>
 #include <ILog.h>

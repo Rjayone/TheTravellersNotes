@@ -49,7 +49,7 @@ bool CControllerInputRenderInfo::SetIcon(const char * text)
 bool CControllerInputRenderInfo::SetText(const char * text)
 {
 	m_type = kCITV_text;
-	return cry_strncpy(m_text, CHUDUtils::LocalizeString(text, NULL, NULL), sizeof(m_text));
+	return cry_strcpy(m_text, CHUDUtils::LocalizeString(text, NULL, NULL));
 }
 
 bool CControllerInputRenderInfo::CreateForInput(const char * mapName, const char * inputName)

@@ -32,15 +32,15 @@ public:
 	// IGameToken implementation.
 	//////////////////////////////////////////////////////////////////////////
 	virtual void SetName( const char *sName );
-	VIRTUAL const char* GetName() const { return m_name; }
-	VIRTUAL void SetFlags( uint32 flags ) { m_nFlags = flags; }
-	VIRTUAL uint32 GetFlags() const { return m_nFlags; }
-	VIRTUAL EFlowDataTypes GetType() const { return (EFlowDataTypes)m_value.GetType(); };
-	VIRTUAL void SetType( EFlowDataTypes dataType );
-	VIRTUAL void SetValue( const TFlowInputData& val );
-	VIRTUAL bool GetValue( TFlowInputData& val ) const;
-	VIRTUAL void SetValueAsString( const char* sValue,bool bDefault=false );
-	VIRTUAL const char* GetValueAsString() const;
+	virtual const char* GetName() const { return m_name; }
+	virtual void SetFlags( uint32 flags ) { m_nFlags = flags; }
+	virtual uint32 GetFlags() const { return m_nFlags; }
+	virtual EFlowDataTypes GetType() const { return (EFlowDataTypes)m_value.GetType(); };
+	virtual void SetType( EFlowDataTypes dataType );
+	virtual void SetValue( const TFlowInputData& val );
+	virtual bool GetValue( TFlowInputData& val ) const;
+	virtual void SetValueAsString( const char* sValue,bool bDefault=false );
+	virtual const char* GetValueAsString() const;
 	//////////////////////////////////////////////////////////////////////////
 
 	void AddListener( IGameTokenEventListener *pListener ) { stl::push_back_unique(m_listeners,pListener); };

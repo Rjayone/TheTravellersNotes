@@ -56,6 +56,7 @@ struct IChunkFile : _reference_target_t
 		static inline bool LessId( const ChunkDesc& d1, const ChunkDesc& d2 ) { return d1.chunkId < d2.chunkId; }
 	};
 
+	// <interfuscator:shuffle>
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const=0;
 
@@ -95,6 +96,7 @@ struct IChunkFile : _reference_target_t
 
 	virtual const char* GetLastError() const = 0;
 
+	// </interfuscator:shuffle>
 };
 
 #endif // __IChunkFile_h__

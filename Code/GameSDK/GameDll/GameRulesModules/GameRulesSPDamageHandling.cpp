@@ -956,14 +956,14 @@ void CGameRulesSPDamageHandling::SvOnCollision(const IEntity* pVictimEntity, con
 
 							if (playerIsAirborne || playerIsSliding) //  || playerIsSprinting)
 							{
-								if (!bVictimIsFriendly)
+								if (bVictimIsFriendly)
 								{
-									reactionInfo.bMakeVictimFall = false;
+									hit.damage = 0.0f; // No damage for sliding or jumping into friendlies
+									reactionInfo.bMakeVictimFall = true; //this is an friend
 								}
 								else
 								{
-									hit.damage = 0.0f; // No damage for sliding or jumping into friendlies
-									reactionInfo.bMakeVictimFall = false;
+									reactionInfo.bMakeVictimFall = true;  //this is an enemey
 								}
 							}
 

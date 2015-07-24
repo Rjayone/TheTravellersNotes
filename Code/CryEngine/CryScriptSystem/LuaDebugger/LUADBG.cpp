@@ -1118,10 +1118,7 @@ string CLUADbg::GetLineFromFile( const char *sFilename,int nLine )
 void CLUADbg::GetStackAndLocals()
 {
 	m_wCallstack.SendMessage( WM_SETREDRAW,(WPARAM)FALSE,(LPARAM)FALSE );
-	m_wLocals.SendMessage( WM_SETREDRAW,(WPARAM)FALSE,(LPARAM)FALSE );
 	m_wWatch.SendMessage( WM_SETREDRAW,(WPARAM)FALSE,(LPARAM)FALSE );
-
-	m_nodeLookupByName.clear();
 
 	///////////
 	// Stack //
@@ -1225,39 +1222,21 @@ void CLUADbg::GetStackAndLocals()
 			iItem = m_wCallstack.InsertItem(iItem+1, "", 0);
 			iItem = m_wCallstack.InsertItem(iItem+1, "C++ call stack can be activated in menu", 0);
 		}
-
 	}
 
-	////////////
-	// Locals //
-	////////////
+	m_wCallstack.SendMessage( WM_SETREDRAW,(WPARAM)TRUE,(LPARAM)FALSE );
 
-	m_wLocals.Clear();
-	m_pIVariable = m_pScriptSystem->GetLocalVariables(1);
-	m_pTreeToAdd = &m_wLocals;
-	if (m_pIVariable)
-	{
-		m_hRoot = NULL;
-		m_iRecursionLevel = 0;
-		m_pIVariable->Dump((IScriptTableDumpSink *) this);
-		m_pIVariable->Release();
-		m_pIVariable = NULL;
-	}
-	else
-		m_wLocals.AddItemToTree("No Locals Available");
-	m_pTreeToAdd = NULL;
+	// ShowLocalsForFrame will also call ShowSelf (for that frame)
+	ShowLocalsForFrame(0);
+	m_nodeLookupByName.clear();
+}
 
-	
-	///////////
-	// Watch //
-	///////////
-
+void CLUADbg::ShowSelf(IScriptTable *pFrame)
+{
 	const char *pszText = NULL;
 
 	m_wWatch.Clear();
-	IScriptTable *pIScriptObj = m_pScriptSystem->GetLocalVariables(1);
-
-	string strWatchVar = "self";
+	IScriptTable *pIScriptObj = pFrame;
 
 	bool bVarFound = false;
 	IScriptTable::Iterator iter = pIScriptObj->BeginIteration();
@@ -1266,7 +1245,7 @@ void CLUADbg::GetStackAndLocals()
 		if (iter.sKey)
 		{
 			pszText = iter.sKey;
-			if (strWatchVar == pszText)
+			if (strcmp("self", pszText) == 0)
 			{
 				SmartScriptTable pIEntry(m_pScriptSystem, true);
 				if (iter.value.type == ANY_TTABLE)
@@ -1295,7 +1274,6 @@ void CLUADbg::GetStackAndLocals()
 					// No AddRef() !
 					// m_pIVariable->Release();
 
-					m_pIVariable = NULL;
 				}
 				
 				m_pTreeToAdd = NULL;
@@ -1303,13 +1281,37 @@ void CLUADbg::GetStackAndLocals()
 		}
 	}
 	pIScriptObj->EndIteration(iter);
+	m_pIVariable = NULL;
 
 	if (!bVarFound)
-		m_wWatch.AddItemToTree(const_cast<LPSTR>((strWatchVar + " = ?").c_str())); // TODO: Cast...
+		m_wWatch.AddItemToTree("self = ?");
 
-	m_wLocals.SendMessage( WM_SETREDRAW,(WPARAM)TRUE,(LPARAM)FALSE );
 	m_wWatch.SendMessage( WM_SETREDRAW,(WPARAM)TRUE,(LPARAM)FALSE );
-	m_wCallstack.SendMessage( WM_SETREDRAW,(WPARAM)TRUE,(LPARAM)FALSE );
+
+}
+
+void CLUADbg::ShowLocalsForFrame(int frame)
+{
+	m_wLocals.SendMessage( WM_SETREDRAW,(WPARAM)FALSE,(LPARAM)FALSE );
+
+	m_nodeLookupByName.clear();
+	m_wLocals.Clear();
+	IScriptTable *pFrame = m_pScriptSystem->GetLocalVariables(frame, false);
+	m_pTreeToAdd = &m_wLocals;
+	if (pFrame)
+	{
+		m_hRoot = NULL;
+		m_iRecursionLevel = 0;
+		m_pIVariable = pFrame;
+		pFrame->Dump((IScriptTableDumpSink *) this);
+		ShowSelf(pFrame);
+		pFrame->Release();
+	}
+	else
+		m_wLocals.AddItemToTree("No Locals Available");
+	m_pTreeToAdd = NULL;
+	m_pIVariable = NULL;
+	m_wLocals.SendMessage( WM_SETREDRAW,(WPARAM)TRUE,(LPARAM)FALSE );
 }
 
 HTREEITEM CLUADbg::AddVariableToTree(const char *sName, ScriptVarType type, HTREEITEM hParent)
@@ -1768,7 +1770,7 @@ void CLUADbg::OnDebugHook( lua_State *L,lua_Debug *ar )
 
 	// on each line
 	case LUA_HOOKLINE:
-		lua_getinfo(L, "Sl", ar);
+		lua_getinfo(L, "S", ar);
 		if(m_trackCoverage && *(ar->source)=='@')
 			m_coverage->VisitLine(ar->source+1, ar->currentline);
 

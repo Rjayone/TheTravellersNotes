@@ -27,4 +27,6 @@ def build(bld):
 		linux_lib         = 'SDL2',
 		linux_includes    = [ Path('Code/SDKs/SDL2/include/linux'), Path('Code/SDKs/SDL2/include/SDL') ],
 		linux_x64_libpath = Path('Code/SDKs/SDL2/lib/linux/'),
+
+		android_includes  = [ Path('Code/SDKs/SDL2/include/linux'), Path('Code/SDKs/SDL2/include/SDL') ],
 	)

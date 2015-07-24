@@ -88,7 +88,7 @@ are added automatically by a metaclass.
 reg_gcc_output = re.compile(r"(.):(.+?):([0-9]+?):([0-9]+?):(.*)", re.M)
 """
 regex to replace GCC output with output for Visual Studio
-eg: f:\ce\Code\CryEngine\CrySystem\Scaleform\../MTSafeAllocator.h : 54:70: note: #pragma message: Verifiy MTSAFE settings for CRY_MOBILE based on PS3
+eg: f:\ce\Code\CryEngine\CrySystem\Scaleform\../MTSafeAllocator.h : 54:70: note: #pragma message: Verifiy MTSAFE settings for MOBILE
 """
 
 def create_context(cmd_name, *k, **kw):

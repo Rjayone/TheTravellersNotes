@@ -941,7 +941,7 @@ void CPlaylistManager::AddPlaylistsFromPath(const char* pPath)
 //---------------------------------------
 ILevelRotation::TExtInfoId CPlaylistManager::GetPlaylistId( const char *pUniqueName ) const
 {
-	const ILevelRotation::TExtInfoId  genId = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pUniqueName);
+	const ILevelRotation::TExtInfoId  genId = CCrc32::ComputeLowercase(pUniqueName);
 	return genId;
 }
 

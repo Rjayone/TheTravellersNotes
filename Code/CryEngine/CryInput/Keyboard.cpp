@@ -536,7 +536,7 @@ char CKeyboard::GetInputCharAscii(const SInputEvent& event)
 
 #define IS_KEYBOARD_KEY(key)	((key)&0x0000FFFF)
 
-const wchar_t* CKeyboard::GetOSKeyName(const SInputEvent& event)
+const char* CKeyboard::GetOSKeyName(const SInputEvent& event)
 {
 	if (IS_KEYBOARD_KEY(event.keyId) && GetDirectInputDevice())
 	{
@@ -544,22 +544,17 @@ const wchar_t* CKeyboard::GetOSKeyName(const SInputEvent& event)
 
 		if (iDIK)
 		{
-			DIDEVICEOBJECTINSTANCE dido;
+			static DIDEVICEOBJECTINSTANCE dido;
 			ZeroMemory(&dido, sizeof(DIDEVICEOBJECTINSTANCE));
 			dido.dwSize = sizeof(DIDEVICEOBJECTINSTANCE);
 
 			if (GetDirectInputDevice()->GetObjectInfo(&dido, iDIK, DIPH_BYOFFSET) != DI_OK)
-				return L"";
+				return "";
 
-			static wchar_t szwMyKeyName[256];
-			const size_t len = sizeof(szwMyKeyName) / sizeof(szwMyKeyName[0]);
-			szwMyKeyName[0] = 0;
-			swprintf(szwMyKeyName, len, L"%S", dido.tszName);
-			szwMyKeyName[len-1] = 0;
-			return szwMyKeyName;
+			return dido.tszName;
 		}
 	}
-	return L"";
+	return "";
 }
 
 #endif // USE_DXINPUT

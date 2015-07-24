@@ -3,10 +3,12 @@
 
 #include "stdafx.h"
 #include "AudioSystemImpl_sdlmixer.h"
+#include "AudioSystemImplCVars_sdlmixer.h"
 #include <CryFile.h>
 #include <CryPath.h>
 #include "SDLMixerSoundEngineUtil.h"
 #include <IAudioSystem.h>
+#include "SDLMixerSoundEngineTypes.h"
 
 // SDL / SDL Mixer
 #include <SDL.h>
@@ -15,6 +17,7 @@
 
 char const* const	CAudioSystemImpl_sdlmixer::ms_sSDLFileTag = "SDLMixerSample";
 char const* const	CAudioSystemImpl_sdlmixer::ms_sSDLCommonAttribute = "sdl_name";
+char const* const	CAudioSystemImpl_sdlmixer::ms_sSDLEventIdTag = "event_id";
 char const* const	CAudioSystemImpl_sdlmixer::ms_sSDLEventTag = "SDLMixerEvent";
 char const* const	CAudioSystemImpl_sdlmixer::ms_sSDLSoundLibraryPath = "/sounds/sdlmixer/";
 char const* const	CAudioSystemImpl_sdlmixer::ms_sSDLEventTypeTag = "event_type";
@@ -29,7 +32,8 @@ void EndEventCallback(TAudioEventID nEventID)
 {
 	SAudioRequest oRequest;
 	SAudioCallbackManagerRequestData<eACMRT_REPORT_FINISHED_EVENT> oRequestData(nEventID, true);
-	oRequest.pData = &oRequestData;
+	oRequest.nFlags	= eARF_THREAD_SAFE_PUSH;
+	oRequest.pData	= &oRequestData;
 	gEnv->pAudioSystem->PushRequest(oRequest);
 }
 
@@ -50,7 +54,7 @@ CAudioSystemImpl_sdlmixer::CAudioSystemImpl_sdlmixer()
 	m_nMemoryAlignment = 16;
 #elif defined(MAC)
 	m_nMemoryAlignment = 16;
-#elif defined(LINUX)
+#elif defined(LINUX) && !defined(ANDROID)
 	m_nMemoryAlignment = 16;
 #elif defined(IOS)
 	m_nMemoryAlignment = 16;
@@ -90,6 +94,18 @@ EAudioRequestStatus CAudioSystemImpl_sdlmixer::Release()
 {
 	SDLMixer::SoundEngine::Release();
 	POOL_FREE(this);
+
+	// Freeing Memory Pool Memory again
+	uint8* pMemSystem = g_SDLMixerImplMemoryPool.Data();
+	g_SDLMixerImplMemoryPool.UnInitMem();
+
+	if (pMemSystem)
+	{
+		delete[](uint8*)(pMemSystem);
+	}
+
+	g_SDLMixerImplCVars.UnregisterVariables();
+
 	return eARS_SUCCESS;
 }
 
@@ -216,12 +232,11 @@ EAudioRequestStatus CAudioSystemImpl_sdlmixer::ActivateTrigger(IATLAudioObjectDa
 EAudioRequestStatus CAudioSystemImpl_sdlmixer::StopEvent(IATLAudioObjectData* const pAudioObjectData, IATLEventData const* const pEventData)
 {
 	EAudioRequestStatus eResult = eARS_FAILURE;
-	SSDLMixerAudioObjectData* const pSDLAudioObjectData = static_cast<SSDLMixerAudioObjectData* const>(pAudioObjectData);
 	SSDLMixerEventInstanceData const* const pSDLEventInstanceData = static_cast<SSDLMixerEventInstanceData const* const>(pEventData);
 
-	if ((pSDLAudioObjectData != NPTR) && (pSDLEventInstanceData != NPTR))
+	if (pSDLEventInstanceData != NPTR)
 	{
-		if (SDLMixer::SoundEngine::StopEvent(pSDLAudioObjectData, pSDLEventInstanceData))
+		if (SDLMixer::SoundEngine::StopEvent(pSDLEventInstanceData))
 		{
 			eResult = eARS_SUCCESS;
 		}
@@ -358,7 +373,6 @@ void CAudioSystemImpl_sdlmixer::DeleteAudioFileEntryData(IATLAudioFileEntryData*
 char const* const CAudioSystemImpl_sdlmixer::GetAudioFileLocation(SATLAudioFileEntryInfo* const pFileEntryInfo)
 {
 	static CryFixedStringT<MAX_AUDIO_FILE_PATH_LENGTH> sPath;
-			
 	sPath = m_sGameFolder.c_str();
 	sPath += ms_sSDLSoundLibraryPath;
 
@@ -370,14 +384,24 @@ IATLTriggerImplData const* CAudioSystemImpl_sdlmixer::NewAudioTriggerImplData(Xm
 	SSDLMixerEventStaticData* pNewTriggerImpl = NPTR;
 	if (_stricmp(pAudioTriggerNode->getTag(), ms_sSDLEventTag) == 0)
 	{
-		char const* const sEventName = pAudioTriggerNode->getAttr(ms_sSDLCommonAttribute);
-		pNewTriggerImpl = SDLMixer::SoundEngine::CreateEventData(SDLMixer::GetIDFromString(sEventName));
-		if(pNewTriggerImpl)
+		char const* const sFileName = pAudioTriggerNode->getAttr(ms_sSDLCommonAttribute);
+		SDLMixer::TSDLMixerID sampleID = SDLMixer::GetIDFromString(sFileName);
+
+		SDLMixer::TSDLMixerID eventID = sampleID;
+		if (pAudioTriggerNode->haveAttr(ms_sSDLEventIdTag))
 		{
+			pAudioTriggerNode->getAttr(ms_sSDLEventIdTag, eventID);
+		}
+
+		pNewTriggerImpl = SDLMixer::SoundEngine::CreateEventData(eventID);
+		if (pNewTriggerImpl)
+		{
+			pNewTriggerImpl->samples.push_back(sampleID);
+
 			pNewTriggerImpl->bStartEvent = (_stricmp(pAudioTriggerNode->getAttr(ms_sSDLEventTypeTag), "stop") != 0);
 			pNewTriggerImpl->bPanningEnabled = (_stricmp(pAudioTriggerNode->getAttr(ms_sSDLEventPanningEnabledTag), "true") == 0);
 			bool bAttenuationEnabled = (_stricmp(pAudioTriggerNode->getAttr(ms_sSDLEventAttenuationEnabledTag), "true") == 0);
-			if(bAttenuationEnabled)
+			if (bAttenuationEnabled)
 			{
 				pAudioTriggerNode->getAttr(ms_sSDLEventAttenuationMinDistanceTag, pNewTriggerImpl->fAttenuationMinDistance);
 				pAudioTriggerNode->getAttr(ms_sSDLEventAttenuationMaxDistanceTag, pNewTriggerImpl->fAttenuationMaxDistance);
@@ -403,12 +427,19 @@ IATLTriggerImplData const* CAudioSystemImpl_sdlmixer::NewAudioTriggerImplData(Xm
 
 void CAudioSystemImpl_sdlmixer::DeleteAudioTriggerImplData(IATLTriggerImplData const* const pOldTriggerImplData)
 {
+	SSDLMixerEventStaticData const* const pSDLEventStaticData = static_cast<SSDLMixerEventStaticData const* const>(pOldTriggerImplData);
+	if(pSDLEventStaticData)
+	{
+		SDLMixer::SoundEngine::StopEvents(pSDLEventStaticData->nEventID);
+	}
 	POOL_FREE_CONST(pOldTriggerImplData);
 }
 
 IATLRtpcImplData const* CAudioSystemImpl_sdlmixer::NewAudioRtpcImplData(XmlNodeRef const pAudioRtpcNode)
 {
-	return NPTR;
+	SATLRtpcImplData_sdlmixer* pNewRtpcImpl = NPTR;
+	POOL_NEW(SATLRtpcImplData_sdlmixer, pNewRtpcImpl)();
+	return pNewRtpcImpl;
 }
 
 void CAudioSystemImpl_sdlmixer::DeleteAudioRtpcImplData(IATLRtpcImplData const* const pOldRtpcImplData)
@@ -418,7 +449,9 @@ void CAudioSystemImpl_sdlmixer::DeleteAudioRtpcImplData(IATLRtpcImplData const* 
 
 IATLSwitchStateImplData const* CAudioSystemImpl_sdlmixer::NewAudioSwitchStateImplData(XmlNodeRef const pAudioSwitchStateImplNode)
 {
-	return NPTR;
+	SATLSwitchStateImplData_sdlmixer* pNewSwitchImpl = NPTR;
+	POOL_NEW(SATLSwitchStateImplData_sdlmixer, pNewSwitchImpl)();
+	return pNewSwitchImpl;
 }
 
 void CAudioSystemImpl_sdlmixer::DeleteAudioSwitchStateImplData(IATLSwitchStateImplData const* const pOldAudioSwitchStateImplNode)
@@ -428,7 +461,9 @@ void CAudioSystemImpl_sdlmixer::DeleteAudioSwitchStateImplData(IATLSwitchStateIm
 
 IATLEnvironmentImplData const* CAudioSystemImpl_sdlmixer::NewAudioEnvironmentImplData(XmlNodeRef const pAudioEnvironmentNode)
 {
-	return NPTR;
+	SATLEnvironmentImplData_sdlmixer* pNewEnvironmentImpl = NPTR;
+	POOL_NEW(SATLEnvironmentImplData_sdlmixer, pNewEnvironmentImpl)();
+	return pNewEnvironmentImpl;
 }
 
 void CAudioSystemImpl_sdlmixer::DeleteAudioEnvironmentImplData(IATLEnvironmentImplData const* const pOldEnvironmentImplData)

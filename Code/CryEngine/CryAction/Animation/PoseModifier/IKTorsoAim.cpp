@@ -215,14 +215,13 @@ bool CIKTorsoAim::Prepare(const SAnimationPoseModifierParams& params)
 	return true;
 }
 
-SPU_INDIRECT(CommandBufferExecute(ML))
+
 bool CIKTorsoAim::Execute(const SAnimationPoseModifierParams& params)
 {
 	const IDefaultSkeleton& rIDefaultSkeleton = params.GetIDefaultSkeleton();
 	if ((m_params.effectorJoint < 0) || (m_params.aimJoint < 0))
 		return false;
 
-#if !defined(__SPU__) && !defined(__CRYCG__)
 	bool StapDisable								= s_CVars.STAP_DISABLE != 0;
 	bool StapLockEffector						= s_CVars.STAP_LOCK_EFFECTOR != 0;
 	float OverrideTrackFactor				= s_CVars.STAP_OVERRIDE_TRACK_FACTOR;
@@ -230,10 +229,6 @@ bool CIKTorsoAim::Execute(const SAnimationPoseModifierParams& params)
 	{
 		return false;
 	}
-#else  //defined(__SPU__) || defined(__CRYCG__)
-	bool StapLockEffector						= false;
-	float OverrideTrackFactor				= -1.0f;
-#endif //defined(__SPU__) || defined(__CRYCG__)	
 
 	uint32 numJoints = params.pPoseData->GetJointCount();;
 	params.pPoseData->SetJointAbsolute(0, QuatT(params.pPoseData->GetJointRelative(0)));

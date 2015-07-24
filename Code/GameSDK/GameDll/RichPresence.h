@@ -33,9 +33,8 @@ class CRichPresence : public CGameMechanismBase
 		virtual void Update(float dt);
 		// ~CGameMechanismBase
 
-		void LoadXmlFromFile(const char* path);		
+		void LoadXmlFromFile(const char* path);
 		bool SetRichPresence(ERichPresenceState state);
-		void RefreshRichPresence();
 		CrySessionID GetPendingRichPresenceSessionID() const { return m_pendingSessionID; }
 	
 	private:

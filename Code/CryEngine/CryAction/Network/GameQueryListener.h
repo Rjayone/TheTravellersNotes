@@ -89,18 +89,18 @@ public:
 	~CGameQueryListener(); 
 
 	// IGameQueryListener
-	VIRTUAL void AddServer(const char* description, const char* target, const char* additionalText, uint32 ping);
-	VIRTUAL void RemoveServer(string address);
-	VIRTUAL void AddPong(string address, uint32 ping);
-	VIRTUAL void GetCurrentServers(char*** pastrServers, int& o_amount);
-	VIRTUAL void GetServer(int number, char** server, char** data, int& ping);
-	VIRTUAL const char* GetServerData(const char* server, int& o_ping);
-	VIRTUAL void Update();
-	VIRTUAL void OnReceiveGameState( const char * fromAddress, XmlNodeRef xmlData );
+	virtual void AddServer(const char* description, const char* target, const char* additionalText, uint32 ping);
+	virtual void RemoveServer(string address);
+	virtual void AddPong(string address, uint32 ping);
+	virtual void GetCurrentServers(char*** pastrServers, int& o_amount);
+	virtual void GetServer(int number, char** server, char** data, int& ping);
+	virtual const char* GetServerData(const char* server, int& o_ping);
+	virtual void Update();
+	virtual void OnReceiveGameState( const char * fromAddress, XmlNodeRef xmlData );
 	virtual void Release();
-	VIRTUAL void RefreshPings();
-	VIRTUAL void ConnectToServer(const char* server);
-	VIRTUAL void GetValuesFromData(char *strData,SServerData *pServerData);
+	virtual void RefreshPings();
+	virtual void ConnectToServer(const char* server);
+	virtual void GetValuesFromData(char *strData,SServerData *pServerData);
 	// ~IGameQueryListener
 
 	void GetMemoryStatistics(ICrySizer * s);

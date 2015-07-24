@@ -12,10 +12,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IEntityClass.h)
 
-#ifndef __IEntityClass_h__
-#define __IEntityClass_h__
 #pragma once
 
 #include "BoostHelpers.h"
@@ -24,6 +21,7 @@ struct IEntity;
 struct IEntityProxy;
 struct SEntitySpawnParams;
 struct IEntityScript;
+struct IScriptTable;
 
 struct SEditorClassInfo
 {
@@ -278,7 +276,7 @@ typedef DynArray<IEntityAttributePtr> TEntityAttributeArray;
 //    Two entities can be compared if they are of the same type by
 //    just comparing their IEntityClass pointers.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityClass
+struct IEntityClass
 {
 	//////////////////////////////////////////////////////////////////////////
 	// UserProxyCreateFunc is a function pointer type, 
@@ -310,6 +308,7 @@ UNIQUE_IFACE struct IEntityClass
 		bool bOutput;					// Input or Output event.
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IEntityClass(){}
 	// Description:
 	//    Destroy IEntityClass object, do not call directly, only EntityRegisty can destroy entity classes.
@@ -422,12 +421,8 @@ UNIQUE_IFACE struct IEntityClass
 	virtual const TEntityAttributeArray& GetEntityAttributes() const = 0;
 
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#if defined(UnregisterClass)
-#undef UnregisterClass
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 // Description:
@@ -438,7 +433,7 @@ UNIQUE_IFACE struct IEntityClass
 // See Also:
 //    IEntitySystem::GetClassRegistry
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityClassRegistry
+struct IEntityClassRegistry
 {
 	struct SEntityClassDesc
 	{
@@ -446,6 +441,7 @@ UNIQUE_IFACE struct IEntityClassRegistry
 			: flags(0)
 			, sName("")
 			, sScriptFile("")
+			, pScriptTable(NULL)
 			, editorClassInfo()
 			, pUserProxyCreateFunc(NULL)
 			, pUserProxyData(NULL)
@@ -458,6 +454,7 @@ UNIQUE_IFACE struct IEntityClassRegistry
 		int           flags;
 		const char*   sName;
 		const char*   sScriptFile;
+		IScriptTable* pScriptTable;
 
 		SEditorClassInfo editorClassInfo;
 
@@ -477,13 +474,13 @@ UNIQUE_IFACE struct IEntityClassRegistry
 	//    Register a new entity class.
 	// Returns:
 	//    true if successfully registered.
-	virtual bool RegisterClass( IEntityClass *pClass ) = 0;
+	virtual bool RegisterEntityClass( IEntityClass *pClass ) = 0;
 	
 	// Description:
 	//    Unregister an entity class.
 	// Returns:
 	//    true if successfully unregistered.
-	virtual bool UnregisterClass( IEntityClass *pClass ) = 0;
+	virtual bool UnregisterEntityClass( IEntityClass *pClass ) = 0;
 
 	// Description:
 	//    Retrieves pointer to the IEntityClass interface by entity class name.
@@ -544,7 +541,7 @@ UNIQUE_IFACE struct IEntityClassRegistry
 	// Returns:
 	//    Return a pointer to the next IEntityClass interface, or NULL if is the end
 	virtual int GetClassCount() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 enum EEntityClassRegistryEvent
@@ -582,5 +579,3 @@ private:
 
 	IEntityClassRegistry*	m_pRegistry;
 };
-
-#endif // __IEntityClass_h__

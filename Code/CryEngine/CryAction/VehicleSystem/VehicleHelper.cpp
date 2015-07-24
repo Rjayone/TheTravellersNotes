@@ -83,4 +83,4 @@ IVehiclePart* CVehicleHelper::GetParentPart() const
 	return m_pParentPart;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IVehicleHelper)
+

@@ -66,13 +66,7 @@ History:
 	x( drop ) \
 	x( zoom_in ) \
 	x( zoom_out ) \
-	x( barrel_spin ) \
-	x(swing)\
-	x(release)\
-	x(holding)\
-	x(cancel)\
-	x(hit)\
-	x(stance)
+	x( barrel_spin )
 
 #define MAN_ITEM_TAGS( x ) \
 	x( shoulder ) \
@@ -117,7 +111,7 @@ public:
 
 	virtual EPriorityComparison ComparePriority(const IAction &actionCurrent) const
 	{
-		return Higher;
+		return (IAction::Installed == actionCurrent.GetStatus() && IAction::Installing & ~actionCurrent.GetFlags()) ? Higher : BaseClass::ComparePriority(actionCurrent);
 	}
 
 private:

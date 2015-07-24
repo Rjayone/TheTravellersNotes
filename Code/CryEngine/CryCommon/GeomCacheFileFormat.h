@@ -14,7 +14,7 @@
 
 #include "CryExtension/CryGUID.h"
 
-#if !defined(LINUX) && !defined(PS3)
+#if !defined(LINUX)
 #pragma pack(push)
 #pragma pack(1)
 #define PACK_GCC
@@ -186,7 +186,7 @@ namespace GeomCacheFile
 
 #undef PACK_GCC
 
-#if !defined(LINUX) && !defined(PS3)
+#if !defined(LINUX)
 #pragma pack(pop)
 #endif
 

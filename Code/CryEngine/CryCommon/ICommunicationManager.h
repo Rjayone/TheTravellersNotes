@@ -42,7 +42,7 @@ struct SCommunicationRequest;
 
 struct ICommunicationPopulateCallBack
 {
-
+	// <interfuscator:shuffle>
 	// Description:
 	//			Callback function to retrieve all communication names
 	//			Use it in conjunction with ICommunicationManager::EnumerateActions / ICommunicationManager::GetCommunicationsCount
@@ -50,7 +50,7 @@ struct ICommunicationPopulateCallBack
 	//     pName - Name of one of the communications retrieved
 	virtual void AddCommunicationName( const char* const pName ) = 0;
 	virtual ~ICommunicationPopulateCallBack(){}
-
+	// </interfuscator:shuffle>
 };
 
 struct ICommunicationManager
@@ -86,20 +86,21 @@ struct ICommunicationManager
 
 	struct ICommInstanceListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~ICommInstanceListener(){}
 		virtual void OnCommunicationEvent(ECommunicationEvent event, EntityId actorID, const CommPlayID& playID) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 	struct ICommGlobalListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~ICommGlobalListener(){}
 		virtual void OnCommunicationEvent(ECommunicationEvent event, EntityId actorID, const CommID& commID) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ICommunicationManager(){}
 	virtual uint32 GetConfigCount() const = 0;
 	virtual const char* GetConfigName(uint32 index) const = 0;
@@ -135,7 +136,7 @@ struct ICommunicationManager
 	// Sets the value of the 
 	virtual void SetVariableValue(const char* variableName, const bool newVariableValue) = 0;
 	virtual void GetVariablesNames(const char** variableNames, const size_t maxSize, size_t& actualSize) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SRestrictedActorParams

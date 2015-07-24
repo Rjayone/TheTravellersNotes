@@ -22,25 +22,25 @@ class CFlashUIEventSystem
 {
 public:
 	CFlashUIEventSystem( const char* sName, EEventSystemType eType ) : m_sName(sName), m_eType(eType), m_listener(2) {};
-	VIRTUAL ~CFlashUIEventSystem();
+	virtual ~CFlashUIEventSystem();
 
-	VIRTUAL const char* GetName() const { return m_sName.c_str(); }
-	VIRTUAL IUIEventSystem::EEventSystemType GetType() const { return m_eType; }
+	virtual const char* GetName() const { return m_sName.c_str(); }
+	virtual IUIEventSystem::EEventSystemType GetType() const { return m_eType; }
 
-	VIRTUAL uint RegisterEvent( const SUIEventDesc& sEventDesc );
+	virtual uint RegisterEvent( const SUIEventDesc& sEventDesc );
 
-	VIRTUAL void RegisterListener( IUIEventListener* pListener, const char* name ) ;
-	VIRTUAL void UnregisterListener( IUIEventListener* pListener );
+	virtual void RegisterListener( IUIEventListener* pListener, const char* name ) ;
+	virtual void UnregisterListener( IUIEventListener* pListener );
 
-	VIRTUAL SUIArgumentsRet SendEvent( const SUIEvent& event );
+	virtual SUIArgumentsRet SendEvent( const SUIEvent& event );
 
-	VIRTUAL const SUIEventDesc* GetEventDesc( int index ) const { return index < m_eventDescriptions.size() ? m_eventDescriptions[index] : NULL; }
-	VIRTUAL const SUIEventDesc* GetEventDesc( const char* sEventName ) const { return m_eventDescriptions(sEventName); }
-	VIRTUAL int GetEventCount()  const { return m_eventDescriptions.size(); }
+	virtual const SUIEventDesc* GetEventDesc( int index ) const { return index < m_eventDescriptions.size() ? m_eventDescriptions[index] : NULL; }
+	virtual const SUIEventDesc* GetEventDesc( const char* sEventName ) const { return m_eventDescriptions(sEventName); }
+	virtual int GetEventCount()  const { return m_eventDescriptions.size(); }
 
-	VIRTUAL uint GetEventId( const char* sEventName );
+	virtual uint GetEventId( const char* sEventName );
 
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+	virtual void GetMemoryUsage(ICrySizer * s) const;
 
 private:
 	string m_sName;
@@ -56,9 +56,9 @@ typedef std::map<string, CFlashUIEventSystem*> TUIEventSystemMap;
 struct CUIEventSystemIterator : public IUIEventSystemIterator
 {
 	CUIEventSystemIterator(TUIEventSystemMap* pMap);
-	VIRTUAL void AddRef();
-	VIRTUAL void Release();
-	VIRTUAL IUIEventSystem* Next( string &sName );
+	virtual void AddRef();
+	virtual void Release();
+	virtual IUIEventSystem* Next( string &sName );
 
 private:
 	int m_iRefs;

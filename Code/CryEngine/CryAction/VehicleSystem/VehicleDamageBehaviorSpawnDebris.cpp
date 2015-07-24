@@ -135,7 +135,7 @@ void CVehicleDamageBehaviorSpawnDebris::OnDamageEvent(EVehicleDamageBehaviorEven
 
 		if (!debrisInfo.entityId)
 		{ 
-			debrisInfo.time = (float(cry_rand()) / float(CRY_RAND_MAX) * (4.0f - min(3.0f, params.hitValue)));
+			debrisInfo.time = cry_random(0.0f, 1.0f) * (4.0f - min(3.0f, params.hitValue));
 			debrisInfo.force = params.componentDamageRatio;
 			isUpdateNeeded = true;
 
@@ -161,14 +161,14 @@ void CVehicleDamageBehaviorSpawnDebris::OnDamageEvent(EVehicleDamageBehaviorEven
 				if (IEntity* pDebrisEntity = SpawnDebris(pDebrisObj, vehicleTM * Matrix33(intactTM), debrisInfo.force))
 				{
 					debrisInfo.entityId = pDebrisEntity->GetId();
-					bool isDetaching = (float(cry_rand()) / float(CRY_RAND_MAX)) > 0.5f;
+					bool isDetaching = cry_random(0.0f, 1.0f) > 0.5f;
 
 					// that's what we get for now...
 					isDetaching = true;
 
 					if (isDetaching)
 					{
-						float force = (float(cry_rand()) / float(CRY_RAND_MAX)) * 2.0f;
+						float force = cry_random(0.0f, 2.0f);
 						GiveImpulse(pDebrisEntity, force);
 						AttachParticleEffect(pEntity);
 					}
@@ -321,7 +321,7 @@ void CVehicleDamageBehaviorSpawnDebris::AttachParticleEffect(IEntity* pDetachedE
 		if (IParticleEmitter* pParticleEmitter = pDetachedEntity->GetParticleEmitter(slot))
 		{
 			SpawnParams spawnParams;
-			spawnParams.fSizeScale = (Random() * 0.5f) + 0.5f;
+			spawnParams.fSizeScale = cry_random(0.5f, 1.0f);
 
 			pParticleEmitter->SetSpawnParams(spawnParams);
 		}
@@ -344,16 +344,16 @@ void CVehicleDamageBehaviorSpawnDebris::GiveImpulse(IEntity* pDetachedEntity, fl
 	pDebrisPhysEntity ->GetStatus(&debrisDyn);
 	pVehiclePhysEntity->GetStatus(&vehicleDyn);
 
-	randomVel.x = (float(cry_rand()) / float(CRY_RAND_MAX) * 1.0f);
-	randomVel.y = (float(cry_rand()) / float(CRY_RAND_MAX) * 1.0f);
-	randomVel.z = (float(cry_rand()) / float(CRY_RAND_MAX) * 1.0f);
+	randomVel.x = cry_random(0.0f, 1.0f);
+	randomVel.y = cry_random(0.0f, 1.0f);
+	randomVel.z = cry_random(0.0f, 1.0f);
 
 	imp.impulse = Vec3(vehicleDyn.v.x * randomVel.x, vehicleDyn.v.y * randomVel.y, vehicleDyn.v.z * randomVel.z);
 	imp.impulse *= debrisDyn.mass * force;
 
-	randomVel.x = (float(cry_rand()) / float(CRY_RAND_MAX) * 1.0f);
-	randomVel.y = (float(cry_rand()) / float(CRY_RAND_MAX) * 1.0f);
-	randomVel.z = (float(cry_rand()) / float(CRY_RAND_MAX) * 1.0f);
+	randomVel.x = cry_random(0.0f, 1.0f);
+	randomVel.y = cry_random(0.0f, 1.0f);
+	randomVel.z = cry_random(0.0f, 1.0f);
 
 	imp.angImpulse = Vec3(vehicleDyn.w.x * randomVel.x, vehicleDyn.w.y * randomVel.y, vehicleDyn.w.z * randomVel.z);
 	imp.angImpulse *= debrisDyn.mass * force;

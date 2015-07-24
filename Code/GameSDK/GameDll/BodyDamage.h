@@ -20,7 +20,7 @@ class CBodyDamageProfile : public _reference_target_t
 		}
 
 		JointId( const char* jointName )
-			: m_id(HashString(jointName))
+			: m_id(CryStringUtils::HashString(jointName))
 		{
 
 		}

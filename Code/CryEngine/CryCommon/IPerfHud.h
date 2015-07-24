@@ -37,7 +37,8 @@ struct ICryPerfHUDWidget : public _reference_target_t
 	ICryPerfHUDWidget(int id=-1) :
 	m_id(id)
 	{}
-
+	
+	// <interfuscator:shuffle>
 	virtual ~ICryPerfHUDWidget() {}
 
 	virtual void Reset()=0;
@@ -47,7 +48,7 @@ struct ICryPerfHUDWidget : public _reference_target_t
 	virtual void SaveStats(XmlNodeRef statsXML)=0;
 	virtual void Enable(int mode)=0;
 	virtual void Disable()=0;
-
+	// </interfuscator:shuffle>
 
 	int m_id;
 };
@@ -77,6 +78,7 @@ struct ICryPerfHUD : public ICryUnknown
 		eHudNumStates,
 	};
 
+	// <interfuscator:shuffle>
 	// Called once to initialize HUD.
 	virtual void Init() = 0;
 	virtual void Done() = 0;
@@ -111,7 +113,7 @@ struct ICryPerfHUD : public ICryUnknown
 	
 	//FPS - Widget Specific interface
 	virtual const std::vector<PerfBucket>* GetFpsBuckets(float &totalTime) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_BOOST_POINTERS(ICryPerfHUD);

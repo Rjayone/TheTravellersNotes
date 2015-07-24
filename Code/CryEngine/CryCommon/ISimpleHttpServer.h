@@ -33,7 +33,7 @@ struct IHttpWebsocketProtocol
 struct IHttpServerListener
 {
 	enum EResultDesc {eRD_Okay, eRD_Failed, eRD_AlreadyStarted};
-
+	// <interfuscator:shuffle>
 	virtual ~IHttpServerListener(){}
 	virtual void OnStartResult(bool started, EResultDesc desc) = 0;
 
@@ -47,7 +47,7 @@ struct IHttpServerListener
 	virtual void AddRef() const {}
 	virtual void Release() const {}
 	virtual bool IsDead() const { return false; }
-
+	// </interfuscator:shuffle>
 };
 
 struct ISimpleHttpServer
@@ -56,6 +56,7 @@ struct ISimpleHttpServer
 	enum EContentType {eCT_HTML, eCT_XML, eCT_TXT, eCT_MAX};
 	enum { NoConnectionID = -1 };
 
+	// <interfuscator:shuffle>
 	virtual ~ISimpleHttpServer(){}
 	// starts an HTTP server with a password using Digest Access Authentication method
 	virtual void Start(uint16 port, const string& password, IHttpServerListener* pListener) = 0;
@@ -65,7 +66,7 @@ struct ISimpleHttpServer
 	virtual void SendResponse(int connectionID, EStatusCode statusCode, EContentType contentType, const string& content, bool closeConnection = false) = 0;
 
 	virtual void SendWebpage(int connectionID, const string& webpage) = 0;
-
+	// </interfuscator:shuffle>
   
 #ifdef HTTP_WEBSOCKETS
   virtual void AddWebsocketProtocol(const string &protocolName, IHttpWebsocketProtocol* pProtocol) = 0;

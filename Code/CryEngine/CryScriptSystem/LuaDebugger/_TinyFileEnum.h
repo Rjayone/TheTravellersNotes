@@ -44,12 +44,12 @@ public:
 	
 	bool StartEnumeration(char *pszEnumPath, char *pszEnumPattern, __finddata64_t *pFile) {
 		char szPath[_MAX_PATH];
-		strcpy(szPath, pszEnumPath);
+		cry_strcpy(szPath, pszEnumPath);
 		if (szPath[strlen(szPath)] != '\\' &&
 			szPath[strlen(szPath)] != '/') {
-			strcat(szPath, "\\");
+			cry_strcat(szPath, "\\");
 		}
-		strcat(szPath, pszEnumPattern);
+		cry_strcat(szPath, pszEnumPattern);
 		m_hEnumFile = _findfirst64(szPath, pFile);
 		return m_hEnumFile != -1;	
 	}

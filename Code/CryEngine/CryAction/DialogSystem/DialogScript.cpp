@@ -92,12 +92,12 @@ CDialogScript::~CDialogScript()
 
 ////////////////////////////////////////////////////////////////////////////
 // Add one line after another
-bool CDialogScript::AddLine(TActorID actorID, const char* sound, const char* anim, const char* facial, TActorID lookAtTargetID, float delay, float facialWeight, float facialFadeTime, bool bLookAtSticky, bool bResetFacial, bool bResetLookAt, bool bSoundStopsAnim, bool bUseAGSignal, bool bUseAGEP)
+bool CDialogScript::AddLine(TActorID actorID, TAudioControlID audioID, const char* anim, const char* facial, TActorID lookAtTargetID, float delay, float facialWeight, float facialFadeTime, bool bLookAtSticky, bool bResetFacial, bool bResetLookAt, bool bSoundStopsAnim, bool bUseAGSignal, bool bUseAGEP)
 {
 	SScriptLine line;
 	line.m_actor = actorID;
 	line.m_lookatActor = lookAtTargetID;
-	line.m_sound = sound;
+	line.m_audioID = audioID;
 	line.m_anim  = anim;
 	line.m_facial = facial;
 	line.m_delay = delay;

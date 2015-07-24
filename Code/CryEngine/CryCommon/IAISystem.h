@@ -13,14 +13,7 @@ History:
 
 *********************************************************************/
 
-#include DEVIRTUALIZE_HEADER_FIX(IAISystem.h)
-
-#ifndef _IAISYSTEM_H_
-#define _IAISYSTEM_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "SerializeFwd.h"
 #include <IAIRecorder.h> // <> required for Interfuscator
@@ -524,10 +517,10 @@ private:
 // AI event listener
 struct IAIEventListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIEventListener(){}
 	virtual void OnAIEvent(EAIStimulusType type, const Vec3& pos, float radius, float threat, EntityId sender) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // AI Global perception Listener
@@ -539,17 +532,18 @@ struct IAIGlobalPerceptionListener
 		eGPS_Disabled,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IAIGlobalPerceptionListener() {}
 	virtual void OnPerceptionScalingEvent(const EGlobalPerceptionScaleEvent event) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IAIAlertnessPredicate
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIAlertnessPredicate(){}
 	virtual bool ConsiderAIObject(IAIObject* pAIObject) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 enum EAIFilterType
@@ -563,7 +557,7 @@ enum EAIFilterType
 
 // Description:
 //		Interface to AI system. Defines functions to control the ai system.
-UNIQUE_IFACE struct IAISystem
+struct IAISystem
 {
 	/// Flags used by the GetGroupCount.
 	enum EGroupFlags
@@ -665,7 +659,7 @@ UNIQUE_IFACE struct IAISystem
 	//Basic////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	IAISystem() {}
-
+	// <interfuscator:shuffle>
 	virtual ~IAISystem() {}
 
 	virtual bool Init() = 0;
@@ -802,8 +796,6 @@ UNIQUE_IFACE struct IAISystem
 	virtual void LogProgress(const char * id, const char * format, ...) PRINTF_PARAMS(3, 4) = 0;
 	virtual void LogEvent(const char * id, const char * format, ...) PRINTF_PARAMS(3, 4) = 0;
 	virtual void LogComment(const char * id, const char * format, ...) PRINTF_PARAMS(3, 4) = 0;
-
-	virtual bool IsAIInDevMode() = 0;
 
 	// Draws a fake tracer around the player.
 	virtual void DebugDrawFakeTracer(const Vec3& pos, const Vec3& dir) = 0;
@@ -979,15 +971,15 @@ UNIQUE_IFACE struct IAISystem
 	virtual void NotifyTargetDead(IAIObject* pDeadObject) = 0;
 
 	virtual boost::shared_ptr<IPathFollower> CreateAndReturnNewDefaultPathFollower(const PathFollowerParams& params, const IPathObstacles& pathObstacleObject) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-#if defined(ENABLE_LW_PROFILERS) && !defined(__SPU__)
+#if defined(ENABLE_LW_PROFILERS)
 class CAILightProfileSection
 {
 public:
 	CAILightProfileSection() 
-		: m_nTicks( JobManager::Fiber::GetNonFiberTicks() )
+		: m_nTicks( CryGetTicks() )
 	{
 	}
 
@@ -995,7 +987,7 @@ public:
 	NO_INLINE ~CAILightProfileSection() 
 	{ 
 		IAISystem *pAISystem = gEnv->pAISystem;
-		uint64 nTicks  = JobManager::Fiber::GetNonFiberTicks();
+		uint64 nTicks  = CryGetTicks();
 		IF( pAISystem != NULL, 1)
 		{
 			pAISystem->AddFrameTicks(nTicks-m_nTicks);
@@ -1009,6 +1001,3 @@ private:
 #else
 #define AISYSTEM_LIGHT_PROFILER()
 #endif
-
-#endif //_IAISYSTEM_H_
-

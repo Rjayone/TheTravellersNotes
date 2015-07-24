@@ -49,6 +49,7 @@ namespace LiveCreate
 			eFlag_SharedDataDirectory = 1 << 4,
 		};
 
+		// <interfuscator:shuffle>
 		virtual ~IPlatformHandler(){}
 
 		// Check if platform flag is set
@@ -99,9 +100,10 @@ namespace LiveCreate
 			char targetName[kMaxTargetNameSize];
 		};
 
+		// <interfuscator:shuffle>
 		virtual ~IPlatformHandlerFactory() {}
 
-		// Returns the platform name handled by this factory (GamePC, X360, PS3, Wii, EditorPC, etc.)
+		// Returns the platform name handled by this factory (GamePC, EditorPC, etc.)
 		virtual const char* GetPlatformName() const = 0;
 
 		// Find the machine's IP address by its target name, returns true if resolving was successful.
@@ -113,6 +115,7 @@ namespace LiveCreate
 		//! Gather possible targets for this platform, returns number of targets discovered
 		virtual uint32 ScanForTargets(TargetInfo* outTargets, const uint maxTargets) = 0;
 
+		// </interfuscator:shuffle>
 	};
 }
 

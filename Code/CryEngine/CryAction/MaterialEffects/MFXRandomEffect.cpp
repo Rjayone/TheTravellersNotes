@@ -38,7 +38,7 @@ TMFXEffectBasePtr CMFXRandomizerContainer::ChooseCandidate( const SMFXRunTimeEff
 	TMFXEffectBasePtr pChosenEffect = NULL;
 	if (!candidatesArray.empty())
 	{
-		const uint32 randChoice = Random(candidatesArray.size());
+		const uint32 randChoice = cry_random(0U, candidatesArray.size() - 1);
 		pChosenEffect = candidatesArray[randChoice];
 	}
 

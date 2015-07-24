@@ -13,10 +13,6 @@ History:
 
 *************************************************************************/
 
-#if defined(USE_CRY_ASSERT) && defined(XENON)
-#include "CryAssert_Xenon.h"
-#endif
-
 #if defined(USE_CRY_ASSERT) && defined(DURANGO)
 #include "CryAssert_Durango.h"
 #endif

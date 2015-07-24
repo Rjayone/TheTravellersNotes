@@ -49,7 +49,7 @@ void CAnimActionTriState::OnInitialise()
 {
 	if ((m_triStateFlags & eTSF_SkippedIntro) == 0)
 	{
-		static uint32 introCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "intro" );
+		static uint32 introCRC = CCrc32::ComputeLowercase( "intro" );
 		const CTagDefinition* pFragTagDef = GetContext().controllerDef.GetFragmentTagDef( m_fragmentID );
 		if ( pFragTagDef )
 		{
@@ -68,7 +68,7 @@ void CAnimActionTriState::Install()
 {
 	CRY_ASSERT( m_fragmentID != FRAGMENT_ID_INVALID );
 
-	static uint32 introCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "intro" );
+	static uint32 introCRC = CCrc32::ComputeLowercase( "intro" );
 	if ( (m_triStateFlags & eTSF_SkippedIntro) || !TrySetTransitionFragment( introCRC ) )
 	{
 		m_triStateFlags |= eTSF_SkippedIntro;
@@ -105,7 +105,7 @@ void CAnimActionTriState::OnAnimationEvent( ICharacterInstance* pCharacter, cons
 
 	// Are we 100% sure that the animevent we receive here is part of the sequence of the fragment we set last?
 
-	static uint32 animExitCRC32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( ANIMEVENT_ANIMEXIT );
+	static uint32 animExitCRC32 = CCrc32::ComputeLowercase( ANIMEVENT_ANIMEXIT );
 	if ( event.m_EventNameLowercaseCRC32 == animExitCRC32 )
 	{
 		TransitionToNextSubState();
@@ -374,7 +374,7 @@ void CAnimActionTriState::TransitionToNextSubState()
 		}
 	case eSS_Middle:
 		{
-			static uint32 outroCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "outro" );
+			static uint32 outroCRC = CCrc32::ComputeLowercase( "outro" );
 			const bool hasOutro = TrySetTransitionFragment( outroCRC );
 			m_flags &= ~IAction::NoAutoBlendOut;
 

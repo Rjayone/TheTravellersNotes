@@ -140,4 +140,4 @@ void CActionFilter::GetMemoryUsage(ICrySizer * s) const
 	s->AddObject(m_filterActions);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IActionFilter)
+

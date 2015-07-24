@@ -2,8 +2,6 @@
 // Copyright (C), Crytek, 1999-2014.
 
 
-#include DEVIRTUALIZE_HEADER_FIX(IGameObjectSystem.h)
-
 #ifndef __IGAMEOBJECTSYSTEM_H__
 #define __IGAMEOBJECTSYSTEM_H__
 
@@ -44,7 +42,7 @@ struct IGameObjectSystemSink
 	virtual ~IGameObjectSystemSink(){}
 };
 
-UNIQUE_IFACE struct IGameObjectSystem
+struct IGameObjectSystem
 {
 	virtual ~IGameObjectSystem(){}
 	// If this is set as the user data for a GameObject with Preactivated Extension
@@ -92,6 +90,7 @@ UNIQUE_IFACE struct IGameObjectSystem
 	virtual IEntityProxyPtr CreateGameObjectEntityProxy(IEntity& entity, IGameObject** ppGameObject = NULL) = 0;
 
 	virtual void RegisterExtension( const char * name, IGameObjectExtensionCreatorBase * pCreator, IEntityClassRegistry::SEntityClassDesc * pEntityCls ) = 0;
+	virtual void RegisterSchedulingProfile( const char* szEntityClassName, const char* szNormalPolicy, const char* szOwnedPolicy ) = 0; 
 	virtual void DefineProtocol( bool server, IProtocolBuilder * pBuilder ) = 0;
 
 	virtual void PostUpdate( float frameTime ) = 0;

@@ -36,7 +36,7 @@ public:
 	IActionController  *GetActionController() {return m_pActionController;}
 	void AttachPassengerScope(CVehicleSeat *seat, EntityId ent, bool attach);
 
-	VIRTUAL CTagState *GetTagState()
+	virtual CTagState *GetTagState()
 	{
 		return m_pAnimContext ? &m_pAnimContext->state : NULL;
 	}

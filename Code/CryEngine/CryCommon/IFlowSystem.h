@@ -1,8 +1,3 @@
-#include DEVIRTUALIZE_HEADER_FIX(IFlowSystem.h)
-
-#ifndef __IFLOWSYSTEM_H__
-#define __IFLOWSYSTEM_H__
-
 #pragma once
 
 #include <BoostHelpers.h>
@@ -932,6 +927,7 @@ struct IFlowNode
 		eFE_DontDoAnythingWithThisPlease
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IFlowNode(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -955,14 +951,14 @@ struct IFlowNode
 	// Out:
 	//	 outGlobalEnum - The global enum name to use for this port
 	virtual bool GetPortGlobalEnum(uint32 portId, IEntity *pNodeEntity, const char* szName, string& outGlobalEnum) const { return false; }
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
 //	 Wraps IFlowNode for specific data
-UNIQUE_IFACE struct IFlowNodeData
+struct IFlowNodeData
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFlowNodeData(){}
 	// Summary:
 	//	 Gets a pointer to the node.
@@ -981,7 +977,7 @@ UNIQUE_IFACE struct IFlowNodeData
 	virtual int GetNumOutputPorts() const = 0;
 
 	virtual EntityId GetCurrentForwardingEntity() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IFlowGraph;
@@ -992,7 +988,7 @@ struct IFlowGraphHook;
 TYPEDEF_AUTOPTR(IFlowGraphHook);
 typedef IFlowGraphHook_AutoPtr IFlowGraphHookPtr;
 
-UNIQUE_IFACE struct IFlowGraphHook
+struct IFlowGraphHook
 {
 	enum EActivation
 	{
@@ -1001,7 +997,7 @@ UNIQUE_IFACE struct IFlowGraphHook
 		eFGH_Debugger_Input,
 		eFGH_Debugger_Output,
 	};
-
+	// <interfuscator:shuffle>
 	virtual ~IFlowGraphHook(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -1014,19 +1010,19 @@ UNIQUE_IFACE struct IFlowGraphHook
 	virtual void CancelCreatedNode( TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode ) = 0;
 
 	virtual IFlowGraphHook::EActivation PerformActivation( IFlowGraphPtr pFlowgraph, TFlowNodeId srcNode, TFlowPortId srcPort, TFlowNodeId toNode, TFlowPortId toPort, const TFlowInputData* value) = 0;
-
+	// </interfuscator:shuffle>
 	void GetMemoryUsage(ICrySizer *pSizer ) const{}
 };
 // Description:
 //	 Structure that permits to iterate through the node of the flowsystem.
 struct IFlowNodeIterator
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFlowNodeIterator(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
 	virtual IFlowNodeData* Next( TFlowNodeId &id ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
@@ -1043,11 +1039,12 @@ struct IFlowEdgeIterator
 		TFlowPortId toPortId;		// ID of the arrival port.
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IFlowEdgeIterator(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
 	virtual bool Next( Edge& edge ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 TYPEDEF_AUTOPTR(IFlowNodeIterator);
@@ -1057,10 +1054,10 @@ typedef IFlowEdgeIterator_AutoPtr IFlowEdgeIteratorPtr;
 
 struct SFlowNodeActivationListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~SFlowNodeActivationListener(){}
 	virtual bool OnFlowNodeActivation(IFlowGraphPtr pFlowgraph, TFlowNodeId srcNode, TFlowPortId srcPort, TFlowNodeId toNode, TFlowPortId toPort, const char* value) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 namespace NFlowSystemUtils
@@ -1135,7 +1132,7 @@ namespace NFlowSystemUtils
 // Description:
 //	 Refers to NFlowSystemUtils::IFlowSystemTyped to see extra per-flow system type
 //	 functions that are added to this interface.
-UNIQUE_IFACE struct IFlowGraph : public NFlowSystemUtils::IFlowSystemTyped
+struct IFlowGraph : public NFlowSystemUtils::IFlowSystemTyped
 {
 	enum EFlowGraphType
 	{
@@ -1146,7 +1143,7 @@ UNIQUE_IFACE struct IFlowGraph : public NFlowSystemUtils::IFlowSystemTyped
 		eFGT_CustomAction,
 		eFGT_MaterialFx
 	};
-
+	// <interfuscator:shuffle>
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
 	virtual IFlowGraphPtr Clone() = 0;
@@ -1288,7 +1285,7 @@ UNIQUE_IFACE struct IFlowGraph : public NFlowSystemUtils::IFlowSystemTyped
 	virtual ICustomAction* GetCustomAction() const = 0;
 
 	virtual void GetMemoryUsage(ICrySizer * s) const = 0;
-
+	// </interfuscator:shuffle>
 
 	template <class T>
 	ILINE void ActivatePort( const SFlowAddress output, const T& value )
@@ -1319,7 +1316,7 @@ UNIQUE_IFACE struct IFlowGraph : public NFlowSystemUtils::IFlowSystemTyped
 
 struct IFlowNodeFactory
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFlowNodeFactory(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -1327,7 +1324,7 @@ struct IFlowNodeFactory
 	virtual void GetMemoryUsage(ICrySizer * s) const = 0;
 	virtual void Reset() = 0;
 	virtual bool AllowOverride() const {return false;}
-
+	// </interfuscator:shuffle>
 };
 
 TYPEDEF_AUTOPTR(IFlowNodeFactory);
@@ -1343,17 +1340,17 @@ struct IFlowNodeTypeIterator
 		TFlowNodeTypeId		typeId;
 		const char*			typeName;
 	};
-
+	// <interfuscator:shuffle>
 	virtual ~IFlowNodeTypeIterator(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
 	virtual bool Next(SNodeType& nodeType) = 0;
-
+	// </interfuscator:shuffle>
 };
 TYPEDEF_AUTOPTR(IFlowNodeTypeIterator);
 typedef IFlowNodeTypeIterator_AutoPtr IFlowNodeTypeIteratorPtr;
 
-UNIQUE_IFACE struct IFlowGraphInspector
+struct IFlowGraphInspector
 {
 	struct IFilter;
 	TYPEDEF_AUTOPTR(IFilter);
@@ -1367,7 +1364,7 @@ UNIQUE_IFACE struct IFlowGraphInspector
 			eFR_Block,    // Blocks flow record.
 			eFR_Pass      // Lets flow record pass.
 		};
-
+		// <interfuscator:shuffle>
 		virtual ~IFilter(){}
 		virtual void AddRef() = 0;
 		virtual void Release() = 0;
@@ -1382,9 +1379,10 @@ UNIQUE_IFACE struct IFlowGraphInspector
 		// Summary:
 		//	 Applies filter(s).
 		virtual IFlowGraphInspector::IFilter::EFilterResult Apply(IFlowGraph * pGraph, const SFlowAddress from, const SFlowAddress to) = 0;		
-
+		// </interfuscator:shuffle>
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IFlowGraphInspector(){}
 
 	virtual void AddRef() = 0;
@@ -1405,7 +1403,7 @@ UNIQUE_IFACE struct IFlowGraphInspector
 	virtual void RemoveFilter(IFlowGraphInspector::IFilterPtr pFilter) = 0;
 	
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const=0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IFlowSystemContainer
@@ -1431,9 +1429,9 @@ typedef IFlowGraphInspector_AutoPtr IFlowGraphInspectorPtr;
 
 typedef boost::shared_ptr<IFlowSystemContainer> IFlowSystemContainerPtr;
 
-UNIQUE_IFACE struct IFlowSystem
+struct IFlowSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFlowSystem(){}
 
 	virtual void Release() = 0;
@@ -1513,7 +1511,7 @@ UNIQUE_IFACE struct IFlowSystem
 	virtual IFlowSystemContainerPtr GetContainer(TFlowSystemContainerId id) = 0;
 
 	virtual void Serialize(TSerialize ser) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 ILINE bool IsPortActive(IFlowNode::SActivationInfo* pActInfo, int nPort)
@@ -1596,5 +1594,3 @@ ILINE bool IsOutputConnected(IFlowNode::SActivationInfo* pActInfo, int nPort)
 	SFlowAddress addr(pActInfo->myID, nPort, true);
 	return pActInfo->pGraph->IsOutputConnected(addr);
 }
-
-#endif

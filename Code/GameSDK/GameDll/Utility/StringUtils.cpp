@@ -13,54 +13,6 @@ StringUtils.cpp
 static bool s_stringUtils_assertEnabled = true;
 
 //--------------------------------------------------------------------------------
-bool cry_strncpy(char * destination, const char * source, size_t bufferLength)
-{
-	bool reply = false;
-
-	CRY_ASSERT(destination);
-	CRY_ASSERT(source);
-
-	if (bufferLength)
-	{
-		size_t i;
-		for (i = 0; source[i] && (i + 1) < bufferLength; ++ i)
-		{
-			destination[i] = source[i];
-		}
-		destination[i] = '\0';
-		reply = (source[i] == '\0');
-	}
-
-	CRY_ASSERT_MESSAGE(reply || !s_stringUtils_assertEnabled, string().Format("String '%s' is too big to fit into a buffer of length %u", source, (unsigned int) bufferLength));
-
-	return reply;
-}
-
-//--------------------------------------------------------------------------------
-bool cry_wstrncpy(wchar_t * destination, const wchar_t * source, size_t bufferLength)
-{
-	bool reply = false;
-
-	CRY_ASSERT(destination);
-	CRY_ASSERT(source);
-
-	if (bufferLength)
-	{
-		size_t i;
-		for (i = 0; source[i] && (i + 1) < bufferLength; ++ i)
-		{
-			destination[i] = source[i];
-		}
-		destination[i] = '\0';
-		reply = (source[i] == '\0');
-	}
-
-	CRY_ASSERT_MESSAGE(reply || !s_stringUtils_assertEnabled, string().Format("String '%ls' is too big to fit into a buffer of length %u", source, (unsigned int) bufferLength));
-
-	return reply;
-}
-
-//--------------------------------------------------------------------------------
 void cry_sprintf(char * destination, size_t size, const char* format, ...)
 {
 	va_list args;
@@ -157,21 +109,6 @@ void CCryLogAlwaysOutputHandler::DoOutput(const char * text)
 #endif
 
 //---------------------------------------------------------------------
-void StrToWstr(const char* str, wstring& dstr)
-{
-	CryStackStringT<wchar_t, 64> tmp;
-	tmp.resize(strlen(str));
-	tmp.clear();
-
-	while (const wchar_t c=(wchar_t)(*str++))
-	{
-		tmp.append(1, c);
-	}
-
-	dstr.assign(tmp.data(), tmp.length());
-}
-
-//---------------------------------------------------------------------
 const char * GetTimeString( int secs, bool useShortForm/*=false*/, bool includeSeconds/*=true*/, bool useSingleLetters/*=false*/ )
 {
 	int d, h, m, s;
@@ -253,89 +190,4 @@ const char * GetTimeString( int secs, bool useShortForm/*=false*/, bool includeS
 const char * GetTimeString( float secs, bool useShortForm/*=false*/, bool includeSeconds/*=true*/, bool useSingleLetters/*=false*/ )
 {
 	return GetTimeString(int_round(secs), useShortForm, includeSeconds, useSingleLetters);
-}
-
-//---------------------------------------------------------------------
-const wchar_t * GetTimeStringW( int secs, bool useShortForm/*=false*/, bool includeSeconds/*=true*/, bool useSingleLetters/*=false*/)
-{
-
-	int d, h, m, s;
-
-	CGame::ExpandTimeSeconds(secs, d, h, m, s);
-
-	static CryFixedWStringT<64> resultW;
-	resultW.clear();
-
-	if (useShortForm)
-	{
-		if(includeSeconds)
-		{
-			if (d>0)
-				resultW.Format(L"%.2d:%.2d:%.2d:%.2d", d, h, m, s);
-			else if(h>0)
-				resultW.Format(L"%.2d:%.2d:%.2d", h, m, s);
-			else
-				resultW.Format(L"%.2d:%.2d", m, s);
-		}
-		else
-		{
-			if (d>0)
-				resultW.Format(L"%.2d:%.2d:%.2d", d, h, m);
-			else
-				resultW.Format(L"%.2d:%.2d", h, m);
-		}
-	}
-	else
-	{
-		if ( useSingleLetters == false )
-		{
-			if (d==1)
-				resultW.Format(L"%d %ls",d, CHUDUtils::LocalizeStringW("@ui_day"));
-			else if (d>1)
-				resultW.Format(L"%d %ls",d, CHUDUtils::LocalizeStringW("@ui_days"));
-
-			if (h==1)
-				resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", h, CHUDUtils::LocalizeStringW("@ui_hr"));
-			else if (h>1 || d>0)
-				resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", h, CHUDUtils::LocalizeStringW("@ui_hrs"));
-
-			if (m==1)
-				resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", m, CHUDUtils::LocalizeStringW("@ui_min"));
-			else if (m>1 || h>0 || d>0)
-				resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", m, CHUDUtils::LocalizeStringW("@ui_mins"));
-
-			if(includeSeconds)
-			{
-				if (s==1)
-					resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", s, CHUDUtils::LocalizeStringW("@ui_sec"));
-				else
-					resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", s, CHUDUtils::LocalizeStringW("@ui_secs"));
-			}
-		}
-		else
-		{
-			if (d>0)
-				resultW.Format(L"%d %ls",d, CHUDUtils::LocalizeStringW("@ui_mp_days"));
-
-			if (h>0 || d>0)
-				resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", h, CHUDUtils::LocalizeStringW("@ui_mp_hrs"));
-
-			if (m>0 || h>0 || d>0)
-				resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", m, CHUDUtils::LocalizeStringW("@ui_mp_mins"));
-
-			if(includeSeconds)
-			{
-				if (s>0 || (h==0 && d==0 && m==0))
-					resultW.Format(L"%ls%ls%d %ls",resultW.c_str(), resultW.empty()?L"":L" ", s, CHUDUtils::LocalizeStringW("@ui_mp_sec"));
-			}
-		}
-	}
-
-	return resultW.c_str();
-}
-
-//---------------------------------------------------------------------
-const wchar_t * GetTimeStringW( float secs, bool useShortForm/*=false*/, bool includeSeconds/*=true*/, bool useSingleLetters/*=false*/ )
-{
-	return GetTimeStringW(int_round(secs), useShortForm, includeSeconds, useSingleLetters);
 }

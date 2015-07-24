@@ -13,8 +13,6 @@ History:
 
 *************************************************************************/
 
-#include DEVIRTUALIZE_HEADER_FIX(IForceFeedbackSystem.h)
-
 #pragma once
 
 #ifndef _IFORCEFEEDBACKSYSTEM_H_
@@ -59,7 +57,7 @@ struct SForceFeedbackRuntimeParams
 	float delay;				//Start playback delay
 };
 
-UNIQUE_IFACE struct IForceFeedbackSystem
+struct IForceFeedbackSystem
 {
 	virtual	~IForceFeedbackSystem(){}
 	// Description:

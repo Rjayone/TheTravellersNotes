@@ -7,6 +7,8 @@
 
 struct SAuxGeomRenderFlags;
 
+#include "IRenderer.h"
+
 
 enum EBoundingBoxDrawStyle
 {
@@ -17,11 +19,11 @@ enum EBoundingBoxDrawStyle
 // Summary:
 //   Auxiliary geometry render interface.
 // Description:
-//   Used mostly for debugging, editor purposes, the Auxiliary geometry render 
+//   Used mostly for debugging, editor purposes, the Auxiliary geometry render
 //   interface provide functions to render 2d geometry and also text.
 struct IRenderAuxGeom
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IRenderAuxGeom(){}
 	// Summary:
 	//	 Sets render flags.
@@ -183,14 +185,65 @@ struct IRenderAuxGeom
 	//##@}
 
 	// Summary:
-	//	 Flushes elements stored on the buffer to the screen.
-	virtual void Flush() = 0;
+	//	 Draws Text.
+	//##@{
+	virtual void RenderText( Vec3 pos, SDrawTextInfo &ti, const char *format, va_list args) = 0;
 
+	void Draw2dLabel( float x,float y, float font_size, const float * pfColor, bool bCenter, const char * format, va_list args)
+	{
+		SDrawTextInfo ti;
+		ti.xscale = ti.yscale = font_size;
+		ti.flags = eDrawText_2D|eDrawText_800x600 | eDrawText_FixedSize | ((bCenter)?eDrawText_Center:0);
+		if( pfColor )
+		{
+			ti.color[0] = pfColor[0];
+			ti.color[1] = pfColor[1];
+			ti.color[2] = pfColor[2];
+			ti.color[3] = pfColor[3];
+		}
+
+		RenderText( Vec3(x,y,0.5f), ti, format, args );
+	}
+
+	void Draw2dLabel( float x,float y, float font_size, const float * pfColor, bool bCenter, const char * label_text, ...) PRINTF_PARAMS(7, 8)
+	{
+		va_list args;
+		va_start(args,label_text);
+		Draw2dLabel(x, y, font_size, pfColor, bCenter, label_text, args );
+		va_end(args);
+	}
+
+	void Draw2dLabel( float x,float y, float font_size, const ColorF &fColor, bool bCenter, const char * label_text, ...) PRINTF_PARAMS(7, 8)
+	{
+		const float& pColor = fColor[0];
+		va_list args;
+		va_start(args,label_text);
+		Draw2dLabel(x, y, font_size, &pColor, bCenter, label_text, args );
+		va_end(args);
+	}
+	//##@}
+
+	// Summary:
+	//	 If possible flushes all elements stored on the buffer to rendering system.
+	//	 Note 1: rendering system may start processing flushed commands immediately or postpone it till Commit() call
+	//	 Note 2: worker threads's commands are always postponed till Commit() call
+	//
+	virtual void Flush() = 0;
+	// </interfuscator:shuffle>
+
+	// Summary:
+	//	 Flushes yet unprocessed elements and notifies rendering system that issuing rendering commands for current frame is done and frame is ready to be drawn
+	//	 Thus Commit() guarantees that all previously issued commands will appear on the screen
+	//	 Each thread rendering AUX geometry MUST call Commit() at the end of drawing cycle/frame
+	//	 "frames" indicate how many frames current commands butch must be presented on screen unless there till next butch is ready.
+	//	 for render and main thread this parameter has no effect
+	virtual void Commit(uint frames = 0) = 0;
+	// </interfuscator:shuffle>
 };
 
 // Notes:
 //	 Don't change the xxxShift values blindly as they affect the rendering output
-//	 that is two primitives have to be rendered after 3d primitives, alpha blended 
+//	 that is two primitives have to be rendered after 3d primitives, alpha blended
 //	 geometry have to be rendered after opaque ones, etc.
 //	 This also applies to the individual flags in EAuxGeomPublicRenderflags_*!
 // Remarks:
@@ -198,10 +251,10 @@ struct IRenderAuxGeom
 //	 Check RenderAuxGeom.h in ../RenderDll/Common
 enum EAuxGeomPublicRenderflagBitMasks
 {
-	
+
 
 	e_Mode2D3DShift				= 31,
-	e_Mode2D3DMask				= 0x1 << e_Mode2D3DShift,	
+	e_Mode2D3DMask				= 0x1 << e_Mode2D3DShift,
 
 	e_AlphaBlendingShift		= 29,
 	e_AlphaBlendingMask			= 0x3 << e_AlphaBlendingShift,
@@ -221,15 +274,15 @@ enum EAuxGeomPublicRenderflagBitMasks
 	e_DepthTestShift			= 22,
 	e_DepthTestMask				= 0x1 << e_DepthTestShift,
 
-	e_PublicParamsMask		= e_Mode2D3DMask | e_AlphaBlendingMask | e_DrawInFrontMask | e_FillModeMask | 
-		e_CullModeMask | e_DepthWriteMask | e_DepthTestMask 
+	e_PublicParamsMask		= e_Mode2D3DMask | e_AlphaBlendingMask | e_DrawInFrontMask | e_FillModeMask |
+		e_CullModeMask | e_DepthWriteMask | e_DepthTestMask
 
 };
 
 // Notes:
 //	 e_Mode2D renders in normalized [0.. 1] screen space.
 //	 Don't change the xxxShift values blindly as they affect the rendering output
-//	 that is two primitives have to be rendered after 3d primitives, alpha blended 
+//	 that is two primitives have to be rendered after 3d primitives, alpha blended
 //	 geometry have to be rendered after opaque ones, etc.
 //	 This also applies to the individual flags in EAuxGeomPublicRenderflagBitMasks!
 // Remarks:
@@ -245,7 +298,7 @@ enum EAuxGeomPublicRenderflags_Mode2D3D
 
 // Notes:
 //	 Don't change the xxxShift values blindly as they affect the rendering output
-//	 that is two primitives have to be rendered after 3d primitives, alpha blended 
+//	 that is two primitives have to be rendered after 3d primitives, alpha blended
 //	 geometry have to be rendered after opaque ones, etc.
 //	 This also applies to the individual flags in EAuxGeomPublicRenderflagBitMasks!
 // Remarks:
@@ -262,7 +315,7 @@ enum EAuxGeomPublicRenderflags_AlphaBlendMode
 
 // Notes:
 //	 Don't change the xxxShift values blindly as they affect the rendering output
-//	 that is two primitives have to be rendered after 3d primitives, alpha blended 
+//	 that is two primitives have to be rendered after 3d primitives, alpha blended
 //	 geometry have to be rendered after opaque ones, etc.
 //	 This also applies to the individual flags in EAuxGeomPublicRenderflagBitMasks!
 // Remarks:
@@ -278,7 +331,7 @@ enum EAuxGeomPublicRenderflags_DrawInFrontMode
 
 // Notes:
 //	 Don't change the xxxShift values blindly as they affect the rendering output
-//	 that is two primitives have to be rendered after 3d primitives, alpha blended 
+//	 that is two primitives have to be rendered after 3d primitives, alpha blended
 //	 geometry have to be rendered after opaque ones, etc.
 //	 This also applies to the individual flags in EAuxGeomPublicRenderflagBitMasks!
 // Remarks:
@@ -295,7 +348,7 @@ enum EAuxGeomPublicRenderflags_FillMode
 
 // Notes:
 //	 Don't change the xxxShift values blindly as they affect the rendering output
-//	 that is two primitives have to be rendered after 3d primitives, alpha blended 
+//	 that is two primitives have to be rendered after 3d primitives, alpha blended
 //	 geometry have to be rendered after opaque ones, etc.
 //	 This also applies to the individual flags in EAuxGeomPublicRenderflagBitMasks!
 // Remarks:
@@ -312,7 +365,7 @@ enum EAuxGeomPublicRenderflags_CullMode
 
 // Notes:
 //	 Don't change the xxxShift values blindly as they affect the rendering output
-//	 that is two primitives have to be rendered after 3d primitives, alpha blended 
+//	 that is two primitives have to be rendered after 3d primitives, alpha blended
 //	 geometry have to be rendered after opaque ones, etc.
 //	 This also applies to the individual flags in EAuxGeomPublicRenderflagBitMasks!
 // Remarks:
@@ -328,7 +381,7 @@ enum EAuxGeomPublicRenderflags_DepthWrite
 
 // Notes:
 //	 Don't change the xxxShift values blindly as they affect the rendering output
-//	 that is two primitives have to be rendered after 3d primitives, alpha blended 
+//	 that is two primitives have to be rendered after 3d primitives, alpha blended
 //	 geometry have to be rendered after opaque ones, etc.
 //	 This also applies to the individual flags in EAuxGeomPublicRenderflagBitMasks!
 // Remarks:
@@ -346,11 +399,11 @@ enum EAuxGeomPublicRenderflags_DepthTest
 enum EAuxGeomPublicRenderflags_Defaults
 {
 	// Default render flags for 3d primitives.
-	e_Def3DPublicRenderflags = e_Mode3D | e_AlphaNone | e_DrawInFrontOff | e_FillModeSolid | 
+	e_Def3DPublicRenderflags = e_Mode3D | e_AlphaNone | e_DrawInFrontOff | e_FillModeSolid |
 		e_CullModeBack | e_DepthWriteOn | e_DepthTestOn,
-	
+
 		// Default render flags for 2d primitives.
-	e_Def2DPublicRenderflags = e_Mode2D | e_AlphaNone | e_DrawInFrontOff | e_FillModeSolid | 
+	e_Def2DPublicRenderflags = e_Mode2D | e_AlphaNone | e_DrawInFrontOff | e_FillModeSolid |
 		e_CullModeBack | e_DepthWriteOn | e_DepthTestOn
 };
 
@@ -443,12 +496,12 @@ SAuxGeomRenderFlags::operator =( const SAuxGeomRenderFlags& rhs )
 }
 
 
-inline SAuxGeomRenderFlags& 
+inline SAuxGeomRenderFlags&
 SAuxGeomRenderFlags::operator =( uint32 rhs )
 {
 	m_renderFlags = rhs;
 	return( *this );
-}	
+}
 
 
 inline bool
@@ -479,7 +532,7 @@ SAuxGeomRenderFlags::operator !=( uint32 rhs ) const
 }
 
 
-inline EAuxGeomPublicRenderflags_Mode2D3D 
+inline EAuxGeomPublicRenderflags_Mode2D3D
 SAuxGeomRenderFlags::GetMode2D3DFlag() const
 {
 	int mode2D3D( (int)(m_renderFlags & (uint32)e_Mode2D3DMask) );
@@ -499,7 +552,7 @@ SAuxGeomRenderFlags::GetMode2D3DFlag() const
 }
 
 
-inline void 
+inline void
 SAuxGeomRenderFlags::SetMode2D3DFlag( const EAuxGeomPublicRenderflags_Mode2D3D& state )
 {
 	m_renderFlags &= ~e_Mode2D3DMask;
@@ -507,7 +560,7 @@ SAuxGeomRenderFlags::SetMode2D3DFlag( const EAuxGeomPublicRenderflags_Mode2D3D& 
 }
 
 
-inline EAuxGeomPublicRenderflags_AlphaBlendMode 
+inline EAuxGeomPublicRenderflags_AlphaBlendMode
 SAuxGeomRenderFlags::GetAlphaBlendMode() const
 {
 	uint32 alphaBlendMode( m_renderFlags & e_AlphaBlendingMask );
@@ -559,7 +612,7 @@ SAuxGeomRenderFlags::GetDrawInFrontMode() const
 }
 
 
-inline void 
+inline void
 SAuxGeomRenderFlags::SetDrawInFrontMode( const EAuxGeomPublicRenderflags_DrawInFrontMode& state )
 {
 	m_renderFlags &= ~e_DrawInFrontMask;
@@ -567,7 +620,7 @@ SAuxGeomRenderFlags::SetDrawInFrontMode( const EAuxGeomPublicRenderflags_DrawInF
 }
 
 
-inline EAuxGeomPublicRenderflags_FillMode 
+inline EAuxGeomPublicRenderflags_FillMode
 SAuxGeomRenderFlags::GetFillMode() const
 {
 	uint32 fillMode( m_renderFlags & e_FillModeMask );
@@ -591,7 +644,7 @@ SAuxGeomRenderFlags::GetFillMode() const
 }
 
 
-inline void 
+inline void
 SAuxGeomRenderFlags::SetFillMode( const EAuxGeomPublicRenderflags_FillMode& state )
 {
 	m_renderFlags &= ~e_FillModeMask;
@@ -599,7 +652,7 @@ SAuxGeomRenderFlags::SetFillMode( const EAuxGeomPublicRenderflags_FillMode& stat
 }
 
 
-inline EAuxGeomPublicRenderflags_CullMode 
+inline EAuxGeomPublicRenderflags_CullMode
 SAuxGeomRenderFlags::GetCullMode() const
 {
 	uint32 cullMode( m_renderFlags & e_CullModeMask );
@@ -623,7 +676,7 @@ SAuxGeomRenderFlags::GetCullMode() const
 }
 
 
-inline void 
+inline void
 SAuxGeomRenderFlags::SetCullMode( const EAuxGeomPublicRenderflags_CullMode& state )
 {
 	m_renderFlags &= ~e_CullModeMask;
@@ -631,7 +684,7 @@ SAuxGeomRenderFlags::SetCullMode( const EAuxGeomPublicRenderflags_CullMode& stat
 }
 
 
-inline EAuxGeomPublicRenderflags_DepthWrite 
+inline EAuxGeomPublicRenderflags_DepthWrite
 SAuxGeomRenderFlags::GetDepthWriteFlag() const
 {
 	uint32 depthWriteFlag( m_renderFlags & e_DepthWriteMask );
@@ -651,7 +704,7 @@ SAuxGeomRenderFlags::GetDepthWriteFlag() const
 }
 
 
-inline void 
+inline void
 SAuxGeomRenderFlags::SetDepthWriteFlag( const EAuxGeomPublicRenderflags_DepthWrite& state )
 {
 	m_renderFlags &= ~e_DepthWriteMask;
@@ -659,7 +712,7 @@ SAuxGeomRenderFlags::SetDepthWriteFlag( const EAuxGeomPublicRenderflags_DepthWri
 }
 
 
-inline EAuxGeomPublicRenderflags_DepthTest 
+inline EAuxGeomPublicRenderflags_DepthTest
 SAuxGeomRenderFlags::GetDepthTestFlag() const
 {
 	uint32 depthTestFlag( m_renderFlags & e_DepthTestMask );
@@ -679,7 +732,7 @@ SAuxGeomRenderFlags::GetDepthTestFlag() const
 }
 
 
-inline void 
+inline void
 SAuxGeomRenderFlags::SetDepthTestFlag( const EAuxGeomPublicRenderflags_DepthTest& state )
 {
 	m_renderFlags &= ~e_DepthTestMask;

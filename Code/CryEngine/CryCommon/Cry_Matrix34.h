@@ -30,7 +30,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-template <typename F> struct __passinreg Matrix34_tpl
+template <typename F> struct Matrix34_tpl
 {
 	F m00,m01,m02,m03;
 	F m10,m11,m12,m13;
@@ -194,52 +194,6 @@ template <typename F> struct __passinreg Matrix34_tpl
 		m10=F(m.m10);		m11=F(m.m11);		m12=F(m.m12);		m13=F(m.m13);
 		m20=F(m.m20);		m21=F(m.m21);		m22=F(m.m22);		m23=F(m.m23);
 	}
-
-
-
-	//CONSTRUCTOR for identical float-types. It converts a Matrix34A into a Matrix34. 
-	//Needs to be 'explicit' because we loose the 16byte alignment in the conversion process 
-	//Matrix34(m34A);
-	ILINE Matrix34_tpl<F>( const Matrix34A_tpl<F>& m ) //the F-type for Matrix34A is always 32bit-float
-	{
-		assert(m.IsValid());
-		m00=m.m00;		m01=m.m01;		m02=m.m02;	m03=m.m03;	
-		m10=m.m10;		m11=m.m11;		m12=m.m12;	m13=m.m13;
-		m20=m.m20;		m21=m.m21;		m22=m.m22;	m23=m.m23;
-	}
-	//CONSTRUCTOR for different float types. It converts a Matrix34A into a Matrix34 and converts the floats of the Matrix34A into doubles. 
-	//Needs to be 'explicit' because we loose the 16byte alignment in the conversion process 
-	//Matrix34r(m34A);
-	template<class F1> ILINE Matrix34_tpl<F>( const Matrix34A_tpl<F1>& m ) //the F1-type for Matrix34A is always 32bit-float
-	{
-		assert(m.IsValid());
-		m00=F(m.m00);		m01=F(m.m01);		m02=F(m.m02);	m03=F(m.m03);	
-		m10=F(m.m10);		m11=F(m.m11);		m12=F(m.m12);	m13=F(m.m13);
-		m20=F(m.m20);		m21=F(m.m21);		m22=F(m.m22);	m23=F(m.m23);
-	}
-
-	//CONSTRUCTOR for identical float-types. It converts a Matrix44A into a Matrix34. 
-	//Needs to be 'explicit' because we loose the translation vector and the 3rd row in the conversion process 
-	//Matrix34(m44A);
-	ILINE explicit Matrix34_tpl<F>(const Matrix44A_tpl<F>& m ) //the F-type for Matrix44A is always 32bit-float
-	{
-		assert(m.IsValid());
-		m00=m.m00;		m01=m.m01;		m02=m.m02;		m03=m.m03;	
-		m10=m.m10;		m11=m.m11;		m12=m.m12;		m13=m.m13;
-		m20=m.m20;		m21=m.m21;		m22=m.m22;		m23=m.m23;
-	}
-	//CONSTRUCTOR for different float types. It converts a Matrix44A into a Matrix34 and converts between double/float. 
-	//Needs to be 'explicit' because we loose the translation vector and the 3rd row in the conversion process 
-	//Matrix34(m44Ar);
-	template<class F1> ILINE explicit Matrix34_tpl<F>(const Matrix44A_tpl<F1>& m ) //the F1-type for Matrix44A is always 32bit-float
-	{
-		assert(m.IsValid());
-		m00=F(m.m00);		m01=F(m.m01);		m02=F(m.m02);		m03=F(m.m03);	
-		m10=F(m.m10);		m11=F(m.m11);		m12=F(m.m12);		m13=F(m.m13);
-		m20=F(m.m20);		m21=F(m.m21);		m22=F(m.m22);		m23=F(m.m23);
-	}
-
-
 
 	//CONSTRUCTOR for identical float-types. It converts a Quat into a Matrix34. 
 	//Needs to be 'explicit' because we loose float-precision in the conversion process 
@@ -595,9 +549,9 @@ template <typename F> struct __passinreg Matrix34_tpl
 	//! Remove scale from matrix.
 	void OrthonormalizeFast()
 	{
-		Vec3 x( m00,m10,m20 );
-		Vec3 y( m01,m11,m21 );
-		Vec3 z;
+		Vec3_tpl<F> x( m00,m10,m20 );
+		Vec3_tpl<F> y( m01,m11,m21 );
+		Vec3_tpl<F> z;
 		x = x.GetNormalized();
 		z = (x % y).GetNormalized();
 		y = (z % x).GetNormalized();
@@ -647,6 +601,13 @@ template <typename F> struct __passinreg Matrix34_tpl
 		m00=m33.m00;	m01=m33.m01; m02=m33.m02;	
 		m10=m33.m10;	m11=m33.m11; m12=m33.m12;	
 		m20=m33.m20;	m21=m33.m21; m22=m33.m22;	
+	}
+
+	ILINE void GetRotation33( Matrix33_tpl<F>& m33 ) const
+	{ 
+		m33.m00=m00;	m33.m01=m01; m33.m02=m02;	
+		m33.m10=m10;	m33.m11=m11; m33.m12=m12;	
+		m33.m20=m20;	m33.m21=m21; m33.m22=m22;	
 	}
 
 	//check if we have an orthonormal-base (general case, works even with reflection matrices)
@@ -958,26 +919,6 @@ ILINE Matrix34_tpl<F> operator * (const Matrix34_tpl<F>& l, const Matrix34_tpl<F
 	return m;
 }
 
-template<class F> 
-ILINE Matrix34_tpl<F> operator * (const Matrix34A_tpl<F>& l, const Matrix34_tpl<F>& r) {
-	assert(l.IsValid());
-	assert(r.IsValid());
-	Matrix34_tpl<F> m;
-	m.m00 = l.m00*r.m00 + l.m01*r.m10 + l.m02*r.m20;
-	m.m10 = l.m10*r.m00 + l.m11*r.m10 + l.m12*r.m20;
-	m.m20 = l.m20*r.m00 + l.m21*r.m10 + l.m22*r.m20;
-	m.m01 = l.m00*r.m01 + l.m01*r.m11 + l.m02*r.m21;
-	m.m11 = l.m10*r.m01 + l.m11*r.m11 + l.m12*r.m21;
-	m.m21 = l.m20*r.m01 + l.m21*r.m11 + l.m22*r.m21;
-	m.m02 = l.m00*r.m02 + l.m01*r.m12 + l.m02*r.m22;
-	m.m12 = l.m10*r.m02 + l.m11*r.m12 + l.m12*r.m22;
-	m.m22 = l.m20*r.m02 + l.m21*r.m12 + l.m22*r.m22;
-	m.m03 = l.m00*r.m03 + l.m01*r.m13 + l.m02*r.m23 + l.m03;
-	m.m13 = l.m10*r.m03 + l.m11*r.m13 + l.m12*r.m23 + l.m13;
-	m.m23 = l.m20*r.m03 + l.m21*r.m13 + l.m22*r.m23 + l.m23;
-	return m;
-}
-
 /*!
 *  Implements the multiplication operator: Matrix44=Matrix34*Matrix44
 *
@@ -1013,32 +954,6 @@ ILINE Matrix44_tpl<F> operator * (const Matrix34_tpl<F>& l, const Matrix44_tpl<F
 	m.m33 = r.m33;
 	return m;
 }
-template<class F> 
-ILINE Matrix44_tpl<F> operator * (const Matrix34A_tpl<F>& l, const Matrix44_tpl<F>& r) {
-	assert(l.IsValid());
-	assert(r.IsValid());
-	Matrix44_tpl<F> m;
-	m.m00 = l.m00*r.m00 + l.m01*r.m10 + l.m02*r.m20 + l.m03*r.m30;
-	m.m10 = l.m10*r.m00 + l.m11*r.m10 + l.m12*r.m20 + l.m13*r.m30;
-	m.m20 = l.m20*r.m00 + l.m21*r.m10 + l.m22*r.m20 + l.m23*r.m30;
-	m.m30 = r.m30;
-	m.m01 = l.m00*r.m01 + l.m01*r.m11 + l.m02*r.m21 + l.m03*r.m31;
-	m.m11 = l.m10*r.m01 + l.m11*r.m11 + l.m12*r.m21 + l.m13*r.m31;
-	m.m21 = l.m20*r.m01 + l.m21*r.m11 + l.m22*r.m21 + l.m23*r.m31;
-	m.m31 = r.m31;
-	m.m02 = l.m00*r.m02 + l.m01*r.m12 + l.m02*r.m22 + l.m03*r.m32;
-	m.m12 = l.m10*r.m02 + l.m11*r.m12 + l.m12*r.m22 + l.m13*r.m32;
-	m.m22 = l.m20*r.m02 + l.m21*r.m12 + l.m22*r.m22 + l.m23*r.m32;
-	m.m32 = r.m32;
-	m.m03 = l.m00*r.m03 + l.m01*r.m13 + l.m02*r.m23 + l.m03*r.m33;
-	m.m13 = l.m10*r.m03 + l.m11*r.m13 + l.m12*r.m23 + l.m13*r.m33;
-	m.m23 = l.m20*r.m03 + l.m21*r.m13 + l.m22*r.m23 + l.m23*r.m33;
-	m.m33 = r.m33;
-	return m;
-}
-
-
-
 
 #endif //MATRIX_H
 

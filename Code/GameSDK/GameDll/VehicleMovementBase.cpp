@@ -195,7 +195,7 @@ bool CVehicleMovementBase::Init(IVehicle* pVehicle, const CVehicleParams& table)
 		m_pIEntityAudioProxy->SetSwitchState(m_audioControlIDs[eSID_VehicleSurface], nSurfaceStateID);
 	}
 
-	m_pIEntityAudioProxy->SetAuxAudioProxyOffset(SATLWorldPosition(IDENTITY, m_enginePos));
+	m_pIEntityAudioProxy->SetAuxAudioProxyOffset(SATLWorldPosition(m_enginePos));
 
 	if (IVehicleComponent* pComp = m_pVehicle->GetComponent("Hull"))
 		m_damageComponents.push_back(pComp);

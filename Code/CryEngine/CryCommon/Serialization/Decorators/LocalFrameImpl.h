@@ -16,13 +16,13 @@ inline void LocalPosition::Serialize(Serialization::IArchive& ar)
 
 inline void LocalOrientation::Serialize(Serialization::IArchive& ar)
 {
-		ar(Serialization::AsAng3<float>(*value), "q", "^");
+	ar(Serialization::AsAng3(*value), "q", "^");
 }
 
 inline void LocalFrame::Serialize(Serialization::IArchive& ar)
 {
-	ar(value->t, "t", "<T");
-	ar(AsAng3<float>(value->q), "q", "<R");
+	ar(*position, "t", "<T");
+	ar(AsAng3(*rotation), "q", "<R");
 }
 
 inline bool Serialize(Serialization::IArchive& ar, Serialization::LocalPosition& value, const char* name, const char* label)
@@ -46,7 +46,17 @@ inline bool Serialize(Serialization::IArchive& ar, Serialization::LocalFrame& va
 	if (ar.IsEdit())
 		return ar(Serialization::SStruct(value), name, label);
 	else
-		return ar(*value.value, name, label);
+	{
+		QuatT t(*value.rotation, *value.position);
+		if (!ar(t, name, label))
+			return false;
+		if (ar.IsInput())
+		{
+			*value.position = t.t;
+			*value.rotation = t.q;
+		}
+		return true;
+	}
 }
 
 }

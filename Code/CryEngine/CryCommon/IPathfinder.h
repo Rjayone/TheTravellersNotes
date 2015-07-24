@@ -29,6 +29,7 @@ struct IAIPathAgent;
 #include <INavigationSystem.h>
 #include "functor.h"
 #include <IMNM.h>
+#include <IAgent.h>
 
 /* WARNING: These interfaces and structures are soon to be deprecated.
 						Use at your own risk of having to change your code later!
@@ -378,7 +379,7 @@ struct PathFollowResult
 //			 The alternative would be to make IAIObject derive from IAIPathAgent.
 struct IAIPathAgent
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIPathAgent(){}
 	virtual IEntity *GetPathAgentEntity() const = 0;
 	virtual const char *GetPathAgentName() const = 0;
@@ -418,7 +419,7 @@ struct IAIPathAgent
 	virtual class IPathFollower* GetPathFollower() const = 0;
 
 	virtual bool IsPointValidForAgent(const Vec3& pos, uint32 flags) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 typedef std::list<PathPointDescriptor> TPathPoints;
@@ -501,10 +502,10 @@ struct SNavPathParams
 	}
 };
 
-UNIQUE_IFACE class INavPath
+class INavPath
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~INavPath(){}
 	virtual void Release() = 0;
 	virtual void CopyTo(INavPath *pRecipient) const = 0;
@@ -519,6 +520,7 @@ public:
 	virtual const SNavPathParams& GetParams() const = 0;
 	virtual SNavPathParams& GetParams() = 0;
 	virtual const TPathPoints &GetPath() const = 0;
+	virtual void SetPathPoints(const TPathPoints& points) = 0;
 
 	virtual float	GetPathLength(bool twoD) const = 0;
 	virtual void PushFront(const PathPointDescriptor &newPathPoint, bool force=false) = 0;
@@ -588,7 +590,7 @@ public:
 		TMismatchResult result = std::mismatch(path1It, path1End, path2It, PathPointDescriptor::ArePointsEquivalent);
 		return result.first == path1.end();
 	}
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_BOOST_POINTERS(INavPath);
@@ -627,10 +629,10 @@ struct IPathObstacles
 	virtual bool IsLineSegmentIntersectingObstaclesOrCloseToThem(const Lineseg& linesegToTest, float maxDistanceToConsiderClose) const = 0;
 };
 
-UNIQUE_IFACE class IPathFollower
+class IPathFollower
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IPathFollower(){}
 
 	virtual void Release() = 0;
@@ -681,7 +683,7 @@ public:
 
 	// Sets whether or not the pathfollower is allowed to cut corners if there is space to do so. (default: true)
 	virtual void SetAllowCuttingCorners(const bool allowCuttingCorners) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_BOOST_POINTERS( IPathFollower );
@@ -769,9 +771,9 @@ struct MNMPathRequest
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-UNIQUE_IFACE struct IMNMPathfinder 
+struct IMNMPathfinder 
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMNMPathfinder() {};
 
 	//Request a path (look at MNMPathRequest for relevant request info).  This request is queued and processed in a seperate
@@ -784,13 +786,14 @@ UNIQUE_IFACE struct IMNMPathfinder
 
 	virtual bool CheckIfPointsAreOnStraightWalkableLine(const NavigationMeshID& meshID, const Vec3& source, const Vec3& destination, float heightOffset = 0.2f) const = 0;
 
+	// </interfuscator:shuffle>
 };
 
 
-UNIQUE_IFACE struct IAIPathFinder
+struct IAIPathFinder
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IAIPathFinder(){}
 	virtual void RequestPathTo(const Vec3 &start, const Vec3 &end, const Vec3 &endDir, IAIPathAgent *pRequester, bool allowDangerousDestination, int forceTargetBuildingId, float endTol, float endDistance) = 0;
 	virtual void RequestPathTo(uint32 startIndex, uint32 endIndex, const Vec3 &endDir, IAIPathAgent *pRequester, bool allowDangerousDestination, int forceTargetBuildingId, float endTol, float endDistance) = 0;
@@ -818,7 +821,7 @@ public:
 
 	virtual void RegisterPathFinderListener(IAIPathFinderListerner* pListener) = 0;
 	virtual void UnregisterPathFinderListener(IAIPathFinderListerner* pListener) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 

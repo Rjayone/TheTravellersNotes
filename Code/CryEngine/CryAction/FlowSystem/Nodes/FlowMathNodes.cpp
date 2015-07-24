@@ -1602,8 +1602,8 @@ public:
 		case eFE_Initialize:
 				float min = GetPortFloat(pActInfo, 1);
 				float max = GetPortFloat(pActInfo, 2);
-				float f = Random(min, max);
-				ActivateOutput(pActInfo, 0, f); // CryMath::Random
+				float f = cry_random(min, max);
+				ActivateOutput(pActInfo, 0, f); 
 				ActivateOutput(pActInfo, 1, int_round(f));
 			}
 			break;

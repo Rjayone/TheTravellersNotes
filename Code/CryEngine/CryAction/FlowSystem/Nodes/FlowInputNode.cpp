@@ -172,7 +172,7 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////////
 
-class CFlowNode_InputAction : public CFlowBaseNode<eNCT_Instanced>, public IInputEventListener
+class CFlowNode_InputActionListener : public CFlowBaseNode<eNCT_Instanced>, public IInputEventListener
 {
 	enum INPUTS 
 {
@@ -190,12 +190,12 @@ class CFlowNode_InputAction : public CFlowBaseNode<eNCT_Instanced>, public IInpu
 	};
 
 public:
-	CFlowNode_InputAction( SActivationInfo * pActInfo ) : m_bActive(false)
+	CFlowNode_InputActionListener( SActivationInfo * pActInfo ) : m_bActive(false)
 	{
 		m_eventKeyName.resize(64); // avoid delete/re-newing during execution - assuming no action keys are longer than 64 char
 	}
 
-	~CFlowNode_InputAction()
+	~CFlowNode_InputActionListener()
 	{
 		Register(false, 0);
 	}
@@ -228,7 +228,7 @@ public:
 
 	IFlowNodePtr Clone(SActivationInfo *pActInfo)
 	{
-		return new CFlowNode_InputAction(pActInfo);
+		return new CFlowNode_InputActionListener(pActInfo);
 	}
 
 	void Register(bool bRegister, SActivationInfo *pActInfo)
@@ -503,7 +503,76 @@ protected:
 	SActivationInfo* m_pActInfo;
 };
 
+//////////////////////////////////////////////////////////////////////
+class CFlowNode_ActionMapManager : public CFlowBaseNode<eNCT_Instanced>
+{
+	enum INPUTS 
+	{
+		EIP_ENABLE = 0,
+		EIP_DISABLE,
+		EIP_ACTIONMAP,
+	};
 
+public:
+	CFlowNode_ActionMapManager(SActivationInfo* pActInfo)
+	: m_pActInfo(pActInfo)
+	{
+	}
+
+	~CFlowNode_ActionMapManager()
+	{
+	}
+
+	void GetConfiguration( SFlowNodeConfig& config )
+	{
+		static const SInputPortConfig inputs[] = 
+		{
+			InputPortConfig_Void( "Enable", _HELP("Trigger to enable (default: disabled)." )),
+			InputPortConfig_Void( "Disable", _HELP("Trigger to disable" )),
+			InputPortConfig<string>( "ActionMap", _HELP("Action Map to use" ), _HELP("Action Map"), _UICONFIG("enum_global:action_maps")),
+			{0}
+		};
+
+		config.pInputPorts = inputs;
+		config.sDescription = _HELP("FlowNode to enable/disable actionmaps");
+		config.SetCategory(EFLN_APPROVED);
+	}
+
+	IFlowNodePtr Clone(SActivationInfo *pActInfo)
+	{
+		return new CFlowNode_ActionMapManager(pActInfo);
+	}
+
+	void ProcessEvent( EFlowEvent event, SActivationInfo *pActInfo )
+	{
+		m_pActInfo = pActInfo;
+		switch (event)
+		{	
+		case eFE_Activate:
+			if (IsPortActive(pActInfo, EIP_ENABLE) || IsPortActive(pActInfo, EIP_DISABLE))
+			{
+				const bool bEnable = IsPortActive(pActInfo, EIP_ENABLE);
+				const string actionMapName = GetPortString(pActInfo, EIP_ACTIONMAP);
+				
+				IGameFramework* pGameFramework = gEnv->pGame ? gEnv->pGame->GetIGameFramework() : NULL;
+				IActionMapManager* pAMMgr = pGameFramework ? pGameFramework->GetIActionMapManager() : NULL;
+				if (pAMMgr && !actionMapName.empty())
+				{
+					pAMMgr->EnableActionMap(actionMapName, bEnable);
+				}
+			}
+			break;
+		}
+	}
+
+	virtual void GetMemoryUsage(ICrySizer * s) const
+	{
+		s->Add(*this);
+	}
+
+protected:
+	SActivationInfo* m_pActInfo;
+};
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -740,7 +809,8 @@ public:
 };
 
 REGISTER_FLOW_NODE("Input:Key",	CFlowNode_InputKey);
-REGISTER_FLOW_NODE("Input:Action",	CFlowNode_InputAction);
+REGISTER_FLOW_NODE("Input:ActionMapManager",	CFlowNode_ActionMapManager);
+REGISTER_FLOW_NODE("Input:ActionListener",	CFlowNode_InputActionListener);
 REGISTER_FLOW_NODE("Input:ActionFilter", CFlowNode_InputActionFilter);
 REGISTER_FLOW_NODE("Game:ForceFeedback", CFlowNode_ForceFeedback);
 REGISTER_FLOW_NODE("Game:ForceFeedbackTweaker", CFlowNode_ForceFeedbackTweaker);

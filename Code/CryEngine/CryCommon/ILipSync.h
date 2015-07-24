@@ -7,16 +7,16 @@ struct CryCharMorphParams;
 // callback interfaces
 struct IDialogLoadSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IDialogLoadSink(){}
 	virtual void OnDialogLoaded(struct ILipSync *pLipSync)=0;
 	virtual void OnDialogFailed(struct ILipSync *pLipSync)=0;
-
+	// </interfuscator:shuffle>
 };
 
 struct ILipSync
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ILipSync(){}
 	virtual bool Init(ISystem *pSystem, IEntity *pEntity)=0;											// initializes and prepares the character for lip-synching
 	virtual void Release()=0;																											// releases all resources and deletes itself
@@ -31,7 +31,7 @@ struct ILipSync
 	virtual bool StopExpression(const char *pszMorphTarget)=0;										// stop animating the specified expression
 	virtual bool Update(bool bAnimate=true)=0;																		// updates animation & stuff
 	virtual void SetCallbackSink(IDialogLoadSink *pSink)=0;												// set callback sink (see above)
-
+	// </interfuscator:shuffle>
 };
 
 #endif // ILIPSYNC_H

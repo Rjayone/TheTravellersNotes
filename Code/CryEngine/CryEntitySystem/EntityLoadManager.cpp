@@ -99,7 +99,7 @@ void CEntityLoadManager::SetupHeldLayer(const char* pLayerName)
 
 		// Crc the original layer name and add it to the map.  If the layer is held we
 		// store the index, or -1 if it isn't held.
-		uint32 layerCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32(pLayerName);
+		uint32 layerCrc = CCrc32::Compute(pLayerName);
 		m_layerNameMap[layerCrc] = heldLayerIdx;
 	}
 }
@@ -111,7 +111,7 @@ bool CEntityLoadManager::IsHeldLayer(XmlNodeRef& entityNode)
 
 	const char* pLayerName = entityNode->getAttr("Layer");
 
-	uint32 layerCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32(pLayerName);
+	uint32 layerCrc = CCrc32::Compute(pLayerName);
 
 	std::map<uint32, int>::iterator it = m_layerNameMap.find(layerCrc);
 
@@ -680,7 +680,7 @@ bool CEntityLoadManager::CreateEntity(SEntityLoadParams &loadParams, EntityId &o
 		const char* entityGuidStr = entityNode->getAttr("Id");
 		if (entityGuidStr[0] != '\0')
 		{
-			entityGuid = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(entityGuidStr);
+			entityGuid = CCrc32::ComputeLowercase(entityGuidStr);
 		}
 	}
 
@@ -873,7 +873,7 @@ bool CEntityLoadManager::CreateEntity(SEntityLoadParams &loadParams, EntityId &o
 				const char* pParentGuid = entityNode->getAttr("Parent");
 				if (pParentGuid[0] != '\0')
 				{
-					uint32 parentGuid = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pParentGuid);
+					uint32 parentGuid = CCrc32::ComputeLowercase(pParentGuid);
 					AddQueuedAttachment((EntityId)parentGuid, 0, spawnParams.id, spawnParams.vPosition, spawnParams.qRotation, spawnParams.vScale, true, flags, attachmentTarget);
 				}
 			}
@@ -1115,7 +1115,7 @@ EntityId CEntityLoadManager::GetClonedId(int clonedLayerId, EntityId originalId)
 //////////////////////////////////////////////////////////////////////////
 EntityId CEntityLoadManager::FindEntityByEditorGuid(const char* pGuid) const
 {
-	uint32 guidCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pGuid);
+	uint32 guidCrc = CCrc32::ComputeLowercase(pGuid);
 	TGuidToId::const_iterator it = m_guidToId.find(guidCrc);
 	if (it != m_guidToId.end())
 		return it->second;

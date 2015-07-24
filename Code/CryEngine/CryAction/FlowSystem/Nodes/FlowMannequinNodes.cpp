@@ -91,7 +91,7 @@ public:
 					if(pAnimChar && pAnimChar->GetActionController())
 					{
 						const string fragName = GetPortString(pActInfo, EIP_Fragment);
-						const int fragCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(fragName);
+						const int fragCRC = CCrc32::ComputeLowercase(fragName);
 						const FragmentID fragID = pAnimChar->GetActionController()->GetContext().controllerDef.m_fragmentIDs.Find(fragCRC);
 
 						string tagName = GetPortString(pActInfo, EIP_Tags);
@@ -110,7 +110,7 @@ public:
 
 								if(tagDefinition)
 								{
-									const int tagCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(curTagName);
+									const int tagCRC = CCrc32::ComputeLowercase(curTagName);
 									const TagID tagID = tagDefinition->Find(tagCRC);
 									found = tagID != TAG_ID_INVALID;
 									tagDefinition->Set(tagState, tagID, true);
@@ -257,7 +257,7 @@ public:
 					if(pSlaveAnimChar && pSlaveAnimChar->GetActionController())
 					{
 						IAnimationDatabaseManager &dbManager = gEnv->pGame->GetIGameFramework()->GetMannequinInterface().GetAnimationDatabaseManager();
-						uint32 db_crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(GetPortString(pActInfo, EIP_DB));
+						uint32 db_crc32 = CCrc32::ComputeLowercase(GetPortString(pActInfo, EIP_DB));
 						const IAnimationDatabase* db = dbManager .FindDatabase(db_crc32);
 
 						const string& scopeContextName = GetPortString(pActInfo, EIP_ScopeContext);
@@ -306,7 +306,7 @@ public:
 	};
 
 private:
-	virtual void Update(float timePassed) OVERRIDE {}
+	virtual void Update(float timePassed) override {}
 
 public:
 	void SendEvent(const string& eventName)
@@ -443,7 +443,7 @@ public:
 		s->Add(*this);
 	}
 
-	void OnProcClipEvent(const string& eventName) OVERRIDE
+	void OnProcClipEvent(const string& eventName) override
 	{
 		if (!eventName.empty())
 		{

@@ -43,7 +43,7 @@ private:
 	class CAnimationDatabaseManager *m_pAnimationDatabaseManager;
 	std::vector<IMannequinGameListener *> m_mannequinGameListeners;
 	CMannequinUserParamsManager m_userParamsManager;
-	std::auto_ptr<CProceduralClipFactory> m_pProceduralClipFactory;
+	std::unique_ptr<CProceduralClipFactory> m_pProceduralClipFactory;
 	bool m_bSilentPlaybackMode;
 };
 

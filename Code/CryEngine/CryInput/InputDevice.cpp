@@ -96,9 +96,9 @@ char CInputDevice::GetInputCharAscii(const SInputEvent& event)
 	return '\0';
 }
 
-const wchar_t* CInputDevice::GetOSKeyName(const SInputEvent& event)
+const char* CInputDevice::GetOSKeyName(const SInputEvent& event)
 {
-	return L"";
+	return "";
 }
 
 
@@ -217,7 +217,6 @@ CInputDevice::CDebugPressedButtons::SData::SData( const SInputSymbol* pSymbol_, 
 		case eIS_Released:	state = "Released"; break;
 		case eIS_Down:			state = "Down"; break;
 		case eIS_Changed:		state = "Changed"; break;
-		case eIS_UI:				state = "UI"; break;
 		default:						state = "?State?";
 		}
 		key = pSymbol_->name.c_str();

@@ -40,92 +40,191 @@ inline string MakePrettyClassName(const char* className)
 	return result;
 }
 
-template<class TPointer, class TSerializable>
-void CryExtensionPointer<TPointer, TSerializable>::Serialize(IArchive& ar)
+// Provides Serialization::IClassFactory interface for classes
+// registered with CryExtension to IArchive.
+// 
+// TSerializable can be used to expose Serialize method through
+// a separate interface, rathern than TBase. Safe to missing
+// as QueryInterface is used to check its presence.
+template<class TBase, class TSerializable = TBase>
+class CryExtensionClassFactory : public Serialization::IClassFactory
 {
-	ICryFactoryRegistry* factoryRegistry = gEnv->pSystem->GetCryFactoryRegistry();
-
-	if (!ar.IsEdit())
+public:
+	size_t size() const override
 	{
-		CryClassID previousClassId = { 0, 0 };
-		if (ptr)
-			previousClassId = boost::static_pointer_cast<TPointer>(ptr)->GetFactory()->GetClassID();
-		CryClassID classId = previousClassId;
-		ar(classId.hipart, "guidHiPart");
-		ar(classId.lopart, "guidLoPart");
+		return m_types.size();
+	}
 
-		if (ar.IsInput())
+	static CryExtensionClassFactory& the()
+	{
+		static CryExtensionClassFactory instance;
+		return instance;
+	}
+
+	CryExtensionClassFactory()
+	: IClassFactory(Serialization::TypeID::get<TBase>())
+	{
+		setNullLabel("[ None ]");
+		ICryFactoryRegistry* factoryRegistry = gEnv->pSystem->GetCryFactoryRegistry();
+
+		size_t factoryCount = 0;
+		factoryRegistry->IterateFactories(cryiidof<TBase>(), 0, factoryCount);
+		std::vector<ICryFactory*> factories;
+		factories.reserve(factoryCount);
+		if (factoryCount)
+			factoryRegistry->IterateFactories(cryiidof<TBase>(), &factories[0], factoryCount);
+
+		string sharedPrefix;
+		bool hasSharedPrefix = true;
+		for (size_t i = 0; i < factoryCount; ++i)
 		{
-			if (classId != previousClassId)
+			ICryFactory* factory = factories[i];
+			if (factory->ClassSupports(cryiidof<TSerializable>()))
 			{
-				if (ICryFactory* factory = factoryRegistry->GetFactory(classId))
-					ptr = boost::static_pointer_cast<TPointer>(factory->CreateClassInstance());
+				m_factories.push_back(factory);
+				if (hasSharedPrefix)
+				{
+					// make sure that shared prefix is the same for all the names
+					const char* name = factory->GetName();
+					const char* lastPrefixCharacter = strchr(name, '_');
+					if (lastPrefixCharacter == 0)
+						hasSharedPrefix = false;
+					else
+					{
+						if (!sharedPrefix.empty())
+						{
+							if (strncmp(name, sharedPrefix.c_str(), sharedPrefix.size()) != 0)
+								hasSharedPrefix = false;
+						}
+						else
+							sharedPrefix.assign(name, lastPrefixCharacter + 1);
+					}
+				}
 			}
 		}
 
+		size_t usableFactoriesCount = m_factories.size();
+		m_types.reserve(usableFactoriesCount);
+		m_labels.reserve(usableFactoriesCount);
+
+		for (size_t i = 0; i < usableFactoriesCount; ++i)
+		{
+			ICryFactory* factory = m_factories[i];
+			m_classIds.push_back(factory->GetClassID());
+			const char* name = factory->GetName();
+			m_labels.push_back(MakePrettyClassName(name));
+			if (hasSharedPrefix)
+				name += sharedPrefix.size();
+			m_types.push_back(Serialization::TypeDescription(name, m_labels.back().c_str()));
+		}
+	}
+
+	const Serialization::TypeDescription* descriptionByIndex(int index) const override
+	{
+		if (size_t(index) >= m_types.size())
+			return 0;
+		return &m_types[index];
+	}
+
+	const Serialization::TypeDescription* descriptionByRegisteredName(const char* registeredName) const override
+	{
+		size_t count = m_types.size();
+		for (size_t i = 0; i < m_types.size(); ++i)
+			if (strcmp(m_types[i].name(), registeredName) == 0)
+				return &m_types[i];
+		return 0;
+	}
+
+	const char* findAnnotation(const char* typeName, const char* name) const override { return ""; }
+
+	void serializeNewByIndex(IArchive& ar, int index, const char* name, const char* label) override
+	{
+		if (size_t(index) >= m_types.size())
+			return;
+		boost::shared_ptr<TBase> ptr(create(m_types[index].name()));
 		if (TSerializable* ser = cryinterface_cast<TSerializable>(ptr.get()))
-			ser->Serialize(ar);
-		else if (ar.IsInput())
-			ptr.reset();
+		{
+			ar(*ser, name, label);
+		}
 	}
-	else
+
+	boost::shared_ptr<TBase> create(const char* registeredName)
 	{
-		static std::vector<CryInterfaceID> classIds;
-		static StringList prettyNames;
-		if (classIds.empty())
-		{
-			classIds.push_back(CryInterfaceID());
-			prettyNames.push_back("None");
-
-			size_t factoryCount = 0;
-			factoryRegistry->IterateFactories(cryiidof<TPointer>(), 0, factoryCount);
-			PREFAST_SUPPRESS_WARNING(6255)
-			ICryFactory** factories = (ICryFactory**)(factoryCount ? alloca(sizeof(ICryFactory*) * factoryCount) : 0);
-			PREFAST_ASSUME(factories);
-			factoryRegistry->IterateFactories(cryiidof<TPointer>(), factories, factoryCount);
-
-			for (size_t i = 0; i < factoryCount; ++i)
-			{
-				if (!factories[i]->ClassSupports(cryiidof<TSerializable>()))
-					continue;
-				classIds.push_back(factories[i]->GetClassID());
-				prettyNames.push_back(MakePrettyClassName(factories[i]->GetClassName()));
-			}
-		}	 
-
-		std::size_t previousIndex = 0;
-		if (ptr)
-		{
-			previousIndex = (int)std::distance(classIds.begin(), std::find(classIds.begin(), classIds.end(), ptr->GetFactory()->GetClassID()));
-			if (previousIndex >= classIds.size())
-				previousIndex = 0;
-		}
-
-		StringListValue name(prettyNames, previousIndex);
-		ar(name, "type", "<^");
-		if (name.index() != previousIndex)
-		{
-			if (name.index() == 0)
-				ptr.reset();
-			else
-			{
-				ICryFactory* factory = factoryRegistry->GetFactory(classIds[name.index()]);
-				if (factory) 
-					ptr = boost::static_pointer_cast<TPointer>(factory->CreateClassInstance());
-			}
-		}
-
-		if (ptr)
-			if (TSerializable* ser = cryinterface_cast<TSerializable>(ptr.get()))
-				ser->Serialize(ar);
+		size_t count = m_types.size();
+		for (size_t i = 0; i < count; ++i)
+			if (strcmp(m_types[i].name(), registeredName) == 0)
+				return boost::static_pointer_cast<TBase>(m_factories[i]->CreateClassInstance());
+		return boost::shared_ptr<TBase>();
 	}
-}
 
-}
+	const char* getRegisteredTypeName(const boost::shared_ptr<TBase>& ptr) const
+	{
+		if (!ptr.get())
+			return "";
+		CryInterfaceID id = boost::static_pointer_cast<TBase>(ptr)->GetFactory()->GetClassID();
+		size_t count = m_classIds.size();
+		for (size_t i = 0; i < count; ++i)
+			if (m_classIds[i] == id)
+				return m_types[i].name();
+		return "";
+	}
+	
+private:
+	std::vector<Serialization::TypeDescription> m_types;
+	std::vector<string> m_labels;
+	std::vector<ICryFactory*> m_factories;
+	std::vector<CryInterfaceID> m_classIds;
+};
 
-template<class T>
-bool Serialize(Serialization::IArchive& ar, boost::shared_ptr<T>& ptr, const char* name, const char* label)
+// Exposes CryExtension shared_ptr<> as serializeable type for Serialization::IArchive
+template<class T, class TSerializable>
+class CryExtensionSharedPtr : public Serialization::IPointer
 {
-	Serialization::CryExtensionPointer<T, T> extensionPointer(ptr);
-	return ar(extensionPointer, name, label);
+public:
+	CryExtensionSharedPtr(boost::shared_ptr<T>& ptr)
+	: m_ptr(ptr)
+	{}
+
+	const char* registeredTypeName() const override
+	{
+		if (m_ptr)
+			return factory()->getRegisteredTypeName(m_ptr);
+		else
+			return "";
+	}
+
+	void create(const char* registeredTypeName) const override
+	{
+		if (registeredTypeName[0] != '\0')
+			m_ptr = factory()->create(registeredTypeName);
+		else
+			m_ptr.reset((T*)0);
+	}
+
+	Serialization::TypeID baseType() const{ return Serialization::TypeID::get<T>(); }
+	virtual Serialization::SStruct serializer() const override
+	{ 
+		if (TSerializable* ser = cryinterface_cast<TSerializable>(m_ptr.get()))
+			return Serialization::SStruct(*ser);
+		else
+			return Serialization::SStruct();
+ 	}
+	void* get() const override{ return reinterpret_cast<void*>(m_ptr.get()); }
+	const void* handle() const override{ return &m_ptr; }
+	Serialization::TypeID pointerType() const override{ return Serialization::TypeID::get<boost::shared_ptr<T> >(); }
+	CryExtensionClassFactory<T, TSerializable>* factory() const override{ return &CryExtensionClassFactory<T, TSerializable>::the(); }
+protected:
+	boost::shared_ptr<T>& m_ptr;
+};
+
+}
+
+namespace boost
+{
+	template<class T>
+	bool Serialize(Serialization::IArchive& ar, shared_ptr<T>& ptr, const char* name, const char* label)
+	{
+		Serialization::CryExtensionPointer<T, T> serializer(ptr);
+		return ar(static_cast<Serialization::IPointer&>(ptr), name, label);
+	}
 }

@@ -16,7 +16,6 @@ History:
 - 18:12:2006   Created by Julien Darré
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IHardwareMouse.h)
 
 #ifndef __IHARDWAREMOUSE_H__
 #define __IHARDWAREMOUSE_H__
@@ -50,17 +49,17 @@ enum EHARDWAREMOUSEEVENT
 
 struct IHardwareMouseEventListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IHardwareMouseEventListener(){}
 	virtual void OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta = 0) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //-----------------------------------------------------------------------------------------------------
 
-UNIQUE_IFACE struct IHardwareMouse
+struct IHardwareMouse
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IHardwareMouse(){}
 
 	virtual void Release() = 0;
@@ -78,6 +77,11 @@ UNIQUE_IFACE struct IHardwareMouse
 	virtual void AddListener		(IHardwareMouseEventListener *pHardwareMouseEventListener) = 0;
 	virtual void RemoveListener	(IHardwareMouseEventListener *pHardwareMouseEventListener) = 0;
 
+	// prevents all other listeners from receiving events. function returns true if succesfully set.
+	virtual bool SetExclusiveEventListener( IHardwareMouseEventListener *pHardwareMouseEventListener ) = 0;
+	virtual void RemoveExclusiveEventListener( IHardwareMouseEventListener *pHardwareMouseEventListener ) = 0;
+	virtual IHardwareMouseEventListener* GetCurrentExclusiveEventListener() = 0;
+
 	// Called only in Editor when switching from editing to game mode
 	virtual void SetGameMode(bool bGameMode) = 0;
 
@@ -93,14 +97,17 @@ UNIQUE_IFACE struct IHardwareMouse
 	virtual void GetHardwareMouseClientPosition(float *pfX,float *pfY) = 0;
 	virtual void SetHardwareMouseClientPosition(float fX,float fY) = 0;
 
-	// I consider a call to that function as a hack...
+	// Load and/or set cursor
+	virtual bool SetCursor(int idc_cursor_id) = 0;
+	virtual bool SetCursor(const char* path) = 0;
+
 	virtual void Reset(bool bVisibleByDefault) = 0;
 	virtual void ConfineCursor(bool confine) = 0;
 	virtual void Hide(bool hide) = 0;
 
 	virtual void Update() = 0;
 	virtual void Render() = 0;
-
+	// </interfuscator:shuffle>
 
 #ifdef WIN32
 	virtual void UseSystemCursor(bool useSystemCursor) = 0;

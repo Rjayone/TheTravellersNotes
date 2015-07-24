@@ -47,6 +47,7 @@ namespace
 		}
 	}
 
+///////////////////////////////////////////////////////////////////////////
 	void ScriptDump(IConsoleCmdArgs* pArgs)
 	{
 		CDialogSystem* pDS = CCryAction::GetCryAction()->GetDialogSystem();
@@ -59,6 +60,7 @@ namespace
 		}
 	}
 
+///////////////////////////////////////////////////////////////////////////
 	void ScriptDumpSessions(IConsoleCmdArgs* pArgs)
 	{
 		CDialogSystem* pDS = CCryAction::GetCryAction()->GetDialogSystem();
@@ -68,6 +70,7 @@ namespace
 		}
 	}
 
+///////////////////////////////////////////////////////////////////////////
 	bool InitCons()
 	{
 		REGISTER_COMMAND("ds_Reload", ScriptReload,VF_NULL,"");
@@ -193,6 +196,7 @@ CDialogSystem::~CDialogSystem()
 ////////////////////////////////////////////////////////////////////////////
 /* virtual */ void CDialogSystem::Reset(bool bUnload)
 {
+	m_dialogQueueManager.Reset();
 	ReleaseSessions();
 	if (bUnload)
 		ReleaseScripts();
@@ -240,8 +244,7 @@ void CDialogSystem::ReleaseSessions()
 		(*iter).second->Release();
 		++iter;
 	}
-	stl::free_container(m_activeSessions);
-	stl::free_container(m_activeSessionsTemp);
+	stl::free_container(m_activeSessions);	
 	stl::free_container(m_allSessions);
 	stl::free_container(m_restoreSessions);
 
@@ -286,7 +289,8 @@ void CDialogSystem::OnLoadingComplete(ILevel *pLevel)
 	bool bSuccessNew = false;
 
 	// load old excel based dialogs
-	if (sLoadExcelScripts) {
+	if (sLoadExcelScripts) 
+	{
 		CDialogLoader loader (this);
 
 		string path = DIALOG_LIBS_PATH_EXCEL;
@@ -358,6 +362,35 @@ CDialogSession* CDialogSystem::GetSession(CDialogSystem::SessionID id) const
 }
 
 ////////////////////////////////////////////////////////////////////////////
+CDialogSession* CDialogSystem::GetActiveSession(CDialogSystem::SessionID id) const
+{
+	for (TDialogSessionVec::const_iterator it = m_activeSessions.begin(); it != m_activeSessions.end(); ++it)
+	{
+		if ((*it)->GetSessionID() == id)
+		{
+			return *it;
+		}
+	}
+
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////
+
+CDialogActorContext* CDialogSystem::GetActiveSessionActorContext(ActorContextID id) const
+{
+	for (TDialogSessionVec::const_iterator it = m_activeSessions.begin(); it != m_activeSessions.end(); ++it)
+	{
+		CDialogSession::CDialogActorContextPtr foundContextWithMatchingID = (*it)->GetContext(id);
+		if (foundContextWithMatchingID)
+		{
+			return foundContextWithMatchingID;
+		}
+	}
+
+	return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////
 bool CDialogSystem::DeleteSession(CDialogSystem::SessionID id)
 {
 	TDialogSessionMap::iterator iter = m_allSessions.find(id);
@@ -387,22 +420,26 @@ bool CDialogSystem::RemoveSession(CDialogSession* pSession)
 ////////////////////////////////////////////////////////////////////////////
 void CDialogSystem::Update(const float dt)
 {
-	FUNCTION_PROFILER( GetISystem(),PROFILE_ACTION );
+	FUNCTION_PROFILER(GetISystem(), PROFILE_ACTION);
 
 	RestoreSessions();
 
-	// make fast dynamic copy of the active sessions, original vector can get invalidate if elements are deleted during update calls.
-	m_activeSessionsTemp.resize(0);
-	m_activeSessionsTemp.reserve( m_activeSessions.size() );
-	m_activeSessionsTemp.insert( m_activeSessionsTemp.end(),m_activeSessions.begin(),m_activeSessions.end() );
-	for (int i = 0,num = (int)m_activeSessionsTemp.size(); i < num; i++)
+	if (!m_activeSessions.empty())
 	{
-		m_activeSessionsTemp[i]->Update(dt);
-
+		//original vector can get invalidate if elements are deleted during update calls. therefore we create a copy first
+		TDialogSessionVec activeSessionsCopy(m_activeSessions);
+		for (TDialogSessionVec::const_iterator it = activeSessionsCopy.begin(); it != activeSessionsCopy.end(); ++it)
+		{
+			(*it)->Update(dt);
+		}
 	}
+
 	ReleasePendingDeletes();
+
+	m_dialogQueueManager.Update();
 }
 
+///////////////////////////////////////////////////////////////////////////
 void CDialogSystem::RestoreSessions()
 {
 	if (m_restoreSessions.empty() == false)
@@ -439,6 +476,8 @@ IDialogScriptIteratorPtr CDialogSystem::CreateScriptIterator()
 ////////////////////////////////////////////////////////////////////////////
 void CDialogSystem::Serialize(TSerialize ser)
 {
+	m_dialogQueueManager.Serialize(ser);
+
 	if (ser.IsWriting())
 	{
 		// All Sessions
@@ -514,6 +553,7 @@ void CDialogSystem::Serialize(TSerialize ser)
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////
 const char* ToActor(CDialogScript::TActorID id)
 {
 	switch (id)
@@ -546,8 +586,13 @@ void CDialogSystem::Dump(int verbosity)
 			for (int nLine = 0; nLine < pScript->GetNumLines(); ++nLine)
 			{
 				const CDialogScript::SScriptLine* pLine = pScript->GetLine(nLine);
+				const char* pTriggerName = gEnv->pAudioSystem->GetAudioControlName(eACT_TRIGGER, pLine->m_audioID);
+				if (pTriggerName == NULL)
+				{
+					pTriggerName = "unknown trigger";
+				}
 				CryLogAlways("Line%3d: %s | Sound=%s StopAnim=%d | Facial=%s Reset=%d W=%.2f T=%.2f| Anim=%s [%s] EP=%d | LookAt=%s Sticky=%d Reset=%d | Delay=%.2f",
-					nLine+1, ToActor(pLine->m_actor), pLine->m_sound.c_str(), pLine->m_flagSoundStopsAnim, pLine->m_facial.c_str(), pLine->m_flagResetFacial, pLine->m_facialWeight, pLine->m_facialFadeTime,
+					nLine+1, ToActor(pLine->m_actor), pTriggerName, pLine->m_flagSoundStopsAnim, pLine->m_facial.c_str(), pLine->m_flagResetFacial, pLine->m_facialWeight, pLine->m_facialFadeTime,
 					pLine->m_anim.c_str(), pLine->m_flagAGSignal ? "SIG" : "ACT", pLine->m_flagAGEP, ToActor(pLine->m_lookatActor), pLine->m_flagLookAtSticky, pLine->m_flagResetLookAt, pLine->m_delay);
 			}
 		}
@@ -638,6 +683,7 @@ bool CDialogSystem::FindSessionAndActorForEntity(EntityId entityId, CDialogSyste
 	return false;
 }
 
+///////////////////////////////////////////////////////////////////////////
 void CDialogSystem::GetMemoryStatistics(ICrySizer *pSizer)
 {
 	SIZER_SUBCOMPONENT_NAME(pSizer,"DialogSystem");
@@ -648,4 +694,4 @@ void CDialogSystem::GetMemoryStatistics(ICrySizer *pSizer)
 	pSizer->AddObject(m_restoreSessions);	
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IDialogSystem)
+

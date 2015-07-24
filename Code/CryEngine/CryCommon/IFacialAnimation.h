@@ -12,10 +12,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IFacialAnimation.h)
 
-#ifndef __IFacialAnimation_h__
-#define __IFacialAnimation_h__
 #pragma once
 
 #include <ISplines.h> // <> required for Interfuscator
@@ -28,10 +25,7 @@ struct IFacialAnimSequence;
 class IJoystickSet;
 
 
-#if !(defined(XENON) || defined(PS3))
 #define FACE_STORE_ASSET_VALUES (1)
-#endif
-
 
 // This class is used all over the place in the Face Animation System
 // to replace Strings by CRC32s on consoles. Internally, 
@@ -145,7 +139,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 struct IFacialEffector
 {
-
+	// <interfuscator:shuffle>
 	virtual void SetIdentifier( CFaceIdentifierHandle ident ) = 0;
 	virtual CFaceIdentifierHandle GetIdentifier() = 0;
 	
@@ -177,7 +171,7 @@ struct IFacialEffector
 	virtual void RemoveSubEffector( IFacialEffector *pEffector ) = 0;
 	virtual void RemoveAllSubEffectors() = 0;
 	virtual ~IFacialEffector(){}
-
+	// </interfuscator:shuffle>
 
 #ifdef FACE_STORE_ASSET_VALUES
 	// functions should only be used in the editor.
@@ -189,7 +183,7 @@ struct IFacialEffector
 //////////////////////////////////////////////////////////////////////////
 // Sub Effector controller.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFacialEffCtrl
+struct IFacialEffCtrl
 {
 	enum ControlType
 	{
@@ -200,7 +194,7 @@ UNIQUE_IFACE struct IFacialEffCtrl
 	{
 		CTRL_FLAG_UI_EXPENDED = 0x01000, // Controller is expanded.
 	};
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialEffCtrl(){}
 	virtual IFacialEffCtrl::ControlType GetType() = 0;
 	virtual void SetType( ControlType t ) = 0;
@@ -218,7 +212,7 @@ UNIQUE_IFACE struct IFacialEffCtrl
 	virtual int GetFlags() = 0;
 	// @see ControlFlags
 	virtual void SetFlags( int nFlags ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -226,14 +220,14 @@ UNIQUE_IFACE struct IFacialEffCtrl
 //////////////////////////////////////////////////////////////////////////
 struct IFacialEffectorsLibraryEffectorVisitor
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialEffectorsLibraryEffectorVisitor(){}
 	virtual void VisitEffector(IFacialEffector* pEffector) = 0;
-
+	// </interfuscator:shuffle>
 };
-UNIQUE_IFACE struct IFacialEffectorsLibrary
+struct IFacialEffectorsLibrary
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialEffectorsLibrary(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -270,15 +264,15 @@ UNIQUE_IFACE struct IFacialEffectorsLibrary
 
 	// Serialized library.
 	virtual void Serialize( XmlNodeRef &node,bool bLoading ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 // IFacialModel interface.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFacialModel
+struct IFacialModel
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialModel(){}
 	virtual int GetEffectorCount() const = 0;
 	virtual IFacialEffector* GetEffector( int nIndex ) const = 0;
@@ -289,25 +283,25 @@ UNIQUE_IFACE struct IFacialModel
 
 	virtual int GetMorphTargetCount() const = 0;
 	virtual const char* GetMorphTargetName(int morphTargetIndex) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFaceState
+struct IFaceState
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFaceState(){}
 	virtual float GetEffectorWeight( int nIndex ) = 0;
 	virtual void SetEffectorWeight( int nIndex,float fWeight ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 // IFacialInstance interface
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFacialInstance
+struct IFacialInstance
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialInstance(){}
 	virtual IFacialModel* GetFacialModel() = 0;
 	virtual IFaceState* GetFaceState() = 0;
@@ -339,7 +333,7 @@ UNIQUE_IFACE struct IFacialInstance
 	virtual void StopAllSequencesAndChannels() = 0;
 
 	virtual void SetUseFrameRateLimiting( bool useFrameRateLimiting ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -353,14 +347,14 @@ struct SPhonemeInfo
 };
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IPhonemeLibrary
+struct IPhonemeLibrary
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IPhonemeLibrary(){}
 	virtual int GetPhonemeCount() const = 0;
 	virtual bool GetPhonemeInfo( int nIndex,SPhonemeInfo &phoneme ) = 0;
 	virtual int FindPhonemeByName( const char *sPhonemeName ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -369,9 +363,9 @@ UNIQUE_IFACE struct IPhonemeLibrary
 class IJoystickContext;
 class IJoystickChannel;
 struct IFacialAnimChannel;
-UNIQUE_IFACE struct IFacialAnimation
+struct IFacialAnimation
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialAnimation(){}
 	virtual IPhonemeLibrary* GetPhonemeLibrary() = 0;
 
@@ -401,13 +395,13 @@ UNIQUE_IFACE struct IFacialAnimation
 	// Create an Identifier Handle to address objects in the Face Animation system by Handle
 	// instead of by strings.
 	virtual CFaceIdentifierHandle CreateIdentifierHandle(const char* identifierString) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 // Sentence is a collection of phonemes and other lip syncing related data.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFacialSentence
+struct IFacialSentence
 {
 	struct Phoneme
 	{
@@ -429,6 +423,7 @@ UNIQUE_IFACE struct IFacialSentence
 		float strength;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IFacialSentence(){}
 	virtual void SetText( const char *text ) = 0;
 	virtual const char* GetText() = 0;
@@ -450,14 +445,14 @@ UNIQUE_IFACE struct IFacialSentence
 	// Add a new word into the sentence.
 	virtual void AddWord( const Word &wrd ) = 0;
 	virtual int Evaluate(float fTime, float fInputPhonemeStrength, int maxSamples, ChannelSample* samples) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 // Facial animation channel used in facial sequence.
 // Each channel controls the weight of the single facial expression over time.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFacialAnimChannel
+struct IFacialAnimChannel
 {
 	enum EFlags
 	{
@@ -472,7 +467,7 @@ UNIQUE_IFACE struct IFacialAnimChannel
 		FLAG_UI_SELECTED = 0x01000,
 		FLAG_UI_EXTENDED = 0x02000,
 	};
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialAnimChannel(){}
 	virtual void SetIdentifier( CFaceIdentifierHandle ident ) = 0;
 	virtual const CFaceIdentifierHandle GetIdentifier() = 0;
@@ -503,7 +498,7 @@ UNIQUE_IFACE struct IFacialAnimChannel
 	virtual void CleanupKeys(float fErrorMax) = 0;
 	virtual void SmoothKeys(float sigma) = 0;
 	virtual void RemoveNoise(float sigma, float threshold) = 0;
-
+	// </interfuscator:shuffle>
 
 #ifdef FACE_STORE_ASSET_VALUES
 	// Only for the editor
@@ -516,9 +511,9 @@ UNIQUE_IFACE struct IFacialAnimChannel
 };
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFacialAnimSoundEntry
+struct IFacialAnimSoundEntry
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialAnimSoundEntry() {}
 
 	// Set filename of the sound associated with this facial sequence.
@@ -531,13 +526,13 @@ UNIQUE_IFACE struct IFacialAnimSoundEntry
 
 	virtual float GetStartTime() = 0;
 	virtual void SetStartTime(float time) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFacialAnimSkeletonAnimationEntry
+struct IFacialAnimSkeletonAnimationEntry
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFacialAnimSkeletonAnimationEntry(){}
 	// Set the name of the animation associated with this entry.
 	virtual void SetName(const char* skeletonAnimationFile) = 0;
@@ -548,11 +543,11 @@ UNIQUE_IFACE struct IFacialAnimSkeletonAnimationEntry
 	virtual float GetStartTime() const = 0;
 	virtual void SetEndTime(float time) = 0;
 	virtual float GetEndTime() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IFacialAnimSequence
+struct IFacialAnimSequence
 {
 	enum EFlags
 	{
@@ -567,6 +562,7 @@ UNIQUE_IFACE struct IFacialAnimSequence
 		SFLAG_ALL =           0xFFFFFFFF
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IFacialAnimSequence(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -623,10 +619,8 @@ UNIQUE_IFACE struct IFacialAnimSequence
 	virtual void SetInMemory(bool bInMemory) = 0;
 
 	virtual void GetMemoryUsage( ICrySizer* pSizer ) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 static const float FACIAL_EDITOR_FPS = 30.0f;
 inline float FacialEditorSnapTimeToFrame(float time) {return int((time * FACIAL_EDITOR_FPS) + 0.5f) * (1.0f / FACIAL_EDITOR_FPS);}
-
-#endif // __IFacialAnimation_h__

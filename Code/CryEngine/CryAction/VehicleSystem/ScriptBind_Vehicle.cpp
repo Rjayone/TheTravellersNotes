@@ -73,6 +73,7 @@ void CScriptBind_Vehicle::RegisterMethods()
 
 	SCRIPT_REG_TEMPLFUNC(OnHit, "targetId, shooterId, damage, position, radius, hitTypeId, explosion");
 	SCRIPT_REG_TEMPLFUNC(ProcessPassengerDamage, "passengerHandle, actorHealth, damage, pDamageClass, explosion");
+	SCRIPT_REG_TEMPLFUNC(Destroy, "");
   SCRIPT_REG_TEMPLFUNC(IsDestroyed, "");
 
 	SCRIPT_REG_TEMPLFUNC(IsUsable, "userId");
@@ -388,6 +389,19 @@ int CScriptBind_Vehicle::OnSpawnComplete(IFunctionHandler* pH)
 		return pH->EndFunction();
 
 	pVehicle->OnSpawnComplete();
+
+	return pH->EndFunction();
+}
+
+//------------------------------------------------------------------------
+int CScriptBind_Vehicle::Destroy(IFunctionHandler* pH)
+{
+	CVehicle* pVehicle = GetVehicle(pH);
+
+	if (!pVehicle)
+		return pH->EndFunction();
+
+	pVehicle->Destroy();
 
 	return pH->EndFunction();
 }

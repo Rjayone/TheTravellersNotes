@@ -1242,7 +1242,7 @@ void CEnvironmentalWeapon::ProcessEvent(SEntityEvent& event)
 
 
 				pe_action_set_velocity velocity;
-				velocity.v  = dynamics.v + direction * Random( 1.0f, 3.f );
+				velocity.v  = dynamics.v + direction * cry_random( 1.0f, 3.0f );
 				velocity.w = dynamics.w + angular;
 				velocity.bRotationAroundPivot = true;
 					
@@ -2300,7 +2300,7 @@ Vec3 CEnvironmentalWeapon::CalculateImpulse_Player( const HitInfo& hitInfo, CPla
 		}
 		else
 		{
-			const float hitOverrideDirRatio = (m_overrideHitDirMaxRatio-m_overrideHitDirMinRatio)*cry_frand() + m_overrideHitDirMinRatio;
+			const float hitOverrideDirRatio = (m_overrideHitDirMaxRatio-m_overrideHitDirMinRatio)*cry_random(0.0f, 1.0f) + m_overrideHitDirMinRatio;
 			const Vec3 worldOverrideHitDir = attackerMat.TransformVector(m_overrideHitDir);
 
 			impulseVector = ((1.f - hitOverrideDirRatio) * toVictimVec.GetNormalized()) + ((hitOverrideDirRatio) * worldOverrideHitDir.GetNormalized());

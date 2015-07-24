@@ -52,9 +52,9 @@ public:
 	void ReadConfig();
 	//////////////////////////////////////////////////////////////////////////
 	// IGameStatsConfig
-	VIRTUAL int GetStatsVersion();
-	VIRTUAL int GetCategoryMod(const char* cat);
-	VIRTUAL const char* GetValueNameByCode(const char* cat, int id);
+	virtual int GetStatsVersion();
+	virtual int GetCategoryMod(const char* cat);
+	virtual const char* GetValueNameByCode(const char* cat, int id);
 	virtual int GetKeyId(const char* key)const;
 	//////////////////////////////////////////////////////////////////////////
 	int			GetCodeByKeyName(const char* cat ,const char* key)const;

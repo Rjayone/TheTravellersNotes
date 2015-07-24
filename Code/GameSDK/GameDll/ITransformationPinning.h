@@ -3,7 +3,7 @@
 
 #include <ICryAnimation.h>
 
-UNIQUE_IFACE struct ITransformationPinning : public IAnimationPoseModifier
+struct ITransformationPinning : public IAnimationPoseModifier
 {
 	CRYINTERFACE_DECLARE(ITransformationPinning, 0xcc34ddea972e47db, 0x93f9cdcb98c28c8f)
 

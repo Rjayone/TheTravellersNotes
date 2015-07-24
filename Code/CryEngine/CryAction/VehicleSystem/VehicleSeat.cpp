@@ -3066,4 +3066,4 @@ void CVehicleSeat::OffsetPosition(const Vec3 &delta)
 #endif
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IVehicleSeat)
+

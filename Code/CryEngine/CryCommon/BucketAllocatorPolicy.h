@@ -5,22 +5,11 @@
 #include <CryWindows.h>
 #endif
 
-#if defined(XENON) || defined(PS3)
-#define BUCKET_ALLOCATOR_PACK_SMALL_SIZES
-#define BUCKET_ALLOCATOR_DEFAULT_MAX_SEGMENTS 1
-#elif defined(ORBIS)
-#define MEMORY_ALLOCATION_ALIGNMENT	16
 #define BUCKET_ALLOCATOR_DEFAULT_MAX_SEGMENTS 8
-#elif defined(LINUX64) || defined(APPLE) || defined(CRY_MOBILE)
-	#define MEMORY_ALLOCATION_ALIGNMENT	16
-	#define BUCKET_ALLOCATOR_DEFAULT_MAX_SEGMENTS 8
-#elif defined(LINUX32)
-	#define MEMORY_ALLOCATION_ALIGNMENT	8
-	#define BUCKET_ALLOCATOR_DEFAULT_MAX_SEGMENTS 8
-#else
-#define BUCKET_ALLOCATOR_DEFAULT_MAX_SEGMENTS 8
-#endif
 
+#ifndef MEMORY_ALLOCATION_ALIGNMENT
+#	error MEMORY ALLOCATION_ALIGNMENT is not defined
+#endif
 
 namespace BucketAllocatorDetail
 {
@@ -36,9 +25,9 @@ namespace BucketAllocatorDetail
 
 	struct SyncPolicyLocked
 	{
-#if defined(XENON) || defined(_WIN32)
+#if defined(_WIN32)
 		typedef SLIST_HEADER FreeListHeader;
-#elif defined(PS3) || defined(ORBIS)
+#elif defined(ORBIS)
         typedef AllocHeader* volatile FreeListHeader;
 #elif defined(APPLE) || defined(LINUX)
         typedef SLockFreeSingleLinkedListHeader FreeListHeader;
@@ -61,44 +50,7 @@ namespace BucketAllocatorDetail
 			SyncPolicyLocked& m_policy;
 		};
 
-#if defined (XENON)
-
-		static void PushOnto(FreeListHeader& list, AllocHeader* ptr)
-		{
-			InterlockedPushEntrySListRelease(&list, reinterpret_cast<PSLIST_ENTRY>(ptr));
-		}
-
-		static void PushListOnto(FreeListHeader& list, AllocHeader* head, AllocHeader* tail)
-		{
-			AllocHeader* item = head;
-			AllocHeader* next;
-
-			while (item)
-			{
-				next = item->next;
-				item->next = NULL;
-
-				PushOnto(list, item);
-
-				item = next;
-			}
-		}
-		
-		ILINE static AllocHeader* PopOff(FreeListHeader& list)
-		{
-			return reinterpret_cast<AllocHeader*>(InterlockedPopEntrySListAcquire(&list));
-		}
-
-		ILINE static AllocHeader* PopListOff(FreeListHeader& list)
-		{
-			return reinterpret_cast<AllocHeader*>(InterlockedFlushSList(&list));
-		}
-
-		ILINE static bool IsFreeListEmpty(FreeListHeader& list)
-		{
-			return reinterpret_cast<AllocHeader*>(list.Next.Next) == NULL;
-		}
-#elif defined(APPLE) || defined(LINUX)
+#if defined(APPLE) || defined(LINUX)
 
         static void PushOnto(FreeListHeader& list, AllocHeader* ptr)
 	    {
@@ -135,80 +87,6 @@ namespace BucketAllocatorDetail
 	    {
 		    return list.pNext == 0;
 	    }   
-#elif defined(PS3)
-
-		static void PushOnto(FreeListHeader& list, AllocHeader* ptr)
-		{
-#if !defined(__SPU__)
-			AllocHeader* currentTop;
-
-			__lwsync();
-			do
-			{
-				currentTop = (AllocHeader*) __lwarx((volatile void*) &list);
-
-				ptr->next = currentTop;
-			}
-			while (!__stwcx((volatile void*) &list, (long) ptr));
-			__lwsync();
-#endif
-		}
-
-		static void PushListOnto(FreeListHeader& list, AllocHeader* head, AllocHeader* tail)
-		{
-#if !defined(__SPU__)
-			AllocHeader* headItem;
-
-			__lwsync();
-			do
-			{
-				headItem = (AllocHeader*) __lwarx((volatile void*) &list);
-
-				tail->next = headItem;
-			}
-			while (!__stwcx((volatile void*) &list, (unsigned int)head));
-			__lwsync();
-#endif
-		}
-
-		static AllocHeader* PopOff(FreeListHeader& list)
-		{
-			AllocHeader* currentTop = NULL;
-
-#if !defined(__SPU__)
-			AllocHeader* next;
-
-			__lwsync();
-			do
-			{
-				currentTop = (AllocHeader*) __lwarx((volatile void*) &list);
-				if (!currentTop)
-					return NULL;
-
-				next = currentTop->next;
-			}
-			while (!__stwcx((volatile void*) &list, (long) next));
-			__lwsync();
-#endif
-
-			return currentTop;
-		}
-
-		static AllocHeader* PopListOff(FreeListHeader& list)
-		{
-			AllocHeader* pList;
-			do 
-			{
-				pList = const_cast<AllocHeader*>(list);
-			}
-			while (CryInterlockedCompareExchangePointer((void * volatile *) &list, NULL, pList) != pList);
-			return pList;
-		}
-
-		ILINE static bool IsFreeListEmpty(FreeListHeader& list)
-		{
-			return list == NULL;
-		}
 
 #elif defined(WIN32) || defined(DURANGO)
 

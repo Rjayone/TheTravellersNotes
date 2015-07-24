@@ -1,0 +1,399 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Enable for all projects to avoid NVIDIA TEGRA auto updater dialog -->
+  <PropertyGroup Label="NsightTegraProject">
+    <NsightTegraProjectRevisionNumber>9</NsightTegraProjectRevisionNumber>
+  </PropertyGroup>
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="[GameSDK] Debug|Win32">
+			<Configuration>[GameSDK] Debug</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Debug|x64">
+			<Configuration>[GameSDK] Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Profile|Win32">
+			<Configuration>[GameSDK] Profile</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Profile|x64">
+			<Configuration>[GameSDK] Profile</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Performance|Win32">
+			<Configuration>[GameSDK] Performance</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Performance|x64">
+			<Configuration>[GameSDK] Performance</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Release|Win32">
+			<Configuration>[GameSDK] Release</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK] Release|x64">
+			<Configuration>[GameSDK] Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Debug|Win32">
+			<Configuration>[GameSDK Server] Debug</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Debug|x64">
+			<Configuration>[GameSDK Server] Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Profile|Win32">
+			<Configuration>[GameSDK Server] Profile</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Profile|x64">
+			<Configuration>[GameSDK Server] Profile</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Performance|Win32">
+			<Configuration>[GameSDK Server] Performance</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Performance|x64">
+			<Configuration>[GameSDK Server] Performance</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Release|Win32">
+			<Configuration>[GameSDK Server] Release</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="[GameSDK Server] Release|x64">
+			<Configuration>[GameSDK Server] Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>{B1325A4A-81F6-4986-90AF-FC07D7DB3372}</ProjectGuid>
+		<Keyword>MakeFileProj</Keyword>
+		<ProjectName>CryAudioCommon</ProjectName>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'" Label="Configuration">
+		<ConfigurationType>Makefile</ConfigurationType>
+		<OutDir>g:\CRYENGINE_pc_eaascode\Solutions\.depproj</OutDir>
+		<PlatformToolset>v110</PlatformToolset>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="ExtensionSettings">
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'">
+		<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props" Condition="exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).vcxproj.default.props')"/>
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug build_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Debug|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug build_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile build_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Profile|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile build_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance build_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Performance|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance build_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release build_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK] Release|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release build_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release --project-spec gamesdk --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug build_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Debug|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug build_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_debug --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile build_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Profile|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile build_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_profile --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance build_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Performance|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance build_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_performance --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|Win32'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release build_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x86_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='[GameSDK Server] Release|x64'">
+		<NMakeBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe build_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release build_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cd /d &quot;g:\CRYENGINE_pc_eaascode&quot; &amp; cry_waf.exe clean_win_x64_release --project-spec gamesdk_server --execsolution=&quot;g:\CRYENGINE_pc_eaascode\Solutions\CRYENGINE.sln&quot; --targets=CryAudioCommon</NMakeCleanCommandLine>
+		<NMakeIncludeSearchPath></NMakeIncludeSearchPath>
+		<NMakePreprocessorDefinitions>;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+		<IncludePath></IncludePath>
+		<NMakeOutput>not_supported</NMakeOutput>
+		<ExecutablePath>not_supported</ExecutablePath>
+	</PropertyGroup>
+	<ItemGroup>
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\ATLEntityData.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\AudioLogger.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\IAudioSystemImplementation.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\STLSoundAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\SoundAllocator.h' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\audiocommon.waf_files' />
+		<ClInclude Include='g:\CRYENGINE_pc_eaascode\Code\CryEngine\CrySoundSystem\Common\wscript' />
+	</ItemGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+	<Import Project="$(MSBuildProjectDirectory)\..\..\_WAF_\msbuild\waf_build.targets" />
+	<ImportGroup Label="ExtensionTargets">
+	</ImportGroup>
+</Project>

@@ -197,12 +197,11 @@ namespace mannequin
 #if MANNEQUIN_DEBUGGING_ENABLED
 
 		static const int maxSavedMsgs = 10;
-		static const int maxSavedMsgLength = MAX_WARNING_LENGTH;
 		enum ESavedMsgType {SMT_WARNING, SMT_ERROR};
 		struct SSavedMsg
 		{
 			ESavedMsgType savedMsgType;
-			char savedMsg[maxSavedMsgLength];
+			char savedMsg[MAX_WARNING_LENGTH];
 			uint32 renderFrame;
 			bool   isNew;
 			bool	isUsed;
@@ -234,8 +233,7 @@ namespace mannequin
 			if (actionController.GetFlag(AC_DebugDraw))
 			{
 				savedMsgs[savedMsgIndex].savedMsgType = SMT_WARNING;
-				strncpy(savedMsgs[savedMsgIndex].savedMsg, outputBufferLog, maxSavedMsgLength);
-				savedMsgs[savedMsgIndex].savedMsg[maxSavedMsgLength-1] = '\0';
+				cry_strcpy(savedMsgs[savedMsgIndex].savedMsg, outputBufferLog);
 				savedMsgs[savedMsgIndex].renderFrame = gEnv->pRenderer->GetFrameID();
 				savedMsgs[savedMsgIndex].isNew = true;
 				savedMsgs[savedMsgIndex].isUsed = true;

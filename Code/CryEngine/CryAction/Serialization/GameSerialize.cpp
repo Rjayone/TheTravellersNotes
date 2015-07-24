@@ -690,7 +690,7 @@ ELoadGameResult CGameSerialize::LoadGame( CCryAction * pCryAction, const char * 
 	}
 
 	// basic game state loading... need to do it early to verify and reserve entity id's
-	std::auto_ptr<TSerialize> pGameStateSer(loadEnvironment.m_pLoadGame->GetSection(SAVEGAME_GAMESTATE_SECTION));
+	std::unique_ptr<TSerialize> pGameStateSer(loadEnvironment.m_pLoadGame->GetSection(SAVEGAME_GAMESTATE_SECTION));
 	if (!pGameStateSer.get())
 	{
 		return eLGR_Failed;
@@ -737,7 +737,6 @@ ELoadGameResult CGameSerialize::LoadGame( CCryAction * pCryAction, const char * 
 
 	// load timer data
 	loadEnvironment.m_pSer = loadEnvironment.m_pLoadGame->GetSection(SAVEGAME_TIMER_SECTION);
-
 	if (loadEnvironment.m_pSer.get())
 		gEnv->pTimer->Serialize(*loadEnvironment.m_pSer);
 	else
@@ -826,9 +825,8 @@ ELoadGameResult CGameSerialize::LoadGame( CCryAction * pCryAction, const char * 
 
 	// AI object ID serialization (needs to be before the AI and entity serialization, but after the AI flush)
 	{
-		{
-			loadEnvironment.m_pSer = loadEnvironment.m_pLoadGame->GetSection(SAVEGAME_AIOBJECTID_SECTION);
-		}
+		loadEnvironment.m_pSer = loadEnvironment.m_pLoadGame->GetSection(SAVEGAME_AIOBJECTID_SECTION);
+
 		if (loadEnvironment.m_pSer.get())
 		{
 			if (gEnv->pAISystem)
@@ -845,7 +843,7 @@ ELoadGameResult CGameSerialize::LoadGame( CCryAction * pCryAction, const char * 
 	LoadEngineSystems( loadEnvironment );
 
 	// load entities
-	if(!LoadEntities( loadEnvironment, pGameStateSer ))
+	if (!LoadEntities(loadEnvironment, std::move(pGameStateSer)))
 	{
 		return loadEnvironment.m_failure;
 	}
@@ -878,9 +876,8 @@ ELoadGameResult CGameSerialize::LoadGame( CCryAction * pCryAction, const char * 
 	}
 #endif
 
-	{
-		loadEnvironment.m_pSer = loadEnvironment.m_pLoadGame->GetSection(SAVEGAME_AISTATE_SECTION);
-	}
+	loadEnvironment.m_pSer = loadEnvironment.m_pLoadGame->GetSection(SAVEGAME_AISTATE_SECTION);
+
 	if (!loadEnvironment.m_pSer.get())
 	{
 		GameWarning("No AI section in save game");
@@ -1439,9 +1436,7 @@ void CGameSerialize::LoadEngineSystems( SLoadEnvironment &loadEnv )
 	loadEnv.m_failure = eLGR_FailedAndDestroyedState;
 
 	// timer serialization (after potential context switch, e.g. when loading a savegame for which Level has not been loaded yet)
-	{
-		loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_TIMER_SECTION);
-	}
+	loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_TIMER_SECTION);
 	if (!loadEnv.m_pSer.get())
 		GameWarning("Unable to open timer %s", SAVEGAME_TIMER_SECTION);
 	else
@@ -1452,9 +1447,7 @@ void CGameSerialize::LoadEngineSystems( SLoadEnvironment &loadEnv )
 	SPauseGameTimer pauseGameTimer;
 
 	// terrain modifications (e.g. heightmap changes)
-	{
-		loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_TERRAINSTATE_SECTION);
-	}
+	loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_TERRAINSTATE_SECTION);
 	if (!loadEnv.m_pSer.get())
 		GameWarning("Unable to open section %s", SAVEGAME_TERRAINSTATE_SECTION);
 	else
@@ -1463,9 +1456,7 @@ void CGameSerialize::LoadEngineSystems( SLoadEnvironment &loadEnv )
 	loadEnv.m_checkpoint.Check("3DEngine");
 
 	// game tokens
-	{
-		loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_GAMETOKEN_SECTION);
-	}
+	loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_GAMETOKEN_SECTION);
 	if (!loadEnv.m_pSer.get())
 		GameWarning("No game token data in save game");
 	else
@@ -1498,9 +1489,7 @@ void CGameSerialize::LoadEngineSystems( SLoadEnvironment &loadEnv )
 	if (pMatFX)
 		pMatFX->Reset(false);
 
-	{
-		loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_MATERIALEFFECTS_SECTION);
-	}
+	loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_MATERIALEFFECTS_SECTION);
 	if (!loadEnv.m_pSer.get())
 		GameWarning("Unable to open section %s", SAVEGAME_MATERIALEFFECTS_SECTION);
 	else
@@ -1514,9 +1503,8 @@ void CGameSerialize::LoadEngineSystems( SLoadEnvironment &loadEnv )
 
 	// ViewSystem Serialization
 	IViewSystem* pViewSystem = loadEnv.m_pCryAction->GetIViewSystem();
-	{
-		loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_VIEWSYSTEM_SECTION);
-	}
+
+	loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_VIEWSYSTEM_SECTION);
 	if (!loadEnv.m_pSer.get())
 		GameWarning("Unable to open section %s", SAVEGAME_VIEWSYSTEM_SECTION);
 	else
@@ -1572,9 +1560,7 @@ void CGameSerialize::LoadEngineSystems( SLoadEnvironment &loadEnv )
 		pDS->Reset(false);
 
 	// Dialog System First Pass [recreates DialogSessions]
-	{
-		loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_DIALOGSYSTEM_SECTION);
-	}
+	loadEnv.m_pSer = loadEnv.m_pLoadGame->GetSection(SAVEGAME_DIALOGSYSTEM_SECTION);
 	if (!loadEnv.m_pSer.get())
 		GameWarning("Unable to open section %s", SAVEGAME_DIALOGSYSTEM_SECTION);
 	else
@@ -1688,7 +1674,7 @@ bool CGameSerialize::LoadLevel( SLoadEnvironment &loadEnv, SGameStartParams& sta
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool CGameSerialize::LoadEntities( SLoadEnvironment &loadEnv, std::auto_ptr<TSerialize> pGameStateSer )
+bool CGameSerialize::LoadEntities( SLoadEnvironment &loadEnv, std::unique_ptr<TSerialize> pGameStateSer )
 {
 	IEntitySystem *pEntitySystem = gEnv->pEntitySystem;
 	// entity creation/deletion/repositioning
@@ -1727,7 +1713,7 @@ bool CGameSerialize::LoadEntities( SLoadEnvironment &loadEnv, std::auto_ptr<TSer
 	// serialize breakable objects AFTER reservation
 	// this will quite likely spawn new entities
 	CRY_ASSERT(pGameStateSer.get());
-	loadEnv.m_pSer = pGameStateSer;
+	loadEnv.m_pSer = std::move(pGameStateSer);
 	if (!loadEnv.m_pSer.get())
 		return false;
 

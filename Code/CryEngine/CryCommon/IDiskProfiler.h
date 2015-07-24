@@ -9,7 +9,6 @@ Description:  Routine for profiling disk IO
 History:
 - 28:3:2008   11:11 : Created by Anton Kaplanyan
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IDiskProfiler.h)
 
 #ifndef __diskprofile_h__
 #define __diskprofile_h__

@@ -22,11 +22,11 @@
 #	include <cstdlib>
 #	include <cstring>
 
-#include "StatsAgent.h"
-#include "StatsAgentPipe.h"
-#include "MultiThread_Containers.h"
+#	include "StatsAgent.h"
+#	include "StatsAgentPipe.h"
+#	include "MultiThread_Containers.h"
 
-#include "ITelemetryCollector.h"
+#	include "ITelemetryCollector.h"
 
 /* 10mins - assuming 60fps which the game can run at when it is in the precache phase */
 const int DELAY_MESSAGES_TIMEOUT = 60 * 60 * 10;

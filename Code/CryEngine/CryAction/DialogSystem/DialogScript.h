@@ -54,10 +54,10 @@ public:
 		{
 		}
 
-		SScriptLine(TActorID actor, TActorID lookat, const char* sound, const char* anim, const char* facial, float delay, float facialWeight, float facialFadeTime, bool bLookAtSticky, bool bResetFacial, bool bResetLookAt, bool bSoundStopsAnim, bool bUseAGSignal, bool bUseAGEP)
+		SScriptLine(TActorID actor, TActorID lookat, TAudioControlID audioID, const char* anim, const char* facial, float delay, float facialWeight, float facialFadeTime, bool bLookAtSticky, bool bResetFacial, bool bResetLookAt, bool bSoundStopsAnim, bool bUseAGSignal, bool bUseAGEP)
 			: m_actor(actor),
 				m_lookatActor(lookat),
-				m_sound(sound),
+				m_audioID(audioID),
 				m_anim(anim),
 				m_facial(facial),
 				m_delay(delay),
@@ -82,17 +82,17 @@ public:
 		uint16   m_flagAGSignal       : 1; // it's an AG Signal / AG Action
 		uint16   m_flagAGEP           : 1; // use exact positioning
 		uint16   m_flagUnused : 10;
-
-		string  m_sound;					// Sound Name
+		
+		TAudioControlID m_audioID;
 		string  m_anim;						// Animation to Play
 		string  m_facial;					// Facial Animation to Play
 		float   m_delay;					// Delay
 		float   m_facialWeight;		// Weight of facial expression
 		float   m_facialFadeTime;	// Time of facial fade-in
 
-		void GetMemoryUsage( ICrySizer *pSizer ) const 
+		void GetMemoryUsage(ICrySizer *pSizer) const 
 		{
-			pSizer->AddObject(m_sound);
+			//pSizer->AddObject(m_audioID);
 			pSizer->AddObject(m_anim);
 			pSizer->AddObject(m_facial);
 		}
@@ -123,7 +123,7 @@ public:
 
 	// Add one line after another
 	// Ugly interface exists purely for speed reasons
-	bool AddLine(TActorID actorID, const char* sound, const char* anim, const char* facial, TActorID lookAtTargetID, float delay, float facialWeight, float facialFadeTime, bool bLookAtSticky, bool bResetFacial, bool bResetLookAt, bool bSoundStopsAnim, bool bUseAGSignal, bool bUseAGEP);
+	bool AddLine(TActorID actorID, TAudioControlID audioID, const char* anim, const char* facial, TActorID lookAtTargetID, float delay, float facialWeight, float facialFadeTime, bool bLookAtSticky, bool bResetFacial, bool bResetLookAt, bool bSoundStopsAnim, bool bUseAGSignal, bool bUseAGEP);
 
 	// Add one line after another
 	bool AddLine(const SScriptLine& line);

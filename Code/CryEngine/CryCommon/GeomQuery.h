@@ -15,6 +15,7 @@
 
 #include "Cry_Geo.h"
 #include "CryArray.h"
+#include "Random.h"
 
 //////////////////////////////////////////////////////////////////////
 // Extents cache
@@ -88,7 +89,7 @@ public:
 
 	int RandomPart() const
 	{
-		return GetPart(Random());
+		return GetPart(cry_random(0.0f, 1.0f));
 	}
 
 protected:
@@ -174,19 +175,20 @@ inline float BoxExtent(EGeomForm eForm, Vec3 const& vSize)
 template<class T> inline
 const typename T::value_type& RandomElem(const T& array)
 {
-	int n = Random(int(array.size()));
+	int n = cry_random(0U, array.size() - 1);
 	return array[n];
 }
 
 // Geometric primitive randomizing functions.
 ILINE void BoxRandomPos(PosNorm& ran, EGeomForm eForm, Vec3 const& vSize)
 {
-	ran.vPos = ran.vNorm = BiRandom(vSize);
+	ran.vPos = cry_random_componentwise(-vSize, vSize);
+	ran.vNorm = ran.vPos;
 
 	if (eForm != GeomForm_Volume)
 	{
 		// Generate a random corner, for collapsing random point.
-		int nCorner = Random(8);
+		int nCorner = cry_random(0, 7);
 		ran.vNorm.x = (((nCorner&1)<<1)-1) * vSize.x;
 		ran.vNorm.y = (((nCorner&2))   -1) * vSize.y;
 		ran.vNorm.z = (((nCorner&4)>>1)-1) * vSize.z;
@@ -198,7 +200,7 @@ ILINE void BoxRandomPos(PosNorm& ran, EGeomForm eForm, Vec3 const& vSize)
 		else if (eForm == GeomForm_Surface)
 		{
 			// Collapse one axis.
-			float fAxis = Random(vSize.x*vSize.y + vSize.y*vSize.z + vSize.z*vSize.x);
+			float fAxis = cry_random(0.0f, vSize.x*vSize.y + vSize.y*vSize.z + vSize.z*vSize.x);
 			if ((fAxis -= vSize.y*vSize.z) < 0.f)
 			{
 				ran.vPos.x = ran.vNorm.x;
@@ -218,7 +220,7 @@ ILINE void BoxRandomPos(PosNorm& ran, EGeomForm eForm, Vec3 const& vSize)
 		else if (eForm == GeomForm_Edges)
 		{
 			// Collapse 2 axes.
-			float fAxis = Random(vSize.x + vSize.y + vSize.z);
+			float fAxis = cry_random(0.0f, vSize.x + vSize.y + vSize.z);
 			if ((fAxis -= vSize.x) < 0.f)
 			{
 				ran.vPos.y = ran.vNorm.y;
@@ -263,13 +265,13 @@ inline Vec2 CircleRandomPoint(EGeomForm eForm, float fRadius)
 	{
 		case GeomForm_Edges:
 			// Generate random angle.
-			sincos_tpl(Random(gf_PI2), &vPt.y,&vPt.x);
+			sincos_tpl(cry_random(0.0f, gf_PI2), &vPt.y,&vPt.x);
 			vPt *= fRadius;
 			break;
 		case GeomForm_Surface:
 			// Generate random angle, and radius, adjusted for even distribution.
-			sincos_tpl(Random(gf_PI2), &vPt.y,&vPt.x);
-			vPt *= sqrt(Random(1.f)) * fRadius;
+			sincos_tpl(cry_random(0.0f, gf_PI2), &vPt.y,&vPt.x);
+			vPt *= sqrt(cry_random(0.0f, 1.0f)) * fRadius;
 			break;
 		default:
 			vPt.x = vPt.y = 0.f;
@@ -308,8 +310,8 @@ inline void SphereRandomPos(PosNorm& ran, EGeomForm eForm, float fRadius)
 		case GeomForm_Volume:
 		{
 			// Generate point on surface, as normal.
-			float fPhi = Random(gf_PI2);
-			float fZ = Random(-1.f, 1.f);
+			float fPhi = cry_random(0.0f, gf_PI2);
+			float fZ = cry_random(-1.f, 1.f);
 			float fH = sqrt_tpl(1.f - fZ*fZ);
 			sincos_tpl(fPhi, &ran.vNorm.y, &ran.vNorm.x);
 			ran.vNorm.x *= fH;
@@ -319,7 +321,7 @@ inline void SphereRandomPos(PosNorm& ran, EGeomForm eForm, float fRadius)
 			ran.vPos = ran.vNorm;
 			if (eForm == GeomForm_Volume)
 			{
-				float fV = Random(1.f);
+				float fV = cry_random(0.0f, 1.0f);
 				float fR = pow_tpl(fV, 0.333333f);
 				ran.vPos *= fR;
 			}
@@ -359,7 +361,7 @@ inline void TriRandomPos(PosNorm& ran, EGeomForm eForm, PosNorm const aRan[3], b
 			return;
 		case GeomForm_Edges:
 		{
-			float t = Random();
+			float t = cry_random(0.0f, 1.0f);
 			ran.vPos = aRan[0].vPos * (1.f-t) + aRan[1].vPos * t;
 			if (bDoNormals)
 				ran.vNorm = aRan[0].vNorm * (1.f-t) + aRan[1].vNorm * t;
@@ -367,7 +369,9 @@ inline void TriRandomPos(PosNorm& ran, EGeomForm eForm, PosNorm const aRan[3], b
 		}
 		case GeomForm_Surface:
 		{
-			float t0 = Random(), t1 = Random(), t2 = Random();
+			float t0 = cry_random(0.0f, 1.0f);
+			float t1 = cry_random(0.0f, 1.0f);
+			float t2 = cry_random(0.0f, 1.0f);
 			float fSum = t0 + t1 + t2;
 			ran.vPos = (aRan[0].vPos * t0 + aRan[1].vPos * t1 + aRan[2].vPos * t2) * (1.f / fSum);
 			if (bDoNormals)
@@ -376,7 +380,10 @@ inline void TriRandomPos(PosNorm& ran, EGeomForm eForm, PosNorm const aRan[3], b
 		}
 		case GeomForm_Volume:
 		{
-			float t0 = Random(), t1 = Random(), t2 = Random(), t3 = Random();
+			float t0 = cry_random(0.0f, 1.0f);
+			float t1 = cry_random(0.0f, 1.0f);
+			float t2 = cry_random(0.0f, 1.0f);
+			float t3 = cry_random(0.0f, 1.0f);
 			float fSum = t0 + t1 + t2 + t3;
 			ran.vPos = (aRan[0].vPos * t0 + aRan[1].vPos * t1 + aRan[2].vPos * t2) * (1.f / fSum);
 			if (bDoNormals)

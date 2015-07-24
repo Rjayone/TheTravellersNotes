@@ -781,7 +781,7 @@ namespace Variables
 					VariableID variableID = GetVariableID( variableName );
 					if( declarations.IsDeclared( variableID ) )
 					{
-						SignalHandles::iterator it = m_signalHandles.insert( SignalHandles::value_type( gEnv->pSystem->GetCrc32Gen()->GetCRC32( signalName ), SignalHandle() ) );
+						SignalHandles::iterator it = m_signalHandles.insert( SignalHandles::value_type( CCrc32::Compute( signalName ), SignalHandle() ) );
 
 						SignalHandle& signalHandle = it->second;
 
@@ -1017,7 +1017,7 @@ namespace std
 		if( !archive( pair.second, name, label ) )
 			return false;
 
-		pair.first = gEnv->pSystem->GetCrc32Gen()->GetCRC32( pair.second.signalName );
+		pair.first = CCrc32::Compute( pair.second.signalName );
 		return true;
 	}
 }

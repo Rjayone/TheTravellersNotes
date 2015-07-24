@@ -105,84 +105,84 @@ public:
 
 	// interface IScriptSystem -----------------------------------------------------------
 
-	VIRTUAL bool ExecuteFile(const char *sFileName,bool bRaiseError,bool bForceReload, IScriptTable* pEnv = 0);
-	VIRTUAL bool ExecuteBuffer(const char *sBuffer, size_t nSize,const char *sBufferDescription, IScriptTable* pEnv = 0);
-	VIRTUAL void UnloadScript(const char *sFileName);
-	VIRTUAL void UnloadScripts();
-	VIRTUAL bool ReloadScript(const char *sFileName,bool bRaiseError);
-	VIRTUAL bool ReloadScripts();
-	VIRTUAL void DumpLoadedScripts();
+	virtual bool ExecuteFile(const char *sFileName,bool bRaiseError,bool bForceReload, IScriptTable* pEnv = 0);
+	virtual bool ExecuteBuffer(const char *sBuffer, size_t nSize,const char *sBufferDescription, IScriptTable* pEnv = 0);
+	virtual void UnloadScript(const char *sFileName);
+	virtual void UnloadScripts();
+	virtual bool ReloadScript(const char *sFileName,bool bRaiseError);
+	virtual bool ReloadScripts();
+	virtual void DumpLoadedScripts();
 	
-	VIRTUAL IScriptTable* CreateTable( bool bEmpty=false );
+	virtual IScriptTable* CreateTable( bool bEmpty=false );
 	
 	//////////////////////////////////////////////////////////////////////////
 	// Begin Call.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL int BeginCall(HSCRIPTFUNCTION hFunc);
-	VIRTUAL int BeginCall(const char *sFuncName);
-	VIRTUAL int BeginCall(const char *sTableName,const char *sFuncName);
-	VIRTUAL int BeginCall( IScriptTable *pTable, const char *sFuncName );
+	virtual int BeginCall(HSCRIPTFUNCTION hFunc);
+	virtual int BeginCall(const char *sFuncName);
+	virtual int BeginCall(const char *sTableName,const char *sFuncName);
+	virtual int BeginCall( IScriptTable *pTable, const char *sFuncName );
 	
 	//////////////////////////////////////////////////////////////////////////
 	// End Call.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL bool EndCall();
-	VIRTUAL bool EndCallAny( ScriptAnyValue &any );
-	VIRTUAL bool EndCallAnyN( int n, ScriptAnyValue* anys );
+	virtual bool EndCall();
+	virtual bool EndCallAny( ScriptAnyValue &any );
+	virtual bool EndCallAnyN( int n, ScriptAnyValue* anys );
 
 	//////////////////////////////////////////////////////////////////////////
 	// Get function pointer.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL HSCRIPTFUNCTION GetFunctionPtr(const char *sFuncName);
-	VIRTUAL HSCRIPTFUNCTION GetFunctionPtr(const char *sTableName, const char *sFuncName);
-	VIRTUAL void ReleaseFunc( HSCRIPTFUNCTION f );
-	VIRTUAL HSCRIPTFUNCTION AddFuncRef(HSCRIPTFUNCTION f);
-	VIRTUAL bool CompareFuncRef(HSCRIPTFUNCTION f1, HSCRIPTFUNCTION f2);
+	virtual HSCRIPTFUNCTION GetFunctionPtr(const char *sFuncName);
+	virtual HSCRIPTFUNCTION GetFunctionPtr(const char *sTableName, const char *sFuncName);
+	virtual void ReleaseFunc( HSCRIPTFUNCTION f );
+	virtual HSCRIPTFUNCTION AddFuncRef(HSCRIPTFUNCTION f);
+	virtual bool CompareFuncRef(HSCRIPTFUNCTION f1, HSCRIPTFUNCTION f2);
 	
-	VIRTUAL ScriptAnyValue CloneAny(const ScriptAnyValue& any);
-	VIRTUAL void ReleaseAny(const ScriptAnyValue& any);
+	virtual ScriptAnyValue CloneAny(const ScriptAnyValue& any);
+	virtual void ReleaseAny(const ScriptAnyValue& any);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Push function param.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void PushFuncParamAny( const ScriptAnyValue &any );
+	virtual void PushFuncParamAny( const ScriptAnyValue &any );
 
 	//////////////////////////////////////////////////////////////////////////
 	// Set global value.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetGlobalAny( const char *sKey,const ScriptAnyValue &any );
-	VIRTUAL bool GetGlobalAny( const char *sKey,ScriptAnyValue &any );
+	virtual void SetGlobalAny( const char *sKey,const ScriptAnyValue &any );
+	virtual bool GetGlobalAny( const char *sKey,ScriptAnyValue &any );
 
-	VIRTUAL IScriptTable * CreateUserData(void * ptr, size_t size);
-	VIRTUAL void ForceGarbageCollection();
-	VIRTUAL int GetCGCount();
-	VIRTUAL void SetGCThreshhold(int nKb);
+	virtual IScriptTable * CreateUserData(void * ptr, size_t size);
+	virtual void ForceGarbageCollection();
+	virtual int GetCGCount();
+	virtual void SetGCThreshhold(int nKb);
 	virtual void Release();
-	VIRTUAL void ShowDebugger(const char *pszSourceFile, int iLine, const char *pszReason);
-	VIRTUAL HBREAKPOINT AddBreakPoint(const char *sFile,int nLineNumber);
-	VIRTUAL IScriptTable *GetLocalVariables(int nLevel = 0);
-	VIRTUAL IScriptTable *GetCallsStack();// { return 0; };
-	VIRTUAL void DumpCallStack();
+	virtual void ShowDebugger(const char *pszSourceFile, int iLine, const char *pszReason);
+	virtual HBREAKPOINT AddBreakPoint(const char *sFile,int nLineNumber);
+	virtual IScriptTable *GetLocalVariables(int nLevel, bool bRecursive);
+	virtual IScriptTable *GetCallsStack();// { return 0; };
+	virtual void DumpCallStack();
 	
-	VIRTUAL void DebugContinue(){}
-	VIRTUAL void DebugStepNext(){}
-	VIRTUAL void DebugStepInto(){}
-	VIRTUAL void DebugDisable(){}
+	virtual void DebugContinue(){}
+	virtual void DebugStepNext(){}
+	virtual void DebugStepInto(){}
+	virtual void DebugDisable(){}
 
-	VIRTUAL BreakState GetBreakState(){return bsNoBreak;}
-	VIRTUAL void GetMemoryStatistics(ICrySizer *pSizer) const;
-	VIRTUAL void GetScriptHash( const char *sPath, const char *szKey, unsigned int &dwHash );
-	VIRTUAL void PostInit();
-	VIRTUAL void RaiseError( const char *format,... ) PRINTF_PARAMS(2, 3);
-	VIRTUAL void LoadScriptedSurfaceTypes( const char *sFolder,bool bReload );
-	VIRTUAL void SerializeTimers( ISerialize *pSer );
-	VIRTUAL void ResetTimers( );
+	virtual BreakState GetBreakState(){return bsNoBreak;}
+	virtual void GetMemoryStatistics(ICrySizer *pSizer) const;
+	virtual void GetScriptHash( const char *sPath, const char *szKey, unsigned int &dwHash );
+	virtual void PostInit();
+	virtual void RaiseError( const char *format,... ) PRINTF_PARAMS(2, 3);
+	virtual void LoadScriptedSurfaceTypes( const char *sFolder,bool bReload );
+	virtual void SerializeTimers( ISerialize *pSer );
+	virtual void ResetTimers( );
 
-	VIRTUAL int GetStackSize();
-	VIRTUAL uint32 GetScriptAllocSize();
+	virtual int GetStackSize();
+	virtual uint32 GetScriptAllocSize();
 
-	VIRTUAL void* Allocate(size_t sz);
-	VIRTUAL size_t Deallocate(void* ptr);
+	virtual void* Allocate(size_t sz);
+	virtual size_t Deallocate(void* ptr);
 
 	void PushAny( const ScriptAnyValue &var );
 	bool PopAny( ScriptAnyValue &var );
@@ -209,10 +209,10 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Facility to pre-catch any lua buffer
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL HSCRIPTFUNCTION CompileBuffer(const char *sBuffer, size_t nSize, const char* sBufferDesc);
-	VIRTUAL int PreCacheBuffer(const char *sBuffer, size_t nSize, const char* sBufferDesc);
-	VIRTUAL int BeginPreCachedBuffer(int iIndex );
-	VIRTUAL void ClearPreCachedBuffer();
+	virtual HSCRIPTFUNCTION CompileBuffer(const char *sBuffer, size_t nSize, const char* sBufferDesc);
+	virtual int PreCacheBuffer(const char *sBuffer, size_t nSize, const char* sBufferDesc);
+	virtual int BeginPreCachedBuffer(int iIndex );
+	virtual void ClearPreCachedBuffer();
 
 	//////////////////////////////////////////////////////////////////////////
 	// ISystemEventListener

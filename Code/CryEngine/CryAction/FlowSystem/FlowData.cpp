@@ -518,4 +518,4 @@ bool CFlowData::DoForwardingIfNeed( IFlowNode::SActivationInfo * pActInfo )
 }
 
 
-#include UNIQUE_VIRTUAL_WRAPPER(IFlowNodeData)
+

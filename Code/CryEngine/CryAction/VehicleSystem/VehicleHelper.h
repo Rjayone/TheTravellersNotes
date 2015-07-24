@@ -27,16 +27,16 @@ public:
 	// IVehicleHelper
 	virtual void Release() { delete this; }
 
-	VIRTUAL const Matrix34& GetLocalTM() const { return m_localTM; }
-	VIRTUAL void GetVehicleTM(Matrix34& vehicleTM, bool forced = false) const;
-	VIRTUAL void GetWorldTM(Matrix34& worldTM) const;
-	VIRTUAL void GetReflectedWorldTM(Matrix34 &reflectedWorldTM) const;
+	virtual const Matrix34& GetLocalTM() const { return m_localTM; }
+	virtual void GetVehicleTM(Matrix34& vehicleTM, bool forced = false) const;
+	virtual void GetWorldTM(Matrix34& worldTM) const;
+	virtual void GetReflectedWorldTM(Matrix34 &reflectedWorldTM) const;
 
-	VIRTUAL Vec3 GetLocalSpaceTranslation() const;
-	VIRTUAL Vec3 GetVehicleSpaceTranslation() const;
-	VIRTUAL Vec3 GetWorldSpaceTranslation() const;
+	virtual Vec3 GetLocalSpaceTranslation() const;
+	virtual Vec3 GetVehicleSpaceTranslation() const;
+	virtual Vec3 GetWorldSpaceTranslation() const;
 
-	VIRTUAL IVehiclePart* GetParentPart() const;
+	virtual IVehiclePart* GetParentPart() const;
 	// ~IVehicleHelper
 
 	void GetMemoryUsage(ICrySizer *pSizer)const

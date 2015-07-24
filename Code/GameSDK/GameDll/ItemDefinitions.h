@@ -219,9 +219,7 @@ struct SItemAnimationEvents
 	{
 		if (!m_initialized)
 		{
-			Crc32Gen* pCRC32 = gEnv->pSystem->GetCrc32Gen();
-
-			m_ltagUpdateGrenades = pCRC32->GetCRC32Lowercase("UpdateGrenades");
+			m_ltagUpdateGrenades = CCrc32::ComputeLowercase("UpdateGrenades");
 		}
 
 		m_initialized = true;
@@ -237,24 +235,22 @@ struct SItemFragmentTagCRCs
 {
 	void Init()
 	{
-		Crc32Gen* pCRC32 = gEnv->pSystem->GetCrc32Gen();
+		ammo_clipRemaining = CCrc32::ComputeLowercase("ammo_clipRemaining");
+		ammo_empty = CCrc32::ComputeLowercase("ammo_empty");
+		ammo_last1 = CCrc32::ComputeLowercase("ammo_last1");
+		ammo_last2 = CCrc32::ComputeLowercase("ammo_last2");
+		ammo_last3 = CCrc32::ComputeLowercase("ammo_last3");
 
-		ammo_clipRemaining = pCRC32->GetCRC32Lowercase("ammo_clipRemaining");
-		ammo_empty = pCRC32->GetCRC32Lowercase("ammo_empty");
-		ammo_last1 = pCRC32->GetCRC32Lowercase("ammo_last1");
-		ammo_last2 = pCRC32->GetCRC32Lowercase("ammo_last2");
-		ammo_last3 = pCRC32->GetCRC32Lowercase("ammo_last3");
+		inventory_last1 = CCrc32::ComputeLowercase("inventory_last1");
+		inventory_last2 = CCrc32::ComputeLowercase("inventory_last2");
 
-		inventory_last1 = pCRC32->GetCRC32Lowercase("inventory_last1");
-		inventory_last2 = pCRC32->GetCRC32Lowercase("inventory_last2");
+		doubleclip_fast = CCrc32::ComputeLowercase("doubleclip_fast");
 
-		doubleclip_fast = pCRC32->GetCRC32Lowercase("doubleclip_fast");
+		ammo_partiallycharged = CCrc32::ComputeLowercase("ammo_partiallycharged");
+		ammo_fullycharged = CCrc32::ComputeLowercase("ammo_fullycharged");
 
-		ammo_partiallycharged = pCRC32->GetCRC32Lowercase("ammo_partiallycharged");
-		ammo_fullycharged = pCRC32->GetCRC32Lowercase("ammo_fullycharged");
-
-		holo = pCRC32->GetCRC32Lowercase("holo");
-		typhoonAttachment = pCRC32->GetCRC32Lowercase("typhoonAttachment");
+		holo = CCrc32::ComputeLowercase("holo");
+		typhoonAttachment = CCrc32::ComputeLowercase("typhoonAttachment");
 	}
 	
 	uint32 ammo_clipRemaining;
@@ -280,25 +276,23 @@ struct SItemActionParamCRCs
 {
 	void Init()
 	{
-		Crc32Gen* pCRC32 = gEnv->pSystem->GetCrc32Gen();
-
-		concentratedFire = pCRC32->GetCRC32Lowercase("concentration");
-		ammoLeft = pCRC32->GetCRC32Lowercase("ammo_left");
-		burstFire = pCRC32->GetCRC32Lowercase("burst");
-		spinSpeed = pCRC32->GetCRC32Lowercase("spinSpeed");
-		ffeedbackScale = pCRC32->GetCRC32Lowercase("forceFeedback");
-		fired = pCRC32->GetCRC32Lowercase("fired");
-		firstFire = pCRC32->GetCRC32Lowercase("firstFire");
-		bowChargeLevel = pCRC32->GetCRC32Lowercase("ChargeLevel");
-		bowChargeSound = pCRC32->GetCRC32Lowercase("charge");
-		bowFireIntensity = pCRC32->GetCRC32Lowercase("intensity");
-		bowStrength = pCRC32->GetCRC32Lowercase("strength");
-		aimDirection = pCRC32->GetCRC32Lowercase("aim_direction");
-		zoomTransition = pCRC32->GetCRC32Lowercase("zoom_transition");
-		inputMove = pCRC32->GetCRC32Lowercase("input_move");
-		inputRot = pCRC32->GetCRC32Lowercase("input_rot");
-		velocity = pCRC32->GetCRC32Lowercase("velocity");
-		fallFactor = pCRC32->GetCRC32Lowercase("fall_factor");
+		concentratedFire = CCrc32::ComputeLowercase("concentration");
+		ammoLeft = CCrc32::ComputeLowercase("ammo_left");
+		burstFire = CCrc32::ComputeLowercase("burst");
+		spinSpeed = CCrc32::ComputeLowercase("spinSpeed");
+		ffeedbackScale = CCrc32::ComputeLowercase("forceFeedback");
+		fired = CCrc32::ComputeLowercase("fired");
+		firstFire = CCrc32::ComputeLowercase("firstFire");
+		bowChargeLevel = CCrc32::ComputeLowercase("ChargeLevel");
+		bowChargeSound = CCrc32::ComputeLowercase("charge");
+		bowFireIntensity = CCrc32::ComputeLowercase("intensity");
+		bowStrength = CCrc32::ComputeLowercase("strength");
+		aimDirection = CCrc32::ComputeLowercase("aim_direction");
+		zoomTransition = CCrc32::ComputeLowercase("zoom_transition");
+		inputMove = CCrc32::ComputeLowercase("input_move");
+		inputRot = CCrc32::ComputeLowercase("input_rot");
+		velocity = CCrc32::ComputeLowercase("velocity");
+		fallFactor = CCrc32::ComputeLowercase("fall_factor");
 	}
 
 	uint32 concentratedFire;

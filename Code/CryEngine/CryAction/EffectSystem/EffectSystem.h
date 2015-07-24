@@ -24,19 +24,19 @@ public:
 	virtual ~CEffectSystem();
 
 	// IEffectSystem
-	VIRTUAL bool Init();
-	VIRTUAL void Update(float delta);
-	VIRTUAL void Shutdown();
+	virtual bool Init();
+	virtual void Update(float delta);
+	virtual void Shutdown();
 
-	VIRTUAL EffectId GetEffectId(const char* name);
+	virtual EffectId GetEffectId(const char* name);
 
-	VIRTUAL void Activate(const EffectId& eid);
-	VIRTUAL bool BindEffect(const char* name, IEffect* pEffect);
-	VIRTUAL IGroundEffect* CreateGroundEffect(IEntity* pEntity);
+	virtual void Activate(const EffectId& eid);
+	virtual bool BindEffect(const char* name, IEffect* pEffect);
+	virtual IGroundEffect* CreateGroundEffect(IEntity* pEntity);
 
 	virtual void RegisterFactory(const char *name, IEffect *(*)(), bool isAI);
 
-	VIRTUAL void GetMemoryStatistics(ICrySizer * s);
+	virtual void GetMemoryStatistics(ICrySizer * s);
 	// ~IEffectSystem
 
 private:

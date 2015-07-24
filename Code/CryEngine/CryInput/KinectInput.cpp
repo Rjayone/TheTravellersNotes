@@ -9,6 +9,7 @@
 #include "KinectInput.h"
 #include <IRenderer.h>
 #include "IRenderAuxGeom.h"
+#include "UnicodeFunctions.h"
 
 #ifdef KINECT_XBOX_CONNECT
 #include "KinectXboxSyncThread.h"
@@ -118,7 +119,6 @@ bool CKinectInput::Init()
 	// check if kinect is connected
 	if(!g_pInputCVars->i_useKinect)
 		return false;
-
 	m_pImageFrame = NULL;
 	m_pDepthFrame80x60 = NULL;
 	m_pDepthFrame320x240 = NULL;
@@ -175,7 +175,6 @@ bool CKinectInput::Init()
 	}
 
 	DWORD dwFlags = NUI_SKELETON_TRACKING_FLAG_SUPPRESS_NO_FRAME_DATA;
-	hr = NuiSkeletonTrackingEnable( NULL, dwFlags );
 	if (FAILED(hr))
 	{
 		LogKinectError(hr, "NuiSkeletonTrackingEnable", 0);
@@ -209,8 +208,8 @@ bool CKinectInput::Init()
 	}
 #endif
 
-	m_iDepth320x240 = gEnv->pRenderer->SF_CreateTexture(320, 240, 0, NULL, eTF_A8R8G8B8, FT_NOMIPS|FT_DONT_RESIZE|FT_DONT_RELEASE|FT_DONT_STREAM);
-	m_iImage = gEnv->pRenderer->SF_CreateTexture(640, 480, 0, NULL, eTF_X8R8G8B8, FT_NOMIPS|FT_DONT_RESIZE|FT_DONT_RELEASE|FT_DONT_STREAM);
+	m_iDepth320x240 = gEnv->pRenderer->SF_CreateTexture(320, 240, 0, NULL, eTF_R8G8B8A8, FT_NOMIPS|FT_DONT_RESIZE|FT_DONT_RELEASE|FT_DONT_STREAM);
+	m_iImage = gEnv->pRenderer->SF_CreateTexture(640, 480, 0, NULL, eTF_R8G8B8A8, FT_NOMIPS|FT_DONT_RESIZE|FT_DONT_RELEASE|FT_DONT_STREAM);
 
 	SpeechEnable();
 
@@ -764,7 +763,7 @@ void CKinectInput::EnableSeatedSkeletonTracking(bool bEnableSeatedST)
 		return;
 
 #ifdef KINECT_XBOX_CONNECT
-	else if (m_pXboxKinectSyncThread)
+	if (!m_enabled && m_pXboxKinectSyncThread)
 	{
 		m_pXboxKinectSyncThread->SetSeatedST(bEnableSeatedST);
 		m_bUseSeatedST = bEnableSeatedST;
@@ -1201,7 +1200,7 @@ void CKinectInput::DebugDraw()
 
 			if( SUCCEEDED( m_pImageFrame->pFrameTexture->LockRect( 0, &LockedSrc, NULL, flags ) ) )
 			{
-				gEnv->pRenderer->UpdateTextureInVideoMemory(m_iImage, (unsigned char*)LockedSrc.pBits, 0,0,640, 480, eTF_X8R8G8B8);
+				gEnv->pRenderer->UpdateTextureInVideoMemory(m_iImage, (unsigned char*)LockedSrc.pBits, 0,0,640, 480, eTF_R8G8B8A8);
 				m_pImageFrame->pFrameTexture->UnlockRect(0);
 			}
 		}
@@ -1243,7 +1242,7 @@ void CKinectInput::DebugDraw()
 					lpBits += 320;
 					pDepthMapCur += LockedSrc.Pitch / sizeof( USHORT );
 				}
-				gEnv->pRenderer->UpdateTextureInVideoMemory(m_iDepth320x240, (unsigned char*)&tmp[0], 0,0,320, 240, eTF_X8R8G8B8);
+				gEnv->pRenderer->UpdateTextureInVideoMemory(m_iDepth320x240, (unsigned char*)&tmp[0], 0,0,320, 240, eTF_R8G8B8A8);
 				m_pDepthFrame320x240->pFrameTexture->UnlockRect(0);
 			}
 		}
@@ -1465,11 +1464,7 @@ void CKinectInput::OnSpeechEvent(NUI_SPEECH_EVENT event)
 				const NUI_SPEECH_ELEMENT* pElt = &event.pResult->Phrase.pElements[i];
 				if (event.pResult->Phrase.pSemanticProperties->fSREngineConfidence > 0.80f)
 				{
-					char buffer[250];
-					size_t convSize;
-
-					wcstombs_s(&convSize, buffer, 250, pElt->pcwszLexicalForm, 250);
-					outputString.append(buffer);
+					Unicode::Append(outputString, pElt->pcwszLexicalForm);
 				}
 			}
 			/*string conf;
@@ -1483,11 +1478,7 @@ void CKinectInput::OnSpeechEvent(NUI_SPEECH_EVENT event)
 				const NUI_SPEECH_ELEMENT* pElt = &event.pResult->Phrase.pElements[i];
 				if (event.pResult->Phrase.Rule.fSREngineConfidence > 0.80f)
 				{
-					char buffer[250];
-					size_t convSize;
-
-					wcstombs_s(&convSize, buffer, 250, pElt->pcwszLexicalForm, 250);
-					outputString.append(buffer);
+					Unicode::Append(outputString, pElt->pcwszLexicalForm);
 					outputString.append(" ");
 				}
 			}

@@ -7,9 +7,8 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#ifndef XENON
+
 #include <windows.h>
-#endif
 #include <process.h>
 #include <CryProfileMarker.h>
 struct SThreadNameDesc
@@ -285,7 +284,6 @@ void CryFastSemaphore::Release()
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if !defined(XENON)
 CryRWLock::CryRWLock()
 {
 	STATIC_ASSERT(sizeof(m_Lock) == sizeof(PSRWLOCK), "RWLock-pointer has invalid size");
@@ -356,7 +354,6 @@ void CryRWLock::Unlock()
 {
 	WUnlock();
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 CrySimpleThreadSelf::CrySimpleThreadSelf()
@@ -401,33 +398,26 @@ void CryInterlockedPushEntrySList( SLockFreeSingleLinkedListHeader& list,  SLock
 {
 	STATIC_CHECK(sizeof(SLockFreeSingleLinkedListHeader) == sizeof(SLIST_HEADER), CRY_INTERLOCKED_SLIST_HEADER_HAS_WRONG_SIZE);
 	STATIC_CHECK(sizeof(SLockFreeSingleLinkedListEntry) >= sizeof(SLIST_ENTRY), CRY_INTERLOCKED_SLIST_ENTRY_HAS_WRONG_SIZE);		
-#if defined(XENON)
-	InterlockedPushEntrySListRelease( alias_cast<PSLIST_HEADER>(&list), alias_cast<PSLIST_ENTRY>(&element) );
-#else
+
 	assert( IsAligned(&list,MEMORY_ALLOCATION_ALIGNMENT) && "LockFree SingleLink List Header has wrong Alignment" );
 	assert( IsAligned(&element, MEMORY_ALLOCATION_ALIGNMENT) && "LockFree SingleLink List Entry has wrong Alignment" );	
 	InterlockedPushEntrySList( alias_cast<PSLIST_HEADER>(&list), alias_cast<PSLIST_ENTRY>(&element) );
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
 void* CryInterlockedPopEntrySList(  SLockFreeSingleLinkedListHeader& list )
 {	
 	STATIC_CHECK(sizeof(SLockFreeSingleLinkedListHeader) == sizeof(SLIST_HEADER), CRY_INTERLOCKED_SLIST_HEADER_HAS_WRONG_SIZE);
-#if defined(XENON)
-	return reinterpret_cast<void*>(InterlockedPopEntrySListAcquire(alias_cast<PSLIST_HEADER>(&list)));	
-#else	
+
 	assert( IsAligned(&list,MEMORY_ALLOCATION_ALIGNMENT) && "LockFree SingleLink List Header has wrong Alignment" );
 	return reinterpret_cast<void*>(InterlockedPopEntrySList(alias_cast<PSLIST_HEADER>(&list)));	
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
 void CryInitializeSListHead(SLockFreeSingleLinkedListHeader& list)
 {
-#if !defined(XENON)
 	assert( IsAligned(&list,MEMORY_ALLOCATION_ALIGNMENT) && "LockFree SingleLink List Header has wrong Alignment" );
-#endif
+
 	STATIC_CHECK(sizeof(SLockFreeSingleLinkedListHeader) == sizeof(SLIST_HEADER), CRY_INTERLOCKED_SLIST_HEADER_HAS_WRONG_SIZE);
 	InitializeSListHead(alias_cast<PSLIST_HEADER>(&list));
 }
@@ -435,9 +425,8 @@ void CryInitializeSListHead(SLockFreeSingleLinkedListHeader& list)
 //////////////////////////////////////////////////////////////////////////
 void* CryInterlockedFlushSList(SLockFreeSingleLinkedListHeader& list)
 {
-#if !defined(XENON)
 	assert( IsAligned(&list,MEMORY_ALLOCATION_ALIGNMENT) && "LockFree SingleLink List Header has wrong Alignment" );
-#endif
+
 	STATIC_CHECK(sizeof(SLockFreeSingleLinkedListHeader) == sizeof(SLIST_HEADER), CRY_INTERLOCKED_SLIST_HEADER_HAS_WRONG_SIZE);
 	return InterlockedFlushSList(alias_cast<PSLIST_HEADER>(&list));	
 }

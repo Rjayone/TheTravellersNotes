@@ -363,5 +363,4 @@ void CUIActionManager::EnableActionInt( IUIAction* pAction, bool bEnable )
 }
 
 //------------------------------------------------------------------------------------
-#include UNIQUE_VIRTUAL_WRAPPER(IUIAction)
-#include UNIQUE_VIRTUAL_WRAPPER(IUIActionManager)
+

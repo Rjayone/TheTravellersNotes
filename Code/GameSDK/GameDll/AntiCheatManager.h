@@ -29,10 +29,6 @@ History:
 
 #if defined(ANTI_CHEAT_ENABLED)
 
-#if defined(DEDICATED_SERVER)
-#define USE_CRISP_THINKING
-#endif
-
 #include "Network/Lobby/SessionNames.h"
 #include "Network/Lobby/IGameLobbyEventListener.h"
 #include <IXml.h>
@@ -233,8 +229,6 @@ public:
 
 	virtual bool HasDownloadedEssentials(void) { return true; }
 
-	void ChatMessage(uint16 channelId, const char * pString);
-
 	void PlayerVotedOff( EntityId playerId, const TVoteDataList& voteData, float fSecondsToBanFor );
 
   TCheatType FindCheatType(const char* name);
@@ -367,14 +361,6 @@ private:
 	uint32			m_uIncidents;
 
 	//TAntiCheatLoggers m_AntiCheatLoggers;
-
-#if defined(USE_CRISP_THINKING)
-	void HandleCrispThinkingOutput(TCheatType type, uint16 channelId, XmlNodeRef incidentXML, int nMaxConfidence);
-	void OutputXMLToCrispThinking(XmlNodeRef xml);
-
-	void * m_CrispLibrary;
-	class ICrispWrapper* m_pCrispWrapper;
-#endif
 };
 #endif
 

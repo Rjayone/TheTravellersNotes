@@ -21,13 +21,14 @@
 #include <ICryPak.h>
 #include <IConsole.h>
 #include "CryPath.h"
+#include "StringUtils.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Defines for CryEngine filetypes extensions.
 //////////////////////////////////////////////////////////////////////////
 #define CRY_GEOMETRY_FILE_EXT                    "cgf"
 #define CRY_SKEL_FILE_EXT                        "chr" //will be a SKEL soon
-#define CRY_SKIN_FILE_EXT												 "skin"
+#define CRY_SKIN_FILE_EXT                        "skin"
 #define CRY_CHARACTER_ANIMATION_FILE_EXT         "caf"
 #define CRY_CHARACTER_DEFINITION_FILE_EXT        "cdf"
 #define CRY_CHARACTER_LIST_FILE_EXT              "cid"
@@ -185,7 +186,6 @@ private:
 
 #define IfPak(PakFunc, stdfunc, args) (m_pIPak ? m_pIPak->PakFunc args : stdfunc args)
 
-#ifndef __SPU__
 // Summary:
 // CCryFile implementation.
 inline CCryFile::CCryFile()
@@ -222,7 +222,7 @@ inline CCryFile::~CCryFile()
 inline bool CCryFile::Open( const char *filename, const char *mode,int nOpenFlagsEx )
 {
 	char tempfilename[CRYFILE_MAX_PATH] = "";
-	strncpy_s( tempfilename,filename,_TRUNCATE );
+	cry_strcpy( tempfilename,filename );
 
 #if !defined ( _RELEASE )
 	if ( gEnv && gEnv->IsEditor() )
@@ -234,7 +234,7 @@ inline bool CCryFile::Open( const char *filename, const char *mode,int nOpenFlag
 			if ( lowercasePaths )
 			{
 				const string lowerString = PathUtil::ToLower(tempfilename);
-				strncpy_s( tempfilename,lowerString.c_str(),_TRUNCATE );
+				cry_strcpy( tempfilename,lowerString.c_str() );
 			}
 		}
 	}
@@ -243,7 +243,7 @@ inline bool CCryFile::Open( const char *filename, const char *mode,int nOpenFlag
 	{
 		Close();
 	}
-	strncpy_s( m_filename,tempfilename,_TRUNCATE );
+	cry_strcpy( m_filename,tempfilename );
 
 	m_file = m_pIPak ? m_pIPak->FOpen( tempfilename,mode,nOpenFlagsEx ) : fopen( tempfilename,mode );
 	return m_file != NULL;
@@ -256,7 +256,7 @@ inline void CCryFile::Close()
 	{
 		IfPak( FClose, fclose, (m_file) );
 		m_file = 0;
-		strcpy_s( m_filename,"" );
+		m_filename[0] = 0;
 	}
 }
 
@@ -372,8 +372,8 @@ inline const char* CCryFile::GetAdjustedFilename() const
 
 	// Returns standard path otherwise.
 	if (gameUrl != &szAdjustedFile[0])
-		strncpy_s(szAdjustedFile, gameUrl,_TRUNCATE);
+		cry_strcpy(szAdjustedFile, gameUrl);
 	return szAdjustedFile;
 }
-#endif//__SPU__
+
 #endif // __cryfile_h__

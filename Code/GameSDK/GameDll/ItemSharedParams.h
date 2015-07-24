@@ -90,10 +90,8 @@ struct SParams
 		giveable = true;
 		unique = true;
 		mass = 3.5f;
-		hud_style = 0;
 		drop_impulse = 12.5f;
 		select_override = 0.0f;
-		heavy_weapon = false;
 		auto_droppable = false;
 		auto_pickable = true;
 		has_first_select = false;
@@ -168,8 +166,6 @@ struct SParams
 		}
 	}
 	
-
-	bool  heavy_weapon;
 	bool	selectable;
 	bool	droppable;
 	bool	pickable;
@@ -198,7 +194,6 @@ struct SParams
 	float	sprintToRunBlendTime;
 
 	int   scopeAttachment;
-	int		hud_style;
 
 	SWeaponStatsData weaponStats;
 

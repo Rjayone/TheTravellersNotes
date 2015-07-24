@@ -155,49 +155,49 @@ public:
 	virtual ~CItemParamsNode();
 
 	virtual void AddRef() const { ++m_refs; };
-	VIRTUAL uint32 GetRefCount() const { return m_refs; };
+	virtual uint32 GetRefCount() const { return m_refs; };
 	virtual void Release() const { if (!--m_refs) delete this; };
 
-	VIRTUAL void GetMemoryUsage(ICrySizer *pSizer) const;
+	virtual void GetMemoryUsage(ICrySizer *pSizer) const;
 
-	VIRTUAL int GetAttributeCount() const;
-	VIRTUAL const char *GetAttributeName(int i) const;
-	VIRTUAL const char *GetAttribute(int i) const;
-	VIRTUAL bool GetAttribute(int i, Vec3 &attr) const;
-	VIRTUAL bool GetAttribute(int i, Ang3 &attr) const;
-	VIRTUAL bool GetAttribute(int i, float &attr) const;
-	VIRTUAL bool GetAttribute(int i, int &attr) const;
-	VIRTUAL int GetAttributeType(int i) const;
+	virtual int GetAttributeCount() const;
+	virtual const char *GetAttributeName(int i) const;
+	virtual const char *GetAttribute(int i) const;
+	virtual bool GetAttribute(int i, Vec3 &attr) const;
+	virtual bool GetAttribute(int i, Ang3 &attr) const;
+	virtual bool GetAttribute(int i, float &attr) const;
+	virtual bool GetAttribute(int i, int &attr) const;
+	virtual int GetAttributeType(int i) const;
 
-	VIRTUAL const char *GetAttribute(const char *name) const;
-	VIRTUAL bool GetAttribute(const char *name, Vec3 &attr) const;
-	VIRTUAL bool GetAttribute(const char *name, Ang3 &attr) const;
-	VIRTUAL bool GetAttribute(const char *name, float &attr) const;
-	VIRTUAL bool GetAttribute(const char *name, int &attr) const;
-	VIRTUAL int GetAttributeType(const char *name) const;
+	virtual const char *GetAttribute(const char *name) const;
+	virtual bool GetAttribute(const char *name, Vec3 &attr) const;
+	virtual bool GetAttribute(const char *name, Ang3 &attr) const;
+	virtual bool GetAttribute(const char *name, float &attr) const;
+	virtual bool GetAttribute(const char *name, int &attr) const;
+	virtual int GetAttributeType(const char *name) const;
 
-	VIRTUAL const char *GetAttributeSafe(const char *name) const;
+	virtual const char *GetAttributeSafe(const char *name) const;
 
-	VIRTUAL const char *GetNameAttribute() const;
+	virtual const char *GetNameAttribute() const;
 	
-	VIRTUAL int GetChildCount() const;
-	VIRTUAL const char *GetChildName(int i) const;
-	VIRTUAL const IItemParamsNode *GetChild(int i) const;
-	VIRTUAL const IItemParamsNode *GetChild(const char *name) const;
+	virtual int GetChildCount() const;
+	virtual const char *GetChildName(int i) const;
+	virtual const IItemParamsNode *GetChild(int i) const;
+	virtual const IItemParamsNode *GetChild(const char *name) const;
 	
 	EXMLFilterType ShouldConvertNodeFromXML(const XmlNodeRef &xmlNode, const char * keepWithThisAttrValue) const;
 
-	VIRTUAL void SetAttribute(const char *name, const char *attr);
-	VIRTUAL void SetAttribute(const char *name, const Vec3 &attr);
-	VIRTUAL void SetAttribute(const char *name, float attr);
-	VIRTUAL void SetAttribute(const char *name, int attr);
+	virtual void SetAttribute(const char *name, const char *attr);
+	virtual void SetAttribute(const char *name, const Vec3 &attr);
+	virtual void SetAttribute(const char *name, float attr);
+	virtual void SetAttribute(const char *name, int attr);
 
-	VIRTUAL void SetName(const char *name) { m_name = name; };
-	VIRTUAL const char *GetName() const { return m_name.c_str(); };
+	virtual void SetName(const char *name) { m_name = name; };
+	virtual const char *GetName() const { return m_name.c_str(); };
 
-	VIRTUAL IItemParamsNode *InsertChild(const char *name);
-	VIRTUAL void ConvertFromXML(const XmlNodeRef &root);
-	VIRTUAL bool ConvertFromXMLWithFiltering(const XmlNodeRef &root, const char * keepWithThisAttrValue);
+	virtual IItemParamsNode *InsertChild(const char *name);
+	virtual void ConvertFromXML(const XmlNodeRef &root);
+	virtual bool ConvertFromXMLWithFiltering(const XmlNodeRef &root, const char * keepWithThisAttrValue);
 
 private:
 	struct SAttribute

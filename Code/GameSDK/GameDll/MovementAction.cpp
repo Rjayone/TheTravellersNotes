@@ -339,10 +339,6 @@ CPlayerMovementAction::EMoveState CPlayerMovementAction::CalculateState(float *p
 	float retTravelAngle	= 0.0f;
 	float retMoveSpeed		= 0.0f;
 
-	//Костыли крайтека
-	if (&player == NULL)
-		return ret;
-
 	const bool notInAir = player.IsOnGround() || player.IsSwimming() || player.IsOnLedge() || player.IsSliding();
 	if (notInAir)
 	{

@@ -15,7 +15,6 @@
 #include "Game.h"
 #include "GameStartup.h"
 #include "EditorGame.h"
-#include "BasicEventListener.h"
 
 #include <CryLibrary.h>
 
@@ -31,8 +30,7 @@ extern "C"
 
 	GAME_API IGameStartup *CreateGameStartup()
 	{
-		static CBasicEventListener basicEventListener;
-		return CGameStartup::Create(basicEventListener);
+		return CGameStartup::Create();
 	}
 	GAME_API IEditorGame *CreateEditorGame()
 	{

@@ -59,7 +59,6 @@ History:
 CPlayerInput::CPlayerInput( CPlayer * pPlayer ) : 
 	m_pPlayer(pPlayer), 
 	m_actions(0), 
-	m_actionFlags(CPlayer::eAF_NONE), 
 	m_deltaRotation(0,0,0), 
 	m_lastMouseRawInput(0,0,0),
 	m_deltaMovement(0,0,0), 
@@ -72,7 +71,6 @@ CPlayerInput::CPlayerInput( CPlayer * pPlayer ) :
 	m_flyCamDeltaRotation(0,0,0),
 	m_flyCamTurbo(false),
 	m_filteredDeltaMovement(0,0,0),
-	m_jumpPressTime(0.0f),
 	m_suitArmorPressTime(0.0f),
 	m_suitStealthPressTime(0.0f),
 	m_moveButtonState(0),
@@ -93,7 +91,9 @@ CPlayerInput::CPlayerInput( CPlayer * pPlayer ) :
 	m_autoPickupMode(false),
 	m_standingOn(0),
 	m_openingVisor(false),
-	m_playerInVehicleAtFrameStart(false)
+	m_playerInVehicleAtFrameStart(false),
+	m_pendingYawSnapAngle(0.0f),
+	m_bYawSnappingActive(false)
 {
 	m_pPlayer->GetGameObject()->CaptureActions(this);
 
@@ -211,13 +211,11 @@ void CPlayerInput::Reset()
 {
 	m_actions = 0;
 	m_lastActions = m_actions;
-	m_actionFlags = CPlayer::eAF_NONE;
 
 	ClearDeltaMovement();
 
 	m_xi_deltaMovement.zero();
 	m_filteredDeltaMovement.zero();
-	m_jumpPressTime = 0.f;
 	m_deltaRotation.Set(0,0,0);
 	m_lastMouseRawInput.Set(0,0,0);
 	m_xi_deltaRotation.Set(0,0,0);
@@ -348,7 +346,6 @@ void CPlayerInput::OnAction( const ActionId& actionId, int activationMode, float
 
 				//FIXME:not really good
 				m_actions = 0;
-				m_actionFlags = CPlayer::eAF_NONE;
 //			m_deltaRotation.Set(0,0,0);
 
 				ClearDeltaMovement();
@@ -732,7 +729,6 @@ void CPlayerInput::PreUpdate()
 
 			//FIXME:not really good
 			m_actions = 0;
-			m_actionFlags = CPlayer::eAF_NONE;
 			ClearDeltaMovement();
 			m_deltaRotation.Set(0,0,0);
 		}
@@ -770,6 +766,20 @@ void CPlayerInput::PreUpdate()
 	request.SetLookTarget( playerTargetPosition );
 
 	request.AddDeltaRotation( deltaRotation );
+	
+	if (g_pGameCVars->cl_controllerYawSnapEnable && (fabsf(m_pendingYawSnapAngle) > FLT_EPSILON))
+	{
+		const float angleSign = (float)__fsel(m_pendingYawSnapAngle, 1.0f, -1.0f);
+
+		const float snapAngle = DEG2RAD(g_pGameCVars->cl_controllerYawSnapAngle);
+		const float snapSpeed = snapAngle / CLAMP(g_pGameCVars->cl_controllerYawSnapTime, 0.01f, 1000.0f);
+		const float additionalYawAngle = angleSign * min(snapSpeed * dt, fabsf(m_pendingYawSnapAngle));			
+
+		request.AddDeltaRotation( Ang3(0.0f, 0.0f, additionalYawAngle) );
+
+		m_pendingYawSnapAngle -= additionalYawAngle;
+	}
+
 	if (!animControlled)
 	{
     request.AddDeltaMovement( FilterMovement( m_moveOverlay.GetMixedOverlay(m_deltaMovement) ) );
@@ -805,7 +815,6 @@ void CPlayerInput::PreUpdate()
 	// send the movement request to the appropriate spot!
 	m_pPlayer->m_pMovementController->RequestMovement( request );
 	m_pPlayer->m_actions = m_actions;
-	m_pPlayer->m_actionFlags = m_actionFlags;
 
 	if (g_pGameCVars->g_detachCamera && g_pGameCVars->g_moveDetachedCamera)
 	{
@@ -819,7 +828,6 @@ void CPlayerInput::PreUpdate()
 	if (m_pPlayer->GetFlyMode() == 0)
 	{
 		m_actions &= ~ACTION_JUMP;
-		m_actionFlags &= ~(CPlayer::eAF_JUMP_QUICK);
 	}
 }
 
@@ -1005,17 +1013,6 @@ void CPlayerInput::Update()
 	}
 
 	UpdateWeaponToggle();
-	
-	if (m_jumpPressTime > 0.0f)
-	{
-		const float  pressDelta = (gEnv->pTimer->GetAsyncCurTime() - m_jumpPressTime);
-		if (pressDelta > g_pGameCVars->pl_jump_quickPressThresh)
-		{
-			//CryLog("[tlh] calling PerformJump(false) from PlayerInput::Update()");
-			m_jumpPressTime = 0.f;
-			PerformJump(false);
-		}
-	}
 
 	if(m_autoPickupMode)
 	{
@@ -1382,9 +1379,6 @@ bool CPlayerInput::OnActionJump(EntityId entityId, const ActionId& actionId, int
 {
 	bool canJump = (!m_pPlayer->GetLinkedVehicle()) && ((m_pPlayer->IsSwimming() || (m_pPlayer->TrySetStance(STANCE_STAND) && (m_pPlayer->m_stats.onGround > 0.01f))));
 
-	bool  performJump = false;
-	bool  performQuickJump = false;
-
 	m_pPlayer->m_jumpButtonIsPressed = (activationMode == eAAM_OnPress);
 
 	if (!CallTopCancelHandler(kCancelPressFlag_jump) && CanMove() && canJump)
@@ -1405,40 +1399,17 @@ bool CPlayerInput::OnActionJump(EntityId entityId, const ActionId& actionId, int
 				}
 			}
 
-			CRY_ASSERT(m_jumpPressTime <= 0.f);
-			m_jumpPressTime = gEnv->pTimer->GetAsyncCurTime();
 			return true;
-		}
-		else
-		{
-			if (m_jumpPressTime > 0.f)
-			{
-				float  pressDelta = (gEnv->pTimer->GetAsyncCurTime() - m_jumpPressTime);
-				//CryLog("[tlh] @ CPlayerInput::OnActionJump(), pressDelta = %f", pressDelta);
-				m_jumpPressTime = 0.f;
-				performQuickJump = true;
-			}
 		}
 	}
 	else
 	{
 		CCCPOINT_IF(value > 0.0f, PlayerMovement_PressJumpInputIgnored);
-		m_jumpPressTime = 0.f;
 	}
 
-	if (performJump || performQuickJump)
+	if (canJump)
 	{
-		PerformJump(performQuickJump);
-	}
-	else
-	{
-		// Moved this outside the (CanMove() && ...) condition, since if it's false the JUMP flag might not be cleared, 
-		// and the player continues jumping as if the jump key was held.
-		if ((m_pPlayer->GetFlyMode() == 0) || (activationMode == eAAM_OnRelease))
-		{
-			m_actions &= ~ACTION_JUMP;
-			m_actionFlags &= ~CPlayer::eAF_JUMP_QUICK;
-		}
+		PerformJump();
 	}
 
 	CHANGED_NETWORK_STATE(m_pPlayer, CPlayer::ASPECT_INPUT_CLIENT);
@@ -1446,33 +1417,15 @@ bool CPlayerInput::OnActionJump(EntityId entityId, const ActionId& actionId, int
 	return false;
 }
 
-bool CPlayerInput::PerformJump(bool quickPress)
+bool CPlayerInput::PerformJump()
 {
-	//CryLog("[tlh] @ CPlayerInput::PerformJump(quickPress=%d)", quickPress);
-
-	bool canJump = ((m_pPlayer->IsSwimming()) ||
-		(m_pPlayer->TrySetStance(STANCE_STAND)) && 
-		(m_pPlayer->m_stats.onGround > 0.01f));
-
-	if (!CanMove() || !canJump || (m_pPlayer->GetSpectatorMode() != CActor::eASM_None))
+	if (!CanMove() || (m_pPlayer->GetSpectatorMode() != CActor::eASM_None))
 	{
-		CryLog("			> either can't move or can't jump or is spectating, aborting.");
-		return false;
-	}
-
-	if(m_actions & ACTION_CROUCH)
-	{
-		CryLog("			> is crouching, un-crouching rather than jumping.");
-		CCCPOINT(PlayerMovement_PressJumpWhileCrouchedToStandUp);
-		m_actions &= ~ACTION_CROUCH;
+		CryLog("			> either can't move or is spectating, aborting.");
 		return false;
 	}
 
 	m_actions |= ACTION_JUMP;
-	if (quickPress)
-		m_actionFlags |= CPlayer::eAF_JUMP_QUICK;
-	else
-		m_actionFlags &= ~CPlayer::eAF_JUMP_QUICK;
 
 	// Record 'Jump' telemetry stats.
 
@@ -1831,8 +1784,32 @@ bool CPlayerInput::OnActionAIDebugCenterViewAgent(EntityId entityId, const Actio
 
 bool CPlayerInput::OnActionXIRotateYaw(EntityId entityId, const ActionId& actionId, int activationMode, float value)
 {
-	m_xi_deltaRotationRaw.z = value;
+	if (g_pGameCVars->cl_controllerYawSnapEnable == 0)
+	{
+		m_xi_deltaRotationRaw.z = value;
+	}
+	else
+	{
+		const float valueSign = (float)__fsel(value, 1.0f, -1.0f);
+		const float valueAbs  = value * valueSign;
 
+		if (valueAbs >= g_pGameCVars->cl_controllerYawSnapMax)
+		{
+			const float snapAngle = DEG2RAD(g_pGameCVars->cl_controllerYawSnapAngle);
+			const float minAngleThreshold = DEG2RAD(5.0f);
+
+			if (!m_bYawSnappingActive && (fabsf(m_pendingYawSnapAngle) < minAngleThreshold))
+			{
+				m_bYawSnappingActive = true;
+				m_pendingYawSnapAngle -= (snapAngle * valueSign);
+			}
+		}
+		else if (valueAbs <= g_pGameCVars->cl_controllerYawSnapMin)
+		{
+			m_bYawSnappingActive = false;
+		}
+	}
+	
 	//NOTE: Controller mapping no longer carried out here. Speak to Richard Semmens
 		
 	m_isAimingWithMouse = false;

@@ -1,12 +1,4 @@
-// Interface to the crytek pack files management
-#include DEVIRTUALIZE_HEADER_FIX(ICryPak.h)
-
-#ifndef _ICRY_PAK_HDR_
-#define _ICRY_PAK_HDR_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #include <smartptr.h>
 #include "CryEndian.h"
@@ -94,6 +86,7 @@ struct ICryArchive: public _reference_target_t
 
 	typedef void* Handle;
 
+	// <interfuscator:shuffle>
 	virtual ~ICryArchive(){}
 	
 	struct IEnumerateArchiveEntries
@@ -212,20 +205,20 @@ struct ICryArchive: public _reference_target_t
 	// Summary:
 	//   Collect allocated memory in CrySizer
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const =0;
-
+	// </interfuscator:shuffle>
 };
 
 TYPEDEF_AUTOPTR(ICryArchive);
 
 struct ICryPakFileAcesssSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICryPakFileAcesssSink(){}
 	// Arguments:
 	//   in - 0 if asyncronous read
 	//   szFullPath - must not be 0
 	virtual void ReportFileOpen( FILE *in, const char *szFullPath )=0;
-
+	// </interfuscator:shuffle>
 };
 
 // this special flag is used for findfirst/findnext routines
@@ -236,7 +229,7 @@ enum {_A_IN_CRYPAK = 0x80000000};
 //   Interface to the Pak file system
 // See Also
 //   CryPak
-UNIQUE_IFACE struct ICryPak
+struct ICryPak
 {
 	typedef uint64 FileTime;
 	// Flags used in file path resolution rules
@@ -344,6 +337,7 @@ UNIQUE_IFACE struct ICryPak
 	
 	typedef int64 SignedFileSize;
 
+	// <interfuscator:shuffle>
 	virtual ~ICryPak(){}
 
 	// given the source relative path, constructs the full path to the file according to the flags
@@ -603,7 +597,7 @@ UNIQUE_IFACE struct ICryPak
 
 	// PerfHUD widget for tracking pak file stats
 	virtual void CreatePerfHUDWidget() = 0;
-
+	// </interfuscator:shuffle>
 
 	// Type-safe endian conversion read.
 	template<class T>
@@ -627,7 +621,7 @@ UNIQUE_IFACE struct ICryPak
 // Client can add a new file names to the resource list and check if resource already in the list.
 struct IResourceList : public _reference_target_t
 {
-
+	// <interfuscator:shuffle>
 	// Description:
 	//    Adds a new resource to the list.
 	virtual void Add( const char *sResourceFile ) = 0;
@@ -658,58 +652,13 @@ struct IResourceList : public _reference_target_t
 
 	// Return memory usage stats.
 	virtual void GetMemoryStatistics(class ICrySizer *pSizer) = 0;
-
+	// </interfuscator:shuffle>
 };
-
-//////////////////////////////////////////////////////////////////////
-#ifdef _XBOX
-inline void _ConvertNameForXBox(char *dst, const char *src)
-{
-	//! On XBox d:\ represents current working directory (C:\MasterCD)
-	//! only back slash (\) can be used
-	strcpy(dst, "d:\\");
-	if (src[0]=='.' && (src[1]=='\\' || src[1]=='/'))
-		strcat(dst, &src[2]);
-	else
-		strcat(dst, src);
-	int len = strlen(dst);
-	for (int n=0; dst[n]; n++)
-	{
-		if ( dst[n] == '/' )
-			dst[n] = '\\';
-		if (n > 8 && n+3 < len && dst[n] == '\\' && dst[n+1] == '.' && dst[n+2] == '.')
-		{
-			int m = n+3;
-			n--;
-			while (dst[n] != '\\')
-			{
-				n--;
-				if (!n)
-					break;
-			}
-			if (n)
-			{
-				memmove(&dst[n], &dst[m], len-m+1);
-				len -= m-n;
-				n--;
-			}
-		}
-	}
-}
-#endif
 
 //! Everybody should use fxopen instead of fopen
 //! so it will work both on PC and XBox
 inline FILE * fxopen(const char *file, const char *mode,bool bGameRelativePath=false )
 {
-	//SetFileAttributes(file,FILE_ATTRIBUTE_ARCHIVE);
-	//	FILE *pFile = fopen("C:/MasterCD/usedfiles.txt","a");
-	//	if (pFile)
-	//	{
-	//		fprintf(pFile,"%s\n",file);
-	//		fclose(pFile);
-	//	}
-	
 	if(gEnv && gEnv->pCryPak)
 	{
 		gEnv->pCryPak->CheckFileAccessDisabled(file, mode);
@@ -717,61 +666,7 @@ inline FILE * fxopen(const char *file, const char *mode,bool bGameRelativePath=f
 	bool bWriteAccess = false;
 	for (const char *s = mode; *s; s++) { if (*s == 'w' || *s == 'W' || *s == 'a' || *s == 'A' || *s == '+') { bWriteAccess = true; break; }; }
 
-#if defined(PS3) && !defined(__SPU__)
-/*char name[strlen(gPS3Env->pFopenWrapperBasedir) + 1 + strlen(file) + 1];
-	sprintf(name, "%s/%s", gPS3Env->pFopenWrapperBasedir, file);
-	char adjustedName[MAX_PATH];
-	bool createFlag = false;
-	if (strchr(mode, 'w') || strchr(mode, 'a'))
-		createFlag = true;
-	GetFilenameNoCase(name, adjustedName, createFlag);
-	return fopen(adjustedName, mode);
-*/
-	return WrappedFopen(file, mode);
-#else
-#if defined(LINUX) || defined(APPLE)
-	char adjustedName[MAX_PATH];
-	GetFilenameNoCase(file, adjustedName, bWriteAccess);
-
-	int accessFlag = R_OK;
-	if (bWriteAccess)
-		accessFlag |= W_OK;
-
-	// check if file exists
-	int err = access(adjustedName, F_OK);
-	if (err != 0)
-	{
-		// file not exists, so fail in case of not bWriteAccess
-		// in case of bWriteAccess check parent directory permission
-		if (!bWriteAccess)
-			return 0;
-
-		char parentDir[MAX_PATH];
-		strcpy_s(parentDir, adjustedName);
-
-		char* p = strrchr(parentDir, '/');
-		if (0 != p)
-		{
-			*p = 0;
-		}
-		else
-		{
-			parentDir[0] = '.';
-			parentDir[1] = 0;
-		}
-		err = access(parentDir, accessFlag);
-	}
-	else
-	{
-		// file exists so check permission on it
-		err = access(adjustedName, accessFlag);
-	}
-	if (0 == err)
-	return fopen(adjustedName, mode);
-	else
-		return 0;
-#else
-	// This is on windows or xbox.
+	// This is on windows/xbox/Linux/Mac
 	if (gEnv && gEnv->pCryPak)
 	{
 		int nAdjustFlags = 0;
@@ -784,17 +679,17 @@ inline FILE * fxopen(const char *file, const char *mode,bool bGameRelativePath=f
 		char path[_MAX_PATH];
 		const char* szAdjustedPath = gEnv->pCryPak->AdjustFileName(file,path,nAdjustFlags);
 
+#if !defined(LINUX) && !defined(APPLE)
 		if (bWriteAccess)
 		{
 			// Make sure folder is created.
 			gEnv->pCryPak->MakeDir( szAdjustedPath );
 		}
+#endif
 		return fopen(szAdjustedPath,mode);
 	}
 	else
 		return 0;
-#endif //LINUX MAC
-#endif //PS3
 }
 
 class CDebugAllowFileAccess
@@ -1061,5 +956,3 @@ private:
 	}
 };
 #endif // !RESOURCE_COMPILER
-
-#endif

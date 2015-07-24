@@ -1,14 +1,6 @@
 #include "StdAfx.h"
 #include "RadioChatterModule.h"
 
-namespace
-{
-	float RandomInterval(float min, float max)
-	{
-		return (float(rand())/RAND_MAX) * (max-min) + min;
-	}
-}
-
 void RadioChatterModule::Update(float updateTime)
 {
 	IF_UNLIKELY (!m_enabled)
@@ -103,7 +95,7 @@ void RadioChatterModule::PlayChatterOnRandomNearbyAgent()
 	if (candidates.size() > 3)
 		candidates.resize(3);
 
-	ChatterCandidates::size_type randomCandidateIndex = cry_rand() % candidates.size();
+	ChatterCandidates::size_type randomCandidateIndex = cry_random((size_t)0, candidates.size() - 1);
 
 	IEntity* entity = candidates[randomCandidateIndex].first;
 	assert(entity);
@@ -150,7 +142,7 @@ void RadioChatterModule::RefreshNextChatterTime()
 {
 	const CTimeValue& now = gEnv->pTimer->GetFrameStartTime();
 
-	const float silenceDuration = RandomInterval(
+	const float silenceDuration = cry_random(
 		m_minimumSilenceDurationBetweenChatter,
 		m_maximumSilenceDurationBetweenChatter);
 

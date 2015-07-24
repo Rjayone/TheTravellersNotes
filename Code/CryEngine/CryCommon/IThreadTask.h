@@ -12,16 +12,10 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IThreadTask.h)
+
+#pragma once
 
 #include "BitFiddling.h"
-
-#ifndef __i_thread_task_h__
-#define __i_thread_task_h__
-
-#if _MSC_VER > 1000
-#pragma once
-#endif
 
 // forward declarations
 struct SThreadTaskInfo;
@@ -32,16 +26,16 @@ enum EThreadTaskFlags
 	THREAD_TASK_ASSIGN_TO_POOL = BIT(1),	// Task can be assigned to any thread in the group of threads
 };
 
-UNIQUE_IFACE class IThreadTask_Thread
+class IThreadTask_Thread
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IThreadTask_Thread() {};
 	virtual void AddTask( SThreadTaskInfo *pTaskInfo ) = 0;
 	virtual void RemoveTask( SThreadTaskInfo *pTaskInfo ) = 0;
 	virtual void RemoveAllTasks() = 0;
 	virtual void SingleUpdate() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 typedef int	ThreadPoolHandle;
@@ -66,7 +60,7 @@ struct SThreadTaskParams
 //////////////////////////////////////////////////////////////////////////
 struct IThreadTask
 {
-
+	// <interfuscator:shuffle>
 	// The function to be called on every update for non bocking tasks.
 	// Or will be called only once for the blocking threads.
 	virtual void OnUpdate() = 0;
@@ -79,7 +73,7 @@ struct IThreadTask
 	virtual struct SThreadTaskInfo* GetTaskInfo() = 0;
 
 	virtual ~IThreadTask() {}
-
+	// </interfuscator:shuffle>
 };
 
 struct SThreadTaskInfo : public CMultiThreadRefCount
@@ -131,9 +125,9 @@ struct ThreadPoolDesc
 //////////////////////////////////////////////////////////////////////////
 // Task manager.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IThreadTaskManager
+struct IThreadTaskManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IThreadTaskManager(){}
 	// Register new task to the manager.
 	virtual void RegisterTask( IThreadTask *pTask,const SThreadTaskParams &options ) = 0;
@@ -156,7 +150,6 @@ UNIQUE_IFACE struct IThreadTaskManager
 
 	// if bMark=true the calling thread will dump its stack during crashes
 	virtual void MarkThisThreadForDebugging(const char *name, bool bDump) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-#endif //__i_thread_task_h__

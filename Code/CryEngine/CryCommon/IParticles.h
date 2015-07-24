@@ -13,18 +13,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include DEVIRTUALIZE_HEADER_FIX(IParticles.h)
-
-#ifndef IPARTICLES_H
-#define IPARTICLES_H
+#pragma once
 
 #include <IMemory.h>
 #include <IEntityRenderState.h>
 #include <TimeValue.h>
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 enum EParticleEmitterFlags
 {
@@ -128,7 +121,7 @@ struct ParticleParams;
 // Description:
 //		This interface is used by I3DEngine::CreateParticleEffect to control a particle effect.
 // 	It is created by CreateParticleEffect method of 3d engine.
-UNIQUE_IFACE struct IParticleEffect : public _i_reference_target_t
+struct IParticleEffect : public _i_reference_target_t
 {
 	static QuatTS ParticleLoc(const Vec3& pos, const Vec3& dir = Vec3(0,0,1), float scale = 1.f)
 	{
@@ -150,6 +143,7 @@ UNIQUE_IFACE struct IParticleEffect : public _i_reference_target_t
 		return qts;
 	}
 
+	// <interfuscator:shuffle>
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -288,7 +282,8 @@ UNIQUE_IFACE struct IParticleEffect : public _i_reference_target_t
 	// Arguments:
 	//   bChildren - When true also recursively reloads effect children.
 	virtual void Reload( bool bChildren ) = 0;
-
+	
+	// </interfuscator:shuffle>
 
 	// Compatibility versions.
 	IParticleEmitter* Spawn( const Matrix34& mLoc, uint uEmitterFlags = 0 )
@@ -311,9 +306,9 @@ UNIQUE_IFACE struct IParticleEffect : public _i_reference_target_t
 //     using I3DEngine::DeleteParticleEmitter.
 // Summary:
 //     Interface to a particle effect emitter.
-UNIQUE_IFACE struct IParticleEmitter : public IRenderNode, public CMultiThreadRefCount
+struct IParticleEmitter : public IRenderNode, public CMultiThreadRefCount
 {
-
+	// <interfuscator:shuffle>
 	// Summary: 
 	//		Returns whether emitter still alive in engine.
 	virtual bool IsAlive() const = 0;
@@ -430,7 +425,7 @@ UNIQUE_IFACE struct IParticleEmitter : public IRenderNode, public CMultiThreadRe
 	// Summary:
 	//		 Set the flags associated with this particle emitter
 	virtual void SetEmitterFlags(uint32 flags) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -438,7 +433,7 @@ UNIQUE_IFACE struct IParticleEmitter : public IRenderNode, public CMultiThreadRe
 //	 A callback interface for a class that wants to be aware when particle emitters are being created/deleted.
 struct IParticleEffectListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IParticleEffectListener(){}
 	// Description:
 	//	 This callback is called when a new particle emitter is created.
@@ -454,7 +449,7 @@ struct IParticleEffectListener
 	// Arguments:
 	//   pEmitter - The emitter being deleted
 	virtual void OnDeleteEmitter(IParticleEmitter* pEmitter) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -546,7 +541,7 @@ typedef IParticleEffectIterator_AutoPtr IParticleEffectIteratorPtr;
 //////////////////////////////////////////////////////////////////////////
 struct IParticleManager
 {	
-
+	// <interfuscator:shuffle>
 	virtual ~IParticleManager(){}
 	//////////////////////////////////////////////////////////////////////////
 	// ParticleEffects
@@ -683,7 +678,7 @@ struct IParticleManager
 	virtual void AddEventListener(IParticleEffectListener *pListener) = 0;
 	virtual void RemoveEventListener(IParticleEffectListener *pListener) = 0;
 	
-	// Prepare all date for SPU Particle*::Render Tasks
+	// Prepare all date for Job Particle*::Render Tasks
 	virtual void PrepareForRender(const SRenderingPassInfo &passInfo) = 0;
 
 	// Finish up all Particle*::Render Tasks
@@ -711,14 +706,15 @@ struct IParticleManager
 	virtual void AddVertexIndexPoolUsageEntry( uint32 nVertexMemory, uint32 nIndexMemory, const char *pContainerName ) = 0;
 	virtual void MarkAsOutOfMemory() = 0;
 
+	// </interfuscator:shuffle>
 };
 
-#if defined(ENABLE_LW_PROFILERS) && !defined(__SPU__)
+#if defined(ENABLE_LW_PROFILERS)
 class CParticleLightProfileSection
 {
 public:
 	CParticleLightProfileSection() 
-		: m_nTicks( JobManager::Fiber::GetNonFiberTicks() )
+		: m_nTicks( CryGetTicks() )
 	{
 	}
 	~CParticleLightProfileSection() 
@@ -726,7 +722,7 @@ public:
 		IParticleManager *pPartMan = gEnv->p3DEngine->GetParticleManager();
 		IF( pPartMan != NULL, 1)
 		{
-			pPartMan->AddFrameTicks(JobManager::Fiber::GetNonFiberTicks() - m_nTicks);
+			pPartMan->AddFrameTicks(CryGetTicks() - m_nTicks);
 		}
 	}
 private:
@@ -737,14 +733,14 @@ class CParticleLightProfileSectionSyncTime
 {
 public:
 	CParticleLightProfileSectionSyncTime() 
-	: m_nTicks( JobManager::Fiber::GetNonFiberTicks() ) 
+	: m_nTicks( CryGetTicks() ) 
 	{}
 	~CParticleLightProfileSectionSyncTime() 
 	{ 
 		IParticleManager *pPartMan = gEnv->p3DEngine->GetParticleManager();
 		IF( pPartMan != NULL, 1)
 		{
-			pPartMan->AddFrameSyncTicks(JobManager::Fiber::GetNonFiberTicks() - m_nTicks);
+			pPartMan->AddFrameSyncTicks(CryGetTicks() - m_nTicks);
 		}
 	}
 private:
@@ -766,7 +762,3 @@ enum EPerfHUD_ParticleDisplayMode
 	PARTICLE_DISP_MODE_FILL,
 	PARTICLE_DISP_MODE_NUM,
 };
-
-#endif //IPARTICLES_H
-
-

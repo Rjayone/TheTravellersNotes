@@ -8,6 +8,7 @@
 #include "CryAction.h"
 #include "IActionMapManager.h"
 #include "IPlatformOS.h"
+#include "CryCrc32.h"
 
 #define SHARED_SAVEGAME_FOLDER "%USER%/SaveGames"
 
@@ -190,11 +191,6 @@ CPlayerProfileManager::CPlayerProfileManager(CPlayerProfileManager::IPlatformImp
 	{
 		testInit = true;
 		REGISTER_CVAR2("pp_RichSaveGames", &CPlayerProfileManager::sUseRichSaveGames, 0, 0, "Enable RichSaveGame Format for SaveGames");
-	//FIXME: TODO: the Crysis save game system is not ready for consoles, profiles and user directories are not set up correctly, don't use RSG
-#if defined(XENON) || defined(PS3)
-		CPlayerProfileManager::sUseRichSaveGames = 0;
-#endif
-
 		REGISTER_CVAR2("pp_RSFDebugWrite", &CPlayerProfileManager::sRSFDebugWrite, gEnv->pSystem->IsDevMode() ? 1 : 0, 0, "When RichSaveGames are enabled, save plain XML Data alongside for debugging");
 		REGISTER_CVAR2("pp_RSFDebugWriteOnLoad", &CPlayerProfileManager::sRSFDebugWriteOnLoad, 0, 0, "When RichSaveGames are enabled, save plain XML Data alongside for debugging when loading a savegame");
 		REGISTER_CVAR2("pp_LoadOnlineAttributes", &CPlayerProfileManager::sLoadOnlineAttributes, CPlayerProfileManager::sLoadOnlineAttributes, VF_REQUIRE_APP_RESTART, "Load online attributes");
@@ -393,7 +389,7 @@ bool CPlayerProfileManager::LogoutUser(const char* userId)
 		return false;
 	}
 
-#if !defined(XENON) && !defined(DURANGO) && !defined(PS3) // We don't want to auto save profile on 360 or PS3, all settings are save to profile at the appropriate time
+#if !defined(DURANGO) // We don't want to auto save profile on durango, all settings are save to profile at the appropriate time
 	// auto-save profile
 	if (pEntry->pCurrentProfile && ( gEnv && gEnv->pSystem && ( !gEnv->pSystem->IsQuitting() ) ) )
 	{
@@ -633,11 +629,7 @@ bool CPlayerProfileManager::RenameProfile(const char* userId, const char* newNam
 	}
 
 	result = ePOR_Unknown;
-#if defined(XENON) || defined(PS3)
-	static const bool ok = true;
-#else
 	bool ok = m_pImpl->RenameProfile(pEntry, newName);
-#endif
 
 	if (ok)
 	{
@@ -648,16 +640,6 @@ bool CPlayerProfileManager::RenameProfile(const char* userId, const char* newNam
 		// assign a new name in the profile itself
 		pEntry->pCurrentProfile->SetName(newName);
 
-#if defined(XENON) || defined(PS3)
-		pEntry->userId = newName;
-		pEntry->pCurrentProfile->SetUserId(newName);
-
-		if(0 == m_curUserID.compare(userId))
-		{
-			m_curUserID = newName;
-		}
-#endif
-
 		result = ePOR_Success;
 	}
 	else
@@ -666,61 +648,6 @@ bool CPlayerProfileManager::RenameProfile(const char* userId, const char* newNam
 	}
 	return ok;
 }
-
-
-//------------------------------------------------------------------------
-bool CPlayerProfileManager::ModifyUserId(const char* userId, const char* newUserId, IPlayerProfileManager::EProfileOperationResult& result)
-{
-	// this is only needed for xbox apparently. I will place the ifdef Until it is fully developed for the other platforms
-	#ifdef XENON
-	if (!m_bInitialized)
-	{
-		result = ePOR_NotInitialized;
-		return false;
-	}
-
-	SUserEntry* pEntry = FindEntry(userId);
-	if (pEntry == 0)
-	{
-		GameWarning("[PlayerProfiles] ModifyUserId: User '%s' not logged in", userId);
-		result =  ePOR_UserNotLoggedIn;
-		return false;
-	}
-
-	// make sure there is no such userId yet
-	if (FindEntry(newUserId))
-	{
-		result = ePOR_Unknown;
-		return false;
-	}
-
-	// can only modify current active profile
-	if (pEntry->pCurrentProfile == 0)
-	{
-		result = ePOR_NoActiveProfile;
-		return false;
-	}
-
-	if (stricmp(pEntry->pCurrentProfile->GetName(), PLAYER_DEFAULT_PROFILE_NAME) == 0)
-	{
-		GameWarning("[PlayerProfiles] ModifyUserId: cannot rename default profile");
-		result = ePOR_DefaultProfile;
-		return false;
-	}
-
-	// assign a new name in the profile itself
-	pEntry->pCurrentProfile->SetUserId(newUserId);
-	pEntry->userId = newUserId;
-
-	m_curUserID = newUserId;
-	result = ePOR_Success;
-	return true;
-	
-	#else
-	return false;
-	#endif
-}
-
 
 //------------------------------------------------------------------------
 bool CPlayerProfileManager::SaveProfile(const char* userId, IPlayerProfileManager::EProfileOperationResult& result, unsigned int reason)
@@ -1167,7 +1094,7 @@ public:
 		return true;
 	}
 
-	VIRTUAL ISaveGameThumbailPtr GetThumbnail(int index)
+	virtual ISaveGameThumbailPtr GetThumbnail(int index)
 	{
 		if (index >= 0 && index < m_saveGameInfoVec.size())
 		{
@@ -1181,7 +1108,7 @@ public:
 		return 0;
 	}
 
-	VIRTUAL ISaveGameThumbailPtr GetThumbnail(const char* saveGameName)
+	virtual ISaveGameThumbailPtr GetThumbnail(const char* saveGameName)
 	{
 		CPlayerProfileManager::TSaveGameInfoVec::const_iterator iter = m_saveGameInfoVec.begin();
 		CPlayerProfileManager::TSaveGameInfoVec::const_iterator iterEnd = m_saveGameInfoVec.end();
@@ -1510,12 +1437,23 @@ bool CPlayerProfileManager::RegisterOnlineAttributes()
 			{
 				xmlData->getAttr("version", m_onlineAttributeDefinedVersion);
 
+				CCrc32 crc;
+
 				const int attributeCount = xmlData->getChildCount();
 
-				// InsertChecksums() adds 2 attributes
 				m_onlineAttributeMap.reserve(2 + attributeCount);
 
-				InsertChecksums();
+				{
+					SCryLobbyUserData defaultData;
+					defaultData.m_type = eCLUDT_Int32;
+					defaultData.m_id = m_onlineDataCount;
+					RegisterOnlineAttribute("checksum0", "int", true, defaultData, crc);
+					defaultData.m_id = m_onlineDataCount;
+					RegisterOnlineAttribute("checksum1", "int", true, defaultData, crc);
+					CRY_ASSERT(0 == GetOnlineAttributeIndexByName("checksum0"));
+					CRY_ASSERT(1 == GetOnlineAttributeIndexByName("checksum1"));
+					CRY_ASSERT(m_onlineDataCount == k_onlineChecksums);
+				}
 
 				for(int i = 0; i < attributeCount; i++)
 				{
@@ -1528,7 +1466,7 @@ bool CPlayerProfileManager::RegisterOnlineAttributes()
 					SCryLobbyUserData defaultValue;
 					GetDefaultValue(type, attributeData, &defaultValue);
 
-					if(!RegisterOnlineAttribute(name, type, onlineOnly, defaultValue))
+					if(!RegisterOnlineAttribute(name, type, onlineOnly, defaultValue, crc))
 					{
 						CRY_ASSERT_TRACE(false, ("Fail to register attribute %s - not enough space DataSlots %d/%d and Bytes %d/%d", name, m_onlineDataCount, k_maxOnlineDataCount, m_onlineDataByteCount, k_maxOnlineDataBytes));
 						SetOnlineAttributesState(IOnlineAttributesListener::eOAE_Register, IOnlineAttributesListener::eOAS_Failed);
@@ -1539,6 +1477,8 @@ bool CPlayerProfileManager::RegisterOnlineAttributes()
 				CryLog("RegisterOnlineAttributes '%d' values in '%d' bytes", m_onlineDataCount, m_onlineDataByteCount);
 				error = stats->StatsRegisterUserData(m_onlineData, m_onlineDataCount, NULL, CPlayerProfileManager::RegisterUserDataCallback, this);
 				CRY_ASSERT(error == eCLE_Success);
+
+				m_onlineAttributeAutoGeneratedVersion = crc.Get();
 			}
 			else
 			{
@@ -1563,7 +1503,7 @@ bool CPlayerProfileManager::RegisterOnlineAttributes()
 }
 
 //------------------------------------------------------------------------
-bool CPlayerProfileManager::RegisterOnlineAttribute(const char* name, const char* type, const bool onlineOnly, const SCryLobbyUserData &defaultValue)
+bool CPlayerProfileManager::RegisterOnlineAttribute(const char* name, const char* type, const bool onlineOnly, const SCryLobbyUserData &defaultValue, CCrc32& crc)
 {
 	m_onlineOnlyData[m_onlineDataCount] = onlineOnly;
 
@@ -1571,19 +1511,16 @@ bool CPlayerProfileManager::RegisterOnlineAttribute(const char* name, const char
 	{
 		m_defaultOnlineData[m_onlineDataCount] = defaultValue;
 		m_onlineDataByteCount += UserDataSize(&m_onlineData[m_onlineDataCount]);
-		if(m_onlineDataCount < k_maxOnlineDataCount && m_onlineDataByteCount < k_maxOnlineDataBytes)
+		if(m_onlineDataCount >= k_maxOnlineDataCount || m_onlineDataByteCount >= k_maxOnlineDataBytes)
 		{
+			return false;  // fail because it doesn't fit
+		}
 #if USE_STEAM // on steam we look up by name not by index
-			m_onlineData[m_onlineDataCount].m_id = string(name);
+		m_onlineData[m_onlineDataCount].m_id = string(name);
 #endif
-			m_onlineAttributeMap[name] = m_onlineDataCount;
-			m_onlineDataCount++;
-			m_onlineAttributeAutoGeneratedVersion = CRC_GEN->GetCRC32(name, strlen(name), m_onlineAttributeAutoGeneratedVersion);
-		}
-		else	//fail if it doesn't fit
-		{
-			return false;
-		}
+		m_onlineAttributeMap[name] = m_onlineDataCount;
+		m_onlineDataCount++;
+		crc.Add(name);
 	}
 
 	return true;
@@ -2167,21 +2104,6 @@ int CPlayerProfileManager::ChecksumConvertValueToInt(const SCryLobbyUserData *pD
 }
 
 //------------------------------------------------------------------------	
-void CPlayerProfileManager::InsertChecksums()
-{
-	//should be equal to k_onlineChecksums
-	SCryLobbyUserData defaultData;
-	defaultData.m_type = eCLUDT_Int32;
-	defaultData.m_id = m_onlineDataCount;
-	RegisterOnlineAttribute("checksum0", "int", true, defaultData);
-	defaultData.m_id = m_onlineDataCount;
-	RegisterOnlineAttribute("checksum1", "int", true, defaultData);
-	CRY_ASSERT(0 == GetOnlineAttributeIndexByName("checksum0"));
-	CRY_ASSERT(1 == GetOnlineAttributeIndexByName("checksum1"));
-	CRY_ASSERT(m_onlineDataCount == k_onlineChecksums);
-}
-
-//------------------------------------------------------------------------	
 void CPlayerProfileManager::ApplyChecksums(SCryLobbyUserData* pData, uint32 numData)
 {
 	for(int i = 0; i < k_onlineChecksums; i++)
@@ -2522,6 +2444,4 @@ void CPlayerProfileManager::GetMemoryStatistics(ICrySizer * s)
 	s->AddObject(m_curUserID);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IPlayerProfileManager)
-#include UNIQUE_VIRTUAL_WRAPPER(ISaveGameEnumerator)
-#include UNIQUE_VIRTUAL_WRAPPER(ISaveGameThumbnail)
+

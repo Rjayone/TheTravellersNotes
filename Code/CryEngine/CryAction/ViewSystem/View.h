@@ -89,34 +89,34 @@ public:
 
 	// IView
 	virtual void Release();
-	VIRTUAL void Update(float frameTime, bool isActive);
+	virtual void Update(float frameTime, bool isActive);
 	virtual void ProcessShaking(float frameTime);
 	virtual void ProcessShake(SShake *pShake,float frameTime);
-	VIRTUAL void ResetShaking();
-	VIRTUAL void ResetBlending() { m_viewParams.ResetBlending(); }
+	virtual void ResetShaking();
+	virtual void ResetBlending() { m_viewParams.ResetBlending(); }
 	//FIXME: keep CGameObject *  or use IGameObject *?
-	VIRTUAL void LinkTo(IGameObject *follow);
-	VIRTUAL void LinkTo(IEntity* follow);
-	VIRTUAL EntityId GetLinkedId() {return m_linkedTo;};
-	VIRTUAL void SetCurrentParams( SViewParams &params ) { m_viewParams = params; };
-	VIRTUAL const SViewParams * GetCurrentParams() {return &m_viewParams;}
-	VIRTUAL void SetViewShake(Ang3 shakeAngle,Vec3 shakeShift,float duration,float frequency,float randomness,int shakeID, bool bFlipVec = true, bool bUpdateOnly=false, bool bGroundOnly=false);
-	VIRTUAL void SetViewShakeEx(  const SShakeParams& params );
-	VIRTUAL void StopShake( int shakeID );
-	VIRTUAL void SetFrameAdditiveCameraAngles(const Ang3& addFrameAngles);
-	VIRTUAL void SetScale(const float scale);
-	VIRTUAL void SetZoomedScale(const float scale);
-	VIRTUAL void SetActive(bool const bActive);
+	virtual void LinkTo(IGameObject *follow);
+	virtual void LinkTo(IEntity* follow);
+	virtual EntityId GetLinkedId() {return m_linkedTo;};
+	virtual void SetCurrentParams( SViewParams &params ) { m_viewParams = params; };
+	virtual const SViewParams * GetCurrentParams() {return &m_viewParams;}
+	virtual void SetViewShake(Ang3 shakeAngle,Vec3 shakeShift,float duration,float frequency,float randomness,int shakeID, bool bFlipVec = true, bool bUpdateOnly=false, bool bGroundOnly=false);
+	virtual void SetViewShakeEx(  const SShakeParams& params );
+	virtual void StopShake( int shakeID );
+	virtual void SetFrameAdditiveCameraAngles(const Ang3& addFrameAngles);
+	virtual void SetScale(const float scale);
+	virtual void SetZoomedScale(const float scale);
+	virtual void SetActive(bool const bActive);
 	// ~IView
 
 	// IEntityEventListener
-	VIRTUAL void OnEntityEvent(IEntity* pEntity, SEntityEvent& event);
+	virtual void OnEntityEvent(IEntity* pEntity, SEntityEvent& event);
 	// ~IEntityEventListener
 
 	void			Serialize(TSerialize ser);
 	void			PostSerialize();
 	CCamera&	GetCamera() { return m_camera; };
-	void			UpdateAudioListener(Matrix34 const& rMatrix, bool bInvalidate);
+	void			UpdateAudioListener(Matrix34 const& rMatrix);
 
 	void GetMemoryUsage(ICrySizer * s) const;
 	

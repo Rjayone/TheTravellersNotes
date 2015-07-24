@@ -19,6 +19,7 @@ struct IGameVolumes
 		f32						volumeHeight;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IGameVolumes() {};
 
 	virtual IGameVolumesEdit* GetEditorInterface() = 0;
@@ -26,12 +27,12 @@ struct IGameVolumes
 	virtual bool GetVolumeInfoForEntity(EntityId entityId, VolumeInfo* pOutInfo) const = 0;
 	virtual void Load( const char* fileName ) = 0;
 	virtual void Reset() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IGameVolumesEdit
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameVolumesEdit() {};
 
 	virtual void SetVolume(EntityId entityId, const IGameVolumes::VolumeInfo& volumeInfo) = 0;
@@ -42,7 +43,7 @@ struct IGameVolumesEdit
 	virtual const char* GetVolumeClass(size_t index) const = 0;
 
 	virtual void Export( const char* fileName ) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

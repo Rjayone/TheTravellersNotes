@@ -1384,7 +1384,7 @@ void CAfterMatchAwards::FilterWinningAwards()
 
 			for (int i=0; i<kMaxLocalAwardsActuallyWon; i++)
 			{
-				uint32 randomIndex=Random(uint32(newlyWonAwards.size()));
+				uint32 randomIndex=cry_random(0U, newlyWonAwards.size() - 1);
 				DbgLog("CAfterMatchAwards::FilterWinningAwards() randomly picked index=%d to give final winning award=%s", randomIndex, GetNameForAward(newlyWonAwards[randomIndex]));
 				awards->m_awards.push_back(newlyWonAwards[randomIndex]);
 				newlyWonAwards.removeAt(randomIndex);
@@ -1419,7 +1419,7 @@ void CAfterMatchAwards::FilterWinningAwards()
 			size_t numRandomRequired = numRemaining;
 			while (numRandomRequired > 0 && awards->m_awards.size())
 			{
-				uint32 randomIndex=Random(uint32(awards->m_awards.size()));
+				uint32 randomIndex=cry_random(0U, awards->m_awards.size() - 1);
 				EAfterMatchAwards award = awards->m_awards[randomIndex];
 
 				if(!IsAwardProhibited(award))

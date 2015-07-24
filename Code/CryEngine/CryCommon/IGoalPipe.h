@@ -1,12 +1,4 @@
-#include DEVIRTUALIZE_HEADER_FIX(IGoalPipe.h)
-
-#ifndef __IGOALPIPE_H_
-#define __IGOALPIPE_H_
-
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 struct GoalParameters
 {
@@ -199,7 +191,7 @@ struct GoalParams
 };
 
 
-UNIQUE_IFACE struct IGoalPipe
+struct IGoalPipe
 {
 	enum EGroupType
 	{
@@ -209,6 +201,7 @@ UNIQUE_IFACE struct IGoalPipe
 		eGT_LAST
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IGoalPipe() {}
 
 	// TODO evgeny Further clean-up from here
@@ -227,10 +220,7 @@ UNIQUE_IFACE struct IGoalPipe
 	virtual void PushPipe(const char* szName, bool bBlocking, EGroupType eGrouping, GoalParameters& params) = 0;
   virtual void SetDebugName(const char* name) = 0;
 
-  VIRTUAL void ParseParams  (const GoalParams &node) = 0;
-  VIRTUAL void ParseParam   (const char* param, const GoalParams &node) = 0;
-
+  virtual void ParseParams  (const GoalParams &node) = 0;
+  virtual void ParseParam   (const char* param, const GoalParams &node) = 0;
+	// </interfuscator:shuffle>
 };
-
-
-#endif	// #ifndef __IGOALPIPE_H_

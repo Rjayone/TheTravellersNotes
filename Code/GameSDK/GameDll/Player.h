@@ -64,6 +64,7 @@ struct SFollowCameraSettings;
 class CPlayerPluginEventDistributor;
 class CPlayerPlugin_InteractiveEntityMonitor;
 class CSprintStamina;
+class CMasterFader;
 
 typedef ICameraMode::AnimationSettings PlayerCameraAnimationSettings;
 
@@ -537,13 +538,6 @@ public:
 	{
 		EEffect_ChromaShift = 1,
 		EEffect_WaterDroplets
-	};
-
-	typedef uint8 EActionFlags;
-	enum
-	{
-		eAF_NONE				= (0),
-		eAF_JUMP_QUICK	= (1<<0),
 	};
 
 	static const NetworkAspectType ASPECT_HEALTH				= eEA_GameServerStatic;
@@ -1490,6 +1484,9 @@ protected:
 
 	Vec3		m_weaponOffset;
 
+	CMasterFader* m_pMasterFader;
+	float    m_closeToWallFadeoutAmount;
+
 	// updated by PlayerMovement for tracking time based acceleration
 	Vec3		m_lastRequestedVelocity;
 	Vec3    m_lastKnownPosition;
@@ -1505,15 +1502,13 @@ protected:
 
 	SPlayerStats		m_stats;
 	
-	std::auto_ptr<IPlayerInput> m_pPlayerInput;
+	std::unique_ptr<IPlayerInput> m_pPlayerInput;
 
 	// for foot/leg ik
 	float m_fLastEffectFootStepTime;
 
 	// compatibility with old code: which actions are set
 	int m_actions;
-
-	EActionFlags m_actionFlags;
 
 	bool m_isAIControlled;
 	bool m_viewBlending;
@@ -1666,6 +1661,9 @@ private:
 	uint8                   m_RMIBenchmarkSeq;
 #endif
 
+	typedef std::map<int32, TAudioProxyID> TJointToAudioProxyLookup;
+	TJointToAudioProxyLookup		m_cJointAudioProxies;
+
 public:
 
 #ifdef SERVER_CHECKS
@@ -1683,7 +1681,7 @@ public:
 	CPlayerDebugMovement m_movementDebug;
 #endif
 
-	virtual void SetTurnAnimationParams(const float turnThresholdAngle, const float turnThresholdTime) OVERRIDE;
+	virtual void SetTurnAnimationParams(const float turnThresholdAngle, const float turnThresholdTime) override;
 
 	QuatT m_lastCameraLocation;
 
@@ -1722,7 +1720,7 @@ public:
 
 	int8 m_lastCachedInteractionIndex;
 
-	std::auto_ptr<CAIAnimationComponent> m_pAIAnimationComponent;
+	std::unique_ptr<CAIAnimationComponent> m_pAIAnimationComponent;
 };
 
 void SetupPlayerCharacterVisibility(IEntity* playerEntity, bool isThirdPerson, int shadowCharacterSlot = -1, bool forceDontRenderNearest = false);

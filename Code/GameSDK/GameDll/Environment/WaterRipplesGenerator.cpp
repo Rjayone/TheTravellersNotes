@@ -124,7 +124,7 @@ void CWaterRipplesGenerator::Update(SEntityUpdateContext &ctx, int updateSlot)
 {
 	CRY_ASSERT( updateSlot == WATER_RIPPLES_GENERATOR_UPDATE_SLOT );
 
-	float fFrequency = m_properties.m_frequency + (Random()*2-1)*m_properties.m_randFrequency;
+	float fFrequency = m_properties.m_frequency + cry_random(-1.0f, 1.0f)*m_properties.m_randFrequency;
 	bool allowHit = (gEnv->pTimer->GetCurrTime() - m_lastSpawnTime) > fFrequency;
 	if(m_properties.m_autoSpawn && allowHit)
 		ProcessHit(false);
@@ -219,11 +219,11 @@ void CWaterRipplesGenerator::ProcessHit(bool isMoving)
 		Vec3 vWorldPos = GetEntity()->GetWorldPos();
 		if(!isMoving) // No random offsets during movement spawning.
 		{
-			vWorldPos += Vec3(m_properties.m_randomOffset.x * (Random()*2-1), m_properties.m_randomOffset.y * (Random()*2-1), 0.0f);
+			vWorldPos += Vec3(m_properties.m_randomOffset).CompMul(cry_random_componentwise(Vec3(-1, -1, 0), Vec3(1, 1, 0)));
 		}
 
-		float fScale = m_properties.m_scale + (Random()*2-1) * m_properties.m_randScale;
-		float fStrength = m_properties.m_strength + (Random()*2-1) * m_properties.m_randStrength;
+		float fScale = m_properties.m_scale + cry_random(-1.0f, 1.0f) * m_properties.m_randScale;
+		float fStrength = m_properties.m_strength + cry_random(-1.0f, 1.0f) * m_properties.m_randStrength;
 	
 		gEnv->pRenderer->EF_AddWaterSimHit( vWorldPos, fScale, fStrength );
 

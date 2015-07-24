@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include MATH_H
+#include <math.h>
 
 #pragma warning (disable : 4768) //Cannot align catch objects to greater than 16 bytes 
 #include <vector>
@@ -102,13 +102,6 @@ inline void EntityFileWarning( const char *file,const char *format,... )
 // Proxy creation functions.
 //////////////////////////////////////////////////////////////////////////
 extern IEntityProxyPtr CreateScriptProxy( class CEntity *pEntity,struct IEntityScript *pScript,SEntitySpawnParams *pSpawnParams );
-
-//! Return random value in [-1,1] range.
-inline float frand()
-{
-	return cry_frand()*2.0f - 1.0f;
-}
-
 
 #define ENTITY_PROFILER FUNCTION_PROFILER_FAST( GetISystem(),PROFILE_ENTITY,g_bProfilerEnabled );
 #define ENTITY_PROFILER_NAME(str) FRAME_PROFILER_FAST( str,GetISystem(),PROFILE_ENTITY,g_bProfilerEnabled );

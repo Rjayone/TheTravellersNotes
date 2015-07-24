@@ -35,19 +35,19 @@ public:
 	void OnAIProxyDestroyed(IAIActorProxy *pProxy);
 
 	// IAIActorProxyFactory
-	VIRTUAL IAIActorProxy* CreateActorProxy(EntityId entityID);
+	virtual IAIActorProxy* CreateActorProxy(EntityId entityID);
 	// ~IAIActorProxyFactory
 
 	// IAIGroupProxyFactory
-	VIRTUAL IAIGroupProxy* CreateGroupProxy(int groupID);
+	virtual IAIGroupProxy* CreateGroupProxy(int groupID);
 	// ~IAIGroupProxyFactory
 
 	// IEntitySystemSink
-	VIRTUAL bool OnBeforeSpawn( SEntitySpawnParams &params );
-	VIRTUAL void OnSpawn( IEntity *pEntity,SEntitySpawnParams &params );
-	VIRTUAL bool OnRemove( IEntity *pEntity );
-	VIRTUAL void OnReused( IEntity *pEntity, SEntitySpawnParams &params );
-	VIRTUAL void OnEvent( IEntity *pEntity, SEntityEvent &event );
+	virtual bool OnBeforeSpawn( SEntitySpawnParams &params );
+	virtual void OnSpawn( IEntity *pEntity,SEntitySpawnParams &params );
+	virtual bool OnRemove( IEntity *pEntity );
+	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params );
+	virtual void OnEvent( IEntity *pEntity, SEntityEvent &event );
 	//~IEntitySystemSink
 
 private:

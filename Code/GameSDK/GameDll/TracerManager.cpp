@@ -220,7 +220,7 @@ bool CTracer::Update(float frameTime, const Vec3 &camera, const float fovScale)
 
 		if(m_slideFrac > 0.f)
 		{
-			pos += (((2.f * cry_frand()) - 0.5f) * m_slideFrac * speed * frameTime * dir);
+			pos += cry_random(-0.5f, 1.5f) * m_slideFrac * speed * frameTime * dir;
 		}
   }
 
@@ -255,7 +255,7 @@ bool CTracer::Update(float frameTime, const Vec3 &camera, const float fovScale)
 			{
 				if(dir.dot((m_startingPos - pos)) > 0)
 				{
-					pos = m_startingPos + (dir * cry_frand() * tracerHalfLength);
+					pos = m_startingPos + (dir * cry_random(0.0f, 1.0f) * tracerHalfLength);
 				}
 
 				lengthScale = ((pos - m_startingPos).GetLength() / tracerHalfLength);
@@ -357,7 +357,7 @@ int CTracerManager::EmitTracer(const STracerParams &params, const EntityId bulle
 
 		for(int i = 0; i < kMaxNumTracers; i++)
 		{
-			CryPrefetchUnsafe(&m_tracerPool[i+4]);
+			CryPrefetch(&m_tracerPool[i+4]);
 			if(m_tracerPool[i].m_age > oldest)
 			{
 				oldest = m_tracerPool[i].m_age;
@@ -578,7 +578,7 @@ void CTracerManager::ClearCurrentActiveTracers()
 	for(int i = 0; i < kNumActiveTracers; i++)
 	{
 		CTracer& tracer = m_tracerPool[i];
-		CryPrefetchUnsafe(&m_tracerPool[i+4]);
+		CryPrefetch(&m_tracerPool[i+4]);
 
 		tracer.m_tracerFlags &= ~kTracerFlag_active;
 

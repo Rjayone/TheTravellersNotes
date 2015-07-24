@@ -13,7 +13,7 @@ namespace BehaviorTree
 		{
 		}
 
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) override
 		{
 			IF_UNLIKELY (BaseClass::LoadFromXml(xml, context) == LoadFailure)
 				return LoadFailure;
@@ -29,11 +29,11 @@ namespace BehaviorTree
 			}
 		}
 
-		virtual void OnInitialize(const UpdateContext& context) OVERRIDE
+		virtual void OnInitialize(const UpdateContext& context) override
 		{
 		}
 
-		virtual void OnTerminate(const UpdateContext& context) OVERRIDE
+		virtual void OnTerminate(const UpdateContext& context) override
 		{
 		}
 	};

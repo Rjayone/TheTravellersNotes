@@ -95,10 +95,10 @@ class CAIProxyManager;
 class CForceFeedBackSystem;
 class CCryActionPhysicQueues;
 class CNetworkStallTickerThread;
-class CTweakMenuController;
 class CSharedParamsManager;
 struct ICooperativeAnimationManager;
 struct IGameSessionHandler;
+class CRuntimeAreaManager;
 
 struct CAnimationGraphCVars;
 struct IRealtimeRemoteUpdate;
@@ -118,10 +118,10 @@ public:
 
 	// IGameFramework
 	void ClearTimers();
-	VIRTUAL TimerID AddTimer(CTimeValue interval, bool repeat, TimerCallback callback, void* userdata);
-	VIRTUAL void* RemoveTimer(TimerID timerID);
+	virtual TimerID AddTimer(CTimeValue interval, bool repeat, TimerCallback callback, void* userdata);
+	virtual void* RemoveTimer(TimerID timerID);
 	
-	VIRTUAL uint32 GetPreUpdateTicks();
+	virtual uint32 GetPreUpdateTicks();
 
 	virtual void RegisterFactory(const char *name, IActorCreator * pCreator, bool isAI);
 	virtual void RegisterFactory(const char *name, IItemCreator * pCreator, bool isAI);
@@ -130,129 +130,129 @@ public:
 	virtual void RegisterFactory(const char *name, ISaveGame *(*func)(), bool);
 	virtual void RegisterFactory(const char *name, ILoadGame *(*func)(), bool);
 
-	VIRTUAL bool Init(SSystemInitParams &startupParams);
-	VIRTUAL void InitGameType(bool multiplayer, bool fromInit);
-	VIRTUAL bool CompleteInit();
-	VIRTUAL void Shutdown();
-	VIRTUAL bool PreUpdate(bool haveFocus, unsigned int updateFlags);
-	VIRTUAL void PostUpdate(bool haveFocus, unsigned int updateFlags);
-	VIRTUAL void Reset(bool clients);
-	VIRTUAL void GetMemoryUsage( ICrySizer *pSizer ) const;
+	virtual bool Init(SSystemInitParams &startupParams);
+	virtual void InitGameType(bool multiplayer, bool fromInit);
+	virtual bool CompleteInit();
+	virtual void Shutdown();
+	virtual bool PreUpdate(bool haveFocus, unsigned int updateFlags);
+	virtual void PostUpdate(bool haveFocus, unsigned int updateFlags);
+	virtual void Reset(bool clients);
+	virtual void GetMemoryUsage( ICrySizer *pSizer ) const;
 
-	VIRTUAL void PauseGame(bool pause, bool force, unsigned int nFadeOutInMS=0);
-	VIRTUAL bool IsGamePaused();
-	VIRTUAL bool IsGameStarted();
-	VIRTUAL bool IsInLevelLoad();
-	VIRTUAL bool IsLoadingSaveGame();
-	VIRTUAL const char * GetLevelName();
-	VIRTUAL const char * GetAbsLevelPath(char*const pPath, const uint32 cPathMaxLen);
-	VIRTUAL bool IsInTimeDemo(); 	// Check if time demo is in progress (either playing or recording);
-	VIRTUAL bool IsTimeDemoRecording(); // Check if time demo is recording;
+	virtual void PauseGame(bool pause, bool force, unsigned int nFadeOutInMS=0);
+	virtual bool IsGamePaused();
+	virtual bool IsGameStarted();
+	virtual bool IsInLevelLoad();
+	virtual bool IsLoadingSaveGame();
+	virtual const char * GetLevelName();
+	virtual const char * GetAbsLevelPath(char*const pPath, const uint32 cPathMaxLen);
+	virtual bool IsInTimeDemo(); 	// Check if time demo is in progress (either playing or recording);
+	virtual bool IsTimeDemoRecording(); // Check if time demo is recording;
 
-	VIRTUAL bool IsLevelPrecachingDone() const;
-	VIRTUAL void SetLevelPrecachingDone(bool bValue);
+	virtual bool IsLevelPrecachingDone() const;
+	virtual void SetLevelPrecachingDone(bool bValue);
 
-	VIRTUAL ISystem *GetISystem() { return m_pSystem; };
-	VIRTUAL ILanQueryListener *GetILanQueryListener() {return m_pLanQueryListener;}
-	VIRTUAL IUIDraw *GetIUIDraw();	
-	VIRTUAL IMannequin &GetMannequinInterface();
-	VIRTUAL ILevelSystem *GetILevelSystem();
-	VIRTUAL IActorSystem *GetIActorSystem();
-	VIRTUAL IItemSystem *GetIItemSystem();
-	VIRTUAL IBreakReplicator *GetIBreakReplicator();
-	VIRTUAL IVehicleSystem *GetIVehicleSystem();
-	VIRTUAL IActionMapManager *GetIActionMapManager();
-	VIRTUAL IViewSystem *GetIViewSystem();
-	VIRTUAL IGameplayRecorder *GetIGameplayRecorder();
-	VIRTUAL IGameRulesSystem *GetIGameRulesSystem();
-	VIRTUAL IGameObjectSystem *GetIGameObjectSystem();
-	VIRTUAL IFlowSystem *GetIFlowSystem();
-	VIRTUAL IGameTokenSystem *GetIGameTokenSystem();
-	VIRTUAL IEffectSystem *GetIEffectSystem();
-	VIRTUAL IMaterialEffects *GetIMaterialEffects();
-	VIRTUAL IBreakableGlassSystem *GetIBreakableGlassSystem();
-	VIRTUAL IPlayerProfileManager *GetIPlayerProfileManager();
-	VIRTUAL ISubtitleManager *GetISubtitleManager();
-	VIRTUAL IDialogSystem *GetIDialogSystem();
-	VIRTUAL ICooperativeAnimationManager* GetICooperativeAnimationManager();
-	VIRTUAL ICheckpointSystem* GetICheckpointSystem();
-	VIRTUAL IForceFeedbackSystem* GetIForceFeedbackSystem() const;
-	VIRTUAL ICustomActionManager *GetICustomActionManager() const;
-	VIRTUAL ICustomEventManager *GetICustomEventManager() const;
-	VIRTUAL ITweakMenuController* CreateITweakMenuController();
-	VIRTUAL IRealtimeRemoteUpdate * GetIRealTimeRemoteUpdate();
+	virtual ISystem *GetISystem() { return m_pSystem; };
+	virtual ILanQueryListener *GetILanQueryListener() {return m_pLanQueryListener;}
+	virtual IUIDraw *GetIUIDraw();	
+	virtual IMannequin &GetMannequinInterface();
+	virtual ILevelSystem *GetILevelSystem();
+	virtual IActorSystem *GetIActorSystem();
+	virtual IItemSystem *GetIItemSystem();
+	virtual IBreakReplicator *GetIBreakReplicator();
+	virtual IVehicleSystem *GetIVehicleSystem();
+	virtual IActionMapManager *GetIActionMapManager();
+	virtual IViewSystem *GetIViewSystem();
+	virtual IGameplayRecorder *GetIGameplayRecorder();
+	virtual IGameRulesSystem *GetIGameRulesSystem();
+	virtual IGameObjectSystem *GetIGameObjectSystem();
+	virtual IFlowSystem *GetIFlowSystem();
+	virtual IGameTokenSystem *GetIGameTokenSystem();
+	virtual IEffectSystem *GetIEffectSystem();
+	virtual IMaterialEffects *GetIMaterialEffects();
+	virtual IBreakableGlassSystem *GetIBreakableGlassSystem();
+	virtual IPlayerProfileManager *GetIPlayerProfileManager();
+	virtual ISubtitleManager *GetISubtitleManager();
+	virtual IDialogSystem *GetIDialogSystem();
+	virtual ICooperativeAnimationManager* GetICooperativeAnimationManager();
+	virtual ICheckpointSystem* GetICheckpointSystem();
+	virtual IForceFeedbackSystem* GetIForceFeedbackSystem() const;
+	virtual ICustomActionManager *GetICustomActionManager() const;
+	virtual ICustomEventManager *GetICustomEventManager() const;
+	virtual IRealtimeRemoteUpdate *GetIRealTimeRemoteUpdate();
+	virtual ITimeDemoRecorder *GetITimeDemoRecorder() const;
 
-	VIRTUAL bool StartGameContext( const SGameStartParams * pGameStartParams );
-	VIRTUAL bool ChangeGameContext( const SGameContextParams * pGameContextParams );
-	VIRTUAL void EndGameContext();
-	VIRTUAL bool StartedGameContext() const;
-	VIRTUAL bool StartingGameContext() const;
-	VIRTUAL bool BlockingSpawnPlayer();
+	virtual bool StartGameContext( const SGameStartParams * pGameStartParams );
+	virtual bool ChangeGameContext( const SGameContextParams * pGameContextParams );
+	virtual void EndGameContext();
+	virtual bool StartedGameContext() const;
+	virtual bool StartingGameContext() const;
+	virtual bool BlockingSpawnPlayer();
 
-	VIRTUAL void ReleaseGameStats();
+	virtual void ReleaseGameStats();
 
-	VIRTUAL void ResetBrokenGameObjects();
-	VIRTUAL void CloneBrokenObjectsAndRevertToStateAtTime(int32 iFirstBreakEventIndex, uint16 * pBreakEventIndices, int32& iNumBreakEvents, IRenderNode** outClonedNodes, int32& iNumClonedNodes, SRenderNodeCloneLookup& renderNodeLookup);
-	VIRTUAL void ApplySingleProceduralBreakFromEventIndex(uint16 uBreakEventIndex, const SRenderNodeCloneLookup& renderNodeLookup);
-	VIRTUAL void UnhideBrokenObjectsByIndex( uint16 * ObjectIndicies, int32 iNumObjectIndices );
+	virtual void ResetBrokenGameObjects();
+	virtual void CloneBrokenObjectsAndRevertToStateAtTime(int32 iFirstBreakEventIndex, uint16 * pBreakEventIndices, int32& iNumBreakEvents, IRenderNode** outClonedNodes, int32& iNumClonedNodes, SRenderNodeCloneLookup& renderNodeLookup);
+	virtual void ApplySingleProceduralBreakFromEventIndex(uint16 uBreakEventIndex, const SRenderNodeCloneLookup& renderNodeLookup);
+	virtual void UnhideBrokenObjectsByIndex( uint16 * ObjectIndicies, int32 iNumObjectIndices );
 
 	void Serialize(TSerialize ser); // defined in ActionGame.cpp
-	VIRTUAL void FlushBreakableObjects();  // defined in ActionGame.cpp
+	virtual void FlushBreakableObjects();  // defined in ActionGame.cpp
 	void ClearBreakHistory(); 
 
-	VIRTUAL void InitEditor(IGameToEditorInterface* pGameToEditor);
-	VIRTUAL void SetEditorLevel(const char *levelName, const char *levelFolder);
-	VIRTUAL void GetEditorLevel(char **levelName, char **levelFolder);
+	virtual void InitEditor(IGameToEditorInterface* pGameToEditor);
+	virtual void SetEditorLevel(const char *levelName, const char *levelFolder);
+	virtual void GetEditorLevel(char **levelName, char **levelFolder);
 
-	VIRTUAL void BeginLanQuery();
-	VIRTUAL void EndCurrentQuery();
+	virtual void BeginLanQuery();
+	virtual void EndCurrentQuery();
 
-	VIRTUAL IActor * GetClientActor() const;
-	VIRTUAL EntityId GetClientActorId() const;
-	VIRTUAL IEntity* GetClientEntity() const;
-	VIRTUAL EntityId GetClientEntityId() const;
-	VIRTUAL INetChannel * GetClientChannel() const;
-	VIRTUAL CTimeValue GetServerTime();
-	VIRTUAL uint16 GetGameChannelId(INetChannel *pNetChannel);
-	VIRTUAL INetChannel *GetNetChannel(uint16 channelId);
-	VIRTUAL bool IsChannelOnHold(uint16 channelId);
-	VIRTUAL IGameObject * GetGameObject(EntityId id);
-	VIRTUAL bool GetNetworkSafeClassId(uint16 &id, const char *className);
-	VIRTUAL bool GetNetworkSafeClassName(char *className, size_t maxn, uint16 id);
-	VIRTUAL IGameObjectExtension * QueryGameObjectExtension( EntityId id, const char * name);
+	virtual IActor * GetClientActor() const;
+	virtual EntityId GetClientActorId() const;
+	virtual IEntity* GetClientEntity() const;
+	virtual EntityId GetClientEntityId() const;
+	virtual INetChannel * GetClientChannel() const;
+	virtual CTimeValue GetServerTime();
+	virtual uint16 GetGameChannelId(INetChannel *pNetChannel);
+	virtual INetChannel *GetNetChannel(uint16 channelId);
+	virtual bool IsChannelOnHold(uint16 channelId);
+	virtual IGameObject * GetGameObject(EntityId id);
+	virtual bool GetNetworkSafeClassId(uint16 &id, const char *className);
+	virtual bool GetNetworkSafeClassName(char *className, size_t classNameSizeInBytes, uint16 id);
+	virtual IGameObjectExtension * QueryGameObjectExtension( EntityId id, const char * name);
 
-	VIRTUAL void DelegateAuthority(EntityId entityId, uint16 channelId);
+	virtual void DelegateAuthority(EntityId entityId, uint16 channelId);
 
-	VIRTUAL INetContext* GetNetContext();
+	virtual INetContext* GetNetContext();
 
-	VIRTUAL bool SaveGame( const char * path, bool bQuick = false, bool bForceImmediate=false, ESaveGameReason reason = eSGR_QuickSave, bool ignoreDelay = false, const char* checkpointName = NULL);
-	VIRTUAL ELoadGameResult LoadGame( const char * path, bool quick = false, bool ignoreDelay = false);
+	virtual bool SaveGame( const char * path, bool bQuick = false, bool bForceImmediate=false, ESaveGameReason reason = eSGR_QuickSave, bool ignoreDelay = false, const char* checkpointName = NULL);
+	virtual ELoadGameResult LoadGame( const char * path, bool quick = false, bool ignoreDelay = false);
 	virtual void ScheduleEndLevel( const char* nextLevel = "");
-	VIRTUAL void ScheduleEndLevelNow(const char* nextLevel);
+	virtual void ScheduleEndLevelNow(const char* nextLevel);
 
-	VIRTUAL void OnEditorSetGameMode( int iMode );
-	VIRTUAL bool IsEditing(){return m_isEditing;}
+	virtual void OnEditorSetGameMode( int iMode );
+	virtual bool IsEditing(){return m_isEditing;}
 
-	VIRTUAL void OnBreakageSpawnedEntity(IEntity* pEntity, IPhysicalEntity* pPhysEntity, IPhysicalEntity* pSrcPhysEntity);
+	virtual void OnBreakageSpawnedEntity(IEntity* pEntity, IPhysicalEntity* pPhysEntity, IPhysicalEntity* pSrcPhysEntity);
 
 	bool IsImmersiveMPEnabled();
 
-	VIRTUAL void AllowSave(bool bAllow = true)
+	virtual void AllowSave(bool bAllow = true)
 	{
 		m_bAllowSave = bAllow;
 	}
 
-	VIRTUAL void AllowLoad(bool bAllow = true)
+	virtual void AllowLoad(bool bAllow = true)
 	{
 		m_bAllowLoad = bAllow;
 	}
 
-	VIRTUAL bool CanSave();
-	VIRTUAL bool CanLoad();
+	virtual bool CanSave();
+	virtual bool CanLoad();
 
-	VIRTUAL ISerializeHelper* GetSerializeHelper() const;
+	virtual ISerializeHelper* GetSerializeHelper() const;
 
-	VIRTUAL bool CanCheat();
+	virtual bool CanCheat();
 
 	INetNub * GetServerNetNub();
 	INetNub * GetClientNetNub();
@@ -260,29 +260,28 @@ public:
 	void SetGameGUID( const char * gameGUID);
 	const char* GetGameGUID() { return m_gameGUID; }
 
-	VIRTUAL bool IsVoiceRecordingEnabled() {return m_VoiceRecordingEnabled!=0;}
+	virtual bool IsVoiceRecordingEnabled() {return m_VoiceRecordingEnabled!=0;}
 
-	VIRTUAL bool IsGameSession(CrySessionHandle sessionHandle);
-	VIRTUAL bool ShouldMigrateNub(CrySessionHandle sessionHandle);
+	virtual bool IsGameSession(CrySessionHandle sessionHandle);
+	virtual bool ShouldMigrateNub(CrySessionHandle sessionHandle);
 
-	VIRTUAL ISharedParamsManager *GetISharedParamsManager();
-	VIRTUAL float GetLoadSaveDelay()const {return m_lastSaveLoad;}
+	virtual ISharedParamsManager *GetISharedParamsManager();
+	virtual float GetLoadSaveDelay()const {return m_lastSaveLoad;}
 
-	VIRTUAL IGameVolumes* GetIGameVolumesManager() const;
+	virtual IGameVolumes* GetIGameVolumesManager() const;
 
-	VIRTUAL void PreloadAnimatedCharacter(IScriptTable* pEntityScript);
-	VIRTUAL void PrePhysicsTimeStep(float deltaTime);
+	virtual void PreloadAnimatedCharacter(IScriptTable* pEntityScript);
+	virtual void PrePhysicsTimeStep(float deltaTime);
 
-	VIRTUAL void RegisterExtension( ICryUnknownPtr pExtension );
-	VIRTUAL void ReleaseExtensions();
+	virtual void RegisterExtension( ICryUnknownPtr pExtension );
+	virtual void ReleaseExtensions();
 protected:
-	VIRTUAL ICryUnknownPtr QueryExtensionInterfaceById( const CryInterfaceID& interfaceID ) const;
+	virtual ICryUnknownPtr QueryExtensionInterfaceById( const CryInterfaceID& interfaceID ) const;
 	// ~IGameFramework
 
 public:
 
 	static CCryAction * GetCryAction() { return m_pThis; }
-	static void SeedRandomGenerator(uint32 seed);
 
 	bool ControlsEntity( EntityId id ) const;
 
@@ -295,19 +294,19 @@ public:
 	CPersistantDebug *GetPersistantDebug() { return m_pPersistantDebug; }
 	CSignalTimer *GetSignalTimer(); 
 	CRangeSignaling *GetRangeSignaling(); 
-	VIRTUAL IPersistantDebug * GetIPersistantDebug();
-	VIRTUAL IGameStatsConfig* GetIGameStatsConfig();
-	VIRTUAL IVisualLog *GetIVisualLog();
+	virtual IPersistantDebug * GetIPersistantDebug();
+	virtual IGameStatsConfig* GetIGameStatsConfig();
+	virtual IVisualLog *GetIVisualLog();
 	CVisualLog *GetVisualLog() { return m_pVisualLog; }
 	
-	VIRTUAL void	AddBreakEventListener(IBreakEventListener * pListener);
-	VIRTUAL void	RemoveBreakEventListener(IBreakEventListener * pListener);
+	virtual void	AddBreakEventListener(IBreakEventListener * pListener);
+	virtual void	RemoveBreakEventListener(IBreakEventListener * pListener);
 
 	void OnBreakEvent(uint16 uBreakEventIndex);
 	void OnPartRemoveEvent(int32 iPartRemoveEventIndex);
 
-	VIRTUAL void RegisterListener		(IGameFrameworkListener *pGameFrameworkListener, const char *name, EFRAMEWORKLISTENERPRIORITY eFrameworkListenerPriority);
-	VIRTUAL void UnregisterListener	(IGameFrameworkListener *pGameFrameworkListener);
+	virtual void RegisterListener		(IGameFrameworkListener *pGameFrameworkListener, const char *name, EFRAMEWORKLISTENERPRIORITY eFrameworkListenerPriority);
+	virtual void UnregisterListener	(IGameFrameworkListener *pGameFrameworkListener);
 
 	CDialogSystem* GetDialogSystem() { return m_pDialogSystem; }
 	CTimeOfDayScheduler* GetTimeOfDayScheduler() const { return m_pTimeOfDayScheduler; }
@@ -329,17 +328,17 @@ public:
 	void NotifyGameFrameworkListeners(ILoadGame* pLoadGame);
 	void NotifySavegameFileLoadedToListeners( const char* pLevelName );
 	void NotifyForceFlashLoadingListeners();
-	VIRTUAL void EnableVoiceRecording(const bool enable);
-	VIRTUAL void MutePlayerById(EntityId mutePlayer);
-  VIRTUAL IDebugHistoryManager* CreateDebugHistoryManager();
-  VIRTUAL void ExecuteCommandNextFrame(const char* cmd);
-	VIRTUAL const char* GetNextFrameCommand() const;
-	VIRTUAL void ClearNextFrameCommand();
-	VIRTUAL void PrefetchLevelAssets( const bool bEnforceAll );
+	virtual void EnableVoiceRecording(const bool enable);
+	virtual void MutePlayerById(EntityId mutePlayer);
+  virtual IDebugHistoryManager* CreateDebugHistoryManager();
+  virtual void ExecuteCommandNextFrame(const char* cmd);
+	virtual const char* GetNextFrameCommand() const;
+	virtual void ClearNextFrameCommand();
+	virtual void PrefetchLevelAssets( const bool bEnforceAll );
 
-  VIRTUAL void ShowPageInBrowser(const char* URL);
-  VIRTUAL bool StartProcess(const char* cmd_line);
-  VIRTUAL bool SaveServerConfig(const char* path);
+  virtual void ShowPageInBrowser(const char* URL);
+  virtual bool StartProcess(const char* cmd_line);
+  virtual bool SaveServerConfig(const char* path);
 
   void  OnActionEvent(const SActionEvent& ev);
 
@@ -350,7 +349,7 @@ public:
 
 	const char* GetStartLevelSaveGameName();
 
-	VIRTUAL IAIActorProxy *GetAIActorProxy(EntityId entityid) const;
+	virtual IAIActorProxy *GetAIActorProxy(EntityId entityid) const;
 	CAIProxyManager *GetAIProxyManager() { return m_pAIProxyManager; }
 	const CAIProxyManager *GetAIProxyManager() const { return m_pAIProxyManager; }
 
@@ -543,6 +542,9 @@ private:
 	// game queries
 	CGameQueryListener*m_pGameQueryListener;
 	
+	// Currently handles the automatic creation of vegetation areas
+	CRuntimeAreaManager						*m_pRuntimeAreaManager;
+
 	// script binds
 	CScriptBind_Action            *m_pScriptA;
 	CScriptBind_ItemSystem				*m_pScriptIS;

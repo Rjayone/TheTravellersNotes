@@ -79,7 +79,7 @@ namespace CryGame
 	{
 	public:
 
-		CPrefab(const string &sName) { strcpy_s(m_szName,sName.c_str()); }
+		CPrefab(const string &sName) { cry_strcpy(m_szName,sName.c_str()); }
 		CPrefab() { m_szName[0]=0; }		
 		~CPrefab() {}		
 

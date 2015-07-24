@@ -819,10 +819,8 @@ void CBreakableGlassSystem::ExtractUVCoords(IStatObj* const pStatObj, const prim
 			for (int i = 0; i < numVerts; ++i)
 			{
 				// Unpack surface data
-				Vec3 tangent, binormal;
-				tPackB2F(pTangents[i].Tangent, tangent);
-				tPackB2F(pTangents[i].Binormal, binormal);
-				Vec3 normal = tangent.Cross(binormal);
+				const Vec3 normal = pTangents[i].GetN();
+				const Vec2 uv = pUV[i].GetUV();
 
 				// Validate vertex is part of our surface
 				const float flatThreshold = 0.95f;
@@ -830,16 +828,18 @@ void CBreakableGlassSystem::ExtractUVCoords(IStatObj* const pStatObj, const prim
 
 				if (dot >= flatThreshold)
 				{
+					const Vec2 uv0 = pUV[pts[0]].GetUV();
+
 					// Store unique points to determine UV axes
 					if (pts[0] == numVerts)
 					{
 						pts[0] = i;
 					}
-					else if (pts[1] == numVerts && pUV[pts[0]].s != pUV[i].s)
+					else if (pts[1] == numVerts && uv0.x != uv.x)
 					{
 						pts[1] = i;
 					}
-					else if (pts[2] == numVerts && pUV[pts[0]].t != pUV[i].t)
+					else if (pts[2] == numVerts && uv0.y != uv.y)
 					{
 						pts[2] = i;
 					}
@@ -851,16 +851,18 @@ void CBreakableGlassSystem::ExtractUVCoords(IStatObj* const pStatObj, const prim
 				}
 				else if (dot <= -flatThreshold)
 				{
+					const Vec2 uv3 = pUV[pts[3]].GetUV();
+
 					// Same as above, but for back-faces
 					if (pts[3] == numVerts)
 					{
 						pts[3] = i;
 					}
-					else if (pts[4] == numVerts && pUV[pts[3]].s != pUV[i].s)
+					else if (pts[4] == numVerts && uv3.x != uv.x)
 					{
 						pts[4] = i;
 					}
-					else if (pts[5] == numVerts && pUV[pts[3]].t != pUV[i].t)
+					else if (pts[5] == numVerts && uv3.y != uv.y)
 					{
 						pts[5] = i;
 					}
@@ -903,14 +905,9 @@ void CBreakableGlassSystem::ExtractUVCoords(IStatObj* const pStatObj, const prim
 				data.uvBasis[2].y = vy.Dot(pPositions[pts[2]]) - centerOffset.y;
 
 				// Store associated UV coords
-				data.uvBasis[0].z = pUV[pts[0]].s;
-				data.uvBasis[0].w = pUV[pts[0]].t;
-
-				data.uvBasis[1].z = pUV[pts[1]].s;
-				data.uvBasis[1].w = pUV[pts[1]].t;
-
-				data.uvBasis[2].z = pUV[pts[2]].s;
-				data.uvBasis[2].w = pUV[pts[2]].t;
+				pUV[pts[0]].ExportTo(data.uvBasis[0].z, data.uvBasis[0].w);
+				pUV[pts[1]].ExportTo(data.uvBasis[1].z, data.uvBasis[1].w);
+				pUV[pts[2]].ExportTo(data.uvBasis[2].z, data.uvBasis[2].w);
 			}
 			else
 			{
@@ -1345,4 +1342,4 @@ void CBreakableGlassSystem::AssertUnusedIfDisabled()
 #endif
 }//-------------------------------------------------------------------------------------------------
 
-#include UNIQUE_VIRTUAL_WRAPPER(IBreakableGlassSystem)
+

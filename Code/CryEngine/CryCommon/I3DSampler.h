@@ -5,14 +5,8 @@ Copyright 2006 Crytek Studios. All Rights Reserved.
 Revision history:
 * Created by Tamas Schlagl
 =============================================================================*/
-#include DEVIRTUALIZE_HEADER_FIX(I3DSampler.h)
 
-#ifndef __I3DSAMPLER_H__
-#define __I3DSAMPLER_H__
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #define	_3DSAMPLER_EXPORT_FILE_NAME "3DSampler.dat"
 /*
@@ -43,6 +37,7 @@ public:
 		return m_eSamplingType;
 	};																																																								//Give back the sampling type
 
+	// <interfuscator:shuffle>
 	virtual ~I3DSampler()	{ SAFE_DELETE_ARRAY(m_pPointDatas); SAFE_DELETE_ARRAY(m_pPositions); }
 
 	//If the system stores more data, needed to re-implement this function
@@ -56,7 +51,7 @@ public:
 
 	//Creation helper functions
 	virtual bool  CreateIrregularSampling( const AABB& GlobalBBox, const Vec3& vScale , const int nPointNumber, const f32* pPoints ) = 0;	//Create the spatial hiearchy for that points
-
+	// </interfuscator:shuffle>
 
 	//Helper functions to create new database
 
@@ -137,5 +132,3 @@ inline int	I3DSampler::GetNumberOfFloats() const
 	}
 	return -1;
 }																																																									//Give back the number of float needed for this data type (-1 means wrong data type!)
-
-#endif//__I3DSAMPLER_H__

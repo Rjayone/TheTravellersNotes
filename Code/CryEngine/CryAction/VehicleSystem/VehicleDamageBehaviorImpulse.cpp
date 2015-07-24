@@ -80,8 +80,8 @@ void CVehicleDamageBehaviorImpulse::OnDamageEvent(EVehicleDamageBehaviorEvent ev
 		pPhysEntity->GetStatus(&dyn);
 		float vehicleMass = dyn.mass;
 
-		float r = Random(2.f);
-		float impulseForce = Random(m_forceMin, m_forceMax) * vehicleMass;		
+		float r = cry_random(0.0f, 2.f);
+		float impulseForce = cry_random(m_forceMin, m_forceMax) * vehicleMass;		
 
     Vec3 impulseDir(m_impulseDir);
     if (!m_worldSpace)
@@ -96,15 +96,15 @@ void CVehicleDamageBehaviorImpulse::OnDamageEvent(EVehicleDamageBehaviorEvent ev
 
 		if (r <= 0.75f)
 		{
-			float r1 = Random(0.7f) - 0.35f;
+			float r1 = cry_random(-0.35f, 0.35f);
 
 			angImpulse += dyn.v * r1 * max(1.0f, dyn.w.GetLength());
 			angImpulse *= vehicleMass;
 		}
 		else
 		{
-			float r1 = Random(0.5f) - 0.25f;
-			float r2 = Random(1.0f) - 0.5f;
+			float r1 = cry_random(-0.25f, 0.25f);
+			float r2 = cry_random(-0.5f, 0.5f);
 
 			impulse.z += abs(dyn.v.y) * r1 * vehicleMass;
 			angImpulse.x += dyn.v.y * r2 * vehicleMass * max(1.0f, dyn.w.GetLength() * 1.5f);

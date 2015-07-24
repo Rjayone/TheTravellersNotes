@@ -36,16 +36,16 @@ public:
 
 	// IActionFilter
 	virtual void Release() { delete this; };
-	VIRTUAL void Filter(const ActionId& action);
-	VIRTUAL bool SerializeXML(const XmlNodeRef& root, bool bLoading);
-	VIRTUAL const char* GetName() { return m_name.c_str(); }
-	VIRTUAL void Enable(bool enable);
-	VIRTUAL bool Enabled() { return m_enabled; };
+	virtual void Filter(const ActionId& action);
+	virtual bool SerializeXML(const XmlNodeRef& root, bool bLoading);
+	virtual const char* GetName() { return m_name.c_str(); }
+	virtual void Enable(bool enable);
+	virtual bool Enabled() { return m_enabled; };
 	// ~IActionFilter
 
 	bool ActionFiltered(const ActionId& action);
 
-	VIRTUAL void GetMemoryUsage(ICrySizer *pSizer ) const;	 
+	virtual void GetMemoryUsage(ICrySizer *pSizer ) const;	 
 
 private:
 	bool							m_enabled;

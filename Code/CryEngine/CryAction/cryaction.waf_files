@@ -46,6 +46,8 @@
 			"FlowSystem/Nodes/FlowCompositeNode.cpp",
 			"FlowSystem/Nodes/FlowConditionNode.cpp",
 			"FlowSystem/Nodes/FlowDelayNode.cpp",
+			"FlowSystem/Nodes/FlowDynamicResponseVariable.cpp",
+			"FlowSystem/Nodes/FlowDynamicResponseSignal.cpp",
 			"FlowSystem/Nodes/FlowEngineEffectsNodes.cpp",
 			"FlowSystem/Nodes/FlowEngineNodes.cpp",
 			"FlowSystem/Nodes/FlowEntityNode.cpp",
@@ -129,7 +131,8 @@
 			"FlowSystem/Nodes/FlowOnlineStatsNodes.cpp",
 			"FlowSystem/Nodes/FlowXmlDataNodes.cpp",
 			"FlowSystem/Nodes/FlowXmlFileNodes.cpp",
-			"FlowSystem/Nodes/FlowXmlNavNodes.cpp"
+			"FlowSystem/Nodes/FlowXmlNavNodes.cpp",
+			"FlowSystem/Nodes/FlowDialogNode.cpp"
 		],
 		"Flow System/Unit Tests":
 		[
@@ -416,7 +419,9 @@
 			"DialogSystem/DialogSession.h",
 			"DialogSystem/DialogSystem.h",
 			"DialogSystem/ScriptBind_DialogSystem.h",
-			"SubtitleManager.h"
+			"SubtitleManager.h",
+			"DialogSystem/DialogQueuesManager.h",
+			"DialogSystem/DialogQueuesManager.cpp"
 		]
 	},
 	"CryAction_game_objects_uber.cpp":
@@ -437,7 +442,9 @@
 			"GameObjects/Interactor.h",
 			"GameObjects/WorldQuery.h",
 			"GameObjects/MannequinObject.h",
-			"GameObjects/MannequinObject.cpp"
+			"GameObjects/MannequinObject.cpp",
+			"GameObjects/RuntimeAreaObject.h",
+			"GameObjects/RuntimeAreaObject.cpp"
 		],
 		"GameRules":
 		[
@@ -840,35 +847,6 @@
 			"BreakableGlassSystem.cpp",
 			"BreakableGlassSystem.h",
 			"DelayedPlaneBreak.h"
-		],
-		"Tweak Menu":
-		[
-			"TweakMenu/TweakMetadataCallback.cpp",
-			"TweakMenu/TweakMetadataGametoken.cpp",
-			"TweakMenu/TweakMetadataVariable.cpp",
-			"TweakMenu/LuaVarUtils.cpp",
-			"TweakMenu/TweakCommon.cpp",
-			"TweakMenu/TweakItemSimple.cpp",
-			"TweakMenu/TweakMenu.cpp",
-			"TweakMenu/TweakMenuController.cpp",
-			"TweakMenu/TweakMetadata.cpp",
-			"TweakMenu/TweakMetadataCommand.cpp",
-			"TweakMenu/TweakMetadataCVAR.cpp",
-			"TweakMenu/TweakMetadataLUA.cpp",
-			"TweakMenu/TweakTraverser.cpp",
-			"TweakMenu/TweakMetadataCallback.h",
-			"TweakMenu/TweakMetadataGametoken.h",
-			"TweakMenu/TweakMetadataVariable.h",
-			"TweakMenu/LuaVarUtils.h",
-			"TweakMenu/TweakCommon.h",
-			"TweakMenu/TweakItemSimple.h",
-			"TweakMenu/TweakMenu.h",
-			"TweakMenu/TweakMenuController.h",
-			"TweakMenu/TweakMetadata.h",
-			"TweakMenu/TweakMetadataCommand.h",
-			"TweakMenu/TweakMetadataCVAR.h",
-			"TweakMenu/TweakMetadataLUA.h",
-			"TweakMenu/TweakTraverser.h"
 		]
 	},
 	"CryAction_main_uber_1.cpp":
@@ -986,7 +964,9 @@
 			"PlayerProfiles/RichSaveGameTypes.h",
 			"PlayerProfiles/RichSaveGameTypes_info.h",
 			"PlayerProfiles/PlayerProfileImplDurango.h",
-			"PlayerProfiles/PlayerProfileImplDurango.cpp"
+			"PlayerProfiles/PlayerProfileImplDurango.cpp",
+			"PlayerProfiles/PlayerProfileImplOrbis.h",
+			"PlayerProfiles/PlayerProfileImplOrbis.cpp"
 		],
 		"Player Profiles/jsmn":
 		[
@@ -1119,6 +1099,11 @@
 			"EffectSystem/EffectSystem.cpp",
 			"EffectSystem/GroundEffect.h",
 			"EffectSystem/GroundEffect.cpp"
+		],
+		"Root":
+		[
+			"RuntimeAreas.h",
+			"RuntimeAreas.cpp"
 		]
 	},
 	"NoUberFile":
@@ -1159,7 +1144,7 @@
 			"ISaveGame.h",
 			"ISharedParamsManager.h",
 			"ISubtitleManager.h",
-			"ITweakMenuController.h",
+			"ITimeDemoRecorder.h",
 			"IUIDraw.h",
 			"IVehicleSystem.h",
 			"IViewSystem.h",

@@ -28,7 +28,7 @@ struct SAimIKParams : public IProceduralParams
 		ar(Serialization::Decorators::Range<uint32>(layer, 0, 15), "AnimationLayer", "Animation Layer");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = animRef.c_str();
 	}

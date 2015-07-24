@@ -46,17 +46,17 @@ public:
 	
 	void Release() { delete this; };
 
-	VIRTUAL bool RegisterGameRules( const char *rulesName, const char *extensionName );
-	VIRTUAL bool CreateGameRules( const char *rulesName );
-	VIRTUAL bool DestroyGameRules();
-	VIRTUAL bool HaveGameRules( const char *rulesName );
+	virtual bool RegisterGameRules( const char *rulesName, const char *extensionName );
+	virtual bool CreateGameRules( const char *rulesName );
+	virtual bool DestroyGameRules();
+	virtual bool HaveGameRules( const char *rulesName );
 
-	VIRTUAL void AddGameRulesAlias(const char *gamerules, const char *alias);
-	VIRTUAL void AddGameRulesLevelLocation(const char *gamerules, const char *mapLocation);
-	VIRTUAL const char *GetGameRulesLevelLocation(const char *gamerules, int i);
+	virtual void AddGameRulesAlias(const char *gamerules, const char *alias);
+	virtual void AddGameRulesLevelLocation(const char *gamerules, const char *mapLocation);
+	virtual const char *GetGameRulesLevelLocation(const char *gamerules, int i);
 
-	VIRTUAL void SetCurrentGameRules(IGameRules *pGameRules);
-	VIRTUAL IGameRules* GetCurrentGameRules() const;
+	virtual void SetCurrentGameRules(IGameRules *pGameRules);
+	virtual IGameRules* GetCurrentGameRules() const;
 	const char *GetGameRulesName(const char *alias) const;
 
 	void GetMemoryStatistics(ICrySizer * s);

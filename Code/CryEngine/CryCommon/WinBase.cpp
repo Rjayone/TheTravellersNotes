@@ -13,40 +13,42 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#if defined(PS3)
-  #include <sdk_version.h>
-	#include <fenv.h>
-#endif
+#include "platform.h" // Note: This should be first to get consistent debugging definitions
+
 #include <CryAssert.h>
-#if !defined(PS3) && !defined(ORBIS)
+#if !defined(ORBIS)
 	#include <signal.h>
 #endif
 
-#ifndef ORBIS
 #include <pthread.h>
-#endif
 #include <sys/types.h>
 #include <fcntl.h>
 
 #ifdef APPLE
 #include <mach/mach.h>
 #include <mach/mach_time.h>
-#include <sys/sysctl.h>						// for total physical memory on Mac
-#include <CoreFoundation/CoreFoundation.h>	// for CryMessageBox
-#include <mach/vm_statistics.h>				// host_statistics
-#include <mach/mach_types.h>		
+#include <sys/sysctl.h>                     // for total physical memory on Mac
+#include <CoreFoundation/CoreFoundation.h>  // for CryMessageBox
+#include <mach/vm_statistics.h>             // host_statistics
+#include <mach/mach_types.h>
 #include <mach/mach_init.h>
 #include <mach/mach_host.h>
 #endif
 
+#if defined(ANDROID)
+#define FIX_FILENAME_CASE 0 // everything is lower case on android
+#elif defined(LINUX) || defined(APPLE)
+#define FIX_FILENAME_CASE 1
+#endif
+
 #ifndef USE_FILE_HANDLE_CACHE
-	#if defined(PS3) || defined(ORBIS)
+	#if defined(ORBIS)
 		#define USE_FILE_HANDLE_CACHE
 	#endif
 #endif
 
 #ifdef USE_FILE_HANDLE_CACHE
-	#include "md5.h"
+	#include <md5/md5.h>
 #endif
 
 #if !defined(PATH_MAX)
@@ -57,39 +59,9 @@
 	#define ORBIS_USE_NATIVE_FILE_IO
 #endif
 
-#ifndef CAFE
 #include <sys/time.h>
-#endif
 
 
-#if defined(ORBIS)
-#include "platform.h"
-#include "OrbisPThreads.h"
-#endif
-
-#if defined(PS3)
-
-#include <sys/ppu_thread.h>
-#include <sys/synchronization.h>
-#include <sys/time_util.h>
-#include <sys/sys_time.h>
-#include <sys/select.h>
-#include <sys/paths.h>
-#include <cell/fs/cell_fs_file_api.h>
-#include <sysutil/sysutil_sysparam.h>
-#include <sysutil/sysutil_common.h>
-#include <sysutil/sysutil_gamecontent.h>
-#include <sys/timer.h>
-#include <sys/memory.h>
-#include <sys/dbg.h>
-#include <sysutil/sysutil_syscache.h>
-#include <arpa/inet.h>
-#include <map>
-#include <vector>
-
-static bool g_EnableFP = false;
-
-#endif//PS3
 
 #if !defined(_RELEASE) || defined(_DEBUG)
 #include <set>
@@ -115,40 +87,7 @@ void CloseFromFileHandleCacheAsFD( int fd );
 extern const char* androidGetInternalPath();
 #endif
 
-// File I/O compatibility macros
-#if defined(PS3)
-	#define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
-	#define FS_ERRNO_TYPE CellFsErrno
-	#define FS_ENOENT CELL_FS_ENOENT
-	#define FS_EINVAL CELL_FS_EINVAL
-  #define FS_EISDIR CELL_FS_ERROR_EISDIR
-	#define FS_DIRENT_TYPE CellFsDirent
-	#define FS_DIR_TYPE int
-	#define FS_DIR_NULL (-1)
-	#define FS_STAT_TYPE CellFsStat
-	#define FS_CLOSEDIR(dir, err) \
-	(((err) = cellFsClosedir((dir))))
-	#define FS_CLOSEDIR_NOERR(dir) \
-	((cellFsClosedir((dir))))
-	#define FS_OPENDIR(dirname, dir, err) \
-		(((err) = cellFsOpendir((dirname), &(dir))))
-	#define FS_READDIR(dir, ent, entsize, err) \
-		((err) = cellFsReaddir((dir), &(ent), (std::uint64_t*)&(entsize)))
-	#define FS_TYPE_DIRECTORY CELL_FS_TYPE_DIRECTORY
-	#define FS_STAT(filename, buffer, err) \
-		((err) = cellFsStat((filename), &(buffer)))
-	#define FS_FSTAT(fd, buffer, err) \
-		((err) = cellFsFstat((fd), &(buffer)))
-	#define FS_OPEN(filename, flags, fd, mode, err) \
-	(((err) = cellFsOpen((filename), (flags), &(fd), (mode), 0)))
-	#define FS_CLOSE(fd, err) \
-		 (((err) = cellFsClose((fd))))
-	#define FS_CLOSE_NOERR(fd) \
-		(cellFsClose((fd)))
-	#define FS_O_RDWR CELL_FS_O_RDWR
-	#define FS_O_RDONLY CELL_FS_O_RDONLY
-	#define FS_O_WRONLY CELL_FS_O_WRONLY
-#endif //PS3
+#include "StringUtils.h"
 
 #if defined(LINUX) || defined(APPLE) || defined(ORBIS)
 typedef int FS_ERRNO_TYPE;
@@ -392,7 +331,7 @@ ILINE void FS_CLOSEDIR_NOERR(FS_DIR_TYPE pDir)
 
 
 
-#if (defined(PS3) || defined(LINUX) || defined(APPLE) || defined(ORBIS)) && (!defined(_RELEASE) || defined(_DEBUG))
+#if (defined(LINUX) || defined(APPLE) || defined(ORBIS)) && (!defined(_RELEASE) || defined(_DEBUG))
 	struct SAssertData
 	{
 		int line;
@@ -433,11 +372,7 @@ ILINE void FS_CLOSEDIR_NOERR(FS_DIR_TYPE pDir)
 	void HandleAssert(const char* cpMessage, const char* cpFunc, const char* cpFile, const int cLine)
 	{
 #if defined(OUTPUT_ASSERT_TO_FILE)
-#if defined(PS3)
-		static FILE *pAssertLogFile = cellFsOpen(SYS_APP_HOME"/Assert.log", "w+");
-#else   
-        static FILE *pAssertLogFile = fopen("Assert.log", "w+");
-#endif
+		static FILE *pAssertLogFile = fopen("Assert.log", "w+");
 #endif
 		bool report = true;
 		static std::set<SAssertData> assertSet;
@@ -467,120 +402,21 @@ ILINE void FS_CLOSEDIR_NOERR(FS_DIR_TYPE pDir)
 	}
 #endif
 
-#if defined PS3
-	#define fopenwrapper_basedir_maxsize \
-		((size_t)gPS3Env->nFopenWrapperBasedirMax)
-	#define fopenwrapper_basedir ((char *)gPS3Env->pFopenWrapperBasedir + 0)
-	#define fopenwrapper_trace_fopen (gPS3Env->bFopenWrapperTrace)
-#endif // PS3
-
 #if defined LINUX || defined(APPLE)
 	extern size_t __attribute__((visibility("default"))) fopenwrapper_basedir_maxsize;
 	extern char * fopenwrapper_basedir __attribute__((visibility("default")));
 	extern bool __attribute__((visibility("default"))) fopenwrapper_trace_fopen;
 #endif
 
-void InitFOpenWrapper()
-{
-#if defined(PS3) && defined(PS3_CRYENGINE)
-	gPS3Env->nFopenWrapperBasedirMax = MAX_PATH;
-	
-	static char basedirBuffer[MAX_PATH]	= "\0";	
 
-	gPS3Env->pFopenWrapperBasedir = basedirBuffer;
-	gPS3Env->bFopenWrapperTrace = 1;
-
-#endif
-}
-
-#if defined(PS3) && defined(PS3_CRYENGINE)
-//main conversion routine for PS3 and hard disk usage, user provides buffer to provide thread safety
-//converts slashes, lowers plus adds the system user path
-const char* const ConvertFileName(char *const pBuf, const char* const inCpName)
-{
-	//init hard drive access
-	const char* cpName = inCpName;
-
-	if (cpName[1] == ':' && cpName[0] == 'h')
-	{
-		strcpy(pBuf, g_GameStat.pGameDataUsrPath);
-		cpName = inCpName + 2;
-	}
-	else
-	if (cpName[1] == ':' && cpName[0] == 'd')
-	{
-		strcpy(pBuf, g_GameStat.pSourceMediaUsrPath );
-		cpName = inCpName + 2;
-	}
-	else
-	if (cpName[1] == ':' && cpName[0] == 'a')
-	{
-		if (!gPS3Env->bAppHomeReadOnly)
-		{
-			strcpy(pBuf, SYS_APP_HOME"/");
-		}
-		else
-		{
-			strcpy(pBuf, SYS_DEV_HDD0"/game_debug/");		
-			strcat(pBuf, gPS3Env->sTitleID);
-			strcat(pBuf, "/");
-		}
-		cpName = inCpName + 2;
-	}
-	else
-	if (cpName[1] == ':' && cpName[0] == 'p')
-	{
-		strcpy(pBuf, g_GameStat.pPatchUsrdirPath);
-		cpName = inCpName + 2;
-	}
-	else
-	if (cpName[1] == ':' && cpName[0] == 'z')
-	{
-		strcpy(pBuf, gPS3Env->pDlcUsrdirPath);
-		cpName = inCpName + 2;
-		//PS3_WriteToGameLog("Convert '%s' -> '%s'", inCpName, pBuf);
-	}
-	else
-	if (cpName[1] == ':' && ((cpName[0] >= '0') && (cpName[0] <= '9')))
-	{
-		char dlcNumber[2];
-		dlcNumber[0] = cpName[0];
-		dlcNumber[1] = '\0';
-
-		//Mount DLC data as virtual drive e.g. 0:, 1:, 2:, 9:
-		//DLC is in a fixed location e.g. USRDIR/dlc/dlc<n>/
-		strcpy(pBuf, gPS3Env->pDlcUsrdirPath);
-		strcat(pBuf, "/dlc");
-		strcat(pBuf, dlcNumber);
-		//PS3_WriteToGameLog("Convert '%s' -> '%s'", inCpName, pBuf);
-		cpName = inCpName + 2;
-	}
-	else
-		strcpy(pBuf, gPS3Env->pFopenWrapperBasedir);
-
-	// Convert path slashes and remove caps
-	const int cStrLen = strlen(cpName);
-	char *__restrict pCurDest	= &pBuf[strlen(pBuf)];
-	const char *__restrict pCurSrc = cpName;
-	for(int i=0; i<cStrLen; ++i)
-	{
-		char c = *pCurSrc++;
-		if(c == '\\') 
-			c = '/';
-		*pCurDest++ = tolower(c);
-	}
-	*pCurDest = '\0';
-	return pBuf;
-}
-#elif defined(ORBIS)
-	char sOrbisRootDir[MAX_PATH] = "/data/sdk/";
+#if defined(ORBIS)
 
 	const char* const ConvertFileName(char *const pBuf, const char* const cpName)
 	{
 		if (cpName[0] != '/')
 		{
 			// Convert relative path
-			strcpy( pBuf, sOrbisRootDir );	
+			strcpy( pBuf, gEnv->pSystem->GetRootFolder() );
 			strcat( pBuf, cpName );
 			return pBuf;
 		}
@@ -588,499 +424,13 @@ const char* const ConvertFileName(char *const pBuf, const char* const inCpName)
 		pBuf[0] = '\0';
 		return cpName;
 	}
-#elif defined(PS3_CRYENGINE)
+#else
 	const bool GetFilenameNoCase(const char*,char *,const bool);
 	const char* const ConvertFileName(char *const pBuf, const char* const cpName)
 	{
 		GetFilenameNoCase(cpName, pBuf, false);
 		return pBuf;
 	}
-#else
-	const char* const ConvertFileName(char *const pBuf, const char* const cpName)
-	{
-		// Not supported outside of CryEngine.
-		return NULL;
-	}
-#endif
-
-#if defined(USE_FILE_MAP)
-#define FILE_MAP_FILENAME "files.list"
-struct FileNode
-{
-	int m_nEntries;
-	int m_nIndex;							// Index relative to the parent, -1 for root.
-	char *m_Buffer;			      // Buffer holding all entry strings, separated by
-														// null characters.
-	const char **m_Entries;		// Node entries, sorted in strcmp() order.
-	FileNode **m_Children;    // Children of the node. NULL for non-directories.
-	bool m_bDirty;						// Flag indicating that the node has been modified.
-
-	FileNode();
-	~FileNode();
-	void Dump(int indent = 0);
-	int Find(const char *);
-	int FindExact(const char *);
-
-	static FileNode *ReadFileList(FILE * = NULL, int = -1);
-	static FileNode *BuildFileList(const char *prefix = NULL);
-	static void Init(void)
-	{
-		m_FileTree = ReadFileList();
-		if (m_FileTree == NULL)
-			m_FileTree = BuildFileList();
-	}
-	static FileNode *GetTree(void) { return m_FileTree; }
-	static FileNode *FindExact(
-			const char *, int &, bool * = NULL, bool = false);
-	static FileNode *Find(
-			const char *, int &, bool * = NULL, bool = false);
-	static bool CheckOpen(const char *, bool = false, bool = false);
-
-	static FileNode *m_FileTree;
-
-	struct Entry
-	{
-		string Name;
-		FileNode *Node;
-		Entry(const string &Name, FileNode *const Node)
-			: Name(Name), Node(Node)
-		{ }
-	};
-
-	struct EntryCompare
-	{
-		bool operator () (const Entry &op1, const Entry &op2)
-		{
-			return op1.Name < op2.Name;
-		}
-	};
-};
-
-FileNode *FileNode::m_FileTree = NULL;
-
-FileNode::FileNode()
-	: m_nEntries(0), m_nIndex(-1), m_Buffer(NULL),
-	  m_Entries(NULL), m_Children(NULL), m_bDirty(false)
-{ }
-
-FileNode::~FileNode()
-{
-	for (int i = 0; i < m_nEntries; ++i)
-	{
-		if (m_Children[i]) delete m_Children[i];
-	}
-	delete[] m_Children;
-	delete[] m_Entries;
-	delete[] m_Buffer;
-}
-
-void FileNode::Dump(int indent)
-{
-	for (int i = 0; i < m_nEntries; ++i)
-	{
-		for (int j = 0; j < indent; ++j) putchar(' ');
-		printf("%s%s\n", m_Entries[i], m_Children[i] ? "/" : "");
-		if (m_Children[i]) m_Children[i]->Dump(indent + 2);
-	}
-}
-
-// Find the index of the element with the specified name (case insensitive).
-// The method returns -1 if the element is not found.
-int FileNode::Find(const char *name)
-{
-	const int n = m_nEntries;
-
-	for (int i = 0; i < n; ++i)
-	{
-		if (!strcasecmp(name, m_Entries[i]))
-			return i;
-	}
-	return -1;
-}
-
-// Find the index of the element with the specified name (case sensitive).
-// The method returns -1 if the element is not found.
-int FileNode::FindExact(const char *name)
-{
-	int i, j, k;
-	const int n = m_nEntries;
-	int cmp;
-
-	if (!n) return -1;
-	for (i = 0, j = n / 2, k = n & 1;; k = j & 1, j /= 2) {
-		cmp = strcmp(m_Entries[i + j], name);
-		if (cmp == 0) return i + j;
-		if (cmp < 0) i += j + k;
-		if (!j) break;
-	}
-	return -1;
-}
-
-// Find the node for the specified file name. The method performs a case
-// sensitive search.
-// The name parameter must be absolute (i.e. start with a '/').
-// The method returns the node associated with the directory containing the
-// specified file or directory. The index of the requested file is stored into
-// &index.
-// The skipInitial flag indicates if the initial path component should be
-// skipped (e.g. "/work" or "/app_home").
-// If the containing directory node is found, but the requested file is not,
-// then the method returns the node of the containing directory and sets
-// index to -1.
-// If containing directory is not found, then the method returns NULL and sets
-// index to -1.
-// If the file and/or containing directory is not found and dirty parameter is
-// not NULL, then a flag value will be written to *dirty indicating if the
-// search failed on a dirty node. If the failing node is dirty, then the
-// requested file might have been created at runtime.
-FileNode *FileNode::FindExact(
-		const char *name,
-		int &index,
-		bool *dirty,
-		bool skipInitial
-		)
-{
-	const char *sep;
-	FileNode *node = m_FileTree;
-
-	assert(name[0] == '/');
-	index = -1;
-	if (node == NULL)
-	{
-		// No node tree present.
-		if (dirty != NULL)
-			*dirty = true;
-		node = NULL;
-	}
-	if (skipInitial)
-	{
-		do ++name; while (*name && *name != '/');
-		assert(!name[0] || name[0] == '/');
-	}
-	while (*name == '/') ++name;
-	if (!name[0])
-	{
-		// Root directory requested.
-		node = NULL;
-	}
-	while (node != NULL)
-	{
-		if (dirty != NULL)
-			*dirty = node->m_bDirty;
-		for (sep = name; *sep && *sep != '/'; ++sep);
-		char component[sep - name + 1];
-		memcpy(component, name, sep - name);
-		component[sep - name] = 0;
-		index = node->FindExact(component);
-		name = sep;
-		while (*name == '/') ++name;
-		if (!name[0]) break;
-		if (index != -1)
-			node = node->m_Children[index];
-		else
-			node = NULL;
-	}
-	if (node == NULL)
-		index = -1;
-	return node;
-}
-
-FileNode *FileNode::Find(
-		const char *name,
-		int &index,
-		bool *dirty,
-		bool skipInitial
-		)
-{
-	abort();
-	// FIXME: Implement
-	index = -1;
-	return NULL;
-}
-
-// Check if a file open operation can be successful.
-// The create flag specified if file creation is requested.
-// The skipInitial flag indicates if the initial path component should be
-// skipped (e.g. "/work" or "/app_home").
-bool FileNode::CheckOpen(
-		const char *filename,
-		bool create,
-		bool skipInitial
-		)
-{
-	int index = -1;
-	FileNode *node = NULL;
-	bool dirty = false;
-	bool fail = false;
-
-	node = FileNode::FindExact(filename, index, &dirty, skipInitial);
-	if (node == NULL && !dirty)
-	{
-		// The containing directory does not exist.
-		fail = true;
-	} else if (!create && index == -1 && !dirty)
-	{
-		// The file does not exist and file creation is not requested.
-		fail = true;
-	} else if (index == -1 && create && node != NULL && !dirty)
-	{
-		// The file does not exist and file creation *is* requested. We'll mark
-		// the containing directory dirty.
-		node->m_bDirty = true;
-	}
-	return !fail;
-}
-
-#if defined(PS3_CRYENGINE)
-static const char* InitListFileName()
-{
-	static char listFilename[CELL_GAMEDATA_PATH_MAX];
-	snprintf(listFilename, sizeof(listFilename),
-			"%s/%s", gPS3Env->pCurDirHDD0, FILE_MAP_FILENAME);
-	return listFilename;
-}
-#endif
-
-FileNode *FileNode::ReadFileList(FILE *in, int index)
-{
-	char line[256];
-#if defined(PS3)
-		static const char *const listFilename = InitListFileName();	
-#else
-	static const char listFilename[] = FILE_MAP_FILENAME;
-#endif
-	int i, count = 0, size = 0;
-	const int maxCount = 4096, maxSize = 256 * 4096;
-	FileNode *node = NULL;
-	bool closeFile = false;
-	
-	if (in == NULL)
-	{
-		in = fopen(listFilename, "r");
-		if (in == NULL)
-		{
-#if !defined(LINUX) && !defined(APPLE)
-			fprintf(stderr, "can't open file map '%s' for reading: %s\n",
-					listFilename, strerror(errno));
-#endif
-			return NULL;
-		}
-		closeFile = true;
-	}
-	if (fgets(line, sizeof line, in) == NULL)
-	{
-		fprintf(stderr, "unexpected EOF in file map '%s'\n", listFilename);
-		fclose(in);
-		return NULL;
-	}
-	line[sizeof line - 1] = 0;
-	if (sscanf(line, "%i,%i", &count, &size) != 2
-			|| count < 0 || count > maxCount
-			|| size < 0 || size > maxSize)
-	{
-		fprintf(stderr, "syntax error in file map '%s'\n", listFilename);
-		fclose(in);
-		return NULL;
-	}
-	node = new FileNode;
-	node->m_nEntries = count;
-	node->m_nIndex = index;
-	node->m_Buffer = new char[size];
-	node->m_Entries = new const char *[count];
-	node->m_Children = new FileNode *[count];
-	char *buffer = node->m_Buffer;
-	for (i = 0; i < count; ++i)
-	{
-		if (fgets(line, sizeof line, in) == NULL)
-		{
-			fprintf(stderr, "unexpected EOF in file map '%s'\n", listFilename);
-			fclose(in);
-			delete node;
-			return NULL;
-		}
-		int lineLen = strlen(line);
-		while (lineLen > 0 && isspace(line[lineLen - 1])) --lineLen;
-		line[lineLen] = 0;
-		char *p = strchr(line, '/');
-		if (p && p[1])
-		{
-			fprintf(stderr, "syntax error in file map '%s'\n", listFilename);
-			fclose(in);
-			delete node;
-			return NULL;
-		}
-		bool isDir = false;
-		if (p) 
-		{
-			*p = 0;
-			isDir = true;
-			--lineLen;
-		}
-		if (lineLen + (buffer - node->m_Buffer) >= size)
-		{
-			fprintf(stderr, "broken file map '%s'\n", listFilename);
-			fclose(in);
-			delete node;
-			return NULL;
-		}
-		memcpy(buffer, line, lineLen + 1);
-		node->m_Entries[i] = buffer;
-		buffer += lineLen + 1;
-		if (isDir)
-		{
-			node->m_Children[i] = ReadFileList(in, i);
-			if (node->m_Children[i] == NULL)
-			{
-				fclose(in);
-				delete node;
-				return NULL;
-			}
-		}
-	}
-	if (buffer - node->m_Buffer != size)
-	{
-		fprintf(stderr, "broken file map '%s'\n", listFilename);
-		fclose(in);
-		delete node;
-		return NULL;
-	}
-	if (closeFile)
-		fclose(in);
-	return node;
-}
-
-FileNode *FileNode::BuildFileList(const char *prefix)
-{
-	FileNode *node = NULL;
-	FS_DIR_TYPE dir = FS_DIR_NULL;
-	FS_ERRNO_TYPE err = 0;
-	char curdir[PATH_MAX + 1];
-	bool addPrefix = false;
-
-	if (prefix == NULL)
-	{
-		// Start with the current working directory.
-		GetCurrentDirectory(sizeof curdir - 1, curdir);
-		curdir[sizeof curdir - 1] = 0;
-		prefix = curdir;
-		addPrefix = true;
-	}
-	FS_OPENDIR(prefix, dir, err);
-	if (dir == FS_DIR_NULL || err != 0)
-	{
-		fprintf(stderr, "warning: can't access directory '%s': %s\n",
-				prefix, strerror(err));
-		return NULL;
-	}
-	std::vector<Entry> entryVec;
-	size_t nameLengthTotal = 0;
-	while (true)
-	{
-		FS_DIRENT_TYPE entry;
-		size_t entrySize = 0;
-		FS_READDIR(dir, entry, entrySize, err);
-		if(err)
-		{
-			FS_CLOSEDIR_NOERR(dir);
-			return NULL;
-		}
-		if (entrySize == 0)
-			break;
-		if (!strcmp(entry.d_name, ".") || !strcmp(entry.d_name, ".."))
-			continue;
-		FileNode *subNode = NULL;
-		if (entry.d_type == FS_TYPE_DIRECTORY)
-		{
-			char path[PATH_MAX + 1];
-			snprintf(path, sizeof path - 1, "%s/%s", prefix, entry.d_name);
-			path[sizeof path - 1] = 0;
-			subNode = BuildFileList(path);
-			if (subNode == NULL)
-				continue;
-		}
-		nameLengthTotal += strlen(entry.d_name);
-		entryVec.push_back(Entry(entry.d_name, subNode));
-	}
-	FS_CLOSEDIR_NOERR(dir);
-	const int count = entryVec.size();
-	node = new FileNode;
-	node->m_nEntries = count;
-	if (count > 0)
-	{
-		std::sort(entryVec.begin(), entryVec.end(), EntryCompare());
-		node->m_Buffer = new char[nameLengthTotal + count];
-		node->m_Entries = new const char *[count];
-		node->m_Children = new FileNode *[count];
-		char *buffer = node->m_Buffer;
-		for (int i = 0; i < count; ++i)
-		{
-			strcpy(buffer, entryVec[i].Name.c_str());
-			node->m_Entries[i] = buffer;
-			buffer += strlen(buffer) + 1;
-			FileNode *subNode = entryVec[i].Node;
-			node->m_Children[i] = subNode; // NULL for non-directories.
-			if (subNode != NULL)
-				subNode->m_nIndex = i;
-		}
-		assert(buffer - node->m_Buffer == nameLengthTotal + count);
-	}
-	if (addPrefix && strcmp(prefix, "/"))
-	{
-		// Add the file nodes for the default prefix (current working directory).
-		// The nodes are marked as dirty, so the on disk directories are scanned
-		// whenever one of these directories is accessed.
-		const char *p, *q;
-		assert(prefix[0] == '/');
-		FileNode *rootNode = NULL, *x = NULL;
-		for (p = q = prefix + 1;; ++p)
-		{
-			if (*p == '/' || *p == 0)
-			{
-				if (rootNode == NULL)
-				{
-					rootNode = new FileNode;
-					x = rootNode;
-					rootNode->m_nIndex = -1;
-				}
-				else
-				{
-					assert(x != NULL);
-					x->m_Children[0] = new FileNode;
-					x = x->m_Children[0];
-					x->m_nIndex = 0;
-				}
-				x->m_nEntries = 1;
-				x->m_Children = new FileNode *[1];
-				x->m_bDirty = true;
-				x->m_Buffer = new char[p - q + 1];
-				memcpy(x->m_Buffer, q, p - q);
-				x->m_Buffer[p - q] = 0;
-				x->m_Entries = new const char *[1];
-				x->m_Entries[0] = x->m_Buffer;
-				q = p + 1;
-			}
-			if (*p == 0)
-				break;
-		}
-		x->m_Children[0] = node;
-		node->m_nIndex = 0;
-		node = rootNode;
-	}
-	return node;
-}
-
-void InitFileList(void)
-{
-	FileNode::Init();
-#if 0
-	if (FileNode::m_FileTree != NULL)
-	{
-		FileNode::m_FileTree->Dump(0);
-	}
-#endif
-}
-#else
-void InitFileList(void) { }
 #endif
 
 inline void WrappedF_InitCWD()
@@ -1189,55 +539,8 @@ char *ltoa ( long i , char *a , int radix )
 	return a ;
 }
 
-#if defined(PS3)
-BOOL CopyFile(const char* cpSrcOrg, const char* cpDstOrg, bool/* bFailIfExists*/)
-{
-	char bufferSource[512];
-	char bufferDestination[512];
-	const char* cpSrc = ConvertFileName(bufferSource, cpSrcOrg);
-	const char* cpDst = ConvertFileName(bufferDestination, cpDstOrg);
-	//this copies a file, no file name adjustments are performed
-	int rd = 0, wr = 0;
 
-	BOOL retValue = true;
-
-	uint64_t numRead;
-	char fileBuf[32 * 1024];
-
-	if(cellFsOpen(cpSrc, CELL_FS_O_RDONLY, &rd, NULL, 0) != CELL_FS_SUCCEEDED) 
-		return false;
-
-	if(cellFsOpen(cpDst, CELL_FS_O_WRONLY | CELL_FS_O_CREAT, &wr, NULL, 0) != CELL_FS_SUCCEEDED)
-		goto done;
-	
-	do
-	{
-		if(cellFsRead(rd, fileBuf, sizeof(fileBuf), &numRead) != CELL_FS_SUCCEEDED) 
-		{
-			retValue = false;
-			break;
-		}
-		if(numRead == 0) 
-			break;
-		if(cellFsWrite(wr, fileBuf, numRead, NULL) != CELL_FS_SUCCEEDED)  
-		{
-			retValue = false;
-			break;
-		}
-	} 
-	while(numRead > 0);
-done:
-	if(rd) 
-		cellFsClose(rd);
-	if(wr)
-		cellFsClose(wr);
-	return retValue;
-}
-
-#endif
-
-#if defined(PS3) || defined(ANDROID)
-// declared in PS3_Win32Wrapper.h for PS3.
+#if defined(ANDROID)
 // For Linux it's redefined to wcscasecmp and wcsncasecmp'
 int wcsicmp (const wchar_t* s1, const wchar_t* s2)
 {
@@ -1274,35 +577,35 @@ int wcsnicmp (const wchar_t* s1, const wchar_t* s2, size_t count)
 
 void _makepath(char * path, const char * drive, const char *dir, const char * filename, const char * ext)
 {
-  char ch;
-  char tmp[MAX_PATH];
-  if ( !path )
-	  return;
-  tmp[0] = '\0';
-  if (drive && drive[0])
-  {
-    tmp[0] = drive[0];
-    tmp[1] = ':';
-    tmp[2] = 0;
-  }
-  if (dir && dir[0])
-  {
-    strcat(tmp, dir);
-    ch = tmp[strlen(tmp)-1];
-    if (ch != '/' && ch != '\\')
-	    strcat(tmp,"\\");
-  }
-  if (filename && filename[0])
-  {
-    strcat(tmp, filename);
-    if (ext && ext[0])
-    {
-      if ( ext[0] != '.' )
-				strcat(tmp,".");
-      strcat(tmp,ext);
-    }
-  }
-  strcpy( path, tmp );
+	char ch;
+	char tmp[MAX_PATH];
+	if ( !path )
+		return;
+	tmp[0] = '\0';
+	if (drive && drive[0])
+	{
+		tmp[0] = drive[0];
+		tmp[1] = ':';
+		tmp[2] = 0;
+	}
+	if (dir && dir[0])
+	{
+		cry_strcat(tmp, dir);
+		ch = tmp[strlen(tmp)-1];
+		if (ch != '/' && ch != '\\')
+			cry_strcat(tmp,"\\");
+	}
+	if (filename && filename[0])
+	{
+		cry_strcat(tmp, filename);
+		if (ext && ext[0])
+		{
+			if ( ext[0] != '.' )
+				cry_strcat(tmp,".");
+			cry_strcat(tmp,ext);
+		}
+	}
+	strcpy( path, tmp );
 }
 
 char * _ui64toa(unsigned long long value,	char *str, int radix)
@@ -1359,20 +662,8 @@ long long _atoi64( const char *str )
 	} /* while */
 	return bMinus? ((long long)-RunningTotal) : (long long)RunningTotal;
 }
- 
-#ifdef PS3
-int gettimeofday(timeval *__restrict tp, void *restrict)
-{
-	sys_time_sec_t sec;
-	sys_time_nsec_t nsec;
-	sys_time_get_current_time(&sec, &nsec);
-	tp->tv_sec  = sec;
-	tp->tv_usec = nsec / 1000;
-	return 0;
-}
-#endif
 
-#if !defined(PS3) && !defined(ORBIS)
+#if !defined(ORBIS)
 bool QueryPerformanceCounter(LARGE_INTEGER *counter)
 {
 #if defined(LINUX)
@@ -1385,9 +676,6 @@ bool QueryPerformanceCounter(LARGE_INTEGER *counter)
 #elif defined(APPLE)
   counter->QuadPart = mach_absolute_time();
   return true;
-#elif defined(CAFE)
-	counter->QuadPart=OSGetTime();
-	return true;
 #else
 	return false;
 #endif
@@ -1408,14 +696,11 @@ bool QueryPerformanceFrequency(LARGE_INTEGER *frequency)
 	// mach_timebase_info_data_t expresses the tick period in nanoseconds
 	frequency->QuadPart = 1e+9 * (uint64_t)s_kTimeBaseInfoData.denom / (uint64_t)s_kTimeBaseInfoData.numer;
 	return true;
-#elif defined(CAFE)
-	frequency->QuadPart=OS_TIMER_CLOCK;
-	return true;
 #else
 	return false;
 #endif
 }
-#endif//PS3
+#endif
 
 void _splitpath(const char* inpath, char * drv, char * dir, char* fname, char * ext )
 {	
@@ -1474,10 +759,6 @@ void _splitpath(const char* inpath, char * drv, char * dir, char* fname, char * 
 
 DWORD GetFileAttributes(LPCSTR lpFileName)
 {
-#if defined(PS3)
-	CRY_ASSERT_MESSAGE(0, "GetFileAttributes not implemented yet");
-	return FILE_ATTRIBUTE_READONLY;
-#else	
 	struct stat fileStats;
 	const int success = stat(lpFileName, &fileStats);
 	if(success == -1)
@@ -1495,50 +776,7 @@ DWORD GetFileAttributes(LPCSTR lpFileName)
 	if(S_ISDIR(fileStats.st_mode) != 0)
 		ret |= FILE_ATTRIBUTE_DIRECTORY;
 	return (ret == 0)?FILE_ATTRIBUTE_NORMAL:ret;//return file attribute normal as the default value, must only be set if no other attributes have been found
-#endif
 }
- 
-#if defined PS3
-const char* GetCellFsErrString(int cRetCode)
-{
-	switch(cRetCode)
-	{
-	case CELL_FS_SUCCEEDED:
-		return "Succeeded";
-	case CELL_FS_ENOTMOUNTED:
-		return "Path not mounted";
-	case CELL_FS_ENOENT:
-		return "File does not exist and CELL_FS_O_CREAT is not specified";
-	case CELL_FS_EINVAL:
-		return "Specified path is invalid";
-	case CELL_FS_EMFILE:
-		return "Max number of file descriptors exceeded";
-	case CELL_FS_EISDIR:
-		return "Specified file path is a directory";
-	case CELL_FS_EIO:
-		return "I/O error has occured";
-	case CELL_FS_ENOMEM:
-		return "Memory is insufficient";
-	case CELL_FS_ENOTDIR:
-		return "Components in path contain something other than a directory";
-	case CELL_FS_ENAMETOOLONG:
-		return "File path exceeds max number of length";
-	case CELL_FS_EFSSPECIFIC:
-		return "File system specific internal error has occurred";
-	case CELL_FS_EFAULT:
-		return "Path or fd is NULL";
-	case CELL_FS_EPERM:
-		return "Permission is invalid";
-	case CELL_FS_EACCES:
-		return "Permission is invalid (Only CFS and FAT)";
-	case CELL_FS_EEXIST:
-		return "File does already exist and CELL_FS_O_CREAT is specified";
-	case CELL_FS_ENOSPC:
-		return "No area to create new file";
-	}
-	return "Unknown";
-}
-#endif // defined PS3
 
 int _mkdir(const char *dirname)
 {
@@ -1552,35 +790,10 @@ int _mkdir(const char *dirname)
 	}
 	//printf( "sceKernelMkdir error 0x%x with arg %s\n", error, buf );
 	return -1;
-#elif !defined(PS3)
+#else
 	const mode_t mode = 0x0777;
 	const int suc = mkdir(dirname, mode);
 	return (suc == 0)? 0 : -1;
-#else
-	//do not create those folders
-	//assert(strlen(dirname) > 1 && strcmp(dirname, PathUtil::GetGameFolder().c_str()) && strstr(dirname, "haders"));
-	char buf[512];
-	const char* const cpConvName = ConvertFileName(buf, dirname);
-#if defined(_DEBUG)
-	//test if exists already 
-	int dirHandle;
-	if(cellFsOpendir(cpConvName, &dirHandle) == CELL_FS_SUCCEEDED)
-	{
-		fprintf(stderr, "_mkdir: tried to create an existing directory for \"%s\" \n", dirname);
-		cellFsClosedir(dirHandle);
-		return 0;
-	}
-#endif
-	CellFsErrno Err	=	cellFsMkdir(cpConvName, CELL_FS_DEFAULT_CREATE_MODE_1);
-	if(Err != CELL_FS_SUCCEEDED && Err != CELL_FS_EEXIST)
-	{
-		char errorBuf[512];
-		sprintf(errorBuf, "_mkdir for \"%s\" failed with error: %s\n", dirname, GetCellFsErrString(Err));
-//		CryFatalError(errorBuf);
-		return -1;
-	}
-	else 
-		return 0;
 #endif
 }
 
@@ -1614,15 +827,7 @@ int strcmpi( const char *str1, const char *str2 )
 void GlobalMemoryStatus(LPMEMORYSTATUS lpmem)
 {
 		//not complete implementation
-#if defined(PS3)
-	memset(lpmem, 0,  sizeof(MEMORYSTATUS));
-	sys_memory_info_t memInfo;
-	if(sys_memory_get_user_memory_size(&memInfo) == CELL_OK)
-	{
-		lpmem->dwTotalPhys = memInfo.total_user_memory;
-		lpmem->dwAvailPhys = memInfo.available_user_memory;
-	}
-#elif defined(ORBIS)
+#if defined(ORBIS)
 	memset(lpmem, 0, sizeof(MEMORYSTATUS));
 
 	SceKernelVirtualQueryInfo info;
@@ -1834,17 +1039,13 @@ void __finddata64_t::CopyFoundData(const char *rMatchedFileName)
 
 	memset(&fsStat, 0, sizeof(fsStat));
 	const int cCurStrLen = strlen(name);
-#if !defined(PS3)
+	
 	if(cCurStrLen > 0 && name[cCurStrLen-1] != '/')
-#else
-	if(name[cCurStrLen-1] != '/')
-#endif	
 	{
 		name[cCurStrLen] = '/';
 		name[cCurStrLen+1] = 0;
 	}
-	strncpy(name, rMatchedFileName, sizeof name - 1);
-	name[sizeof name - 1] = 0;
+	cry_strcpy(name, rMatchedFileName);
 	// Remove trailing slash for directories.
 	if (name[0] && name[strlen(name) - 1] == '/')
 	{
@@ -1926,74 +1127,27 @@ void __finddata64_t::CopyFoundData(const char *rMatchedFileName)
 // Returns 0 on success and -1 on error.
 // In case of an error, all matched path components will have been case
 // corrected.
-int FixDirnameCase
-(
-	char *path, int index = 0
-#if defined(USE_FILE_MAP)
-	, FileNode *node = NULL
-#endif
-)
+int FixDirnameCase(char *path, int index = 0)
 {
-#if defined(PS3) && defined(PS3_CRYENGINE)
-	//lower file name for everything behind the initial path
-	const int cLen = strlen(path);
-	for(int i=gPS3Env->nCurDirHDD0Len; i<cLen; ++i)
-		path[i] = tolower(path[i]);
+
+#if !FIX_FILENAME_CASE
+	path += index;
+	while(*path++)
+		*path = tolower(*path);
 	return 0;
-#else
+#endif
+
 	FS_ERRNO_TYPE fsErr = 0;
   char *slash;
 	FS_DIR_TYPE dir = FS_DIR_NULL;
 	bool pathOk = false;
 	char *parentSlash;
-#if defined(USE_FILE_MAP)
-	FileNode *node1 = NULL;
-#endif
 
 	slash = strchr(path + index + 1, '/');
 	if (!slash) return 0;
 	*slash = 0;
 	parentSlash = strrchr(path, '/');
 
-#if defined(PS3)
-	// On PS3 the first path component is *always* ok.
-	// FIXME  remove the skipInitial semantics for PS3!
-	if (index == 0)
-		pathOk = true;
-#endif
-
-#if defined(USE_FILE_MAP)
-	if (index == 0)
-		node = FileNode::GetTree();
-	if (node != NULL && !pathOk)
-	{
-		int i = node->FindExact(path + index + 1);
-		if (i != -1)
-		{
-			node1 = node->m_Children[i];
-			if (node1 != NULL)
-			{
-				assert(node1->m_nIndex == i);
-				pathOk = true;
-			}
-		} else
-		{
-			i = node->Find(path + index + 1);
-			if (i != -1)
-			{
-				node1 = node->m_Children[i];
-				assert(node1 == NULL || node1->m_nIndex == i);
-			}
-		}
-		if (!pathOk && node1 == NULL && !node->m_bDirty)
-		{
-			*slash = '/';
-			return -1;
-		}
-	}
-	if (node1 == NULL && !pathOk)
-	{
-#endif
 		// Check if path is a valid directory.
 		FS_OPENDIR(path, dir, fsErr);
 		if (!fsErr)
@@ -2006,19 +1160,6 @@ int FixDirnameCase
 			*slash = '/';
 			return -1;
 		}
-#if defined(USE_FILE_MAP)
-	}
-
-	if (node1 != NULL && !pathOk)
-	{
-		const char *name = node->m_Entries[node1->m_nIndex];
-		if (parentSlash)
-			memcpy(parentSlash + 1, name, strlen(name));
-		else
-			memcpy(path, name, strlen(name));
-		pathOk = true;
-	}
-#endif
 
 	if (!pathOk) {
 		// Get the parent dir.
@@ -2070,11 +1211,8 @@ int FixDirnameCase
 				break;
 			}
 #else
-#if defined(PS3)
-			size_t len = dirent.d_namlen;
-#else
 			size_t len = strlen(dirent.d_name);
-#endif
+
 			if (len > 0 && dirent.d_name[len - 1] == '/') len -= 1;
 			if (!strncasecmp(dirent.d_name, name, len))
 			{
@@ -2100,13 +1238,9 @@ int FixDirnameCase
 	// Recurse.
 	if (pathOk)
 	{
-#if defined(USE_FILE_MAP)
-		return FixDirnameCase(path, slash - path, node1);
-#else
 		return FixDirnameCase(path, slash - path);
-#endif
 	}
-#endif
+
 	return -1;
 }
 
@@ -2144,7 +1278,7 @@ static bool matchPattern(const char *name, const char *pattern)
 
 intptr_t _findfirst64(const char *pFileName, __finddata64_t *pFindData)
 {
-#if defined(PS3) || defined(ORBIS)
+#if defined(ORBIS)
 	//path is still relative, convert to absolute path
 	char buf[512];
 	pFileName = ConvertFileName(buf, pFileName);
@@ -2170,16 +1304,15 @@ intptr_t _findfirst64(const char *pFileName, __finddata64_t *pFindData)
 	}
 
 	// Map backslashes to fwdslashes.
-#if !defined(PS3)
 	const int cLen = strlen(pFileName);
 	for (int i = 0; i<cLen; ++i)
 		if (filename[i] == '\\') filename[i] = '/';
-#endif
+
 	// Get the dirname.
 	char *slash = strrchr(filename, '/');
 	if (slash)
 	{
-#if !defined(PS3) && !defined(ORBIS)
+#if !defined(ORBIS)
 		if (FixDirnameCase(filename) == -1)
 			return -1;
 #endif
@@ -2192,7 +1325,7 @@ intptr_t _findfirst64(const char *pFileName, __finddata64_t *pFindData)
 		dirname = "./";
 		pattern = filename;
 	}
-	strncpy(pFindData->m_ToMatch, pattern, sizeof pFindData->m_ToMatch - 1);
+	cry_strcpy(pFindData->m_ToMatch, pattern);
 
 	// Close old directory descriptor.
 	if (pFindData->m_Dir != FS_DIR_NULL)
@@ -2203,52 +1336,6 @@ intptr_t _findfirst64(const char *pFileName, __finddata64_t *pFindData)
 			return -1;
 	}
 
-	bool readDirectory = true;
-#if defined(USE_FILE_MAP)
-#if defined(PS3)
-	const bool skipInitial = true;
-#else
-	const bool skipInitial = false;
-#endif
-	// Check if an up to date directory listing can be extracted from the file
-	// map.
-	int dirIndex = -1;
-	bool dirDirty = false;
-	FileNode *dirNode = FileNode::FindExact(
-			dirname, dirIndex, &dirDirty, skipInitial);
-	if ((dirNode == NULL || dirIndex == -1) && !dirDirty)
-		return -1;
-	if (dirNode != NULL && !dirNode->m_bDirty)
-	{
-		FileNode *const dirNode1 = dirNode->m_Children[dirIndex];
-		if (dirNode1 == NULL)
-			return -1;
-		if (!dirNode1->m_bDirty)
-		{
-			// Copy the directory listing from the file node.
-			strncpy(pFindData->m_DirectoryName, dirname,
-					sizeof pFindData->m_DirectoryName - 1);
-			pFindData->m_DirectoryName[sizeof pFindData->m_DirectoryName - 1] = 0;
-			const int n = dirNode1->m_nEntries;
-			for (int i = 0; i < n; ++i)
-			{
-				if (dirNode1->m_Children[i])
-				{
-					// Directory. We'll add a trailing slash to the name to identify
-					// directory entries.
-					char name[strlen(dirNode1->m_Entries[i]) + 2];
-					strcpy(name, dirNode1->m_Entries[i]);
-					strcat(name, "/");
-					pFindData->m_Entries.push_back(name);
-				} else
-					pFindData->m_Entries.push_back(dirNode1->m_Entries[i]);
-			}
-			readDirectory = false;
-		}
-	}
-#endif
-
-	if (readDirectory)
 	{
 		// Open and read directory.
  		FS_OPENDIR(dirname, pFindData->m_Dir, fsErr);
@@ -2256,9 +1343,7 @@ intptr_t _findfirst64(const char *pFileName, __finddata64_t *pFindData)
 
 		if (fsErr)
 			return -1;
-		strncpy(pFindData->m_DirectoryName, dirname,
-				sizeof pFindData->m_DirectoryName - 1);
-		pFindData->m_DirectoryName[sizeof pFindData->m_DirectoryName - 1] = 0;
+		cry_strcpy(pFindData->m_DirectoryName, dirname);
 		FS_DIRENT_TYPE dirent;
 		uint64_t direntSize = 0;
 		while(true)
@@ -2280,18 +1365,16 @@ intptr_t _findfirst64(const char *pFileName, __finddata64_t *pFindData)
 			// We'll add a trailing slash to the name to identify directory
 			// entries.
 			char d_name[MAX_PATH];
-			strcpy(d_name, dirent.d_name);
+			cry_strcpy(d_name, dirent.d_name);
             // On Mac OS X Sometimes the \0 dilimeter does not get updated to the correct position.
-			#if defined(CAFE)
-			// not supported yet
-			#elif !defined(LINUX)
+			#if !defined(LINUX)
 			d_name[dirent.d_namlen] = '\0';
 			#endif
 			if (dirent.d_type == FS_TYPE_DIRECTORY)
 			{
 				const int cLen = strlen(d_name);
 				if(d_name[0] || d_name[cLen - 1] != '/')
-					strcat(d_name, "/");
+					cry_strcat(d_name, "/");
 			}
 			pFindData->m_Entries.push_back(d_name);
 		}
@@ -2359,7 +1442,6 @@ __finddata64_t::~__finddata64_t()
 }
 
 //end--------------------------------findfirst/-next implementation----------------------------------------------------
-#if !defined(PS3)
 void adaptFilenameToLinux(string& rAdjustedFilename)
 {
 	//first replace all \\ by /
@@ -2375,9 +1457,7 @@ void adaptFilenameToLinux(string& rAdjustedFilename)
 		rAdjustedFilename.replace(loc, 3, "/");
 	}
 }
-#endif
 
-#if !defined(PS3)
 	void replaceDoublePathFilename(char *szFileName)
 	{
 		//replace "\.\" by "\"
@@ -2396,9 +1476,7 @@ void adaptFilenameToLinux(string& rAdjustedFilename)
 		}
 		strcpy((char*)szFileName, s.c_str());
 	}
-#endif
 
-#if !defined(PS3)
 	const int comparePathNames(const char* cpFirst, const char* cpSecond, unsigned int len)
 	{
 		//create two strings and replace the \\ by / and /./ by /
@@ -2411,42 +1489,6 @@ void adaptFilenameToLinux(string& rAdjustedFilename)
 		unsigned int length = std::min(std::min(first.size(), second.size()), (size_t)len);//make sure not to access invalid memory
 		return memicmp(first.c_str(), second.c_str(), length);
 	}
-#else
-	const int comparePathNames(const char* __restrict pFirst, const char* __restrict pSecond, unsigned int cLen)
-	{
-		//do ignore any . and slashes to save the /./ and \.\ replacement
-		//skip disc prefix
-		if(pFirst[0] == 'd' && pFirst[1] == ':')
-		{
-			cLen -= 2;
-			pFirst += 2;
-		}
-		for(int i=0; i<cLen; ++i)
-		{
-			const char cSecond	= *pSecond;
-			const char cFirst		= *pFirst;
-			if(cSecond == 0)
-				return 1;
-			const int cIgnoreFirst = (cFirst == '/') | (cFirst == '.') | (cFirst == '\\');
-			if(cIgnoreFirst)
-			{
-				++pFirst;
-				continue;
-			}
-			const int cIgnoreSecond = (cSecond == '/') | (cSecond == '.') | (cSecond == '\\');
-			if(cIgnoreSecond)
-			{
-				++pSecond;
-				continue;
-			}
-			if(cFirst != cSecond)
-				return -1;//do not care if 1 or -1
-			++pFirst;
-			++pSecond;
-		}
-		return 0;
-	}
-#endif
 
 #if defined(LINUX) || defined(APPLE)
 static bool FixOnePathElement(char *path)
@@ -2509,7 +1551,7 @@ static bool FixOnePathElement(char *path)
 	}
 #endif
 
-#if !defined(PS3) && !defined(ORBIS)
+#if !defined(ORBIS)
 const bool GetFilenameNoCase
 (
 	const char *file,
@@ -2520,13 +1562,13 @@ const bool GetFilenameNoCase
 	assert(file);
 	assert(pAdjustedFilename);
 	strcpy(pAdjustedFilename, file);
-#ifndef PS3
+
 	// Fix the dirname case.
 	const int cLen = strlen(file);
 	for (int i = 0; i<cLen; ++i) 
 		if(pAdjustedFilename[i] == '\\') 
 			pAdjustedFilename[i] = '/';
-#endif
+
 	char *slash;
 	const char *dirname;
 	char *name;
@@ -2564,110 +1606,33 @@ const bool GetFilenameNoCase
 	// Scan for the file.
 	bool found = false;
 	bool skipScan = false;
-#if defined(USE_FILE_MAP)
-#if defined(PS3)
-	const bool skipInitial = true;
-#else
-	const bool skipInitial = false;
-#endif
-	bool dirty = false;
-	int dirIndex = -1;
-	FileNode *dirNode = NULL;
-	if (strrchr(dirname, '/') > dirname)
-	{
-		FileNode *parentDirNode = FileNode::FindExact(
-				dirname, dirIndex, &dirty, skipInitial);
-		if (dirty)
-		{
-			if (parentDirNode != NULL && dirIndex != -1)
-				dirNode = parentDirNode->m_Children[dirIndex];
-		} else
-		{
-			if (parentDirNode == NULL || dirIndex == -1)
-				return false;
-			dirNode = parentDirNode->m_Children[dirIndex];
-			dirty = dirNode->m_bDirty;
-		}
-	}
-	else
-	{
-		// The requested file is in the root directory.
-		dirNode = FileNode::GetTree();
-		if (dirNode != NULL)
-			dirty = dirNode->m_bDirty;
-		else
-			dirty = true;
-	}
-	if (dirNode != NULL)
-	{
-		int index = dirNode->FindExact(name);
-		if (index == -1)
-		{
-			index = dirNode->Find(name);
-			if (index != -1)
-			{
-				strcpy(name, dirNode->m_Entries[index]);
-				found = true;
-			}
-		} else
-			found = true;
-	}
-	if (!dirty || found)
-		skipScan = true;
 
-	if (!skipScan)
-	{
-		FS_OPENDIR(dirname, fd, fsErr);
-		if (fsErr)
-			return false;
-		while (true)
-		{
-			FS_READDIR(fd, dirent, direntSize, fsErr);
-			if (fsErr)
-			{
-				FS_CLOSEDIR_NOERR(fd);
-				return false;
-			}
-			if (direntSize == 0) break;
-			if (!stricmp(dirent.d_name, name))
-			{
-				strcpy(name, dirent.d_name);
-				found = true;
-				break;
-			}
-		}
-		FS_CLOSEDIR(fd, fsErr);
-		if (fsErr)
-			return false;
-	}
-
-	if (slash)
-		*slash = '/';
-	//if (!found && !cCreateNew) return false;
-	return true;
-
-#else //USE_FILE_MAP
-
-	#if defined(LINUX) || defined(APPLE)
 		if (slash) *slash = '/';
-		char *path = pAdjustedFilename;
-		char *sep;
-		while ((sep = strchr(path, '/')) != NULL)
-		{
-			*sep = '\0';
-			const bool exists = FixOnePathElement(pAdjustedFilename);
-			*sep = '/';
-			if (!exists)
+
+	#if FIX_FILENAME_CASE
+			char *path = pAdjustedFilename;
+			char *sep;
+			while ((sep = strchr(path, '/')) != NULL)
+			{
+				*sep = '\0';
+				const bool exists = FixOnePathElement(pAdjustedFilename);
+				*sep = '/';
+				if (!exists)
+					return false;
+
+				path = sep + 1;
+			}
+			if(!FixOnePathElement(pAdjustedFilename)) // catch last filename.
 				return false;
-			path = sep + 1;
-		}
-	  return FixOnePathElement(pAdjustedFilename);  // catch last filename.
+
+	#else
+		for(char* c = pAdjustedFilename; *c; ++c)
+			*c = tolower(*c);
 	#endif
 	
-#endif//USE_FILE_MAP
 	return true;
 }
-#endif//PS3
+#endif //!defined(ORBIS)
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -2686,7 +1651,7 @@ HANDLE CreateFile(
 	FS_ERRNO_TYPE fserr;
 	bool create = false;
 	HANDLE h;
-#if !defined(PS3)
+
 	if ((dwDesiredAccess & GENERIC_READ) == GENERIC_READ
 			&& (dwDesiredAccess & GENERIC_WRITE) == GENERIC_WRITE)
 		flags = O_RDWR;
@@ -2699,7 +1664,6 @@ HANDLE CreateFile(
 		flags = O_RDONLY;
 	}
 	if ((dwDesiredAccess & GENERIC_WRITE) == GENERIC_WRITE)
-#endif
 	{
 		switch (dwCreationDisposition)
 		{
@@ -2726,7 +1690,7 @@ HANDLE CreateFile(
 		}
 	}
 
-#if defined(PS3) || defined(ORBIS)
+#if defined(ORBIS)
 	char buf[512];
 	const char *adjustedFilename = ConvertFileName(buf, lpFileName);
 #else
@@ -2735,25 +1699,8 @@ HANDLE CreateFile(
 #endif
 
 	bool failOpen = false;
-#if defined(USE_FILE_MAP)
-#if defined(LINUX) || defined(APPLE)
-	const bool skipInitial = false;
-#else
-	const bool skipInitial = true;
-#endif
-	if (!FileNode::CheckOpen(adjustedFilename, create, skipInitial))
-		failOpen = true;
-#endif
 	(void)create;
 
-#if defined(FILE_MAP_DEBUG)
-	fd = open(adjustedFilename, flags, mode);
-	if (fd != -1 && failOpen)
-	{
-		puts("FileNode::CheckOpen error");
-		assert(0);
-	}
-#else
 	if (failOpen)
 	{
 		fd = -1;
@@ -2767,7 +1714,7 @@ HANDLE CreateFile(
 		FS_OPEN(adjustedFilename, flags, fd, 0, fserr);
 #endif
 	}
-#endif
+
 	(void)fserr;
 	if (fd == -1)
 	{
@@ -2780,12 +1727,6 @@ HANDLE CreateFile(
 }
 
 #define Int32x32To64(a, b) ((uint64)((uint64)(a)) * (uint64)((uint64)(b)))
-
-#if defined(PS3)
-	#ifndef MAX_FILE_HANDLE_INDEX
-		#define MAX_FILE_HANDLE_INDEX 256
-	#endif
-#endif//PS3
 
 /*
 //////////////////////////////////////////////////////////////////////////
@@ -2801,7 +1742,7 @@ BOOL SetFileTime(
 */
 BOOL SetFileTime(const char* lpFileName, const FILETIME *lpLastAccessTime)
 {
-#if defined(PS3) || defined(ORBIS)
+#if defined(ORBIS)
 	char buf[512];
 	const char* const adjustedFilename = ConvertFileName(buf, lpFileName);
 #else
@@ -2809,25 +1750,8 @@ BOOL SetFileTime(const char* lpFileName, const FILETIME *lpLastAccessTime)
 	char adjustedFilename[MAX_PATH];
 	GetFilenameNoCase(lpFileName, adjustedFilename, false);
 #endif
-#if defined(PS3)
-	CellFsUtimbuf timeBuf;
-	// the incoming time is in windows format(msecs since 1601)
-	// also the set file functions seem to have some (undocumented?) requierments
-	// that the time is a valid date, or else a default date(xx,xx,1979) is choosen
-	// so we must compute the unix file time from the windows format
-	uint64 winTime = *(uint64*)lpLastAccessTime;
-	uint64 unixTime = (winTime - 116444736000000000ll) / 10000000;
-	
-	timeBuf.actime = *(time_t*)&unixTime;
-	timeBuf.modtime = *(time_t*)&unixTime;
-	const CellFsErrno fileErr = cellFsUtime(adjustedFilename, &timeBuf);//local host file
-	if(fileErr != CELL_FS_SUCCEEDED)
-	{
-		CryFatalError("SetFileTime for \"%s\" failed with error code: 0x%08x\n",adjustedFilename,fileErr);
-		return false;
-	}
-	return true;
-#elif defined(ORBIS)
+
+#if defined(ORBIS)
 	ORBIS_TO_IMPLEMENT;
 	return false;
 #elif defined(LINUX) || defined(APPLE)
@@ -2886,7 +1810,6 @@ BOOL GetFileTime(HANDLE hFile, LPFILETIME lpCreationTime, LPFILETIME lpLastAcces
 */
 
 //////////////////////////////////////////////////////////////////////////
-#ifndef PS3
 BOOL SetFileAttributes(
 															LPCSTR lpFileName,
 															DWORD dwFileAttributes )
@@ -2895,7 +1818,6 @@ BOOL SetFileAttributes(
 	printf("SetFileAttributes not properly implemented yet, should not matter\n");
 	return TRUE;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 DWORD GetFileSize(HANDLE hFile,DWORD *lpFileSizeHigh )
@@ -2941,17 +1863,9 @@ BOOL CancelIo( HANDLE hFile )
 //////////////////////////////////////////////////////////////////////////
 HRESULT GetOverlappedResult( HANDLE hFile,void* lpOverlapped,LPDWORD lpNumberOfBytesTransferred, BOOL bWait )
 {
-#if defined PS3
-	// There is nothing like 'GetOverlappedResult()' on PS3, so we'll always
-	// report that no data has been read so far.
-	if (lpNumberOfBytesTransferred != NULL)
-		*lpNumberOfBytesTransferred = 0;
-	return 1;
-#else
 //TODO: implement
 	CRY_ASSERT_MESSAGE(0, "GetOverlappedResult not implemented yet");
 	return 0;
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2980,37 +1894,8 @@ BOOL ReadFileEx
 	LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 )
 {
-#if defined(PS3)
-	CellFsAio *const pAio = lpOverlapped;
-#ifdef ENABLE_FSAIO
-	int id = 0;
-	pAio->fd = static_cast<int>(hFile.Handle());
-	if(pAio->fd == -1)
-		return FALSE;
-	pAio->buf = lpBuffer;
-	pAio->size = static_cast<uint64_t>(nNumberOfBytesToRead);
-	CellFsErrno err = cellFsAioRead(pAio, &id, lpCompletionRoutine);
-	pAio->user_data = (uint64_t)id;//store id to be able cancel io later on
-	return err == CELL_OK;
-#else
-	uint64 read = 0;
-	uint64 pos = 0;
-	int err = -1;
-	int h = static_cast<int>(hFile.Handle());
-	pAio->fd = h;
-	if(h >= 0)
-	{
-		err = cellFsLseek(h, pAio->offset, SEEK_SET, &pos);
-		if(err == CELL_OK)
-			err = cellFsRead(h, lpBuffer, nNumberOfBytesToRead, &read);
-	}
-	lpCompletionRoutine(pAio,err, 0, read);
-	return err==CELL_OK;
-#endif//ENABLE_FSAIO
-#else
 	CRY_ASSERT_MESSAGE(0, "ReadFileEx not implemented yet");
 	return TRUE;
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -3028,7 +1913,7 @@ DWORD SetFilePointer
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if !defined(PS3) && !defined(ORBIS)
+#if !defined(ORBIS)
 threadID GetCurrentThreadId()
 {
   return threadID(pthread_self());
@@ -3051,7 +1936,6 @@ HANDLE CreateEvent
 
 
 //////////////////////////////////////////////////////////////////////////
-#ifndef PS3
 DWORD Sleep(DWORD dwMilliseconds)
 {
 #if defined(LINUX) || defined(APPLE)
@@ -3097,7 +1981,6 @@ DWORD Sleep(DWORD dwMilliseconds)
 	return 0;
 #endif
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 DWORD SleepEx( DWORD dwMilliseconds,BOOL bAlertable )
@@ -3266,67 +2149,15 @@ BOOL SetCurrentDirectory(LPCSTR lpPathName)
 		if (*p == '/') ++p;
 	}
 
-	strncpy(fopenwrapper_basedir, dir, fopenwrapper_basedir_maxsize);
-	fopenwrapper_basedir[fopenwrapper_basedir_maxsize - 1] = 0;
+	cry_strcpy(fopenwrapper_basedir, fopenwrapper_basedir_maxsize, dir);
 	return TRUE;
 }
 #endif //0
-//////////////////////////////////////////////////////////////////////////
-DWORD GetCurrentDirectory( DWORD nBufferLength, char* lpBuffer )
-{
-#if defined(PS3_CRYENGINE)
-	char *p = fopenwrapper_basedir;
-	size_t len;
-
-	if (*p != '/')
-		WrappedF_InitCWD();
-	assert(*p == '/');
-
-	if (!*p)
-	{
-		// Yes, we'll return 2 if the buffer is too small and 1 otherwise.
-		// Yes, this is stupid, but that's what Microsoft says...
-		if (nBufferLength < 2) return 2;
-		lpBuffer[0] = '\\';
-		lpBuffer[1] = 0;
-		return 1;
-	}
-	len = strlen(p) + 1;
-	if (nBufferLength < len) 
-		return len;
-	strcpy(lpBuffer, p);
-#if !defined(PS3)
-	for(int i=0; i<len; ++i)
-	{
-		if (*p == '/') *p = '\\';
-		++p;
-	}
-#endif
-	return len - 1;
-#if 0
-	if (getcwd(lpBuffer, nBufferLength) == NULL)
-	{
-		fprintf(stderr, "getcwd(): %s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-	if (nBufferLength > 0)
-		lpBuffer[nBufferLength - 1] = 0;
-	return strlen(lpBuffer);
-#endif
-#else
-	// Not supported outside of CryEngine.
-	return 0;
-#endif
-}
 
 //////////////////////////////////////////////////////////////////////////
 BOOL DeleteFile(LPCSTR lpFileName)
 {
-#if defined(PS3)
-	char buf[512];
-	const char *const cpConvFileName = ConvertFileName(buf, lpFileName);
-	return((cellFsUnlink(cpConvFileName) == CELL_FS_SUCCEEDED)?0 : -1);
-#elif defined(LINUX) || defined(APPLE)
+#if defined(LINUX) || defined(APPLE)
 	int err = unlink(lpFileName);
 	return (0 == err);
 #else
@@ -3421,14 +2252,8 @@ DWORD GetCurrentProcessId(void)
 //////////////////////////////////////////////////////////////////////////
 BOOL RemoveDirectory(LPCSTR lpPathName)
 {
-#if defined(PS3)
-	char buf[512];
-	const char *const cpConvFileName = ConvertFileName(buf, lpPathName);
-	return((cellFsRmdir(cpConvFileName) == CELL_FS_SUCCEEDED)?0 : -1);
-#else//PS3
 	CRY_ASSERT_MESSAGE(0, "RemoveDirectory not implemented yet");
 	return TRUE;
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -3478,38 +2303,11 @@ void CryLowLatencySleep( unsigned int dwMilliseconds )
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if defined(PS3)
-void sys_timer_usleep_nops( unsigned int dwMicroSeconds )
-{
-	//do loops with nops, 16 nops per iteration
-	const int cIterations = dwMicroSeconds * 100;
-	for(int i=0; i<cIterations; ++i)
-	{
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-		asm volatile("nop");
-	}
-}
-#endif
-
 //////////////////////////////////////////////////////////////////////////
 int CryMessageBox( const char *lpText,const char *lpCaption,unsigned int uType)
 {
 #ifdef WIN32
-	return MessageBox( NULL,lpText,lpCaption,uType );
+#	error WIN32 is defined in WinBase.cpp (it is a non-Windows file)
 #elif defined(MAC)
 	CFStringRef strText = CFStringCreateWithCString(NULL, lpText, strlen(lpText));
 	CFStringRef strCaption = CFStringCreateWithCString(NULL, lpCaption, strlen(lpCaption));
@@ -3543,38 +2341,48 @@ int CryMessageBox( const char *lpText,const char *lpCaption,unsigned int uType)
 }
 
 //////////////////////////////////////////////////////////////////////////
-int CryCreateDirectory( const char *lpPathName,void *lpSecurityAttributes )
+bool CryCreateDirectory( const char *lpPathName )
 {
-#if defined(LINUX) || defined(APPLE)
 	struct stat st_info;
-	
+
 	if (stat(lpPathName, &st_info) == 0)
 	{
 		if (!S_ISDIR(st_info.st_mode))
 		{
-			CryLog( "mkdir(\"%s\") failed: Path already exits and is not a directory", lpPathName);
+			CryLog( "%s failed: '%s' already exists and is not a directory", __FUNC__, lpPathName);
+			return false;
 		}
-		return 0;
+		return true;
 	}
-	int res = mkdir(lpPathName, S_IRWXU);
-	if (res != 0)
-	{
-		CryLog( "mkdir(\"%s\") failed: %s", lpPathName, strerror(errno) );
+
+#if defined(LINUX) || defined(APPLE)
+	const int res = mkdir(lpPathName, S_IRWXU);
 #else
-	int res = _mkdir(lpPathName);
+	const int res = _mkdir(lpPathName);
+#endif
+
 	if (res != 0)
 	{
-#endif
-		SetLastError( ERROR_PATH_NOT_FOUND );
-		return -1;
+		CryLog( "%s: mkdir('%s') failed", __FUNC__, lpPathName);
+		return false;
 	}
+
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+DWORD GetCurrentDirectory( DWORD nBufferLength, char* lpBuffer )
+{
 	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
-int CryGetCurrentDirectory( unsigned int nBufferLength,char *lpBuffer )
+void CryGetCurrentDirectory( unsigned int nBufferLength,char *lpBuffer )
 {
-	return GetCurrentDirectory(nBufferLength,lpBuffer);
+	if (nBufferLength > 0 && lpBuffer)
+	{
+		*lpBuffer = 0;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -3596,7 +2404,6 @@ int CryGetWritableDirectory( unsigned int nBufferLength, char* lpBuffer )
 #endif
 }
 
-#if !defined(PS3) || !defined(_LIB)
 //////////////////////////////////////////////////////////////////////////
 short CryGetAsyncKeyState( int vKey )
 {
@@ -3604,7 +2411,6 @@ short CryGetAsyncKeyState( int vKey )
 	CRY_ASSERT_MESSAGE(0, "CryGetAsyncKeyState not implemented yet");
 	return 0;
 }
-#endif
 
 #if defined(LINUX) || defined(APPLE)
 //[K01]: http://www.memoryhole.net/kyle/2007/05/atomic_incrementing.html
@@ -3720,17 +2526,10 @@ void CryDebugBreak()
 }
 #endif//LINUX APPLE
 
-#ifdef PS3
-void CryDebugBreak()
-{
-	__debugbreak();
-}
-#endif //PS3
-
 //////////////////////////////////////////////////////////////////////////
 uint32 CryGetFileAttributes(const char *lpFileName)
 {
-#if defined(PS3) || defined(ORBIS)
+#if defined(ORBIS)
 	char buf[512];
 	const char* buffer = ConvertFileName(buf, lpFileName);
 #elif defined(LINUX) || defined(APPLE)
@@ -3752,7 +2551,6 @@ uint32 CryGetFileAttributes(const char *lpFileName)
 	return (fsErr == FS_EISDIR)? FILE_ATTRIBUTE_DIRECTORY : INVALID_FILE_ATTRIBUTES;
 }
 
-#if !defined(PS3)
 //////////////////////////////////////////////////////////////////////////
 bool CrySetFileAttributes( const char *lpFileName,uint32 dwFileAttributes )
 {
@@ -3760,157 +2558,18 @@ bool CrySetFileAttributes( const char *lpFileName,uint32 dwFileAttributes )
 	printf("CrySetFileAttributes not properly implemented yet\n");
 	return false;
 }
-#endif
 
-#if defined(PS3)
-//////////////////////////////////////////////////////////////////////////
-char *_fullpath(char * absPath, const char* relPath, size_t size)
-{
-	char szExeFileName[_MAX_PATH];
-	// Get the path of the executable
-	GetCurrentDirectory(sizeof(szExeFileName), szExeFileName);
-	char * __restrict pCurDst = absPath;
-	const char * __restrict pCurSrc = szExeFileName;
-	while(*pCurSrc)
-		*pCurDst++ = *pCurSrc++;
-	pCurSrc = relPath;
-	while(*pCurSrc)
-		*pCurDst++ = *pCurSrc++;
-	*pCurDst = '\0';
-	return absPath;
-}
-#endif
+int file_counter = 0;
+long file_op_counter = 0;
+long file_op_break = -1;
 
-#if !defined(PS3)
-	int file_counter = 0;
-	long file_op_counter = 0;
-	long file_op_break = -1;
-#endif
 
 static void WrappedF_Break(long op_counter)
 {
 	printf("WrappedF_Break(op_counter = %li)\n", op_counter);
 }
 
-#if defined(PS3)
-
-#if defined PS3_CRYENGINE
-typedef std::map<pthread_t, const char*> TThreadMap;
-static TThreadMap g_ThreadNameMap;
-static std::vector<uint32> g_ThreadIndexVec;
-static CryLockT<CRYLOCK_RECURSIVE> g_ThreadIndexLock;
-
-// fp exceptions
-inline int EnableFPException(sys_ppu_thread_t id)
-{
-#ifdef SUPP_FP_EXC
-	int ret;
-	ret = feclearexcept(FE_DIVBYZERO | FE_INVALID);
-	if (ret != 0)
-		return ret;
-	ret = sys_dbg_enable_floating_point_enabled_exception(id, 0, 0, 0);
-	if (ret != CELL_OK)
-		return ret;
-	ret = fesettrapenable(FE_DIVBYZERO | FE_INVALID);
-	if (ret != 0)
-		return ret;
-#endif
-	return CELL_OK;
-}
-
-void RegisterThreadName(pthread_t id, const char* name)
-{
-	g_ThreadIndexLock.Lock();
-	ScopedSwitchToGlobalHeap GlobalHeap;
-	if(name)
-		g_ThreadNameMap.insert(std::pair<pthread_t, const char*>(id, name));	
-	g_ThreadIndexVec.push_back((uint32)id);	
-	if(g_EnableFP)
-		EnableFPException((sys_ppu_thread_t)id);
-	g_ThreadIndexLock.Unlock();
-};
-
-uint32 MapThreadIDToIndex(uint32 threadId)
-{
-	g_ThreadIndexLock.Lock();
-	uint32 index=0;
-	const uint32 cEntryCnt = g_ThreadIndexVec.size();
-	for(; index<cEntryCnt; ++index)
-	{
-		if(g_ThreadIndexVec[index] == threadId)
-			break;
-	}
-	g_ThreadIndexLock.Unlock();
-	return index;
-}
-
-void UnRegisterThreadName(pthread_t id)
-{
-	g_ThreadIndexLock.Lock();
-	TThreadMap::iterator it = g_ThreadNameMap.find(id);
-	if(it != g_ThreadNameMap.end())
-		g_ThreadNameMap.erase(it);
-	const std::vector<uint32>::iterator cThreadEnd = g_ThreadIndexVec.end();
-	for(std::vector<uint32>::iterator it=g_ThreadIndexVec.begin();it!=cThreadEnd; ++it)
-	{
-		if(*it == (uint32)id)
-		{
-			g_ThreadIndexVec.erase(it);
-			return;
-		}
-	}
-	g_ThreadIndexLock.Unlock();
-};
-
-const char* GetRegisteredThreadName(uint32 id)
-{
-	g_ThreadIndexLock.Lock();
-	TThreadMap::iterator it = g_ThreadNameMap.find((pthread_t)id);
-	const char* retVal = NULL;
-	if(it != g_ThreadNameMap.end())
-		retVal = it->second;
-	g_ThreadIndexLock.Unlock();
-	return retVal;
-}
-
-inline void DisableFPException(sys_ppu_thread_t id)
-{
-#ifdef SUPP_FP_EXC
-	sys_dbg_disable_floating_point_enabled_exception(id, 0, 0, 0);
-	fesettrapenable(0);
-#endif
-}
-
-void DisableFPExceptions()
-{
-#ifdef SUPP_FP_EXC
-	sys_ppu_thread_t id;
-	int ret = sys_ppu_thread_get_id(&id);
-	if(ret >= 0)
-		DisableFPException(id);
-	g_EnableFP = false;
-	const std::vector<uint32>::iterator cThreadEnd = g_ThreadIndexVec.end();
-	for(std::vector<uint32>::iterator it=g_ThreadIndexVec.begin();it!=cThreadEnd; ++it)
-		DisableFPException(*it);
-#endif
-}
-
-void EnableFPExceptions()
-{
-#ifdef SUPP_FP_EXC
-	sys_ppu_thread_t id;
-	if(CELL_OK == sys_ppu_thread_get_id(&id))
-		EnableFPException(id);
-	g_EnableFP = true;
-	const std::vector<uint32>::iterator cThreadEnd = g_ThreadIndexVec.end();
-	for(std::vector<uint32>::iterator it=g_ThreadIndexVec.begin();it!=cThreadEnd; ++it)
-		EnableFPException(*it);
-#endif
-}
-#endif
-#endif // defined(PS3)
-
-#if defined(PS3) || defined(ORBIS)
+#if defined(ORBIS)
 // undef the define overloads
 #undef fopen
 #undef stat
@@ -3936,25 +2595,21 @@ void EnableFPExceptions()
 
 
 // LRU cache for filehandles
-// The PS3 only allows up to 31 files opened on gamedata
-// thus we cache them, reuse older filedescriptors, and close
+//we cache them, reuse older filedescriptors, and close
 // files in case we ran out of file descriptors
 // to prevent problems with streaming/direct file access, these get their LRU
 // value modified, so that they have a higher priority
 class CFileHandleCache
 {
 	enum { nFILEHANDLESALT = 0xFF000000 };	// special salt to build FILE* look alikes
-#ifndef PS3
+
 	enum { nFILEENTRIES = 256 };						// number of supported entries in the cache
 #if defined(ORBIS)
-	enum { nMAXOPENFILES = FOPEN_MAX - 13 };	// maximum of simultanius opened files (minus 3 as includes stdout, stderr and stdin minus 10 for miscellaneous other files the OS seems to have open)
+	enum { nMAXOPENFILES = FOPEN_MAX - 18 };	// maximum of simultaneous opened files (minus 3 as includes stdout, stderr and stdin minus 15 for miscellaneous other files the OS seems to have open)
 #else
-	enum { nMAXOPENFILES = FOPEN_MAX - 3 };	// maximum of simultanius opened files (minus 3 as includes stdout, stderr and stdin)
+	enum { nMAXOPENFILES = FOPEN_MAX - 3 };	// maximum of simultaneous opened files (minus 3 as includes stdout, stderr and stdin)
 #endif
-#else
-	enum { nFILEENTRIES = 64 };							// number of supported entries in the cache
-	enum { nMAXOPENFILES = 26 };						// maximum of simultanius opened files
-#endif
+
 	enum { nFILEIOBUFFERSIZE = 32 *1024 };		// size of the buffer used for file io
 
 public:
@@ -3994,28 +2649,7 @@ public:
 	void DumpCacheContent();
 private:
 	CFileHandleCache();
-
-	void TestDiscEjection(FILE *pHandle) 
-	{
-#ifdef PS3
-		if( errno != 0 )
-		{
-			//For robustness, follow the documented procedure described in "libfs Overview - Handling Disc Ejections"
-			FILE *pRealHandle = GetRealFileHandle(pHandle);
-			if(pRealHandle)
-			{
-				int fileNumber = ::fileno(pRealHandle);
-				CellFsStat sb;
-				CellFsErrno statError = cellFsFstat(fileNumber, &sb);
-				if( statError == CELL_FS_EBADF )
-				{
-					SetDiscIsEjectedFlag(pHandle);
-				}
-			}
-		}
-#endif
-	}
-
+	
 	void SetDiscIsEjectedFlag(FILE *pHandle )
 	{
 		uint32 nCachePos = GetCachePos(pHandle);
@@ -4246,7 +2880,6 @@ size_t CFileHandleCache::Fileno(FILE *pHandle )
 	FILE *pRealHandle = GetRealFileHandle(pHandle);
 	errno = 0; // reset erno to not get wrong results
 	size_t nRes = pRealHandle ? ::fileno(pRealHandle) : 0;
-	TestDiscEjection(pHandle);
 	return nRes;
 #endif
 }
@@ -4260,7 +2893,6 @@ size_t CFileHandleCache::FRead( void *ptr, size_t size, size_t count, FILE *pHan
 #else
 	size_t nRes = pRealHandle ? ::fread(ptr, size, count, pRealHandle) : 0;
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4273,7 +2905,6 @@ size_t CFileHandleCache::FWrite( const void * ptr, size_t size, size_t count, FI
 #else
 	size_t nRes = pRealHandle ? ::fwrite(ptr, size, count, pRealHandle) : 0;
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4286,7 +2917,6 @@ size_t CFileHandleCache::FTell(FILE *pHandle)
 #else
 	size_t nRes = pRealHandle ? ::ftell(pRealHandle) : (size_t)(-1L);
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4303,7 +2933,6 @@ size_t CFileHandleCache::FSeek(FILE* pHandle, size_t offset, size_t origin)
 #else
 	size_t nRes = pRealHandle ? ::fseek(pRealHandle,offset, origin) : (size_t)(-1L);
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4319,7 +2948,6 @@ int CFileHandleCache::VFprintf( FILE * pHandle, const char * format, va_list arg
 	FILE *pRealHandle = GetRealFileHandle(pHandle);
 	errno = 0; // reset erno to not get wrong results
 	int nRes = pRealHandle ? ::vfprintf (pRealHandle,format, arg) : -1;
-	TestDiscEjection(pHandle);
 	return nRes;
 #endif
 }
@@ -4334,7 +2962,6 @@ int CFileHandleCache::VFscanf( FILE * pHandle, const char * format, va_list arg 
 #else
 	int nRes = pRealHandle ? ::vfscanf( pRealHandle,format, arg): -1;
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4348,7 +2975,6 @@ int CFileHandleCache::Fgetc( FILE * pHandle )
 #else
 	int nRes = pRealHandle ? ::fgetc( pRealHandle): -1;
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4375,7 +3001,6 @@ char* CFileHandleCache::FGets( char * str, int num, FILE * pHandle )
 	FILE *pRealHandle = GetRealFileHandle(pHandle);
 	errno = 0; // reset erno to not get wrong results
 	char* nRes = pRealHandle ? ::fgets (str,num, pRealHandle) : NULL;	
-	TestDiscEjection(pHandle);
 	return nRes;
 #endif
 }
@@ -4396,7 +3021,6 @@ int CFileHandleCache::Feof ( FILE * pHandle )
 #else
 	int nRes = pRealHandle ? ::feof (pRealHandle) : 0;	
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4409,7 +3033,6 @@ int CFileHandleCache::Ferror ( FILE * pHandle )
 #else
 	int nRes = pRealHandle ? ::ferror (pRealHandle) : 0;
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4423,7 +3046,6 @@ int CFileHandleCache::Getc ( FILE * pHandle )
 #else
 	int nRes = pRealHandle ? ::getc (pRealHandle) : EOF;	
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4437,7 +3059,6 @@ int CFileHandleCache::Ungetc ( int character, FILE * pHandle )
 #else
 	int nRes = pRealHandle ? ::ungetc (character, pRealHandle): EOF;	
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4449,7 +3070,6 @@ int CFileHandleCache::Fputs( const char * str, FILE * pHandle )
 	FILE *pRealHandle = GetRealFileHandle(pHandle);
 	errno = 0; // reset erno to not get wrong results
 	int nRes = pRealHandle ? ::fputs (str, pRealHandle) : EOF;	
-	TestDiscEjection(pHandle);
 	return nRes;
 #endif
 }
@@ -4463,7 +3083,6 @@ int CFileHandleCache::Fflush(FILE *pHandle )
 #else
 	int nRes = pRealHandle ? ::fflush(pRealHandle) : EOF;	
 #endif
-	TestDiscEjection(pHandle);
 	return nRes;
 }
 
@@ -4685,14 +3304,14 @@ FILE* CFileHandleCache::OpenFile(uint32 nCachePos, const char *sName, const char
 #endif
 		
 	rEntry.m_state = SCacheEntry::Open;
-	strcpy_s(rEntry.m_filename, sName);
+	cry_strcpy(rEntry.m_filename, sName);
 
 	stack_string reopenOp=op;
 	reopenOp.replace("wb+", "rb+");
 	reopenOp.replace("wt+", "rt+");
 	reopenOp.replace("w+", "r+");
 	reopenOp.replace("w", "r+");
-	strcpy_s(rEntry.m_mode, reopenOp.c_str());
+	cry_strcpy(rEntry.m_mode, reopenOp.c_str());
 
 	rEntry.m_type = type;
 	// create md5 hash as a search key
@@ -4809,14 +3428,12 @@ namespace std
 {
 // ==== file io wrapper ==== //
 #if defined(USE_FILE_HANDLE_CACHE)
-// non-ps3 versions are below
+// non-file handle cache versions are below
 FILE *WrappedFopen(const char *__restrict filename,	const char *__restrict mode, FileIoWrapper::FileAccessType type, bool bSysAppHome )
 {		
 	char buf[512];
 			
-#if defined(PS3)
-	FILE *fp = CFileHandleCache::Instance().FOpen( bSysAppHome ? filename : ConvertFileName(buf, filename), (const char*)mode, type);	
-#elif defined(ORBIS)
+#if defined(ORBIS)
 	FILE *fp = CFileHandleCache::Instance().FOpen( ConvertFileName(buf, filename), (const char*)mode, type);	
 #else
 	FILE *fp = CFileHandleCache::Instance().FOpen( filename, (const char*)mode, type);	
@@ -4831,7 +3448,7 @@ int WrappedStat(const char * _Filename, struct stat * _Stat)
 		return -1; // Wildcards should always fail a 'stat'
 	}
 	char buf[512];
-#if defined(PS3) || defined(ORBIS)
+#if defined(ORBIS)
 	return ::stat(ConvertFileName(buf, _Filename), _Stat);
 #else
 	return ::stat(_Filename, _Stat);
@@ -4944,7 +3561,7 @@ int WrappedFscanf ( FILE * stream, const char * format, ... )
 }
 
 
-// ==== non PS3 fopen/fclose wrapper
+// ==== non file handle cache fopen/fclose wrapper
 #else 
 
 extern "C" FILE *WrappedFopen(const char *__restrict filename,	const char *__restrict mode)
@@ -5004,27 +3621,16 @@ extern "C" FILE *WrappedFopen(const char *__restrict filename,	const char *__res
 #endif
 
 		bool failOpen = false;
-#if defined(USE_FILE_MAP)
-		if (!FileNode::CheckOpen(filename, isWrite, skipInitial))
-			failOpen = true;
-#endif
+
 		FILE *fp = 0;
-#if defined(FILE_MAP_DEBUG)
-		if (!skipOpen)
-			fp = fopen(filename, mode);
-		if (fp && failOpen)
-		{
-			puts("FileNode::CheckOpen error");
-			assert(0);
-		}
-#else
+
 		if (failOpen)
 		{
 			fp = NULL;
 			errno = ENOENT;
 		} else if (!skipOpen)
 			fp = fopen(filename, mode);
-#endif
+
 		if (fp)
 			++file_counter;
 

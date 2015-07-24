@@ -1,5 +1,3 @@
-#include DEVIRTUALIZE_HEADER_FIX(IConsole.h)
-
 #ifndef _ICONSOLE_H_
 #define _ICONSOLE_H_
 
@@ -61,43 +59,44 @@ enum EVarFlags
 	VF_LIVE_CREATE_SYNCED =				0x10000000,			// This variable will be synced with LiveCreate clients
 	VF_RENDERER_CVAR =						0x20000000,			// The update of this variable will be done in render thread
 	VF_DEPRECATED =								0x40000000,			// Deprecated cvars use default values which cannot be modified outside the code
+	VF_EXPERIMENTAL =							0x80000000,			// This variable is used by WIP or experimental feature
 };
 
 struct ICVarDumpSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICVarDumpSink(){}
 	virtual void OnElementFound(ICVar *pCVar) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IKeyBindDumpSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IKeyBindDumpSink(){}
 	virtual void OnKeyBindFound( const char *sBind,const char *sCommand ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct IOutputPrintSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IOutputPrintSink(){}
 	virtual void Print( const char *inszText )=0;
-
+	// </interfuscator:shuffle>
 };
 
 // Callback class to derive from when you want to receive callbacks when console var changes.
 struct IConsoleVarSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IConsoleVarSink(){}
 	// Called by Console before changing console var value, to validate if var can be changed.
 	// Return value: true if ok to change value, false if should not change value.
 	virtual bool OnBeforeVarChange( ICVar *pVar,const char *sNewValue ) = 0;
 	// Called by Console after variable has changed value
 	virtual void OnAfterVarChange( ICVar *pVar ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #if defined(GetCommandLine)
@@ -105,9 +104,9 @@ struct IConsoleVarSink
 #endif
 
 // Interface to the arguments of the console command.
-UNIQUE_IFACE struct IConsoleCmdArgs
+struct IConsoleCmdArgs
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IConsoleCmdArgs(){}
 	// Gets number of arguments supplied to the command (including the command itself)
 	virtual int GetArgCount() const = 0;
@@ -115,19 +114,19 @@ UNIQUE_IFACE struct IConsoleCmdArgs
 	virtual const char* GetArg( int nIndex ) const = 0;
 	// Gets complete command line
 	virtual const char* GetCommandLine() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Interface to the arguments of the console command.
 struct IConsoleArgumentAutoComplete
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IConsoleArgumentAutoComplete(){}
 	// Gets number of matches for the argument to auto complete.
 	virtual int GetCount() const = 0;
 	// Gets argument value by index, nIndex must be in 0 <= nIndex < GetCount()
 	virtual const char* GetValue( int nIndex ) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // This a definition of the console command function that can be added to console with AddCommand.
@@ -148,9 +147,9 @@ typedef void (*ConsoleVarFunc)( ICVar* );
 	The console takes advantage of the script engine to store the console variables,
 	this mean that all variables visible through script and console.
 */ 
-UNIQUE_IFACE struct IConsole
+struct IConsole
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IConsole(){}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Deletes the console
@@ -224,6 +223,14 @@ UNIQUE_IFACE struct IConsole
 	// Return:
 	//   pointer to the interface ICVar
 	virtual ICVar *Register(const char *name, const char**src, const char* defaultvalue, int nFlags=0, const char *help = "",ConsoleVarFunc pChangeFunc=0, bool allowModify = true)=0;
+
+	// Registers an existing console variable
+	// Should only be used with static duration objects, object is never freed
+	// Arguments:
+	//   pVar - the existing console variable
+	// Return:
+	//   pointer to the interface ICVar (that was passed in)
+	virtual ICVar *Register(ICVar *pVar)=0;
 
 	// ! Remove a variable from the console
 	// @param sVarName console variable name
@@ -468,6 +475,7 @@ UNIQUE_IFACE struct IConsole
 	virtual void SaveInternalState(struct IDataWriteStream& writer) const = 0;
 	virtual void LoadInternalState(struct IDataReadStream& reader) = 0;
 
+	// </interfuscator:shuffle>
 
 #if defined( DEDICATED_SERVER )
 	virtual void SetClientDataProbeString( const char* pName, const char* pValue )=0;
@@ -485,7 +493,7 @@ struct IRemoteConsoleListener
 	virtual void OnGameplayCommand(const char* cmd) {};
 };
 
-UNIQUE_IFACE struct IRemoteConsole
+struct IRemoteConsole
 {
 	virtual ~IRemoteConsole() {};
 
@@ -524,6 +532,7 @@ struct ICVar
 		eCLM_FullInfo					// full info to file only
 	};
 
+	// <interfuscator:shuffle>
 	// TODO make protected;
 	virtual ~ICVar() {}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -639,7 +648,7 @@ struct ICVar
 	// only useful for CVarGroups
 	// log difference between expected state and real state
 	virtual void DebugLog( const int iExpectedValue, const EConsoleLogMode mode ) const {}
-
+	// </interfuscator:shuffle>
 #if defined( DEDICATED_SERVER )
 	// Set the data probe string value of the variable
 	virtual void SetDataProbeString( const char* pDataProbeString ) = 0;

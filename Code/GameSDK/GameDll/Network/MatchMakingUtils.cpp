@@ -4,10 +4,9 @@
 
 #include "MatchMakingUtils.h"
 #include "Lobby/GameLobbyData.h"
-
+#include "UnicodeFunctions.h"
 #include <StringUtils.h>
 
-#define MAX_HOPPER_NAME_LENGTH 100
 #define ROUND_TO_ROUND_HOPPER_NAME "RoundToRound"
 #define ROUND_TO_ROUND_PLAYLIST_ID L"00000000-0000-0000-0000-00000000001F"
 
@@ -249,13 +248,9 @@ namespace MatchmakingUtils
 		if(!constants)
 			return E_INVALIDARG;
 
-		wchar_t hopperBuffer[MAX_HOPPER_NAME_LENGTH];
-		hopperBuffer[MAX_HOPPER_NAME_LENGTH-1] = L'\0';
-		size_t convertedChars;
-		mbstowcs_s( &convertedChars, hopperBuffer, gameModeId.c_str(), MAX_HOPPER_NAME_LENGTH-1);
-
-		wstring hopperName( hopperBuffer );
-
+		wstring hopperName;
+		Unicode::Convert(hopperName, gameModeId);
+		
 		ComPtr<IJsonObject> attr;
 		Activate::Instance(&attr);
 
@@ -314,12 +309,8 @@ namespace MatchmakingUtils
 	{
 		using namespace ABI::Windows::Data::Json;
 
-		wchar_t hopperBuffer[MAX_HOPPER_NAME_LENGTH];
-		hopperBuffer[MAX_HOPPER_NAME_LENGTH-1] = L'\0';
-		size_t convertedChars;
-		mbstowcs_s( &convertedChars, hopperBuffer, gameModeId.c_str(), MAX_HOPPER_NAME_LENGTH-1);
-
-		wstring hopperName( hopperBuffer );
+		wstring hopperName;
+		Unicode::Convert(hopperName, gameModeId);
 
 		Wrappers::HString ticketAttributes;
 		PrepareConstants( gameModeId, playlistId, mpRank, ticketAttributes.GetAddressOf() );
@@ -612,11 +603,6 @@ namespace MatchmakingUtils
 				{
 					CryLogAlways( "MatchmakingUtils: Reporting Live connectivity lost to UI" );
 					SendMatchmakingStatus( Live::MPSessionState::Error );
-				}
-				else
-				{
-					// HACK: not the best place to put this line of code -- 12/11/2013 yeonwoon
-					g_pGame->RefreshRichPresence();
 				}
 
 				return S_OK;

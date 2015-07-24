@@ -11,7 +11,6 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IFlashUI.h)
 
 #ifndef __IFlashUI__h__
 #define __IFlashUI__h__
@@ -276,12 +275,7 @@ struct SUIConversion<string, wstring>
 {
 	static ILINE bool ConvertValue( const string& from, wstring& to )
 	{
-		size_t len = from.length();
-		wchar_t* buff = new wchar_t[len + 1];
-		buff[len] = '\0';
-		mbstowcs(buff, from.c_str(), len);
-		to = buff;
-		delete[] buff;
+		Unicode::Convert(to, from);
 		return true;
 	}
 };
@@ -291,13 +285,8 @@ struct SUIConversion<wstring, string>
 {
 	static ILINE bool ConvertValue( const wstring& from, string& to )
 	{
-		size_t len = from.length();
-		char* buff = new char[len + 1];
-		buff[len] = '\0';
-		size_t res = wcstombs(buff, from.c_str(), len);
-		to = buff;
-		delete[] buff;
-		return res == len;
+		Unicode::Convert(to, from);
+		return true;
 	}
 };
 
@@ -1103,7 +1092,7 @@ protected:
   virtual ~IUIElementEventListener() {}; 
 };
 
-UNIQUE_IFACE struct IUIElementIterator
+struct IUIElementIterator
 {
 	virtual ~IUIElementIterator() {}
 
@@ -1116,7 +1105,7 @@ UNIQUE_IFACE struct IUIElementIterator
 TYPEDEF_AUTOPTR(IUIElementIterator);
 typedef IUIElementIterator_AutoPtr IUIElementIteratorPtr;
 
-UNIQUE_IFACE struct IUIElement
+struct IUIElement
 {
 	struct SUIConstraints
 	{
@@ -1410,7 +1399,7 @@ template<> inline const char* SUIItemLookupIDD<IUIElement>::GetId(const IUIEleme
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////// UI Action ///////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IUIAction
+struct IUIAction
 {
 	enum EUIActionType
 	{
@@ -1449,7 +1438,7 @@ protected:
   virtual ~IUIActionListener() {}
 };
 
-UNIQUE_IFACE struct IUIActionManager
+struct IUIActionManager
 {
 	virtual ~IUIActionManager() {}
 
@@ -1483,7 +1472,7 @@ protected:
   virtual ~IUIEventListener() {}
 };
 
-UNIQUE_IFACE struct IUIEventSystem
+struct IUIEventSystem
 {
 	enum EEventSystemType
 	{
@@ -1512,7 +1501,7 @@ UNIQUE_IFACE struct IUIEventSystem
 	virtual void GetMemoryUsage(ICrySizer * s) const = 0;
 };
 
-UNIQUE_IFACE struct IUIEventSystemIterator
+struct IUIEventSystemIterator
 {
 	virtual ~IUIEventSystemIterator() {}
 
@@ -1558,13 +1547,11 @@ struct IUIModule
 	//------------------------------------------------
 };
 
-UNIQUE_IFACE struct IFlashUI : public ICryUnknown
+struct IFlashUI : public ICryUnknown
 {
 	CRYINTERFACE_DECLARE( IFlashUI, 0xE1161004DA5B4F04, 0x9DFF8FC0EACE3BD4 )
 
 public:
-	DEVIRTUALIZATION_VTABLE_FIX
-
 	// init the Flash UI system
 	virtual void Init() = 0;
 	virtual bool PostInit() = 0;
@@ -1615,7 +1602,7 @@ public:
 	// input events
 	virtual void DispatchControllerEvent( IUIElement::EControllerInputEvent event, IUIElement::EControllerInputState state, float value ) = 0;
 	virtual void SendFlashMouseEvent( SFlashCursorEvent::ECursorState evt, int iX, int iY, int iButton = 0, float fWheel = 0.f, bool bFromController = false ) = 0;
-	virtual bool DisplayVirtualKeyboard( unsigned int flags, const wchar_t* title, const wchar_t* initialInput, int maxInputLength, IVirtualKeyboardEvents *pInCallback ) = 0;
+	virtual bool DisplayVirtualKeyboard( unsigned int flags, const char* title, const char* initialInput, int maxInputLength, IVirtualKeyboardEvents *pInCallback ) = 0;
 	virtual bool IsVirtualKeyboardRunning() = 0;
 	virtual bool CancelVirtualKeyboard() = 0;
 
@@ -1638,8 +1625,6 @@ public:
 	enum EPlatformUI
 	{
 		ePUI_PC = 0,
-		ePUI_X360,
-		ePUI_PS3,
 		ePUI_Durango,
 		ePUI_Orbis,
 	};

@@ -92,6 +92,7 @@ public:
 	// ~IVehicleSeatAction
 
 	void SetAimGoal(Vec3 aimPos, int priority = 0);
+	bool GetRemainingAnglesToAimGoalInDegrees(float &pitch, float &yaw);	// FIXME: should be const, but IVehiclePart::GetLocalTM() is not const
 
 	virtual void OnVehicleEvent(EVehicleEvent event, const SVehicleEventParams& params){}
 	virtual bool GetRotationLimits(int axis, float& min, float& max);

@@ -16,21 +16,21 @@ class CFlowGraphModuleManager;
 
 struct CFlowSystemContainer : public IFlowSystemContainer
 {
-	VIRTUAL void AddItem(TFlowInputData item);
-	VIRTUAL void AddItemUnique(TFlowInputData item);
+	virtual void AddItem(TFlowInputData item);
+	virtual void AddItemUnique(TFlowInputData item);
 
-	VIRTUAL void RemoveItem(TFlowInputData item);
+	virtual void RemoveItem(TFlowInputData item);
 
-	VIRTUAL TFlowInputData GetItem(int i);
+	virtual TFlowInputData GetItem(int i);
 
-	VIRTUAL void RemoveItemAt(int i);
-	VIRTUAL int GetItemCount() const;
+	virtual void RemoveItemAt(int i);
+	virtual int GetItemCount() const;
 
-	VIRTUAL void Clear();
+	virtual void Clear();
 
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+	virtual void GetMemoryUsage(ICrySizer * s) const;
 
-	VIRTUAL void Serialize(TSerialize ser);
+	virtual void Serialize(TSerialize ser);
 private:
 	DynArray<TFlowInputData> m_container;
 };
@@ -43,39 +43,39 @@ public:
 	
 	// IFlowSystem
 	virtual void Release();
-	VIRTUAL void Update();
-	VIRTUAL void Reset(bool unload);
-	VIRTUAL void ReloadAllNodeTypes();
-	VIRTUAL IFlowGraphPtr CreateFlowGraph();
-	VIRTUAL TFlowNodeTypeId RegisterType( const char *type, IFlowNodeFactoryPtr factory );
-	VIRTUAL bool UnregisterType(const char* typeName);
-	VIRTUAL const char* GetTypeName( TFlowNodeTypeId typeId );
-	VIRTUAL TFlowNodeTypeId GetTypeId( const char* typeName );
-	VIRTUAL IFlowNodeTypeIteratorPtr CreateNodeTypeIterator();
-	VIRTUAL void RegisterInspector(IFlowGraphInspectorPtr pInspector, IFlowGraphPtr pGraph = 0);
-	VIRTUAL void UnregisterInspector(IFlowGraphInspectorPtr pInspector, IFlowGraphPtr pGraph = 0);
-	VIRTUAL void EnableInspecting(bool bEnable) { m_bInspectingEnabled = bEnable; }
-	VIRTUAL bool IsInspectingEnabled() const { return m_bInspectingEnabled; }
-	VIRTUAL IFlowGraphInspectorPtr GetDefaultInspector() const { return m_pDefaultInspector; }
-	VIRTUAL IFlowGraph* GetGraphById(TFlowGraphId graphId);
-	VIRTUAL void OnEntityIdChanged( EntityId oldId, EntityId newId );
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+	virtual void Update();
+	virtual void Reset(bool unload);
+	virtual void ReloadAllNodeTypes();
+	virtual IFlowGraphPtr CreateFlowGraph();
+	virtual TFlowNodeTypeId RegisterType( const char *type, IFlowNodeFactoryPtr factory );
+	virtual bool UnregisterType(const char* typeName);
+	virtual const char* GetTypeName( TFlowNodeTypeId typeId );
+	virtual TFlowNodeTypeId GetTypeId( const char* typeName );
+	virtual IFlowNodeTypeIteratorPtr CreateNodeTypeIterator();
+	virtual void RegisterInspector(IFlowGraphInspectorPtr pInspector, IFlowGraphPtr pGraph = 0);
+	virtual void UnregisterInspector(IFlowGraphInspectorPtr pInspector, IFlowGraphPtr pGraph = 0);
+	virtual void EnableInspecting(bool bEnable) { m_bInspectingEnabled = bEnable; }
+	virtual bool IsInspectingEnabled() const { return m_bInspectingEnabled; }
+	virtual IFlowGraphInspectorPtr GetDefaultInspector() const { return m_pDefaultInspector; }
+	virtual IFlowGraph* GetGraphById(TFlowGraphId graphId);
+	virtual void OnEntityIdChanged( EntityId oldId, EntityId newId );
+	virtual void GetMemoryUsage(ICrySizer * s) const;
 
 
-	VIRTUAL bool CreateContainer(TFlowSystemContainerId id);
-	VIRTUAL void DeleteContainer(TFlowSystemContainerId id);	
-	VIRTUAL IFlowSystemContainerPtr GetContainer(TFlowSystemContainerId id);
+	virtual bool CreateContainer(TFlowSystemContainerId id);
+	virtual void DeleteContainer(TFlowSystemContainerId id);	
+	virtual IFlowSystemContainerPtr GetContainer(TFlowSystemContainerId id);
 	
-	VIRTUAL void Serialize(TSerialize ser);
+	virtual void Serialize(TSerialize ser);
 	// ~IFlowSystem
 
 	// TODO Make a single point of entry for this and the AIProxyManager to share?
 	// IEntitySystemSink
-	VIRTUAL bool OnBeforeSpawn( SEntitySpawnParams &params ) { return true; }
-	VIRTUAL void OnSpawn( IEntity *pEntity,SEntitySpawnParams &params );
-	VIRTUAL bool OnRemove( IEntity *pEntity ) { return true; }
-	VIRTUAL void OnReused( IEntity *pEntity, SEntitySpawnParams &params );
-	VIRTUAL void OnEvent( IEntity *pEntity, SEntityEvent &event ) { }
+	virtual bool OnBeforeSpawn( SEntitySpawnParams &params ) { return true; }
+	virtual void OnSpawn( IEntity *pEntity,SEntitySpawnParams &params );
+	virtual bool OnRemove( IEntity *pEntity ) { return true; }
+	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params );
+	virtual void OnEvent( IEntity *pEntity, SEntityEvent &event ) { }
 	//~IEntitySystemSink
 
 	IFlowNodePtr CreateNodeOfType( IFlowNode::SActivationInfo *, TFlowNodeTypeId typeId );
@@ -140,6 +140,7 @@ private:
 	void RegisterEntityTypes();
 	TFlowNodeTypeId GenerateNodeTypeID();
 
+	void LoadBlacklistedFlownodeXML();
 	bool BlacklistedFlownode(const char **editorName);
 
 	void UpdateGraphs();
@@ -167,6 +168,8 @@ private:
 	TFlowGraphId m_nextFlowGraphId;
 
 	CFlowGraphModuleManager* m_pModuleManager;
+
+	XmlNodeRef m_blacklistNode;
 
 	typedef std::map<TFlowSystemContainerId, IFlowSystemContainerPtr> TFlowSystemContainerMap;
 	TFlowSystemContainerMap m_FlowSystemContainers;

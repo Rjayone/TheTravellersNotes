@@ -158,7 +158,6 @@ unsigned countElements (const std::vector<T>& arrT, const T& x)
 */
 namespace stl
 {
-#if !defined(__CRYCG__)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Compare member of class/struct.
 	//
@@ -197,7 +196,6 @@ namespace stl
 
 		const MEMBER_TYPE	&value;
 	};
-#endif //!defined(__CRYCG__)	
 
 	//////////////////////////////////////////////////////////////////////////
 	//! Searches the given entry in the map by key, and if there is none, returns the default value
@@ -673,7 +671,7 @@ namespace stl
 		}
 	};
 
-#if defined(USE_HASH_MAP) && !defined(JOB_LIB_COMP)
+#if defined(USE_HASH_MAP)
 	//C:\Work\Main\Code\SDKs\STLPORT\stlport
 
 	// Support for both Microsoft and SGI kind of hash_map.

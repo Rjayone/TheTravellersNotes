@@ -45,6 +45,8 @@ struct ICryFactoryRegistryImpl : public ICryFactoryRegistry
 	virtual void RegisterFactories(const SRegFactoryNode* pFactories) = 0;
 	virtual void UnregisterFactories(const SRegFactoryNode* pFactories) = 0;
 
+	virtual void UnregisterFactory(ICryFactory* const pFactory) = 0;
+
 protected:
 	// prevent explicit destruction from client side (delete, shared_ptr, etc)
 	virtual ~ICryFactoryRegistryImpl() {}

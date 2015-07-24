@@ -97,7 +97,7 @@ public:
 	
 	void RemoveEntity( IEntity *pEntity );
 
-	VIRTUAL const EventPhysRemoveEntityParts * GetRemovePartEvents(int & iNumEvents);
+	virtual const EventPhysRemoveEntityParts * GetRemovePartEvents(int & iNumEvents);
 
 	void AddListener( IBreakReplicatorListenerPtr pListener, int nFrames );
 

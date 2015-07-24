@@ -26,12 +26,12 @@ def apply_qt_flags(self):
 	# QT specific settings, should be better to move them out of here
 	defines = [ 'QT_LARGEFILE_SUPPORT', 'QT_DLL', 'QT_CORE_LIB', 'QT_GUI_LIB', 'QT_NO_EMIT' ]
 	includes = [ 
-		self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/include'),
-		self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/include/QtNetwork'),
-		self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/include/QtGui'),
-		self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/include/QtCore'),
-		self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/include/ActiveQt'),
-		self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/include/QtWidgets'),		
+		self.bld.CreateRootRelativePath('Code/SDKs/Qt/include'),
+		self.bld.CreateRootRelativePath('Code/SDKs/Qt/include/QtNetwork'),
+		self.bld.CreateRootRelativePath('Code/SDKs/Qt/include/QtGui'),
+		self.bld.CreateRootRelativePath('Code/SDKs/Qt/include/QtCore'),
+		self.bld.CreateRootRelativePath('Code/SDKs/Qt/include/ActiveQt'),
+		self.bld.CreateRootRelativePath('Code/SDKs/Qt/include/QtWidgets'),		
 		]
 		
 	
@@ -45,7 +45,7 @@ def apply_qt_flags(self):
 	else:
 		lib = [ 'Qt5Core', 'Qt5Gui', 'Qt5Widgets', 'qtmain' ]
 
-	libpath = [ self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/x64/lib') ]
+	libpath = [ self.bld.CreateRootRelativePath('Code/SDKs/Qt/x64/lib') ]
 	
 	# Add dependencies for moc_*.cpp files
 	for t in getattr(self, 'compiled_tasks', []):
@@ -97,7 +97,7 @@ def create_manual_moc_tasks(self):
 		
 		# Create Moc Task		
 		tsk = self.create_task('qt_moc', moc_input_file, moc_file_name ) 
-		tsk.env.append_value( 'MOC', self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/x64/bin/moc.exe') )
+		tsk.env.append_value( 'MOC', self.bld.CreateRootRelativePath('Code/SDKs/Qt/x64/bin/moc.exe') )
 		tsk.env.append_value( 'EXTRA_FLAGS', [])
 		
 		# Collect manual mocced files to prevent moccing those automatically as well
@@ -148,7 +148,7 @@ def create_uic_task(self, node):
 	"hook for uic tasks"
 	uictask = self.create_task('ui4', node)
 	uictask.outputs = [self.path.find_or_declare('ui_%s.h' % node.name[:-3])]
-	uictask.env.append_value( 'QT_UIC', self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/x64/bin/uic.exe') )
+	uictask.env.append_value( 'QT_UIC', self.bld.CreateRootRelativePath('Code/SDKs/Qt/x64/bin/uic.exe') )
 	
 	
 class ui4(Task.Task):
@@ -183,7 +183,7 @@ def create_rcc_task(self, node):
 	rcnode = node.change_ext('_rc.cpp')
 	rcctask = self.create_task('rcc', node, rcnode)
 	rcctask.disable_pch = True
-	rcctask.env.append_value( 'QT_RCC', self.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/x64/bin/rcc.exe') )
+	rcctask.env.append_value( 'QT_RCC', self.bld.CreateRootRelativePath('Code/SDKs/Qt/x64/bin/rcc.exe') )
 	cpptask = self.create_task('cxx', rcnode, rcnode.change_ext('.o'))
 	cpptask.disable_pch = True
 	try:
@@ -319,7 +319,7 @@ def create_moc_task(self, tsk, to_moc_file):
 	# Create moc and cxx task
 	cxx_node	= to_moc_file_node.parent.get_bld().make_node(to_moc_file_node.name.replace('.', '_') + '_%d_moc.cpp' % generator.idx)
 	moc_tsk 	= generator.create_task('qt_moc', to_moc_file_node, cxx_node)
-	moc_tsk.env.append_value( 'MOC', generator.bld.CreateRootRelativePath('Code/Sandbox/SDKs/Qt/x64/bin/moc.exe') )
+	moc_tsk.env.append_value( 'MOC', generator.bld.CreateRootRelativePath('Code/SDKs/Qt/x64/bin/moc.exe') )
 	extra_flags = ''
 
 	if hasattr(self, 'pch_name'):

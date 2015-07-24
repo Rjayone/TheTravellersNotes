@@ -122,10 +122,10 @@ typedef std::map<CWeakRef<CAIObject>, SAIPotentialTarget> PotentialTargetMap;
 // Perception extra data interface
 struct IPerceptionExtraData
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IPerceptionExtraData() {}
 	virtual bool SetData(uint32 uDataId, ScriptAnyValue dataAny) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Perception handler interface
@@ -133,7 +133,7 @@ struct IPerceptionHandler
 {
 	// Unique identifier given when registered
 	enum { TypeId = -1 }; // ePHT_INVALID
-
+	// <interfuscator:shuffle>
 	virtual ~IPerceptionHandler() {}
 
 	virtual int GetType() const { return TypeId; }
@@ -167,7 +167,7 @@ struct IPerceptionHandler
 	virtual void HandleSoundEvent(SAIEVENT* pEvent) = 0;
 	virtual void HandleVisualStimulus(SAIEVENT* pEvent) = 0;
 	virtual void HandleBulletRain(SAIEVENT* pEvent) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__IPERCEPTIONHANDLER_H__

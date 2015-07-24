@@ -1031,17 +1031,9 @@ bool CActionGame::BlockingConnect( BlockingConditionFunction condition, bool req
 		if (!requireClientChannel || pChannel)
 			ok |= (this->*condition)(pChannel);
 
-		// Need to sleep 0 to let other threads run - PS3 thread yield
-#ifdef PS3
-		CrySleep(30);
-		if (!gEnv || !gEnv->pSystem || gEnv->pSystem->IsQuitting())
-			break;																											// FIX DT- 10903  - hang if ejecting disc when resuming save game
-#endif
-#if !defined(XENON) && !defined(PS3)
+
 		if (!gEnv || !gEnv->pSystem || gEnv->pSystem->IsQuitting())
 			break;																											// FIX DT- 20377 PC : SP : DESIGN : CRASH : Pure function call engine error followed by title crash when user hits X button or uses Alt F4 during loading screen
-#endif
-
 	}
 
 	if (ok && gEnv && !gEnv->IsEditor())
@@ -2083,7 +2075,8 @@ void CActionGame::PerformPlaneBreak( const EventPhysCollision& epc, SBreakEvent 
 	const char *killFX = 0;
 	if (pb2d)
 	{
-		timeout=pb2d->destroy_timeout+pb2d->destroy_timeout_spread*(1.0f-cry_frand()*2.0f), killFX=pb2d->full_fracture_fx;
+		timeout=pb2d->destroy_timeout+pb2d->destroy_timeout_spread*cry_random(-1.0f,1.0f);
+		killFX=pb2d->full_fracture_fx;
 		if (!pb2d->blast_radius_first && !pb2d->blast_radius)
 			r = 0.0f;
 		else if (!pb2d->blast_radius_first && (epc.vloc[0].len2()<sqr(100.0f) || epc.mass[0]>1.0f)) 
@@ -2092,7 +2085,7 @@ void CActionGame::PerformPlaneBreak( const EventPhysCollision& epc, SBreakEvent 
 
 	if (g_glassForceTimeout!=0.f)
 	{
-		timeout = g_glassForceTimeout + g_glassForceTimeoutSpread*cry_frand();
+		timeout = g_glassForceTimeout + cry_random(0.0f,1.0f) * g_glassForceTimeoutSpread;
 	}
 
 	//IEntity* pEntitySrc = epc.pEntity[0] ? (IEntity*)epc.pEntity[0]->GetForeignData(PHYS_FOREIGN_ID_ENTITY) : 0;
@@ -2615,7 +2608,7 @@ void CActionGame::PerformPlaneBreak( const EventPhysCollision& epc, SBreakEvent 
 			dcl.vHitDirection = epc.n; // epc.vloc[0].normalized();
 			dcl.fLifeTime = 1e10f; 
 			dcl.fSize = r*pb2d->crack_decal_scale;
-			dcl.fAngle = cry_frand()*2*gf_PI;
+			dcl.fAngle = cry_random(0.0f,2.0f*gf_PI);
 			dcl.bSkipOverlappingTest = true;
 			dcl.bForceSingleOwner = true;
 			dcl.bDeferred = false;
@@ -4041,10 +4034,6 @@ void CActionGame::AddBroken2DChunkId(int id)
 
 void CActionGame::UpdateBrokenMeshes(float dt)
 {
-	//Temporarily disabled to fit back into memory
-	//if (g_breakage_mem_limit!=m_lastDynPoolSize)
-	//	gEnv->pPhysicalWorld->SetDynPoolSize((m_lastDynPoolSize = g_breakage_mem_limit)*1024);
-
 	CDelayedPlaneBreak *pdpb;
 	for(int i=m_pendingPlaneBreaks.size()-1; i>=0; i--) 
 		if ((pdpb = &m_pendingPlaneBreaks[i])->m_status == CDelayedPlaneBreak::DONE)
@@ -4218,7 +4207,7 @@ int CActionGame::OnPostStepImmediate( const EventPhys * pEvent )
 	if (piGameObject)
 	{
 		CGameObject* pGameObject = static_cast<CGameObject*> (piGameObject);
-		pGameObject->AquireMutex();
+		pGameObject->AcquireMutex();
 
 		// Test that the physics proxy is still enabled.
 		if( piGameObject->WantsPhysicsEvent(eEPE_OnPostStepImmediate) )

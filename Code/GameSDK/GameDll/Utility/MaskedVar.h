@@ -101,7 +101,7 @@ class CMaskedVarT
 #if MASKEDVAR_DEBUG_VAL_ENABLED
 			m_dbgVal = v;
 #endif
-			const TMaskType  m = ((cry_rand32() % TMaxMaskValue) + 1);  // a random unsigned value from 1 to TMaxMaskValue (inclusive at both bounds)
+			const TMaskType  m = cry_random((TMaskType)1, TMaxMaskValue);
 			UVal  w;
 			w.asVarType = v;
 			m_val.asMaskType = (w.asMaskType ^ m);

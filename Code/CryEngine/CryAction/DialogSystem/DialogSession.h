@@ -156,7 +156,9 @@ public:
 
 	// used by CDialogActorContext
 	CDialogActorContextPtr GetContext(CDialogScript::TActorID actorID) const;
+	CDialogActorContextPtr GetContext(CDialogSystem::ActorContextID contextID) const;
 	const TActorContextMap& GetAllContexts() const { return m_actorContextMap; }
+
 	IEntity* GetActorEntity(CDialogScript::TActorID actorID) const;
 	EntityId GetActorEntityId(CDialogScript::TActorID actorID) const;
 	CDialogScript::TActorID GetActorIdForEntity(EntityId entityId) const;
@@ -201,10 +203,7 @@ protected:
 	bool PlayLine(const CDialogScript::SScriptLine* pLine);
 
 	bool DoStop();
-
-	void PrecacheSounds();
-	void UnCacheSounds();
-
+	
 	void NotifyListeners(EDialogSessionEvent event);
 
 	void Serialize(TSerialize ser);
@@ -246,7 +245,7 @@ protected:
 	AlertnessInterruptMode m_alertnessInterruptMode;
 };
 
-UNIQUE_IFACE struct IDialogSessionListener
+struct IDialogSessionListener
 {
 	virtual	~IDialogSessionListener(){}
 	virtual void SessionEvent(CDialogSession* pSession, CDialogSession::EDialogSessionEvent event) = 0;

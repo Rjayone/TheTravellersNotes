@@ -19,46 +19,55 @@ public:
 	virtual ~CEntityAudioProxy();
 
 	// IComponent
-	VIRTUAL	void											ProcessEvent(SEntityEvent& event);
-	VIRTUAL void											Initialize(SComponentInitializer const& init);
+	virtual void											ProcessEvent(SEntityEvent& event);
+	virtual void											Initialize(SComponentInitializer const& init);
 	// ~IComponent
 
 	// IEntityProxy
-	VIRTUAL EEntityProxy							GetType() {return ENTITY_PROXY_AUDIO;}
-	VIRTUAL void											Release();
-	VIRTUAL void											Done();
-	VIRTUAL	void											Update(SEntityUpdateContext& ctx) {}
-	VIRTUAL bool											Init(IEntity* pEntity, SEntitySpawnParams& params ) {return true;}
-	VIRTUAL void											Reload(IEntity* pEntity, SEntitySpawnParams& params);
-	VIRTUAL void											SerializeXML(XmlNodeRef &entityNode,bool bLoading) {}
-	VIRTUAL void											Serialize(TSerialize ser);
-	VIRTUAL bool											NeedSerialize() {return false;}
-	VIRTUAL bool											GetSignature(TSerialize signature);
-	VIRTUAL void											GetMemoryUsage(ICrySizer* pSizer) const {pSizer->AddObject(this, sizeof(*this));}
+	virtual EEntityProxy							GetType() {return ENTITY_PROXY_AUDIO;}
+	virtual void											Release();
+	virtual void											Done();
+	virtual void											Update(SEntityUpdateContext& ctx) {}
+	virtual bool											Init(IEntity* pEntity, SEntitySpawnParams& params ) {return true;}
+	virtual void											Reload(IEntity* pEntity, SEntitySpawnParams& params);
+	virtual void											SerializeXML(XmlNodeRef &entityNode,bool bLoading) {}
+	virtual void											Serialize(TSerialize ser);
+	virtual bool											NeedSerialize() {return false;}
+	virtual bool											GetSignature(TSerialize signature);
+	virtual void											GetMemoryUsage(ICrySizer* pSizer) const {pSizer->AddObject(this, sizeof(*this));}
 	// ~IEntityProxy
 
 	// IEntityAudioProxy
-	VIRTUAL void											SetFadeDistance(float const fFadeDistance) {m_fFadeDistance = fFadeDistance;}
-	VIRTUAL float											GetFadeDistance() const {return m_fFadeDistance;}
-	VIRTUAL void											SetEnvironmentFadeDistance(float const fEnvironmentFadeDistance) {m_fEnvironmentFadeDistance = fEnvironmentFadeDistance;}
-	VIRTUAL float											GetEnvironmentFadeDistance() const {return m_fEnvironmentFadeDistance;}
-	VIRTUAL void											SetEnvironmentID(TAudioEnvironmentID const nEnvironmentID) {m_nAudioEnvironmentID = nEnvironmentID;}
-	VIRTUAL TAudioEnvironmentID				GetEnvironmentID() const {return m_nAudioEnvironmentID;}
-	VIRTUAL TAudioProxyID							CreateAuxAudioProxy();
-	VIRTUAL bool											RemoveAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID);
-	VIRTUAL void											SetAuxAudioProxyOffset(SATLWorldPosition const& rOffset, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL SATLWorldPosition const&	GetAuxAudioProxyOffset(TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL void											ExecuteTrigger(TAudioControlID const nID, ELipSyncMethod const eLipSyncMethod, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL void											ExecuteTrigger(TAudioControlID const nID, ELipSyncMethod const eLipSyncMethod, TTriggerFinishedCallback const pCallback, void* const pCallbackCookie, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL void											StopTrigger(TAudioControlID const nID, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL void											SetSwitchState(TAudioControlID const nSwitchID, TAudioSwitchStateID const nStateID, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL void											SetRtpcValue(TAudioControlID const nRtpcID, float const fValue, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL void											SetObstructionCalcType(EAudioObjectObstructionCalcType const eObstructionType, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL void											SetEnvironmentAmount(TAudioEnvironmentID const nEnvironmentID, float const fAmount, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
-	VIRTUAL void											SetCurrentEnvironments(TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual void											SetFadeDistance(float const fFadeDistance) {m_fFadeDistance = fFadeDistance;}
+	virtual float											GetFadeDistance() const {return m_fFadeDistance;}
+	virtual void											SetEnvironmentFadeDistance(float const fEnvironmentFadeDistance) {m_fEnvironmentFadeDistance = fEnvironmentFadeDistance;}
+	virtual float											GetEnvironmentFadeDistance() const {return m_fEnvironmentFadeDistance;}
+	virtual void											SetEnvironmentID(TAudioEnvironmentID const nEnvironmentID) {m_nAudioEnvironmentID = nEnvironmentID;}
+	virtual TAudioEnvironmentID				GetEnvironmentID() const {return m_nAudioEnvironmentID;}
+	virtual TAudioProxyID							CreateAuxAudioProxy();
+	virtual bool											RemoveAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID);
+	virtual void											SetAuxAudioProxyOffset(SATLWorldPosition const& rOffset, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual SATLWorldPosition const&	GetAuxAudioProxyOffset(TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual bool											ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID, SAudioCallBackInfos const& rCallBackInfos = SAudioCallBackInfos::GetEmptyObject());
+	virtual void											StopTrigger(TAudioControlID const nTriggerID, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual void											SetSwitchState(TAudioControlID const nSwitchID, TAudioSwitchStateID const nStateID, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual void											SetRtpcValue(TAudioControlID const nRtpcID, float const fValue, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual void											SetObstructionCalcType(EAudioObjectObstructionCalcType const eObstructionType, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual void											SetEnvironmentAmount(TAudioEnvironmentID const nEnvironmentID, float const fAmount, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual void											SetCurrentEnvironments(TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID);
+	virtual void											AuxAudioProxiesMoveWithEntity(bool const bCanMoveWithEntity);
+	virtual void											AddAsListenerToAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID, void (*func)(SAudioRequestInfo const* const), EAudioRequestType requestType = eART_AUDIO_ALL_REQUESTS, TATLEnumFlagsType specificRequestMask = ALL_AUDIO_REQUEST_SPECIFIC_TYPE_FLAGS);
+	virtual void											RemoveAsListenerFromAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID, void (*func)(SAudioRequestInfo const* const));
 	// ~IEntityAudioProxy
 
 private:
+
+	enum EEntityAudioProxyFlags ATL_ENUM_TYPE
+	{
+		eEAPF_NONE									= 0,
+		eEAPF_HIDDEN								= BIT(0),
+		eEAPF_CAN_MOVE_WITH_ENTITY	= BIT(1),
+	};
 
 	struct SAudioProxyWrapper
 	{
@@ -94,11 +103,9 @@ private:
 	void							OnMoveInside(IEntity const* const pEntity);
 	void							OnExclusiveMoveInside(IEntity const* const __restrict pEntity, IEntity const* const __restrict pEntityAreaHigh, IEntity const* const __restrict pEntityAreaLow, float const fFade);
 	void							OnAreaCrossing();
-	void							OnHide(bool const bHide);
-	void							PrecacheHeadBone();
 	TAudioProxyPair&	GetAuxAudioProxyPair(TAudioProxyID const nAudioProxyLocalID);
-	void							ExecuteTriggerInternal(TAudioControlID const nID, ELipSyncMethod const eLipSyncMethod, TTriggerFinishedCallback const pCallback, void* const pCallbackCookie, TAudioProxyID const nAudioProxyLocalID);
 	void							SetEnvironmentAmountInternal(IEntity const* const pEntity, float const fAmount) const;
+	void							UpdateHideStatus();
 
 	// Function objects
 	struct SReleaseAudioProxy
@@ -145,34 +152,12 @@ private:
 
 		inline void operator()(TAudioProxyPair const& rPair)
 		{
-			rPair.second.pIAudioProxy->SetPosition(SATLWorldPosition(rPosition.mPosition * rPair.second.oOffset.mPosition, ZERO));
+			rPair.second.pIAudioProxy->SetPosition(SATLWorldPosition(rPosition.mPosition * rPair.second.oOffset.mPosition));
 		}
 
 	private:
 
 		SATLWorldPosition const& rPosition;
-	};
-
-	struct SExecuteTrigger
-	{
-		SExecuteTrigger(TAudioControlID const nPassedID, ELipSyncMethod const ePassedLipSyncMethod, TTriggerFinishedCallback const pPassedCallback, void* const pPassedCallbackCookie)
-			:	nTriggerID(nPassedID)
-			,	eLipSyncMethod(ePassedLipSyncMethod)
-			, pCallback(pPassedCallback)
-			, pCallbackCookie(pPassedCallbackCookie)
-		{}
-
-		inline void operator()(TAudioProxyPair const& rPair)
-		{
-			rPair.second.pIAudioProxy->ExecuteTrigger(nTriggerID, eLipSyncMethod, pCallback, pCallbackCookie);
-		}
-
-	private:
-
-		TAudioControlID const nTriggerID;
-		ELipSyncMethod const eLipSyncMethod;
-		TTriggerFinishedCallback const pCallback;
-		void* const pCallbackCookie;
 	};
 
 	struct SStopTrigger
@@ -286,10 +271,10 @@ private:
 
 		inline void operator()(TAudioProxyPair& rPair)
 		{
-			Matrix34 const oOffset(IDENTITY, rOffset.GetPositionVec());
-			SATLWorldPosition const oPosition(rEntityPosition * oOffset, ZERO);
 			rPair.second.oOffset = rOffset;
-			rPair.second.pIAudioProxy->SetPosition(oPosition);
+			rPair.second.oOffset.NormalizeForwardVec();
+			SATLWorldPosition const oPosition(rEntityPosition);
+			(SRepositionAudioProxy(oPosition))(rPair);
 		}
 
 	private:
@@ -304,14 +289,10 @@ private:
 
 	TAudioEnvironmentID	m_nAudioEnvironmentID;
 	CEntity*						m_pEntity;
-	bool								m_bHide;
+	TATLEnumFlagsType		m_nFlags;
 
 	float								m_fFadeDistance;
 	float								m_fEnvironmentFadeDistance;
-
-	// Head members for voice files
-	int									m_nBoneHead;
-	int									m_nAttachmentIndex;
 };
 
 #endif // ENTITY_AUDIO_PROXY_H_INCLUDED

@@ -14,9 +14,6 @@
 #ifdef _WIN64
 #pragma message("_WIN64")
 #endif
-#ifdef _XBOX
-#pragma message("_XBOX")
-#endif
 #ifdef _XBOX_VER
 	#if _XBOX_VER == 200
 		#pragma message("_XBOX_VER == 200")
@@ -48,28 +45,16 @@
 
 #endif
 
-#if defined(PS3)
-	#include <CryModuleDefs.h>
-#endif
-
 #include "TypeInfo_impl.h"
 #include "CryTypeInfo.cpp"
-#include "LCGRandom.cpp"
 #include "MTPseudoRandom.cpp"
 #include "CryStructPack.cpp"
-#if !defined __CRYCG__
-	#if defined(PS3) || defined(LINUX) || defined(CAFE) || defined(APPLE)
-		#include "WinBase.cpp"
-	#endif
+#if defined(LINUX) || defined(APPLE)
+	#include "WinBase.cpp"
 #endif
 
 #if defined(DURANGO)
 	#include "Durango_Win32Legacy.cpp"
-#endif
-
-#if defined(PS3) && (!defined(_RELEASE) || defined(PERFORMANCE_BUILD))
-//For SN Tuner PPU Labels
-#	define ENABLE_FRAME_PROFILER_LABELS
 #endif
 
 #ifdef __GNUC__

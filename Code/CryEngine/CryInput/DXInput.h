@@ -20,6 +20,7 @@ History:
 #pragma once
 
 #include "BaseInput.h"
+#include <IWindowMessageHandler.h>
 #include <map>
 #include <queue>
 
@@ -31,7 +32,7 @@ History:
 struct	ILog;
 struct	ISystem;
 
-class CDXInput : public CBaseInput
+class CDXInput : public CBaseInput, public IWindowMessageHandler
 {
 public:
 	CDXInput(ISystem *pSystem, HWND hwnd); 
@@ -49,14 +50,13 @@ public:
 	LPDIRECTINPUT8	GetDirectInput() const	{	return m_pDI;	}
 
 private:
-	// Window procedure handling
-	static LRESULT CALLBACK InputWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-	LRESULT OnInputWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	// IWindowMessageHandler
+	bool HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT *pResult);
 
 	// very platform specific params
 	HWND							m_hwnd;
 	LPDIRECTINPUT8		m_pDI;	
-	WNDPROC						m_prevWndProc;
+	uint16 m_highSurrogate;
 	static CDXInput*	This;
 };
 

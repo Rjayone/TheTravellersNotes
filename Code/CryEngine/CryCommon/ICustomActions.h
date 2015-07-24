@@ -38,10 +38,10 @@ enum ECustomActionEvent
 ///////////////////////////////////////////////////
 struct ICustomActionListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICustomActionListener(){}
 	virtual void OnCustomActionEvent( ECustomActionEvent event, ICustomAction& customAction ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 ///////////////////////////////////////////////////
@@ -49,7 +49,7 @@ struct ICustomActionListener
 ///////////////////////////////////////////////////
 struct ICustomAction
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICustomAction(){}
 
 	// Returns the name of the custom action graph
@@ -92,12 +92,12 @@ struct ICustomAction
 
 	virtual void RegisterListener( ICustomActionListener* pEventListener, const char* name )=0;
 	virtual void UnregisterListener( ICustomActionListener* pEventListener )=0;
-
+	// </interfuscator:shuffle>
 };
 
 struct ICustomActionManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICustomActionManager(){}
 
 	// Execute start section of action
@@ -149,7 +149,7 @@ struct ICustomActionManager
 	virtual bool UnregisterListener( ICustomActionListener* pEventListener ) = 0;
 
 	virtual void Serialize( TSerialize ser ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

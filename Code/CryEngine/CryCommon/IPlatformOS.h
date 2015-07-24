@@ -11,8 +11,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include DEVIRTUALIZE_HEADER_FIX(IPlatformOS.h)
-
 #ifndef __IPLATFORMOS_H_
 #define __IPLATFORMOS_H_
 
@@ -21,11 +19,7 @@
 #include <ILocalizationManager.h>
 #include <ITimer.h>
 
-#if defined(PS3) && !defined(__SPU__)
-#include <sysutil/sysutil_sysparam.h>
-#include <sysutil/sysutil_savedata.h>
-#include <ICryPak.h> // <> required for Interfuscator
-#elif defined(ORBIS)
+#if defined(ORBIS)
 #include <system_service.h>
 #elif defined(WIN32) || defined(WIN64)
 //#include <Lmcons.h> // this causes issues when including other windows headers later by defining PASCAL
@@ -37,11 +31,11 @@ struct IConsoleCmdArgs;
 
 struct IVirtualKeyboardEvents
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IVirtualKeyboardEvents(){}
 	virtual void		KeyboardCancelled()=0;
-	virtual void		KeyboardFinished(const wchar_t *pInString)=0;
-
+	virtual void		KeyboardFinished(const char *pInString)=0;
+	// </interfuscator:shuffle>
 };
 
 enum EStringVerifyResponse
@@ -56,11 +50,11 @@ enum EStringVerifyResponse
 
 struct IStringVerifyEvents
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IStringVerifyEvents(){}
-	virtual void StringVerifyFinished(const wchar_t *inString, EStringVerifyResponse response) = 0;
-	virtual void StringVerifyFailed(const wchar_t *inString) = 0;
-
+	virtual void StringVerifyFinished(const char *inString, EStringVerifyResponse response) = 0;
+	virtual void StringVerifyFailed(const char *inString) = 0;
+	// </interfuscator:shuffle>
 };
 
 enum EUserPIIStatus
@@ -95,19 +89,22 @@ struct SUserPII
 struct SUserXUID
 {
 	enum { eBufferSize = 20 + 1	};
-	SUserXUID() { id[0] = L'\0';}
-	SUserXUID(const wchar_t* _xuid, size_t _size = eBufferSize)
+	wchar_t id[eBufferSize];
+
+	SUserXUID()
 	{
-		const size_t sz = MIN((size_t)eBufferSize, (size_t)_size);
-		wcscpy_s(id, sz, _xuid);
-		id[eBufferSize-1] = L'\0';
+		id[0] = L'\0';
 	}
 
-	bool operator==(const SUserXUID & _rhs) const
+	SUserXUID(const wchar_t* _xuid)
 	{
-		return (wcscmp(id,_rhs.id)==0);
+		cry_wstrcpy(id, _xuid);
 	}
-	wchar_t id[eBufferSize];
+
+	bool operator==(const SUserXUID& _rhs) const
+	{
+		return wcscmp(id, _rhs.id) == 0;
+	}
 };
 #endif
 
@@ -130,7 +127,7 @@ struct SStreamingInstallProgress
 };
 
 // Interface platform OS (Operating System) functionality
-UNIQUE_IFACE struct IPlatformOS
+struct IPlatformOS
 {
 	enum ECreateFlags
 	{
@@ -151,11 +148,7 @@ UNIQUE_IFACE struct IPlatformOS
 
 	enum
 	{
-#if defined(XENON)
-		USER_MAX_NAME = XUSER_NAME_SIZE,
-#elif defined(PS3) && !defined(__SPU__)
-		USER_MAX_NAME = CELL_SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE,
-#elif defined(DURANGO)
+#if defined(DURANGO)
 		USER_MAX_NAME = 34, // 34 characters for name (associated with live account), 16 for Gamertag (user can choose which one to display)
 #elif defined(WIN32) || defined(WIN64)
 		USER_MAX_NAME = 256+1,//UNLEN+1,
@@ -165,7 +158,6 @@ UNIQUE_IFACE struct IPlatformOS
 	};
 
 	typedef CryFixedStringT<USER_MAX_NAME> TUserName;
-	typedef CryFixedWStringT<USER_MAX_NAME> TUserNameW;
 
 	enum ECDP_Start 
 	{
@@ -278,12 +270,12 @@ UNIQUE_IFACE struct IPlatformOS
 	// Derive listeners from this interface
 	struct IDLCListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~IDLCListener(){}
 		virtual void OnDLCMounted(const XmlNodeRef &rootNode, const char* sDLCRootFolder) = 0;
 		virtual void OnDLCMountFailed(EDLCMountFail reason) = 0;
 		virtual void OnDLCMountFinished( int nPacksFound ) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 	struct SUserProfileVariant
@@ -331,7 +323,7 @@ UNIQUE_IFACE struct IPlatformOS
 			eET_StorageMounted,				// uses m_storageMounted - allows a listener to know a new save location is mounted for profiles etc.
 			eET_StorageRemoved,				// uses m_storageRemoved - allows a listener to know that a storage device has been removed
 			eET_StorageCancelled,			// user cancelled a storage request overlap popup
-			eET_FileError,						// uses m_fileError fired when a file error occurs (see CSaveWriter_Xenon::AppendBytes for example)
+			eET_FileError,						// uses m_fileError fired when a file error occurs
 			eET_FileWrite,						// uses m_fileWrite - fired when platform code opens a profile/savegame for writing
 			eET_ContentInstalled,			// allows a listener to know when downloadable content has been installed
 			eET_InstallBegin,					// allow a listener to know when game installation begins
@@ -409,21 +401,6 @@ UNIQUE_IFACE struct IPlatformOS
 		} m_uParams;
 	};
 
-	// Platform specific events now, these have to be here for access by the rest of the engine
-#ifdef XENON
-
-	struct SPlatformEventXenon : public SPlatformEvent
-	{
-		SPlatformEventXenon(unsigned int user)
-			: SPlatformEvent(user, eET_PlatformSpecific) // required by SPlatformEvent
-			, m_id(0)
-			, m_param(0) {}
-		DWORD		m_id;
-		ULONG_PTR	m_param;
-	};
-
-#endif
-
 #if defined(ORBIS)
 	struct SPlatformEventOrbis : public SPlatformEvent
 	{
@@ -434,28 +411,6 @@ UNIQUE_IFACE struct IPlatformOS
 		}
 		SceSystemServiceEvent m_event;
 	};
-#endif 
-
-#ifdef PS3
-
-	struct SPlatformEventPS3 : public IPlatformOS::SPlatformEvent
-	{
-		SPlatformEventPS3(unsigned int user)
-			: IPlatformOS::SPlatformEvent(user, eET_PlatformSpecific)
-			, m_status(0)
-			, m_param(0)
-			, m_userdata(0)
-			, m_pFunc(0)
-			, m_pArg(0)
-		{}
-
-		uint64_t						m_status;
-		uint64_t						m_param;
-		void*								m_userdata;
-		void*								m_pFunc;
-		void*								m_pArg;
-	};
-
 #endif
 
 	struct ISaveReader
@@ -473,6 +428,7 @@ UNIQUE_IFACE struct IPlatformOS
 			return ReadBytes(reinterpret_cast<void*>(&data), sizeof(T));
 		}
 
+		// <interfuscator:shuffle>
 		virtual ~ISaveReader() {}
 		virtual EFileOperationCode Seek(long seek, ESeekMode mode) = 0;
 		virtual EFileOperationCode GetFileCursor(long& fileCursor) = 0;
@@ -483,7 +439,7 @@ UNIQUE_IFACE struct IPlatformOS
 		virtual bool IsTheRightOwner() const { return true; }
 		virtual void GetMemoryUsage(ICrySizer *pSizer) const = 0;
 		virtual void TouchFile() {}
-
+		// </interfuscator:shuffle>
 	};
 	DECLARE_BOOST_POINTERS(ISaveReader);
 	typedef std::vector<IPlatformOS::ISaveReaderPtr> ISaveReaderPtrVector;
@@ -502,17 +458,18 @@ UNIQUE_IFACE struct IPlatformOS
 			return AppendBytes(static_cast<const void*>(data), sizeof(T) * elems);
 		}
 
+		// <interfuscator:shuffle>
 		virtual ~ISaveWriter() {}
 		virtual IPlatformOS::EFileOperationCode AppendBytes(const void* data, size_t length) = 0;
 		virtual EFileOperationCode Close() = 0;
 		virtual IPlatformOS::EFileOperationCode LastError() const = 0;
 		virtual void GetMemoryUsage(ICrySizer *pSizer) const = 0;
-
+		// </interfuscator:shuffle>
 	};
 	DECLARE_BOOST_POINTERS(ISaveWriter);
 	typedef std::vector<IPlatformOS::ISaveWriterPtr> ISaveWriterPtrVector;
 
-	UNIQUE_IFACE struct IFileFinder
+	struct IFileFinder
 	{
 		enum EFileState
 		{
@@ -522,6 +479,7 @@ UNIQUE_IFACE struct IPlatformOS
 			eFS_FileOrDirectory = -1, // for Win32 based bool return value we use this - see CFileFinderCryPak::FileExists
 		};
 
+		// <interfuscator:shuffle>
 		virtual ~IFileFinder(){}
 
 		// FileExists:
@@ -554,7 +512,7 @@ UNIQUE_IFACE struct IPlatformOS
 		virtual bool MapFilePath(const char* filePath, string& filePathMapped, bool bCreateMapping) { filePathMapped = filePath; return true; }
 
 		virtual void GetMemoryUsage(ICrySizer *pSizer) const = 0;
-
+		// </interfuscator:shuffle>
 	};
 	typedef boost::shared_ptr<IFileFinder> IFileFinderPtr;
 
@@ -574,12 +532,12 @@ UNIQUE_IFACE struct IPlatformOS
 	};
 
 	// Derive listeners from this interface and cast event to the appropriate platform event interface
-	UNIQUE_IFACE struct IPlatformListener
+	struct IPlatformListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~IPlatformListener(){}
 		virtual void OnPlatformEvent(const IPlatformOS::SPlatformEvent& event) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
 	struct SDebugDump
@@ -592,6 +550,7 @@ UNIQUE_IFACE struct IPlatformOS
 	// Call once to create and initialize. Use delete to destroy.
 	static IPlatformOS* Create( const uint8 createParams /*see ECreateFlags*/ );
 
+	// <interfuscator:shuffle>
 	virtual ~IPlatformOS() {}
 
 	// Tick with each frame to determine if there are any system messages requiring handling
@@ -662,8 +621,7 @@ UNIQUE_IFACE struct IPlatformOS
 
 	// Tell the platform we have finished a save or load.
 	virtual void EndSaveLoad(unsigned int user) = 0;
-
-	//[AlexMcC|12.02.10]: PS3 devirtualization needs ISaveReaderPtr (and writer) to be fully qualified)
+	
 	// SaveGetReader:
 	//   Get a reader object to read from a save file. The file is automatically opened and closed.
 	virtual IPlatformOS::ISaveReaderPtr SaveGetReader(const char* fileName, unsigned int user = IPlatformOS::Unknown_User) = 0;
@@ -794,7 +752,7 @@ UNIQUE_IFACE struct IPlatformOS
 	//   Starts the virtual keyboard. Flags are from KbdFlag_* enum. title string is not copied. you must pass a set of callbacks via IVirtualKeyboardEvents
 	//	 title & initialInput params must remain valid for the duration of the system keyboard, therefore they must NOT have been originally declared on the stack 
 	//   returns false if the keyboard failed to start
-	virtual bool KeyboardStart(unsigned int inUserIndex, unsigned int flags, const wchar_t* title, const wchar_t* initialInput, int maxInputLength, IVirtualKeyboardEvents *pInCallback) = 0;
+	virtual bool KeyboardStart(unsigned int inUserIndex, unsigned int flags, const char* title, const char* initialInput, int maxInputLength, IVirtualKeyboardEvents *pInCallback) = 0;
 	
 	// KeyboardIsRunning:
 	//   Returns whether the virtual keyboard is currently displayed
@@ -810,7 +768,7 @@ UNIQUE_IFACE struct IPlatformOS
 	// String Verification
 	//
 	
-	virtual bool StringVerifyStart(const wchar_t* inString, IStringVerifyEvents *pInCallback) = 0;
+	virtual bool StringVerifyStart(const char* inString, IStringVerifyEvents *pInCallback) = 0;
 	virtual bool IsVerifyingString() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -834,7 +792,7 @@ UNIQUE_IFACE struct IPlatformOS
 	// Compose a bitfield that enumerates the languages available on this system OS. This is used to determine the overlap
 	// between languages supplied in a SKU and languages available on a system. Some platforms like the PS3 have TRCs relating
 	// to whether or not you should show a language select screen based on this information.
-	virtual ILocalizationManager::TLocalizatonBitfield GetSystemSupportedLanguages() = 0;
+	virtual ILocalizationManager::TLocalizationBitfield GetSystemSupportedLanguages() = 0;
 
 	// DebugMessageBox:
 	//   Displays an OS dialog box for debugging messages.
@@ -848,12 +806,7 @@ UNIQUE_IFACE struct IPlatformOS
 	//Begin platform specific boot checks to meet TRCs/TCRs. Call after localization has been initialized and chosen to meet TCG's guidance.
 	//This should tend to throw fatal errors using platform specific APIs in order to meet TRCs robustly.
 	virtual bool PostLocalizationBootChecks() = 0;
-	//This function finishes off any platform specific initialization routines and should be called when the user leaves the initial splash screen
-	//Examples include game data installation on the PS3
-	virtual bool PostBootCheckProcessing() = 0;
-	//Show/hide a platform specific message box. This will cause a CryWarning on platforms for which it isn't implemented and is currently used on PS3.
-	virtual bool ShowBootCheckMessage(const bool bShow) = 0;
-
+	
 	// Save raw save/load game to/from local hard drive for use in. Implement for each system.
 	virtual bool ConsoleLoadGame(IConsoleCmdArgs* pArgs) = 0;
 
@@ -887,14 +840,7 @@ UNIQUE_IFACE struct IPlatformOS
   	//Function to handle a verification error. Used by some platforms to handle hacking attempts
 	virtual void HandleArchiveVerificationFailure( ) {};
 
-	// on PS3, we need to attempt to save any dirty files we have during loading,
-	// failure to do so can result in the terminate event not being processed in
-	// a timely fashion (as a result of waiting for saves to complete), which is a TCR failure.
-	// We call this during CSystem::UpdateLoadingScreen to service this requirement, on other systems it does nothing at all.
-	virtual void UpdateDuringLoading() {}
-
-
-	CSysCallThread* GetSysCallThread() const;
+	// </interfuscator:shuffle>
 
 	//called from CSystem::RenderEnd(); used to draw platform debug stuff
 	virtual void RenderEnd() {}
@@ -1035,25 +981,17 @@ UNIQUE_IFACE struct IPlatformOS
 #endif
 
 protected:
-#if defined(PS3)  && !defined(__SPU__)
-	CSysCallThread* m_pSysThread;
-#endif
 
 		class	CFileFinderCryPak : public IFileFinder
 		{
 		public:
-			VIRTUAL IFileFinder::EFileState FileExists(const char* path) { return gEnv->pCryPak->IsFileExist(path) ? eFS_FileOrDirectory : eFS_NotExist; }
-			VIRTUAL intptr_t FindFirst(const char* filePattern, _finddata_t* fd) {
-#if defined(XENON) || defined(PS3)
-				const bool bAllowFileSystem = false;
-#else
-				const bool bAllowFileSystem = true;
-#endif
-				return gEnv->pCryPak->FindFirst(filePattern, fd, 0, bAllowFileSystem);
+			virtual IFileFinder::EFileState FileExists(const char* path) { return gEnv->pCryPak->IsFileExist(path) ? eFS_FileOrDirectory : eFS_NotExist; }
+			virtual intptr_t FindFirst(const char* filePattern, _finddata_t* fd) {
+				return gEnv->pCryPak->FindFirst(filePattern, fd, 0, true);
 			}
-			VIRTUAL int FindClose(intptr_t handle) { return gEnv->pCryPak->FindClose(handle); }
-			VIRTUAL int FindNext(intptr_t handle, _finddata_t* fd) { return gEnv->pCryPak->FindNext(handle, fd); }
-			VIRTUAL void GetMemoryUsage(ICrySizer *pSizer) const { pSizer->Add(*this); }
+			virtual int FindClose(intptr_t handle) { return gEnv->pCryPak->FindClose(handle); }
+			virtual int FindNext(intptr_t handle, _finddata_t* fd) { return gEnv->pCryPak->FindNext(handle, fd); }
+			virtual void GetMemoryUsage(ICrySizer *pSizer) const { pSizer->Add(*this); }
 		private:
 			CDebugAllowFileAccess m_allowFileAccess;
 		};
@@ -1106,15 +1044,6 @@ protected:
 		};
 
 };
-
-ILINE CSysCallThread* IPlatformOS::GetSysCallThread() const
-{
-#if defined(PS3)  && !defined(__SPU__)
-	return m_pSysThread;
-#else
-	return NULL;
-#endif	
-}
 
 #endif
 

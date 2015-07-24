@@ -16,113 +16,27 @@
 #include "CrySizer.h"
 #include "CryEndian.h"
 
-#if defined(PS3) || defined(LINUX) || defined(APPLE) || defined(CAFE) || defined(ORBIS)
-
-#undef CVTDIGITHEX
-#undef CVTDIGITDEC
-#define CVTDIGITHEX(VALUE, P, STRING) \
-{ \
-	if (VALUE) \
-	{ \
-		unsigned int _digit = (VALUE % 16); \
-		_digit += (_digit > 10) ? 'a' - 10 : '0'; \
-		*P++ = (char)_digit; \
-	} \
-	else \
-	{ \
-		*P = 0; \
-		return STRING; \
-	} \
-	VALUE /= 16; \
-}
-#define CVTDIGITDEC(VALUE, P, STRING) \
-{ \
-	if (VALUE) \
-		*P++ = '0' + (char)(VALUE % 10); \
-	else \
-	{ \
-		*P = 0; \
-		return STRING; \
-	} \
-	VALUE /= 10; \
-}
+#if defined(LINUX) || defined(APPLE) || defined(ORBIS)
 
 char* _i64toa( int64 value, char *string, int32 radix )
 {
-#ifndef PS3OPT
 	if( 10 == radix )
 		sprintf( string, "%llu", (unsigned long long)value );
 	else
 		sprintf( string, "%llx", (unsigned long long)value );
 	return( string );
-#else
-	char *p = string;
-	uint64 uValue = value < 0 ? (uint64)-value : (uint64)value;
-	if (value < 0)
-		*p++ = '-';
-	if (radix == 10)
-	{
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-		CVTDIGITDEC(uValue, p, string) CVTDIGITDEC(uValue, p, string)
-	}
-	else
-	{
-		CVTDIGITHEX(uValue, p, string) CVTDIGITHEX(uValue, p, string)
-		CVTDIGITHEX(uValue, p, string) CVTDIGITHEX(uValue, p, string)
-		CVTDIGITHEX(uValue, p, string) CVTDIGITHEX(uValue, p, string)
-		CVTDIGITHEX(uValue, p, string) CVTDIGITHEX(uValue, p, string)
-		CVTDIGITHEX(uValue, p, string) CVTDIGITHEX(uValue, p, string)
-		CVTDIGITHEX(uValue, p, string) CVTDIGITHEX(uValue, p, string)
-		CVTDIGITHEX(uValue, p, string) CVTDIGITHEX(uValue, p, string)
-		CVTDIGITHEX(uValue, p, string) CVTDIGITHEX(uValue, p, string)
-	}
-	*p = 0;
-	return string;
-#endif // PS3OPT
 }
 
 char* ultoa( uint32 value, char *string, int32 radix )
 {
-#ifndef PS3OPT
 	if( 10 == radix )
 		sprintf( string, "%.d", value );
 	else
 		sprintf( string, "%.x", value );
 	return( string );
-#else
-	char *p = string;
-	if (radix == 10)
-	{
-		CVTDIGITDEC(value, p, string) CVTDIGITDEC(value, p, string)
-		CVTDIGITDEC(value, p, string) CVTDIGITDEC(value, p, string)
-		CVTDIGITDEC(value, p, string) CVTDIGITDEC(value, p, string)
-		CVTDIGITDEC(value, p, string) CVTDIGITDEC(value, p, string)
-		CVTDIGITDEC(value, p, string) CVTDIGITDEC(value, p, string)
-	}
-	else
-	{
-		CVTDIGITHEX(value, p, string) CVTDIGITHEX(value, p, string)
-		CVTDIGITHEX(value, p, string) CVTDIGITHEX(value, p, string)
-		CVTDIGITHEX(value, p, string) CVTDIGITHEX(value, p, string)
-		CVTDIGITHEX(value, p, string) CVTDIGITHEX(value, p, string)
-	}
-	*p = 0;
-	return string;
-#endif // PS3OPT
 }
 
-#undef CVTDIGITDEC
-#undef CVTDIGITHEX
-
-#endif // PS3 || LINUX || MAC
+#endif //LINUX || MAC
 
 //////////////////////////////////////////////////////////////////////
 // Case-insensitive comparison helpers.

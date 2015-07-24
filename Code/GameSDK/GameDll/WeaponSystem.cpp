@@ -58,8 +58,6 @@ History:
 
 #include "FireModePlugin.h"
 
-#include "Arrow.h"
-
 #define LINKED_PROJ_MAP_RESERVE 24 //3 shots of 8 pellets should be plenty
 
 //////////////////////////////////////////////////////////////////////////
@@ -191,7 +189,6 @@ CWeaponSystem::CWeaponSystem(CGame *pGame, ISystem *pSystem)
 	REGISTER_PROJECTILE(HommingSwarmProjectile, CHommingSwarmProjectile);
 	REGISTER_PROJECTILE(LTagGrenade, CLTAGGrenade);
 	REGISTER_PROJECTILE(EMPGrenade, CEMPGrenade);
-	REGISTER_PROJECTILE(Arrow, CArrow);
 
 	m_pPrecache = gEnv->pConsole->GetCVar("i_precache");
 
@@ -214,7 +211,10 @@ CWeaponSystem::~CWeaponSystem()
 
 	// cleanup current projectiles
 	for (TProjectileMap::iterator pit = m_projectiles.begin(); pit != m_projectiles.end(); ++pit)
-		gEnv->pEntitySystem->RemoveEntity(pit->first, true);
+	{
+		// Do not forcefully remove entities here as an entity shutdown will remove from "m_projectiles"!
+		gEnv->pEntitySystem->RemoveEntity(pit->first);
+	}
 
 	for (TAmmoTypeParams::iterator it = m_ammoparams.begin(); it != m_ammoparams.end(); ++it)
 	{
@@ -1030,24 +1030,35 @@ CProjectile *CWeaponSystem::UseFromPool(IEntityClass *pClass, const SAmmoParams 
 //------------------------------------------------------------------------
 bool CWeaponSystem::ReturnToPool(CProjectile *pProjectile)
 {
-	IEntityClass* pProjectileClass = pProjectile->GetEntity()->GetClass();
-	TAmmoPoolMap::iterator it=m_pools.find(pProjectileClass);
-	assert(it!=m_pools.end());
+	bool bSuccess = false;
+	IEntityClass* const pProjectileClass = pProjectile->GetEntity()->GetClass();
 
-	// It should not happen, but looks like it can some how while load/saving under certain circumstances...
-	if(it == m_pools.end())
+	if (!m_pools.empty())
 	{
-		// Log trace, and return false (projectile will handle it)
-		GameWarning("CWeaponSystem::ReturnToPool(): Trying to return projectile to a pool that doesn't exist (Class: %s)", pProjectileClass ? pProjectileClass->GetName() : "NULL");
-		return false;
+		TAmmoPoolMap::iterator it=m_pools.find(pProjectileClass);
+		assert(it!=m_pools.end());
+
+		// It should not happen, but looks like it can some how while load/saving under certain circumstances...
+		if(it != m_pools.end())
+		{
+			it->second.frees.push_back(pProjectile);
+
+			pProjectile->GetEntity()->Hide(true);
+			pProjectile->GetEntity()->SetWorldTM(IDENTITY);
+			bSuccess = true;
+		}
+		else
+		{
+			// Log trace, and return false (projectile will handle it)
+			GameWarning("CWeaponSystem::ReturnToPool(): Trying to return projectile to a pool that doesn't exist (Class: %s)", pProjectileClass ? pProjectileClass->GetName() : "NULL");
+		}
+	}
+	else
+	{
+		GameWarning("CWeaponSystem::ReturnToPool(): m_pools is empty! (Class: %s)", pProjectileClass ? pProjectileClass->GetName() : "NULL");
 	}
 
-	it->second.frees.push_back(pProjectile);
-
-	pProjectile->GetEntity()->Hide(true);
-	pProjectile->GetEntity()->SetWorldTM(IDENTITY);
-
-	return true;
+	return bSuccess;
 }
 
 //------------------------------------------------------------------------

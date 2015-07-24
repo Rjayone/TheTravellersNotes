@@ -58,7 +58,7 @@ void CLuaRemoteDebug::OnDebugHook( lua_State *L,lua_Debug *ar )
 
 		// on each line
 	case LUA_HOOKLINE:
-		lua_getinfo(L, "Sl", ar);
+		lua_getinfo(L, "S", ar);
 
 		if (!m_bBinaryLuaDetected && ar->currentline == 0 && ar->source[0] == '=' && ar->source[1] == '?' && ar->source[2] == 0 )
 		{
@@ -137,10 +137,6 @@ void CLuaRemoteDebug::SendGameFolder()
 	}
 }
 
-void CLuaRemoteDebug::SendLoadedModulesInformation()
-{
-}
-
 void CLuaRemoteDebug::SendScriptError(const char* errorStr)
 {
 	if (m_clientVersion >= 5)
@@ -200,8 +196,7 @@ void CLuaRemoteDebug::HaltExecutionLoop(lua_State *L, lua_Debug *ar, const char*
 	if (INotificationNetwork *pNotificationNetwork = gEnv->pSystem->GetINotificationNetwork())
 	{
 		while (m_bExecutionStopped)
-		{
-			gEnv->pSystem->ResetWatchdogTimer();
+		{			
 			pNotificationNetwork->Update();
 
 			CrySleep(50);
@@ -281,9 +276,6 @@ void CLuaRemoteDebug::OnNotificationNetworkReceive(const void *pBuffer, size_t l
 		break;
 	case ePT_EnableCppCallstack:
 		ReceiveEnableCppCallstack(bufferUtil);
-		break;
-	case ePT_ModulesInformation:
-		SendLoadedModulesInformation();
 		break;
 	default:
 		CRY_ASSERT_MESSAGE(false, "Unrecognised packet type");
@@ -584,7 +576,7 @@ void CLuaRemoteDebug::SendVariables()
 	m_sendBuffer.Write((uint8)sizeof(void*));	// Serialise out the size of pointers to cope with 32 and 64 bit systems
 
 	// Local variables
-	IScriptTable* pLocalVariables = m_pScriptSystem->GetLocalVariables();
+	IScriptTable* pLocalVariables = m_pScriptSystem->GetLocalVariables(0, true);
 	if (pLocalVariables)
 	{
 		SerializeLuaTable(pLocalVariables, m_sendBuffer, 8);

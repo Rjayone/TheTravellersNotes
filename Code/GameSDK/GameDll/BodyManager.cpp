@@ -397,12 +397,8 @@ void CBodyDamageManager::GetBodyDamageDef( const char *pBodyDamageFile, const ch
 	outDef.bodyDamageFileName = PathUtil::ToUnixPath(string(pBodyDamageFile));
 	outDef.bodyDamageFileName.MakeLower();
 
-	Crc32Gen *pCrc32Gen = gEnv->pSystem->GetCrc32Gen();
-	if (pCrc32Gen)
-	{
-		outDef.crc32BodyPartsFileName = pCrc32Gen->GetCRC32(outDef.bodyPartsFileName.c_str());
-		outDef.crc32BodyDamageFileName = pCrc32Gen->GetCRC32(outDef.bodyDamageFileName.c_str());
-	}
+	outDef.crc32BodyPartsFileName = CCrc32::Compute(outDef.bodyPartsFileName.c_str());
+	outDef.crc32BodyDamageFileName = CCrc32::Compute(outDef.bodyDamageFileName.c_str());	
 }
 
 void CBodyDamageManager::FlushLevelResourcesCache()
@@ -527,11 +523,7 @@ void CBodyDamageManager::GetBodyDestructibilityDef( const char *pBodyDestructibi
 	outDef.bodyDestructibilityFileName = PathUtil::ToUnixPath(string(pBodyDestructibilityFile));
 	outDef.bodyDestructibilityFileName.MakeLower();
 
-	Crc32Gen *pCrc32Gen = gEnv->pSystem->GetCrc32Gen();
-	if (pCrc32Gen)
-	{
-		outDef.crc32BodyDestructibilityFileName = pCrc32Gen->GetCRC32(outDef.bodyDestructibilityFileName.c_str());
-	}
+	outDef.crc32BodyDestructibilityFileName = CCrc32::Compute(outDef.bodyDestructibilityFileName.c_str());
 }
 
 TBodyDamageProfileId CBodyDamageManager::LoadBodyDestructibilityDefinition( SBodyDestructibilityDef &bodyDestructibilityDef )

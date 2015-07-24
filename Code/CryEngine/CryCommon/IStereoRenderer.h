@@ -46,7 +46,7 @@ enum EStereoOutput
 	STEREO_OUTPUT_SIDE_BY_SIDE = 4,
 	STEREO_OUTPUT_LINE_BY_LINE = 5,
 	STEREO_OUTPUT_ANAGLYPH = 6,
-	STEREO_OUTPUT_VR_HEADSET = 7,
+	STEREO_OUTPUT_OCULUS = 7,
 	STEREO_OUTPUT_COUNT,
 };
 
@@ -63,24 +63,28 @@ enum EStereoDeviceState
 
 struct IStereoRenderer
 {
+	enum EHmdRender
+	{
+		eHR_Eyes = 0,
+		eHR_Latency
+	};
 
+	// <interfuscator:shuffle>
 	virtual ~IStereoRenderer(){}
 
 	virtual EStereoDevice GetDevice() = 0;
 	virtual EStereoDeviceState GetDeviceState() = 0;
-	
+	virtual void GetInfo(EStereoDevice* device, EStereoMode* mode, EStereoOutput* output, EStereoDeviceState* state) = 0;
+
 	virtual bool GetStereoEnabled() = 0;
 	virtual float GetStereoStrength() = 0;
 	virtual float GetMaxSeparationScene(bool half=true) = 0;
 	virtual float GetZeroParallaxPlaneDist() = 0;
 
-	virtual EStereoMode		GetStereoMode() = 0;
-	virtual EStereoOutput	GetStereoOutput() = 0;
-	virtual ITexture*			GetLeftRenderTarget() = 0;
-	virtual ITexture*			GetRightRenderTarget() = 0;
+	virtual void OnHMDDeviceChanged(IHMDDevice* hmdDevice) = 0;
 
 	virtual void GetNVControlValues(bool &stereoEnabled, float &stereoStrength) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

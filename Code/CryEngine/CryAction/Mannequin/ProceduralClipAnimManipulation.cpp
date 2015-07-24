@@ -28,7 +28,7 @@ struct SProceduralClipLayerWeightParams : public IProceduralParams
 		ar(invert, "Invert", "Invert");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = paramName.c_str();
 	}
@@ -50,7 +50,7 @@ public:
 
 	virtual void OnEnter(float blendTime, float duration, const SProceduralClipLayerWeightParams &params)
 	{
-		m_dataStringCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(params.paramName.c_str());
+		m_dataStringCRC = CCrc32::ComputeLowercase(params.paramName.c_str());
 		m_invert = params.invert;
 		uint32 layer = params.layer;
 
@@ -106,7 +106,7 @@ struct SProceduralClipIKControlledLayerWeightParams : public IProceduralParams
 		ar(invert, "Invert", "Invert");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = jointName.c_str();
 	}
@@ -196,7 +196,7 @@ struct SProceduralClipLayerManualUpdateParams
 		ar(invert, "Invert", "Invert");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = paramName.c_str();
 	}
@@ -216,7 +216,7 @@ public:
 
 	virtual void OnEnter(float blendTime, float duration, const SProceduralClipLayerManualUpdateParams &params)
 	{
-		m_dataStringCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(params.paramName.c_str());
+		m_dataStringCRC = CCrc32::ComputeLowercase(params.paramName.c_str());
 		uint32 layer = params.layer;
 
 		CRY_ASSERT_MESSAGE(layer >= 0 && layer < m_scope->GetTotalLayers(), string().Format("CProceduralClipLayerManualUpdate::OnEnter -> Invalid layer passed in: '%d'", layer));
@@ -295,7 +295,7 @@ struct SProceduralClipWeightedListParams : public IProceduralParams
 		ar(invert, "Invert", "Invert");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = paramName.c_str();
 	}
@@ -547,7 +547,7 @@ struct SProceduralClipLayerAnimSpeedParams : public IProceduralParams
 		ar(invert, "Invert", "Invert");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = paramName.c_str();
 	}
@@ -610,3 +610,5 @@ private:
 	uint8 m_animLayer;
 	bool m_invert;
 };
+
+REGISTER_PROCEDURAL_CLIP(CProceduralClipLayerAnimSpeed, "LayerAnimSpeed");

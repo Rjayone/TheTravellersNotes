@@ -18,7 +18,7 @@ History:
 // non-inline function definitions and static member definitions cannot
 // reside in header file because of the risk of multiple declarations
 
-SPU_NO_INLINE void CMTRand_int32::gen_state() { // generate new m_nState vector
+void CMTRand_int32::gen_state() { // generate new m_nState vector
 	for (int i = 0; i < (n - m); ++i)
 		m_nState[i] = m_nState[i + m] ^ twiddle(m_nState[i], m_nState[i + 1]);
 	for (int i = n - m; i < (n - 1); ++i)

@@ -67,7 +67,7 @@ SMMStartSearchEvent::SMMStartSearchEvent( SCrySessionSearchParam& searchParamete
 
 SMMFoundSessionEvent::SMMFoundSessionEvent( SCrySessionSearchResult* pSession, uint16 sessionStatus, int rankDiff, int32 region, int32 language, bool isBadServer, float score )
 {
-	cry_strncpy( m_sessionName, pSession->m_data.m_name, sizeof(m_sessionName) );
+	cry_strcpy( m_sessionName, pSession->m_data.m_name );
 
 	pSession->m_id->AsCStr( m_sessionID, sizeof(m_sessionID) );
 
@@ -86,8 +86,8 @@ SMMFoundSessionEvent::SMMFoundSessionEvent( SCrySessionSearchResult* pSession, u
 
 SMMChosenSessionEvent::SMMChosenSessionEvent( const char* name, CrySessionID id, const char* rulesDescription, bool created, int32 searchID, bool primary  )
 {
-	cry_strncpy( m_sessionName, name, sizeof(m_sessionName) );
-	cry_strncpy( m_rulesDescription, rulesDescription, sizeof(m_rulesDescription) );
+	cry_strcpy( m_sessionName, name );
+	cry_strcpy( m_rulesDescription, rulesDescription );
 	id->AsCStr( m_sessionID, sizeof(m_sessionID) );
 
 	m_created = created;
@@ -100,7 +100,7 @@ SMMChosenSessionEvent::SMMChosenSessionEvent( const char* name, CrySessionID id,
 
 SMMNoServerSelectedEvent::SMMNoServerSelectedEvent( const char* reason, int32 searchID )
 {
-	cry_strncpy( m_reason, reason, sizeof(m_reason) );
+	cry_strcpy( m_reason, reason );
 	m_searchID = searchID;
 
 	size = sizeof( SMMNoServerSelectedEvent );
@@ -147,7 +147,7 @@ SMMDemotedToClientEvent::SMMDemotedToClientEvent()
 
 SMMMigrateCompletedEvent::SMMMigrateCompletedEvent( CryFixedStringT<DISPLAY_NAME_LENGTH>& newServer, CrySessionID& sessionId )
 {
-	cry_strncpy( m_newServer, newServer.c_str(), sizeof(m_newServer) );
+	cry_strcpy( m_newServer, newServer.c_str() );
 	sessionId->AsCStr( m_newSessionID, sizeof(m_newSessionID) );
 
 	size = sizeof( SMMMigrateCompletedEvent );
@@ -304,7 +304,7 @@ SMMPlayerReportLagEvent::SMMPlayerReportLagEvent( CryUserID& uid )
 
 SMMGenericLogEvent::SMMGenericLogEvent( const char* pMessage, bool isError )
 {
-	cry_strncpy( m_message, pMessage, sizeof(m_message) );
+	cry_strcpy( m_message, pMessage );
 	m_bError = isError;
 
 	size = sizeof( SMMGenericLogEvent );

@@ -12,12 +12,8 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IEntity.h)
 
 #pragma once
-
-#ifndef __IEntity_h__
-#define __IEntity_h__
 
 #include <IComponent.h>
 
@@ -436,10 +432,9 @@ enum EEntityEvent
 
 	// Description: 
 	// Called to activate some output in a flow node connected to the entity
-	// nParam[0]: Output name
-	// nParam[1] = Type of the output value from IEntityClass::EventValueType.
-	// nParam[2] = Pointer to the event value depending on the type.
-	ENTITY_EVENT_ACTIVE_FLOW_NODE_OUTPUT,
+	// nParam[0] = Output port index
+	// nParam[1] = TFlowInputData* to send to output
+	ENTITY_EVENT_ACTIVATE_FLOW_NODE_OUTPUT,
 
 	// Description
 	// Called in the editor when some property of the current selected entity changes
@@ -545,7 +540,8 @@ enum EEntityFlags
 enum EEntityFlagsExtended
 {
   ENTITY_FLAG_EXTENDED_AUDIO_LISTENER = BIT(0),
-	ENTITY_FLAG_EXTENDED_NEEDS_MOVEINSIDE	= BIT(2),
+	ENTITY_FLAG_EXTENDED_NEEDS_MOVEINSIDE	= BIT(1),
+	ENTITY_FLAG_EXTENDED_CAN_COLLIDE_WITH_MERGED_MESHES	= BIT(2),
 };
 
 // Description:
@@ -602,7 +598,7 @@ struct SChildAttachParams
 
 // Description:
 //    Interface to entity object.
-UNIQUE_IFACE struct IEntity
+struct IEntity
 {
 	enum EEntityLoadFlags
 	{
@@ -627,10 +623,11 @@ UNIQUE_IFACE struct IEntity
 		ESWOF_Global = 0x02
 	};
 
-	VIRTUAL void SetLocalSeg(bool bL) = 0;
-	VIRTUAL bool IsLocalSeg() const = 0;
+	virtual void SetLocalSeg(bool bL) = 0;
+	virtual bool IsLocalSeg() const = 0;
 #endif //SEG_WORLD
 
+	// <interfuscator:shuffle>
 	virtual ~IEntity(){}
 
 	// Description:
@@ -1340,6 +1337,7 @@ UNIQUE_IFACE struct IEntity
 	virtual void SetSwObjDebugFlag(unsigned int uiVal) = 0;
 #endif //SEG_WORLD
 
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -1401,5 +1399,3 @@ inline IScriptTable* IEntity::GetScriptTable() const
 		return pScriptProxy->GetScriptTable();
 	return NULL;
 }
-
-#endif // __IEntity_h__

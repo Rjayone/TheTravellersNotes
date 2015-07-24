@@ -217,7 +217,7 @@ bool CVisualLog::OpenLogs()
 	}
 
 	// Create base directory if necessary
-	CryCreateDirectory( m_sLogFolder, 0 );
+	CryCreateDirectory( m_sLogFolder );
 
 	// Figure out next number in sequence m_sLogFolderName/m_sLogFolderNameXXXX, where XXXX is 0000, 0001, etc.
 	int iSeqNum = 0;
@@ -241,7 +241,7 @@ bool CVisualLog::OpenLogs()
 	// Now create directory
 	char sLogPath[256];
 	_snprintf( sLogPath, sizeof(sLogPath), "%s\\%s%04d", m_sLogFolder.c_str(), m_sLogFolder.c_str(), iSeqNum );
-	if ( 0 == CryCreateDirectory( sLogPath, 0 ) )
+	if ( !CryCreateDirectory( sLogPath ) )
 	{
 		GameWarning( "[VisualLog] Unable to create directory for log files: %s", sLogPath );
 		return false;
@@ -530,4 +530,4 @@ void CVisualLog::ShowDisplayMessage()
 	gEnv->pRenderer->Draw2dLabel( gEnv->pRenderer->GetWidth()*0.5f, gEnv->pRenderer->GetHeight()*0.9f, 2, red, true, "VISUAL LOGGING ENABLED" );
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IVisualLog)
+

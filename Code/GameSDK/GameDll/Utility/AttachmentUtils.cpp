@@ -128,7 +128,7 @@ namespace AttachmentUtils
 
 	IAttachment* GetAttachment( IEntity* pEntity, const char* pAttachmentName, const int slotIndex )
 	{
-		const uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pAttachmentName);
+		const uint32 crc = CCrc32::ComputeLowercase(pAttachmentName);
 		return GetAttachment( pEntity, crc, slotIndex );
 	}
 
@@ -144,7 +144,7 @@ namespace AttachmentUtils
 
 	void AttachObject( const bool bFirstPerson, IEntity* pPlayerEntity, IEntity* pObjectEntity, const char* pAttachmentName, const TAttachmentFlags flags /*= eAF_Default*/, const int playerMainSlot /*= kDefaultPlayerMainSlot*/, const int playerShadowSlot /*= kDefaultPlayerShadowSlot*/ )
 	{
-		const uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pAttachmentName);
+		const uint32 crc = CCrc32::ComputeLowercase(pAttachmentName);
 		AttachObject( bFirstPerson, pPlayerEntity, pObjectEntity, crc, flags, playerMainSlot, playerShadowSlot );
 	}
 
@@ -184,7 +184,7 @@ namespace AttachmentUtils
 
 	void DetachObject( IEntity* pPlayerEntity, IEntity* pObjectEntity, const char* pAttachmentName, const TAttachmentFlags flags /*= eAF_Default*/, const int playerMainSlot /*= kDefaultPlayerMainSlot*/, const int playerShadowSlot /*= kDefaultPlayerShadowSlot*/ )
 	{
-		const uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pAttachmentName);
+		const uint32 crc = CCrc32::ComputeLowercase(pAttachmentName);
 		DetachObject( pPlayerEntity, pObjectEntity, crc, flags, playerMainSlot, playerShadowSlot );
 	}
 

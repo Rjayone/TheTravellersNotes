@@ -18,7 +18,7 @@ History:
 #include "StdAfx.h"
 #include "LocalizedStringManager.h"
 #include "ILocalizationManager.h"
-#include "crc32.h"
+#include "CryCrc32.h"
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -82,19 +82,19 @@ const wchar_t* CLocalizedStringManager::find(const char* label,
 
 //-----------------------------------------------------------------------------------------------------
 // Generate a unique key for the given label and parameters.
-CLocalizedStringManager::Key CLocalizedStringManager::generateKey(const char* label, 
-																																	bool bAdjustActions, bool bPreferXI,
-																																	 const char* param1, const char* param2, 
-																																	 const char* param3, const char* param4)
+CLocalizedStringManager::Key CLocalizedStringManager::generateKey(
+	const char* label, 
+	bool bAdjustActions, bool bPreferXI,
+	const char* param1, const char* param2, 
+	const char* param3, const char* param4)
 {
-	Crc32Gen* pKeyGen = gEnv->pSystem->GetCrc32Gen();
 	Key actionsKey = bAdjustActions ? -1 : 0;
 	Key controllerKey = bPreferXI ? -2 : 0;
-	Key labelKey = (label != NULL) ? pKeyGen->GetCRC32(label) :    (Key)-4;
-	Key param1Key = (param1 != NULL) ? pKeyGen->GetCRC32(param1) : (Key)-8;
-	Key param2Key = (param2 != NULL) ? pKeyGen->GetCRC32(param2) : (Key)-16;
-	Key param3Key = (param3 != NULL) ? pKeyGen->GetCRC32(param3) : (Key)-32;
-	Key param4Key = (param4 != NULL) ? pKeyGen->GetCRC32(param4) : (Key)-64;
+	Key labelKey  = (label  != NULL) ? CCrc32::Compute(label)  : (Key)-4;
+	Key param1Key = (param1 != NULL) ? CCrc32::Compute(param1) : (Key)-8;
+	Key param2Key = (param2 != NULL) ? CCrc32::Compute(param2) : (Key)-16;
+	Key param3Key = (param3 != NULL) ? CCrc32::Compute(param3) : (Key)-32;
+	Key param4Key = (param4 != NULL) ? CCrc32::Compute(param4) : (Key)-64;
 	Key key = actionsKey ^ controllerKey ^ labelKey ^ param1Key ^ param2Key ^ param3Key ^ param4Key;
 	return key;
 }

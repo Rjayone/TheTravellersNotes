@@ -857,7 +857,7 @@ IPlatformOS::TUserName CTelemetryCollector::GetHostName()
 		hostName="unknown_host";
 	}
 
-	const uint32 hostNameHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32(hostName.c_str());
+	const uint32 hostNameHash = CCrc32::Compute(hostName.c_str());
 
 	hostName.Format("%lu",hostNameHash);
 	return hostName;
@@ -874,7 +874,7 @@ IPlatformOS::TUserName CTelemetryCollector::GetProfileName()
 		gEnv->pSystem->GetPlatformOS()->UserGetName(userIndex, profileName);
 	}
 
-	const uint32 profileNameHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32(profileName.c_str());
+	const uint32 profileNameHash = CCrc32::Compute(profileName.c_str());
 
 	profileName.Format("%lu",profileNameHash);
 	return profileName;
@@ -1406,7 +1406,7 @@ bool CTelemetryCollector::TrySubmitTelemetryProducer(
 
 					pLargeSubmitData->m_pProducer=pInProducer;
 
-					cry_strncpy(pLargeSubmitData->m_remoteFileName,"<telemetry producer>",sizeof(pLargeSubmitData->m_remoteFileName));		// can always extract name from post header later if it is needed
+					cry_strcpy(pLargeSubmitData->m_remoteFileName,"<telemetry producer>");		// can always extract name from post header later if it is needed
 
 					assert(inFlags&k_tf_chunked);		// Telemetry producers must be chunked
 					CRY_ASSERT_MESSAGE(inLen<=int(sizeof(pLargeSubmitData->m_postHeaderContents)),"http post header too long, truncating - message liable to get lost");
@@ -1483,7 +1483,7 @@ bool CTelemetryCollector::SubmitLargeFile(
 				pLargeSubmitData->m_pProducer=pProducer;
 				pLargeSubmitData->m_flags=inFlags;
 
-				cry_strncpy(pLargeSubmitData->m_remoteFileName,inRemoteFilePath,sizeof(pLargeSubmitData->m_remoteFileName));
+				cry_strcpy(pLargeSubmitData->m_remoteFileName,inRemoteFilePath);
 
 				if (inHintFileData && inHintFileDataLength>0)
 				{

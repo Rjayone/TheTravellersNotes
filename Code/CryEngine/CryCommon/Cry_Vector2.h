@@ -27,6 +27,7 @@ template<typename T> struct Vec2Constants
 template<class F> struct Vec2_tpl 
 {
 	typedef F value_type;
+	enum { component_count = 2 };
 
 	F x,y;
 		
@@ -43,12 +44,12 @@ template<class F> struct Vec2_tpl
 		}
 	}
 #else
-	ILINE Vec2_tpl()	{};
+	ILINE Vec2_tpl() {}
 #endif
 
 	ILINE Vec2_tpl(type_zero) : x(0),y(0) {}
-
-	ILINE Vec2_tpl(F vx,F vy) { x=F(vx); y=F(vy);  }
+	ILINE Vec2_tpl(F vx,F vy) { x=vx; y=vy; }
+	explicit ILINE Vec2_tpl(F m) { x = y = m; }
 
 	ILINE Vec2_tpl& set(F nx,F ny) { x=F(nx); y=F(ny); return *this; }
 
@@ -58,9 +59,8 @@ template<class F> struct Vec2_tpl
 	template<class F1> ILINE explicit Vec2_tpl(const F1 *psrc) { x=F(psrc[0]); y=F(psrc[1]); }
 
 	explicit ILINE Vec2_tpl(const Vec3_tpl<F>& v) : x((F)v.x), y((F)v.y) { assert(this->IsValid()); }
-#ifndef PS3
+
 	ILINE Vec2_tpl &operator=(const Vec2_tpl &src) { x=src.x; y=src.y; return *this; }
-#endif
 	//template<class F1> Vec2_tpl& operator=(const Vec2_tpl<F1>& src) { x=F(src.x); y=F(src.y); return *this; }
 	//template<class F1> Vec2_tpl& operator=(const Vec3_tpl<F1>& src) { x=F(src.x); y=F(src.y); return *this; }
 
@@ -125,8 +125,20 @@ template<class F> struct Vec2_tpl
 	}
 
 
-	ILINE F GetLength() const { return sqrt_tpl(x*x+y*y); }
-	ILINE F GetLength2() const { return x*x+y*y; }
+	ILINE F GetLength() const
+	{
+		return sqrt_tpl(x*x+y*y);
+	}
+
+	ILINE F GetLengthSquared() const	
+	{
+		return x*x+y*y;
+	}
+
+	ILINE F GetLength2() const 
+	{
+		return x*x+y*y;
+	}
 
 	void SetLength(F fLen)
 	{ 
@@ -244,6 +256,10 @@ template<class F> struct Vec2_tpl
 		return true;
 	}
 
+	ILINE F GetDistance(const Vec2_tpl<F> &vec1) const
+	{
+		return sqrt_tpl((x-vec1.x)*(x-vec1.x)+(y-vec1.y)*(y-vec1.y));
+	}
 
 	AUTO_STRUCT_INFO
 };

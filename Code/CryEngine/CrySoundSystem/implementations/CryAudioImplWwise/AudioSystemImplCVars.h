@@ -14,11 +14,20 @@ public:
 	void	RegisterVariables();
 	void	UnregisterVariables();
 
-	int		m_nPrimaryPoolSize;
-	int		m_nSecondaryPoolSize;
+	int		m_nPrimaryMemoryPoolSize;
+	int		m_nSecondaryMemoryPoolSize;
+	int		m_nPrepareEventMemoryPoolSize;
+	int		m_nStreamManagerMemoryPoolSize;
+	int		m_nStreamDeviceMemoryPoolSize;
+	int		m_nSoundEngineDefaultMemoryPoolSize;
+	int		m_nCommandQueueMemoryPoolSize;
+	int		m_nLowerEngineDefaultPoolSize;
 
 #if defined(INCLUDE_WWISE_IMPL_PRODUCTION_CODE)
 	int		m_nEnableCommSystem;
+	int		m_nEnableOutputCapture;
+	int		m_nMonitorMemoryPoolSize;
+	int		m_nMonitorQueueMemoryPoolSize;
 #endif // INCLUDE_WWISE_IMPL_PRODUCTION_CODE
 
 private:

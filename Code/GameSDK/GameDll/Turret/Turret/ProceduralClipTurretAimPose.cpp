@@ -18,6 +18,16 @@
 struct STurretAimIKParams 
 	: public IProceduralParams
 {
+	STurretAimIKParams()
+		: blendTime(1.0f)
+		, layer(4.0f)
+		, horizontalAimSmoothTime(0.5f)
+		, verticalAimSmoothTime(0.0f)
+		, maxYawDegreesSecond(180.0f)
+		, maxPitchDegreesSecond(50.0f)
+	{
+	}
+
 	virtual void Serialize(Serialization::IArchive& ar)
 	{
 		ar(Serialization::Decorators::AnimationName<SAnimRef>(animRef), "Animation", "Animation");

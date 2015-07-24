@@ -118,7 +118,7 @@ void CryWatch3DAdd(const char * text, const Vec3 & posIn, float lifetime, const 
 	{
 		SLingeringWatch3D * slot = & s_lingeringWatch3D[s_lingeringWatch3D_num];
 		s_lingeringWatch3D_num = (s_lingeringWatch3D_num + 1) % MAX_LINGERING_WATCH_3D;
-		cry_strncpy(slot->m_text, text, sizeof(slot->m_text));
+		cry_strcpy(slot->m_text, text);
 		slot->m_timeLeft = lifetime;
 		slot->m_gravity = gravity;
 		slot->m_pos = posIn;

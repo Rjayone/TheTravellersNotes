@@ -16,10 +16,9 @@
 #include <ITimer.h>
 #include <ICryAnimation.h>
 
-#undef MAX_REST_TIME
-#define MAX_REST_TIME 2.0f
+#define MIN_REST_TIME 2.0f
+#define MAX_REST_TIME 4.0f
 #define MAX_WALK_TIME 5.0f
-#define SCARE_DISTANCE 10
 
 #define CHICKEN_WALK_ANIM   0
 #define CHICKEN_IDLE_ANIM   1
@@ -80,8 +79,8 @@ CChickenBoid::CChickenBoid( SBoidContext &bc )
 : CBoidBird( bc )
 , m_lastRayCastFrame(0)
 {
-	m_maxIdleTime = 2.0f + cry_frand()*MAX_REST_TIME;
-	m_maxNonIdleTime = cry_frand()*MAX_WALK_TIME;
+	m_maxIdleTime = cry_random(MIN_REST_TIME, MAX_REST_TIME);
+	m_maxNonIdleTime = cry_random(0.0f, MAX_WALK_TIME);
 
 	m_avoidanceAccel.Set(0,0,0);
 	m_bThrown = false;
@@ -336,7 +335,7 @@ void CChickenBoid::Think( float dt,SBoidContext &bc )
 	else
 	{
 		//m_accel += (m_birdOriginPos - m_pos) * bc.factorAttractToOrigin;
-		if ((cry_rand()&31) == 1)
+		if (cry_random(0, 31) == 1)
 		{
 			m_birdOriginPos = Vec3(	bc.flockPos.x+Boid::Frand()*bc.fSpawnRadius,bc.flockPos.y+Boid::Frand()*bc.fSpawnRadius,bc.flockPos.z+Boid::Frand()*bc.fSpawnRadius );
 			if (m_birdOriginPos.z - bc.terrainZ < bc.MinHeight)
@@ -376,7 +375,7 @@ void CChickenBoid::Think( float dt,SBoidContext &bc )
 		m_bScared = true;
 		if (m_landing) m_actionTime = m_maxIdleTime+1.0f; // Stop idle.
 		// Do walk sounds.
-		if ((cry_rand() % 128) == 0)
+		if (cry_random(0, 127) == 0)
 			ExecuteTrigger(CHICKEN_SOUND_SCARED);
 	}
 	
@@ -402,8 +401,7 @@ void CChickenBoid::Think( float dt,SBoidContext &bc )
 		}
 	}
 
-	const int rndCluckFactor = m_bScared ? 128 : 255;
-	if ((cry_rand() % rndCluckFactor) == 0)
+	if (cry_random(0, (m_bScared ? 127 : 254)) == 0)
 		ExecuteTrigger(CHICKEN_SOUND_CLUCK);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -451,8 +449,8 @@ void CChickenBoid::Think( float dt,SBoidContext &bc )
 		if (m_actionTime > m_maxNonIdleTime && (m_pos.z > bc.waterLevel && bc.bAvoidWater))
 		{
 			// Play idle.
-			PlayAnimationId( CHICKEN_IDLE_ANIM + (cry_rand()%CHICKEN_IDLE_ANIM_NUM),true );
-			m_maxIdleTime = 2.0f + cry_frand()*MAX_REST_TIME;
+			PlayAnimationId( CHICKEN_IDLE_ANIM + cry_random(0, CHICKEN_IDLE_ANIM_NUM - 1), true );
+			m_maxIdleTime = cry_random(MIN_REST_TIME, MAX_REST_TIME);
 			m_landing = true;
 			m_actionTime = 0;
 			
@@ -468,7 +466,7 @@ void CChickenBoid::Think( float dt,SBoidContext &bc )
 		m_actionTime += dt;
 		if (m_actionTime > m_maxIdleTime)
 		{
-			m_maxNonIdleTime = cry_frand()*MAX_WALK_TIME;
+			m_maxNonIdleTime = cry_random(0.0f, MAX_WALK_TIME);
 			PlayAnimationId( CHICKEN_WALK_ANIM,true );
 			m_landing = false;
 			m_actionTime = 0;
@@ -527,7 +525,7 @@ void CTurtleBoid::Think( float dt,SBoidContext &bc )
 	else if (bWasScared)
 	{
 		// Not scared anymore, resume idle anim.
-		m_maxNonIdleTime = cry_frand()*MAX_WALK_TIME;
+		m_maxNonIdleTime = cry_random(0.0f, MAX_WALK_TIME);
 		PlayAnimationId( CHICKEN_WALK_ANIM,true );
 		m_landing = false;
 		m_actionTime = 0;

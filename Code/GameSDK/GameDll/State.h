@@ -432,9 +432,9 @@ struct SStateIndex
 	SStateIndex( CryHash hashName )
 		: m_name( hashName ), m_func(0), m_parent( NULL ), m_stateID(0), m_hierarchy(0) { DebugInit( "UnknownHash" ); }
 	explicit SStateIndex( const char* pName )
-		: m_name(HashString(pName)), m_func(), m_parent( NULL ), m_stateID(0), m_hierarchy(0) { DebugInit( pName ); }
+		: m_name(CryStringUtils::HashString(pName)), m_func(), m_parent( NULL ), m_stateID(0), m_hierarchy(0) { DebugInit( pName ); }
 	SStateIndex( const char* pName, typename CStateProxy<HOST>::StatePtr func, const SStateIndex<HOST>* parent, uint stateID )
-		: m_name(HashString(pName)), m_func(func), m_parent(parent), m_stateID((1ULL << static_cast<uint64>( stateID ))), m_hierarchy(0) { DebugInit( pName ); RecursiveGenerateHierarchy( *this, m_hierarchy ); }
+		: m_name(CryStringUtils::HashString(pName)), m_func(func), m_parent(parent), m_stateID((1ULL << static_cast<uint64>( stateID ))), m_hierarchy(0) { DebugInit( pName ); RecursiveGenerateHierarchy( *this, m_hierarchy ); }
 	SStateIndex( const SStateIndex& rhs )	: m_name(rhs.m_name), m_func(rhs.m_func), m_parent(rhs.m_parent), m_stateID(rhs.m_stateID), m_hierarchy(rhs.m_hierarchy)
 #ifdef STATE_DEBUG
 		, m_pDebugName(rhs.m_pDebugName)

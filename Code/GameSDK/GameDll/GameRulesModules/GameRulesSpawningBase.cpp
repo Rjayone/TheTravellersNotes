@@ -433,7 +433,7 @@ bool CGameRulesSpawningBase::CanPlayerSpawnThisRound(const EntityId playerId) co
 
 CGameRulesSpawningBase::TSpawnLocations* CGameRulesSpawningBase::GetSpawnLocationsFromGroup( TSpawnGroups &groups, const char *pGroupName )
 {
-	uint32 spawnGroupId = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pGroupName);
+	uint32 spawnGroupId = CCrc32::ComputeLowercase(pGroupName);
 	int numGroups = groups.size();
 	TSpawnLocations *pGroup = NULL;
 	for (int i = 0; i < numGroups; ++ i)
@@ -568,7 +568,7 @@ void CGameRulesSpawningBase::SelectNewInitialSpawnGroup()
 void CGameRulesSpawningBase::SetInitialSpawnGroup( const char* groupName )
 {
 	// Gen crc, and find matching spawn group.
-	uint32 spawnGroupId = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(groupName);
+	uint32 spawnGroupId = CCrc32::ComputeLowercase(groupName);
 	int numGroups = m_initialSpawnLocations.size();
 	for (int i = 0; i < numGroups; ++ i)
 	{

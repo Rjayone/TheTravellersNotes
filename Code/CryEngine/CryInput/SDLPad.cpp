@@ -50,7 +50,7 @@
 #define SDL_GAMEPAD_LEFT_THUMB (SDL_GAMEPAD_SYM(SDL_CONTROLLER_BUTTON_LEFTSTICK))
 #define SDL_GAMEPAD_RIGHT_THUMB (SDL_GAMEPAD_SYM(SDL_CONTROLLER_BUTTON_RIGHTSTICK))
 
-// On some controllers (notably PS3), SDL_CONTROLLER_AXIS_TRIGGER* events are accompanied
+// On some controllers, SDL_CONTROLLER_AXIS_TRIGGER* events are accompanied
 // by a redundant SDL_CONTROLLER_BUTTON_* event outside the range of SDL_CONTROLLER_BUTTON_MAX
 #define SDL_GAMEPAD_BUTTON_LEFT_TRIGGER_DUPE (SDL_GAMEPAD_SYM(15))
 #define SDL_GAMEPAD_BUTTON_RIGHT_TRIGGER_DUPE (SDL_GAMEPAD_SYM(16))
@@ -64,7 +64,7 @@
 #define SDL_GAMEPAD_RIGHT_TRIGGER (SDL_GAMEPAD_AXIS(SDL_CONTROLLER_AXIS_TRIGGERRIGHT))
 #define SDL_GAMEPAD_RIGHT_TRIGGER_DUPE (SDL_GAMEPAD_AXIS(6)) // Discard duplicate event
 
-// On some controllers (notably PS3) dpad events are not raised as hat events with a 
+// On some controllers dpad events are not raised as hat events with a 
 // SDL_HAT_* value, but rather as regular button events with SDL_CONTROLLER_BUTTON_DPAD_*
 // values.  These will be mapped/handled similar to our SDL_GAMEPAD_DPAD_* symbols.
 #define SDL_GAMEPAD_LEFT_THUMB_UP (SDL_GAMEPAD_SYM(SDL_CONTROLLER_BUTTON_DPAD_UP))
@@ -123,10 +123,10 @@ bool CSDLPad::Init()
 	MapSymbol(SDL_GAMEPAD_LEFT_THUMB_X, eKI_XI_ThumbLX, "xi_thumblx",		SInputSymbol::Axis);
 	MapSymbol(SDL_GAMEPAD_LEFT_THUMB_Y, eKI_XI_ThumbLY, "xi_thumbly",		SInputSymbol::Axis);
 	// Map left thumb dpad button events to corresponing dpad hat events
-	MapSymbol(SDL_GAMEPAD_LEFT_THUMB_UP, eKI_XI_DPadUp, "xi_dpad_up");
-	MapSymbol(SDL_GAMEPAD_LEFT_THUMB_DOWN, eKI_XI_DPadDown, "xi_dpad_down");
-	MapSymbol(SDL_GAMEPAD_LEFT_THUMB_LEFT, eKI_XI_DPadLeft, "xi_dpad_left");
-	MapSymbol(SDL_GAMEPAD_LEFT_THUMB_RIGHT, eKI_XI_DPadRight, "xi_dpad_right");
+	/*MapSymbol(SDL_GAMEPAD_LEFT_THUMB_UP, eKI_XI_DPadUp, "xi_dpad_up");
+		MapSymbol(SDL_GAMEPAD_LEFT_THUMB_DOWN, eKI_XI_DPadDown, "xi_dpad_down");
+		MapSymbol(SDL_GAMEPAD_LEFT_THUMB_LEFT, eKI_XI_DPadLeft, "xi_dpad_left");
+		MapSymbol(SDL_GAMEPAD_LEFT_THUMB_RIGHT, eKI_XI_DPadRight, "xi_dpad_right");*/
 	MapSymbol(SDL_GAMEPAD_RIGHT_THUMB_X, eKI_XI_ThumbRX, "xi_thumbrx",		SInputSymbol::Axis);
 	MapSymbol(SDL_GAMEPAD_RIGHT_THUMB_Y, eKI_XI_ThumbRY, "xi_thumbry",		SInputSymbol::Axis);
 	/*MapSymbol(SDL_GAMEPAD_RIGHT_THUMB_UP, eKI_XI_ThumbRUp, "xi_thumbr_up");
@@ -273,6 +273,7 @@ void CSDLPad::HandleHatEvent(const SDL_JoyHatEvent& hatEvt)
 		pSymbol->state = symState; \
 		pSymbol->AssignTo(inputEvt); \
 		GetLinuxInput().PostInputEvent(inputEvt);
+
 	if (hatEvt.value == SDL_HAT_CENTERED)
 	{
 		SET_HAT_STATE(SDL_GAMEPAD_DPAD_UP, eIS_Released);
@@ -299,6 +300,7 @@ void CSDLPad::HandleHatEvent(const SDL_JoyHatEvent& hatEvt)
 			SET_HAT_STATE(SDL_GAMEPAD_DPAD_RIGHT, eIS_Pressed);
 		}
 	}
+	
 	#undef SET_HAT_STATE
 }
 
@@ -333,6 +335,7 @@ void CSDLPad::HandleButtonEvent(const SDL_JoyButtonEvent& btEvt)
 		if (isPost)
 		{
 			pSymbol->state = currState;
+			pSymbol->value = (currState == eIS_Pressed) ? 1.0f : 0.0f; 
 			pSymbol->AssignTo(inputEvt);
 			GetLinuxInput().PostInputEvent(inputEvt);
 		}

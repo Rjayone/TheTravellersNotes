@@ -18,6 +18,7 @@ struct IFactionMap
 		InvalidFactionID = 0xff,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IFactionMap(){}
 	virtual uint32 GetFactionCount() const = 0;
 	virtual const char* GetFactionName(uint8 fraction) const = 0;
@@ -25,7 +26,7 @@ struct IFactionMap
 
 	virtual void SetReaction(uint8 factionOne, uint8 factionTwo, IFactionMap::ReactionType reaction) = 0;
 	virtual IFactionMap::ReactionType GetReaction(uint8 factionOne, uint8 factionTwo) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

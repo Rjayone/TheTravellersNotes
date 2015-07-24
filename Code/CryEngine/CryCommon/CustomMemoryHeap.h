@@ -16,18 +16,6 @@
 #pragma once
 
 #include "IMemory.h"
-#ifdef PS3
-	#include "../CryCommon/CryPool/PoolAlloc.h"
-	enum {eMaxAllocsInHeap = 512};
-	enum {eHeapblockAlignment = 2048};
-	typedef 
-		NCryPoolAlloc::CThreadSafe
-		<NCryPoolAlloc::CInspector
-		<NCryPoolAlloc::CDefragStacked
-		<NCryPoolAlloc::CBestFit
-		<NCryPoolAlloc::CReferenced
-		<NCryPoolAlloc::CMemoryDynamic, eMaxAllocsInHeap, true >, NCryPoolAlloc::CListItemReference > > > > tRSXMemoryPoolReferenced;
-#endif
 
 class CCustomMemoryHeap;
 
@@ -72,30 +60,17 @@ public:
 	// ICustomMemoryHeap
 	//////////////////////////////////////////////////////////////////////////
 	virtual ICustomMemoryBlock* AllocateBlock( size_t const nAllocateSize,char const* const sUsage,size_t const nAlignment = 16 );
-	virtual void AllocateHeap( size_t const nSize,char const* const sUsage );
 	virtual void GetMemoryUsage( ICrySizer *pSizer );
 	virtual size_t GetAllocated();
-	virtual void Defrag();
 	//////////////////////////////////////////////////////////////////////////
 
 	void DeallocateBlock( CCustomMemoryHeapBlock* pBlock );
 
-#ifdef PS3
-	ILINE uint8* GetPoolBegin() const { return m_pRSXPool->FirstItem(); }
-#endif // PS3
-
 private:
-
-	bool IsGPUHeap() const { return m_eAllocPolicy == IMemoryManager::eapGPU || m_eAllocPolicy == IMemoryManager::eapGPUEternal; }
 
 	friend class CCustomMemoryHeapBlock;
 	int m_nAllocatedSize;
 	IMemoryManager::EAllocPolicy m_eAllocPolicy;
-
-#ifdef PS3
-	tRSXMemoryPoolReferenced *m_pRSXPool;
-	uint32 m_nGPUHandle;
-#endif
 	IMemoryManager::HeapHandle m_nTraceHeapHandle;
 };
 

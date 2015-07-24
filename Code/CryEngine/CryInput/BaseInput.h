@@ -71,7 +71,7 @@ public:
 	virtual char GetInputCharAscii(const SInputEvent& event);
 	virtual SInputSymbol* LookupSymbol( EInputDeviceType deviceType, int deviceIndex, EKeyId keyId );
 	virtual const SInputSymbol*	GetSymbolByName(const char* name) const;
-	virtual const wchar_t* GetOSKeyName(const SInputEvent& event);
+	virtual const char* GetOSKeyName(const SInputEvent& event);
 	virtual void ClearKeyState();
 	virtual void ClearAnalogKeyState();
 	virtual void RetriggerKeyState();
@@ -79,7 +79,7 @@ public:
 	virtual bool HasInputDeviceOfType( EInputDeviceType type );
 	virtual void SetDeadZone(float fThreshold);
 	virtual void RestoreDefaultDeadZone();
-	virtual IInputDevice* GetDevice(uint16 id, EInputDeviceType deviceType) { return NULL; }
+	virtual IInputDevice* GetDevice(uint16 id, EInputDeviceType deviceType);
 
 	// listener functions (implemented)
 	virtual void	AddEventListener( IInputEventListener *pListener );
@@ -95,6 +95,7 @@ public:
 	virtual bool  IsEventPostingEnabled () const;
 	virtual void	PostInputEvent( const SInputEvent &event, bool bForce=false );
 	virtual void	PostTouchEvent( const STouchEvent &event, bool bForce=false );
+	virtual void	PostUnicodeEvent( const SUnicodeEvent &event, bool bForce=false );
 	virtual void	ForceFeedbackEvent( const SFFOutputEvent &event );
 	virtual void	ForceFeedbackSetDeviceIndex( int index );
 	virtual void EnableDevice( EInputDeviceType deviceType, bool enable);
@@ -135,6 +136,7 @@ protected:
 
 private:
 	bool SendEventToListeners(const SInputEvent &event);
+	bool SendEventToListeners(const SUnicodeEvent &event);
 	void AddEventToHoldSymbols(const SInputEvent &event);
 	void RemoveDeviceHoldSymbols(EInputDeviceType deviceType, uint8 deviceIndex);
 

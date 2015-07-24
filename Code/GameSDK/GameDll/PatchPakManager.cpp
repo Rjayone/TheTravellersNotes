@@ -925,9 +925,7 @@ void CPatchPakManager::StartNewDownload(const char *inServerName, const int inPo
 			pMD5Iter += 2;
 		}
 
-		Crc32Gen *pCRC = GetISystem()->GetCrc32Gen();
-		CRY_ASSERT(pCRC);
-		newPatchPakData.m_MD5CRC32 = pCRC->GetCRC32((const char *)newPatchPakData.m_pMD5, sizeof(newPatchPakData.m_pMD5), 0xffffffff);
+		newPatchPakData.m_MD5CRC32 = CCrc32::Compute(newPatchPakData.m_pMD5, sizeof(newPatchPakData.m_pMD5));
 
 		CRY_ASSERT(newPatchPakData.m_state == SPatchPakData::es_Uninitialised);
 
@@ -1066,18 +1064,15 @@ void CPatchPakManager::ProcessPermissionsXML(CDownloadableResourcePtr inResource
 
 	inResource->GetRawData(&buffer,&bufferSize);
 
-	Crc32Gen *pCRC = GetISystem()->GetCrc32Gen();
-	CRY_ASSERT(pCRC);
-
 	if (m_state == eMS_initial_permissions_downloaded)
 	{
-		m_installedPermissionsCRC32 = pCRC->GetCRC32(buffer, bufferSize, 0xffffffff);
+		m_installedPermissionsCRC32 = CCrc32::Compute(buffer, bufferSize);
 		CryLog("CPatchPakManager::ProcessPermissionsXML() in state initial permissions downloaded. Saving new installedPermissionsCRC32 of %x", m_installedPermissionsCRC32);
 	}
 	else
 	{
 		CRY_ASSERT(m_state == eMS_patches_installed_permissions_downloaded);
-		uint32 newPermissionsCRC32 = pCRC->GetCRC32(buffer, bufferSize, 0xffffffff);
+		uint32 newPermissionsCRC32 = CCrc32::Compute(buffer, bufferSize);
 		CryLog("CPatchPakManager::ProcessPermissionsXML() this is a polling permissions download. m_state=%d; Testing new permissions CRC=%x against installed permissions CRC=%x", m_state, newPermissionsCRC32, m_installedPermissionsCRC32);
 		if (newPermissionsCRC32 == m_installedPermissionsCRC32)
 		{

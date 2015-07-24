@@ -1,0 +1,101 @@
+<project name="hunt">
+	<settings>
+		<clientspec>hunt</clientspec>
+		<thirdPartyWorkSpace>buildbot_3rdparty_novus</thirdPartyWorkSpace>
+		<internalProjectName>hunt</internalProjectName>
+		<branchName>trunk</branchName>
+		<name>hunt</name>
+		<execBase>GameSDK;Hunt</execBase>
+		<gameBase>GameSDK;game_hunt</gameBase>
+		<solution>Code\Solutions\CryEngineTools.sln</solution>
+		<make>Code\Solutions\CryEngine.mk</make>
+		<buildDir>\\storage\Hunt\builds_hunt</buildDir>
+		<remoteShaderDir>\\storage\Hunt\builds_hunt</remoteShaderDir>
+		<assetDir>GameSDK</assetDir>
+		<min_xdk>2.0.20764.0</min_xdk>
+		<emails>
+			<crash>saschahoba@crytek.com;mathieu@crytek.com</crash>
+		</emails>
+		<wafCompilation enabled="true" additionalArguments="--ask-for-user-input False --use-uber-files True --run-bootstrap-automatically False" />
+	</settings>
+	<tools>
+		<platform name="cppcheck"/>
+		<platform name="prepare_shader" solution="Code\Solutions\ShaderCacheBuild.sln">
+			<test name="shader_pc" />
+		</platform>
+	</tools>
+	<trybuild>
+		<platform name="try_astyle" required="false" />
+
+		<platform name="try_win32_debug" />
+		<platform name="try_win32_profile" required="true" />
+		<platform name="try_win32_release" required="false" />
+		<platform name="try_win64_profile" required="true"/>
+		<platform name="try_win64_profile_no_uber" required="true" wafCompilationAdditionalArguments="--ask-for-user-input False --run-bootstrap-automatically False --use-uber-files=False"/>
+		<platform name="try_win64_debug" required="true" />
+		<platform name="try_win64_release" required="false" />
+		<platform name="try_win32_profile_server" required="false" />
+		<platform name="try_win32_release_server" />
+		<platform name="try_win64_profile_server" outFolder="Bin64" required="false" />
+		<platform name="try_win64_profile_server_no_uber" required="false" outFolder="Bin64" wafCompilationAdditionalArguments="--ask-for-user-input False --run-bootstrap-automatically False --use-uber-files=False"/>
+		<platform name="try_win64_release_server" required="false" />
+		<!-- temporary solution -->
+		<!-- the VS solution doesn't have the matching try_win32_debug_server target -->
+		<!--<platform name="try_win32_debug_server" />-->
+		<platform name="try_orbis_profile" required="true" />
+		<platform name="try_orbis_release" required="false" />
+		<platform name="try_orbis_performance" required="false" />
+		<platform name="try_orbis_debug" required="true" />
+		<platform name="try_dur_profile" required="true"/>
+		<platform name="try_dur_release" required="false" />
+		<platform name="try_dur_debug" required="true" />
+		
+		<platform name="try_linux_x86_gcc_profile" required="false" />
+		<platform name="try_linux_x64_gcc_profile" required="true" />
+		<platform name="try_linux_x86_gcc_release" required="false" />
+		<platform name="try_linux_x64_gcc_release" required="false" />
+		<platform name="try_linux_x86_gcc_performance" required="false" />
+		<platform name="try_linux_x64_gcc_performance" required="false" />
+		<platform name="try_linux_x86_gcc_debug" required="false" />
+		<platform name="try_linux_x64_gcc_debug" required="true" />		
+		
+		<platform name="try_linux_x86_clang_profile" required="false" />
+		<platform name="try_linux_x64_clang_profile" required="true" />
+		<platform name="try_linux_x86_clang_performance" required="false" />
+		<platform name="try_linux_x64_clang_performance" required="false" />
+		<platform name="try_linux_x86_clang_release" required="false" />
+		<platform name="try_linux_x64_clang_release" required="false" />
+		<platform name="try_linux_x86_clang_debug" required="false" />
+		<platform name="try_linux_x64_clang_debug" required="true" />
+
+		<platform name="try_android_arm_gcc_profile" required="true" />
+		<platform name="try_android_arm_gcc_release" required="false" />
+		<platform name="try_android_arm_gcc_performance" required="false" />
+		<platform name="try_android_arm_gcc_debug" required="true" />		
+
+		<platform name="try_darwin_x86_profile" required="false" />
+		<platform name="try_darwin_x64_profile" required="false" />
+		<platform name="try_darwin_x86_performance" required="false" />
+		<platform name="try_darwin_x64_performance" required="false" />
+		<platform name="try_darwin_x86_release" required="false" />
+		<platform name="try_darwin_x64_release" required="false" />
+		<platform name="try_darwin_x86_debug" required="false" />
+		<platform name="try_darwin_x64_debug" required="false" />
+	</trybuild>
+	<buildSuiteUpload>
+		<!-- usually uses the project name. e.g.: "http://ffmgsserver01/ffmgip/cen" -->
+		<refHttpRepoPrefix>http://ffmgsserver01/ffmgip/hunt</refHttpRepoPrefix>
+		<!-- usually looks like this: "gamestream@ffmgsserver01:/GameStream/ffmgip/cen" -->
+		<remoteUriPrefix>gamestream@ffmgsserver01:/GameStream/ffmgip/hunt</remoteUriPrefix>
+		<!-- usually looks like this: "ffmgip/cen" -->
+		<gipRemoteRepoRelPathPrefix>ffmgip/hunt</gipRemoteRepoRelPathPrefix>
+		<projectHasPlatformDependentRepos>true</projectHasPlatformDependentRepos>
+	</buildSuiteUpload>
+	<autocompile>
+			<platform name="ac_win64_profile">
+				<test name="ai_basic" />
+			</platform>
+	</autocompile>
+	<nightly>
+	</nightly>
+</project>

@@ -39,7 +39,7 @@ void CPostEffectActivationSystem::Initialise(const IItemParamsNode* postEffectLi
 			if(postEffectXmlNode && postEffectXmlNode != vecsXmlNode)
 			{
 				param = &m_postEffectParam[paramIndex];
-				strcpy_s(param->name,MAX_POST_EFFECT_NAME,postEffectXmlNode->GetName());
+				cry_strcpy(param->name, postEffectXmlNode->GetName());
 				postEffectXmlNode->GetAttribute("activeValue",param->activeValue);
 				postEffectXmlNode->GetAttribute("nonActiveValue",param->nonActiveValue);
 
@@ -60,7 +60,7 @@ void CPostEffectActivationSystem::Initialise(const IItemParamsNode* postEffectLi
 				postEffectXmlNode = vecsXmlNode->GetChild(i);
 
 				paramVec = &m_postEffectParamVec[i];
-				strcpy_s(paramVec->name,MAX_POST_EFFECT_NAME,postEffectXmlNode->GetName());
+				cry_strcpy(paramVec->name, postEffectXmlNode->GetName());
 
 				Vec3 vecValue(0.0f,0.0f,0.0f);
 				float wValue = 0.0f;

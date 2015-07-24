@@ -240,14 +240,13 @@ SMeleeTags::STagParams::STagParams( const char* pTag, const char* pHitType )
 	:
 crcTagID(0), crcHitType(0), tagState(TAG_STATE_EMPTY), hitType(-1)
 {
-	const Crc32Gen* pCRC32Gen = gEnv->pSystem->GetCrc32Gen();
 	if( pTag )
 	{
-		crcTagID = pCRC32Gen->GetCRC32Lowercase( pTag );
+		crcTagID = CCrc32::ComputeLowercase( pTag );
 	}
 	if( pHitType )
 	{
-		crcHitType = pCRC32Gen->GetCRC32Lowercase( pHitType );
+		crcHitType = CCrc32::ComputeLowercase( pHitType );
 	}
 }
 
@@ -257,7 +256,6 @@ void SMeleeTags::Reset( const XmlNodeRef& tagsNode, bool defaultInit /* = true *
 	{
 		CGameXmlParamReader reader(tagsNode);
 
-		const Crc32Gen* pCrcGen = gEnv->pSystem->GetCrc32Gen();
 		const int numTags = reader.GetUnfilteredChildCount();
 
 		for( int i=0; i<numTags; ++i )
@@ -268,7 +266,7 @@ void SMeleeTags::Reset( const XmlNodeRef& tagsNode, bool defaultInit /* = true *
 			child->getAttr( "name", &pName );
 
 			STagParams tagParams;
-			tagParams.crcTagID = pCrcGen->GetCRC32Lowercase( pName );
+			tagParams.crcTagID = CCrc32::ComputeLowercase( pName );
 
 			if( pName )
 			{
@@ -276,7 +274,7 @@ void SMeleeTags::Reset( const XmlNodeRef& tagsNode, bool defaultInit /* = true *
 				child->getAttr( "hit_type", &pHitType );
 				if( pHitType )
 				{
-					tagParams.crcHitType = pCrcGen->GetCRC32Lowercase( pHitType );
+					tagParams.crcHitType = CCrc32::ComputeLowercase( pHitType );
 				}
 
 				if( strstr( pName, "combo_left" ) )
@@ -487,8 +485,6 @@ void SRapidParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit/*=true*
 		acceleration = 3.0f;
 		deceleration = 3.0f;
 		barrel_attachment = "";
-		camshake_perShot = 0.0f;
-		shoot_play_sound = false;
 		min_firingTimeToStop = 0.1f;
 	}
 
@@ -501,8 +497,6 @@ void SRapidParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit/*=true*
 		reader.ReadParamValue<float>("acceleration", acceleration);
 		reader.ReadParamValue<float>("deceleration", deceleration);
 		barrel_attachment = reader.ReadParamValue("barrel_attachment", barrel_attachment.c_str());
-		reader.ReadParamValue<float>("camshake_perShot", camshake_perShot);
-		reader.ReadParamValue<bool>("shoot_play_sound", shoot_play_sound);
 		reader.ReadParamValue<float>("min_firingTimeToStop", min_firingTimeToStop);
 	}
 }
@@ -696,16 +690,11 @@ void SFireParams::Reset(const XmlNodeRef& paramsNode, bool defaultInit/*=true*/)
 		changeFMFireDelayFraction = 0.0f;
 		endReloadFraction = 1.0f;
 		fillAmmoReloadFraction = 1.0f;
-		useLowAmmoWarning = true;
 		autoReload = true;
 		autoSwitch = true;
-		lowAmmoWarningFraction = 0.1f;
-		offset = 0.15f;      
 		stabilization = 0.2f;
 		speed_override = 0.0f;
-		stealthEnergyDrainMultiplier = 1.0f;
 		bullet_chamber = 0;
-		hasEmptyReload = false;
 		damage = 32;
 		damage_drop_per_meter = 0.0f;
 		damage_drop_min_distance = 0.0f;
@@ -723,7 +712,6 @@ void SFireParams::Reset(const XmlNodeRef& paramsNode, bool defaultInit/*=true*/)
 		barrel_count = 1;
 
 		spin_up_time = 0.0f;
-		spin_down_time = 0.0f;
 		fire_anim_damp = 1.0f;
 		ironsight_fire_anim_damp = 1.0f;
 		holdbreath_fire_anim_damp = 0.5f;
@@ -760,14 +748,10 @@ void SFireParams::Reset(const XmlNodeRef& paramsNode, bool defaultInit/*=true*/)
 		reader.ReadParamValue<float>("changeFMFireDelayFraction", changeFMFireDelayFraction);
 		reader.ReadParamValue<float>("endReloadFraction", endReloadFraction);
 		reader.ReadParamValue<float>("fillAmmoReloadFraction", fillAmmoReloadFraction);
-		reader.ReadParamValue<bool>("useLowAmmoWarning", useLowAmmoWarning);
 		reader.ReadParamValue<bool>("autoReload", autoReload);
 		reader.ReadParamValue<bool>("autoSwitch", autoSwitch);
-		reader.ReadParamValue<float>("lowAmmoWarningFraction", lowAmmoWarningFraction);
-		reader.ReadParamValue<float>("offset", offset);
 		reader.ReadParamValue<float>("stabilization", stabilization);
 		reader.ReadParamValue<float>("speed_override", speed_override);
-		reader.ReadParamValue<float>("stealthEnergyDrainMultiplier", stealthEnergyDrainMultiplier);
 
 #ifndef _RELEASE
 		if (!defaultInit && endReloadFraction < fillAmmoReloadFraction)
@@ -794,8 +778,6 @@ void SFireParams::Reset(const XmlNodeRef& paramsNode, bool defaultInit/*=true*/)
 		{
 			bullet_chamber = (uint8)bulletChamber;
 		}
-		
-		reader.ReadParamValue<bool>("hasEmptyReload", hasEmptyReload);
 		
 		reader.ReadParamValue<int>("damage", damage);
 		reader.ReadParamValue<float>("damage_drop_per_meter", damage_drop_per_meter);
@@ -824,7 +806,6 @@ void SFireParams::Reset(const XmlNodeRef& paramsNode, bool defaultInit/*=true*/)
 		reader.ReadParamValue<short>("barrel_count", barrel_count);
 
 		reader.ReadParamValue<float>("spin_up_time", spin_up_time);
-		reader.ReadParamValue<float>("spin_down_time", spin_down_time);
 		reader.ReadParamValue<float>("fire_anim_damp", fire_anim_damp);
 		reader.ReadParamValue<float>("ironsight_fire_anim_damp", ironsight_fire_anim_damp);
 		reader.ReadParamValue<float>("holdbreath_fire_anim_damp", holdbreath_fire_anim_damp);

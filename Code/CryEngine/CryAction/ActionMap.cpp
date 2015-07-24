@@ -16,7 +16,7 @@
 #include "ActionMapManager.h"
 #include "IConsole.h"
 #include "GameObjects/GameObject.h"
-#include <crc32.h>
+#include "CryCrc32.h"
 
 #define ACTIONINPUT_NAME_STR "name"
 
@@ -106,7 +106,7 @@ bool CActionMapAction::AddActionInput(const SActionInput& actionInput, const int
 	}
 
 	// Don't require to have a crc when passing in, but if has one, check it
-	uint32 inputCRC	= CRC_GEN->GetCRC32Lowercase(actionInput.input);
+	uint32 inputCRC	= CCrc32::ComputeLowercase(actionInput.input);
 	if (actionInput.inputCRC != 0)
 	{
 		if (inputCRC != actionInput.inputCRC)
@@ -222,7 +222,7 @@ SActionInput* CActionMapAction::FindActionInput(uint32 inputCRC)
 //------------------------------------------------------------------------
 const SActionInput* CActionMapAction::FindActionInput(const char* szInput) const
 {
-	uint32 inputCRC = CRC_GEN->GetCRC32Lowercase(szInput);
+	uint32 inputCRC = CCrc32::ComputeLowercase(szInput);
 
 	const SActionInput* pFoundActionInput = NULL;
 
@@ -324,7 +324,7 @@ const SActionInput* CActionMapAction::GetActionInput(const EActionInputDevice de
 SActionInput* CActionMapAction::AddAndGetActionInput(const SActionInput& actionInput)
 {
 	// Don't require to have a crc when passing in, but if has one, check it
-	uint32 inputCRC	= CRC_GEN->GetCRC32Lowercase(actionInput.input);
+	uint32 inputCRC	= CCrc32::ComputeLowercase(actionInput.input);
 	if (actionInput.inputCRC != 0)
 	{
 		if (inputCRC != actionInput.inputCRC)
@@ -507,7 +507,7 @@ bool CActionMap::RemoveActionInput(const ActionId& actionId, const char* szInput
 
 	CActionMapAction& action = iter->second;
 
-	uint32 inputCRC = CRC_GEN->GetCRC32Lowercase(szInput);
+	uint32 inputCRC = CCrc32::ComputeLowercase(szInput);
 
 	SActionInput* pActionInput = action.FindActionInput(inputCRC);
 	if (pActionInput == NULL)
@@ -603,7 +603,7 @@ bool CActionMap::AddAndBindActionInput(CActionMapAction* pAction, const SActionI
 //------------------------------------------------------------------------
 bool CActionMap::ReBindActionInput(CActionMapAction* pAction, const char* szCurrentInput, const char* szNewInput)
 {
-	uint32 inputCRC = CRC_GEN->GetCRC32Lowercase(szCurrentInput);
+	uint32 inputCRC = CCrc32::ComputeLowercase(szCurrentInput);
 
 	SActionInput* pActionInput = pAction->FindActionInput(inputCRC);
 	if (!pActionInput)
@@ -638,7 +638,7 @@ bool CActionMap::ReBindActionInput(CActionMapAction* pAction, SActionInput& acti
 	// Possible to assign empty to clear the binding
 	if (szNewInput != NULL && strcmp(szNewInput, "") != 0)
 	{
-		actionInput.inputCRC = 	CRC_GEN->GetCRC32Lowercase(szNewInput);
+		actionInput.inputCRC = 	CCrc32::ComputeLowercase(szNewInput);
 
 		bool bResult = m_pActionMapManager->AddBind(this, pAction, &actionInput);
 		if (!bResult)
@@ -695,7 +695,7 @@ bool CActionMap::ReBindActionInput(CActionMapAction* pAction,
 	// Possible to assign empty to clear the binding
 	if (szNewInput != NULL && strcmp(szNewInput, "") != 0)
 	{
-		pActionInput->inputCRC = 	CRC_GEN->GetCRC32Lowercase(szNewInput);
+		pActionInput->inputCRC = 	CCrc32::ComputeLowercase(szNewInput);
 
 		bool bResult = m_pActionMapManager->AddBind(this, pAction, pActionInput);
 		if (!bResult)
@@ -2085,4 +2085,4 @@ void CActionMap::GetMemoryUsage(ICrySizer * s) const
 	s->AddObject(m_name);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IActionMap)
+

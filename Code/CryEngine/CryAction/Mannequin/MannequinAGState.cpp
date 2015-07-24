@@ -211,8 +211,7 @@ void CMannequinAGState::QueryChangeInput( InputID iid, TAnimationGraphQueryID* p
 void CMannequinAGState::AddListener( const char* name, IAnimationGraphStateListener* pListener )
 {
 	SListener listener;
-	strncpy(listener.name, name, sizeof(listener.name));
-	listener.name[sizeof(listener.name)-1] = 0;
+	cry_strcpy(listener.name, name);
 	listener.pListener = pListener;
 	stl::push_back_unique( m_listeners, listener );
 }
@@ -389,12 +388,12 @@ bool CMannequinAGState::SetInputInternal( InputID iid, const char* value, TAnima
 	{
 	case eSIID_Action:
 		{
-			static const uint32 idleCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("idle");
+			static const uint32 idleCRC = CCrc32::ComputeLowercase("idle");
 			return SetActionOrSignalInput(m_pLoopingAction, m_actionValue, iid, EAT_Looping, "idle", idleCRC, value, pQueryID, optional);
 		}
 	case eSIID_Signal:
 		{
-			static const uint32 noneCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("none");
+			static const uint32 noneCRC = CCrc32::ComputeLowercase("none");
 			return SetActionOrSignalInput(m_pOneShotAction, m_signalValue, iid, EAT_OneShot, "none", noneCRC, value, pQueryID, optional);
 		}
 	case InputID(-1):
@@ -423,10 +422,10 @@ bool CMannequinAGState::SetActionOrSignalInput(_smart_ptr<CAnimActionAGAction>& 
 	if (pQueryID)
 		queryID = *pQueryID = GenerateQueryID();
 
-	const uint32 valueCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(value);
+	const uint32 valueCRC = CCrc32::ComputeLowercase(value);
 
-	static uint32 idleCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("idle");
-	static uint32 noneCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase("none");
+	static uint32 idleCRC = CCrc32::ComputeLowercase("idle");
+	static uint32 noneCRC = CCrc32::ComputeLowercase("none");
 	const bool isUnsupportedFragmentID = ((valueCRC == idleCRC) || (valueCRC == noneCRC));
 	const FragmentID fragmentID = isUnsupportedFragmentID ? FRAGMENT_ID_INVALID : pActionController->GetContext().controllerDef.m_fragmentIDs.Find(valueCRC);
 

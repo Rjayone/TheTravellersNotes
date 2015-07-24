@@ -36,36 +36,37 @@ private:
 public:
 
 	//IViewSystem
-	VIRTUAL IView *CreateView();
-	VIRTUAL void RemoveView(IView* pView);
-	VIRTUAL void RemoveView(unsigned int viewId);
+	virtual IView *CreateView();
+	virtual void RemoveView(IView* pView);
+	virtual void RemoveView(unsigned int viewId);
 
-	VIRTUAL void SetActiveView(IView *pView);
-	VIRTUAL void SetActiveView(unsigned int viewId);
+	virtual void SetActiveView(IView *pView);
+	virtual void SetActiveView(unsigned int viewId);
 
 	//utility functions
-	VIRTUAL IView *GetView(unsigned int viewId);
-	VIRTUAL IView *GetActiveView();
+	virtual IView *GetView(unsigned int viewId);
+	virtual IView *GetActiveView();
 
-	VIRTUAL unsigned int GetViewId(IView *pView);
-	VIRTUAL unsigned int GetActiveViewId();
+	virtual unsigned int GetViewId(IView *pView);
+	virtual unsigned int GetActiveViewId();
 
-	VIRTUAL void Serialize(TSerialize ser);
-	VIRTUAL void PostSerialize();
+	virtual void Serialize(TSerialize ser);
+	virtual void PostSerialize();
 
-	VIRTUAL IView *GetViewByEntityId(EntityId id, bool forceCreate);
+	virtual IView *GetViewByEntityId(EntityId id, bool forceCreate);
 
-	VIRTUAL float GetDefaultZNear() { return m_fDefaultCameraNearZ; };
-	VIRTUAL void SetBlendParams(float fBlendPosSpeed, float fBlendRotSpeed, bool performBlendOut) { m_fBlendInPosSpeed = fBlendPosSpeed; m_fBlendInRotSpeed = fBlendRotSpeed; m_bPerformBlendOut = performBlendOut; };
-	VIRTUAL void SetOverrideCameraRotation( bool bOverride,Quat rotation );
-	VIRTUAL bool IsPlayingCutScene() const
+	virtual float GetDefaultZNear() { return m_fDefaultCameraNearZ; };
+	virtual void SetBlendParams(float fBlendPosSpeed, float fBlendRotSpeed, bool performBlendOut) { m_fBlendInPosSpeed = fBlendPosSpeed; m_fBlendInRotSpeed = fBlendRotSpeed; m_bPerformBlendOut = performBlendOut; };
+	virtual void SetOverrideCameraRotation( bool bOverride,Quat rotation );
+	virtual bool IsPlayingCutScene() const
 	{
 		return m_cutsceneCount > 0;
 	}
-	VIRTUAL void UpdateSoundListeners();
+	virtual void UpdateSoundListeners();
 
-	VIRTUAL bool UseDeferredViewSystemUpdate() const { return m_useDeferredViewSystemUpdate; }
-	VIRTUAL void SetControlAudioListeners(bool const bActive);
+	virtual void SetDeferredViewSystemUpdate(bool const bDeferred){ m_useDeferredViewSystemUpdate = bDeferred; }
+	virtual bool UseDeferredViewSystemUpdate() const { return m_useDeferredViewSystemUpdate; }
+	virtual void SetControlAudioListeners(bool const bActive);
 	//~IViewSystem
 
 	//IMovieUser
@@ -145,7 +146,6 @@ private:
 
 	bool m_useDeferredViewSystemUpdate;
 	bool m_bControlsAudioListeners;
-	bool m_bInvalidateAudioListeners;
 };
 
 #endif //__VIEWSYSTEM_H__

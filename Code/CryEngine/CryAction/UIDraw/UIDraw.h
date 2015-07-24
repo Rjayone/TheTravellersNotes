@@ -88,35 +88,12 @@ public:
 											const char *strText, ColorF color,
 											EUIDRAWHORIZONTAL	eUIDrawHorizontal, EUIDRAWVERTICAL		eUIDrawVertical);
 
-	void DrawText(IFFont *pFont,
-								float fX,
-								float fY,
-								float fSizeX,
-								float fSizeY,
-								const char *strText,
-								float fAlpha,
-								float fRed,
-								float fGreen,
-								float fBlue,
-								EUIDRAWHORIZONTAL	eUIDrawHorizontalDocking,
-								EUIDRAWVERTICAL		eUIDrawVerticalDocking,
-								EUIDRAWHORIZONTAL	eUIDrawHorizontal,
-								EUIDRAWVERTICAL		eUIDrawVertical);
-
-
-	void GetTextDim(IFFont *pFont,
-									float *fWidth,
-									float *fHeight,
-									float fSizeX,
-									float fSizeY,
-									const char *strText);
-
-	void DrawTextW(	IFFont *pFont,
+	void DrawText(	IFFont *pFont,
 									float fX,
 									float fY,
 									float fSizeX,
 									float fSizeY,
-									const wchar_t *strText,
+									const char *strText,
 									float fAlpha,
 									float fRed,
 									float fGreen,
@@ -126,13 +103,13 @@ public:
 									EUIDRAWHORIZONTAL	eUIDrawHorizontal,
 									EUIDRAWVERTICAL		eUIDrawVertical);
 
-	void DrawWrappedTextW(	IFFont *pFont,
+	void DrawWrappedText(	IFFont *pFont,
 		float fX,
 		float fY,
 		float fMaxWidth,
 		float fSizeX,
 		float fSizeY,
-		const wchar_t *strText,
+		const char *strText,
 		float fAlpha,
 		float fRed,
 		float fGreen,
@@ -142,36 +119,34 @@ public:
 		EUIDRAWHORIZONTAL	eUIDrawHorizontal,
 		EUIDRAWVERTICAL		eUIDrawVertical);
 
-	void GetTextDimW(	IFFont *pFont,
+	void GetTextDim(	IFFont *pFont,
 										float *fWidth,
 										float *fHeight,
 										float fSizeX,
 										float fSizeY,
-										const wchar_t *strText);
+										const char *strText);
 
-	void GetWrappedTextDimW(	IFFont *pFont,
+	void GetWrappedTextDim(	IFFont *pFont,
 														float *fWidth,
 														float *fHeight,
 														float fMaxWidth,
 														float fSizeX,
 														float fSizeY,
-														const wchar_t *strText);
+														const char *strText);
 
 	// ~IUIDraw
-
-	void DrawText( float x, float y, SDrawTextInfo& info, const char * format, ...);
 
 	CUIDraw();
 	~CUIDraw();
 
 protected:
-	void InternalDrawTextW(	IFFont *pFont,
+	void InternalDrawText(	IFFont *pFont,
 													float fX,
 													float fY,
 													float fMaxWidth,
 													float fSizeX,
 													float fSizeY,
-													const wchar_t *strText,
+													const char *strText,
 													float fAlpha,
 													float fRed,
 													float fGreen,
@@ -181,13 +156,13 @@ protected:
 													EUIDRAWHORIZONTAL	eUIDrawHorizontal,
 													EUIDRAWVERTICAL		eUIDrawVertical);
 
-	void InternalGetTextDimW(	IFFont *pFont,
+	void InternalGetTextDim(	IFFont *pFont,
 														float *fWidth,
 														float *fHeight,
 														float fMaxWidth,
 														float fSizeX,
 														float fSizeY,
-														const wchar_t *strText);
+														const char *strText);
 
 	typedef std::map<int,ITexture *> TTexturesMap;
 	TTexturesMap m_texturesMap;

@@ -40,35 +40,35 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IBreakableManager implementation
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void BreakIntoPieces( IEntity *pEntity, int nOrigSlot, int nPiecesSlot, BreakageParams const& Breakage );
+	virtual void BreakIntoPieces( IEntity *pEntity, int nOrigSlot, int nPiecesSlot, BreakageParams const& Breakage );
 
 	// Breakable Plane 
-	VIRTUAL EProcessImpactResult ProcessPlaneImpact(const SProcessImpactIn& in, SProcessImpactOut& out);
-	VIRTUAL void ExtractPlaneMeshIsland(const SExtractMeshIslandIn& in, SExtractMeshIslandOut& out);
-	VIRTUAL void GetPlaneMemoryStatistics(void* pPlaneRaw, ICrySizer* pSizer);
-	VIRTUAL bool IsGeometryBreakable(IPhysicalEntity* pEntity, IStatObj* pStatObj, IMaterial* pMaterial);
+	virtual EProcessImpactResult ProcessPlaneImpact(const SProcessImpactIn& in, SProcessImpactOut& out);
+	virtual void ExtractPlaneMeshIsland(const SExtractMeshIslandIn& in, SExtractMeshIslandOut& out);
+	virtual void GetPlaneMemoryStatistics(void* pPlaneRaw, ICrySizer* pSizer);
+	virtual bool IsGeometryBreakable(IPhysicalEntity* pEntity, IStatObj* pStatObj, IMaterial* pMaterial);
 
 	// Check if this stat object can shatter.
 	// Check if its materials support shattering.
-	VIRTUAL bool CanShatter( IStatObj *pStatObj );
-	VIRTUAL bool CanShatterEntity( IEntity *pEntity,int nSlot=-1 );
+	virtual bool CanShatter( IStatObj *pStatObj );
+	virtual bool CanShatterEntity( IEntity *pEntity,int nSlot=-1 );
 
 	// Attach the effect & params specified by material of object in slot.
-	VIRTUAL void AttachSurfaceEffect( IEntity* pEntity, int nSlot, const char* sType, SpawnParams const& paramsIn, uint uEmitterFlags = 0 );
+	virtual void AttachSurfaceEffect( IEntity* pEntity, int nSlot, const char* sType, SpawnParams const& paramsIn, uint uEmitterFlags = 0 );
 	virtual void CreateSurfaceEffect( IStatObj *pStatObj,const Matrix34 &tm,const char* sType );
 	//////////////////////////////////////////////////////////////////////////
 
 	bool CanShatterRenderMesh( IRenderMesh *pMesh,IMaterial *pMtl );
 
-	VIRTUAL void AddBreakEventListener(IBreakEventListener * pListener);
-	VIRTUAL void RemoveBreakEventListener(IBreakEventListener * pListener);
+	virtual void AddBreakEventListener(IBreakEventListener * pListener);
+	virtual void RemoveBreakEventListener(IBreakEventListener * pListener);
 
-	VIRTUAL void EntityDrawSlot(CEntity * pEntity, int32 slot, int32 flags);
+	virtual void EntityDrawSlot(CEntity * pEntity, int32 slot, int32 flags);
 
-	VIRTUAL ISurfaceType* GetFirstSurfaceType( IStatObj *pStatObj );
-	VIRTUAL ISurfaceType* GetFirstSurfaceType( ICharacterInstance *pCharacter );
+	virtual ISurfaceType* GetFirstSurfaceType( IStatObj *pStatObj );
+	virtual ISurfaceType* GetFirstSurfaceType( ICharacterInstance *pCharacter );
 
-	VIRTUAL void ReplayRemoveSubPartsEvent( const EventPhysRemoveEntityParts *pRemoveEvent );
+	virtual void ReplayRemoveSubPartsEvent( const EventPhysRemoveEntityParts *pRemoveEvent );
 
 	void HandlePhysicsCreateEntityPartEvent( const EventPhysCreateEntityPart *pCreateEvent );
 	void HandlePhysicsRemoveSubPartsEvent( const EventPhysRemoveEntityParts *pRemoveEvent );
@@ -84,24 +84,24 @@ public:
 	void FreezeRenderNode( IRenderNode *pRenderNode,bool bEnable );
 
 	void CreateObjectAsParticles( IStatObj *pStatObj,IPhysicalEntity *pPhysEnt, IBreakableManager::SCreateParams &createParams );
-	VIRTUAL IEntity* CreateObjectAsEntity( IStatObj *pStatObj,IPhysicalEntity *pPhysEnt, IPhysicalEntity *pSrcPhysEnt, IBreakableManager::SCreateParams &createParams, bool bCreateSubstProxy=false );
+	virtual IEntity* CreateObjectAsEntity( IStatObj *pStatObj,IPhysicalEntity *pPhysEnt, IPhysicalEntity *pSrcPhysEnt, IBreakableManager::SCreateParams &createParams, bool bCreateSubstProxy=false );
 	bool CheckForPieces(IStatObj *pStatObjSrc, IStatObj::SSubObject *pSubObj, const Matrix34 &worldTM, int nMatLayers, IPhysicalEntity *pPhysEnt);
 	IStatObj::SSubObject *CheckSubObjBreak(IStatObj *pStatObj, IStatObj::SSubObject *pSubObj, const EventPhysCreateEntityPart *epcep);
 
-	VIRTUAL const IBreakableManager::SBrokenObjRec * GetPartBrokenObjects(int& brokenObjectCount) { brokenObjectCount = m_brokenObjs.size(); return &m_brokenObjs[0]; }
+	virtual const IBreakableManager::SBrokenObjRec * GetPartBrokenObjects(int& brokenObjectCount) { brokenObjectCount = m_brokenObjs.size(); return &m_brokenObjs[0]; }
 
-	VIRTUAL void GetBrokenObjectIndicesForCloning(int32 * pPartRemovalIndices, int32& iNumPartRemovalIndices,
+	virtual void GetBrokenObjectIndicesForCloning(int32 * pPartRemovalIndices, int32& iNumPartRemovalIndices,
 																								int32 * pOutIndiciesForCloning, int32& iNumEntitiesForCloning,
 																								const EventPhysRemoveEntityParts * BreakEvents);
-	VIRTUAL void ClonePartRemovedEntitiesByIndex(	int32 * pBrokenObjectIndices, int32 iNumBrokenObjectIndices,
+	virtual void ClonePartRemovedEntitiesByIndex(	int32 * pBrokenObjectIndices, int32 iNumBrokenObjectIndices,
 																								EntityId * pOutClonedEntities, int32& iNumClonedBrokenEntities,
 																								const EntityId * pRecordingEntities, int32 iNumRecordingEntities,
 																								SRenderNodeCloneLookup& nodeLookup);
 
-	VIRTUAL void HideBrokenObjectsByIndex( const int32 * pBrokenObjectIndices, const int32 iNumBrokenObjectIndices);
-	VIRTUAL void UnhidePartRemovedObjectsByIndex( const int32 * pPartRemovalIndices, const int32 iNumPartRemovalIndices, const EventPhysRemoveEntityParts * pBreakEvents);
-	VIRTUAL void ApplySinglePartRemovalFromEventIndex(int32 iPartRemovalEventIndex, const SRenderNodeCloneLookup& renderNodeLookup, const EventPhysRemoveEntityParts * pBreakEvents);
-	VIRTUAL void ApplyPartRemovalsUntilIndexToObjectList( int32 iFirstEventIndex, const SRenderNodeCloneLookup& renderNodeLookup, const EventPhysRemoveEntityParts * pBreakEvents);
+	virtual void HideBrokenObjectsByIndex( const int32 * pBrokenObjectIndices, const int32 iNumBrokenObjectIndices);
+	virtual void UnhidePartRemovedObjectsByIndex( const int32 * pPartRemovalIndices, const int32 iNumPartRemovalIndices, const EventPhysRemoveEntityParts * pBreakEvents);
+	virtual void ApplySinglePartRemovalFromEventIndex(int32 iPartRemovalEventIndex, const SRenderNodeCloneLookup& renderNodeLookup, const EventPhysRemoveEntityParts * pBreakEvents);
+	virtual void ApplyPartRemovalsUntilIndexToObjectList( int32 iFirstEventIndex, const SRenderNodeCloneLookup& renderNodeLookup, const EventPhysRemoveEntityParts * pBreakEvents);
 
 private:
 	void CreateObjectCommon( IStatObj *pStatObj,IPhysicalEntity *pPhysEnt, IBreakableManager::SCreateParams &createParams );

@@ -25,45 +25,45 @@ public:
 	virtual ~CPlayerProfile();
 
 	// IPlayerProfile
-	VIRTUAL bool Reset(); 
+	virtual bool Reset(); 
 
 	// is this the default profile? it cannot be modified
-	VIRTUAL bool IsDefault() const;
+	virtual bool IsDefault() const;
 
 	// override values with console player profile defaults
 	void LoadGamerProfileDefaults();
 
 	// name of the profile
-	VIRTUAL const char* GetName();
+	virtual const char* GetName();
 
 	// Id of the profile user
-	VIRTUAL const char* GetUserId();
+	virtual const char* GetUserId();
 
 	// retrieve an action map
-	VIRTUAL IActionMap* GetActionMap(const char* name);
+	virtual IActionMap* GetActionMap(const char* name);
 
 	// set the value of an attribute
-	VIRTUAL bool SetAttribute(const char* name, const TFlowInputData& value);
+	virtual bool SetAttribute(const char* name, const TFlowInputData& value);
 
 	// re-set attribute to default value (basically removes it from this profile)
-	VIRTUAL bool ResetAttribute(const char* name);
+	virtual bool ResetAttribute(const char* name);
 
 	//delete an attribute from attribute map (regardless if has a default)
-	VIRTUAL void DeleteAttribute(const char* name);
+	virtual void DeleteAttribute(const char* name);
 
 	// get the value of an attribute. if not specified optionally lookup in default profile
-	VIRTUAL bool GetAttribute(const char* name, TFlowInputData& val, bool bUseDefaultFallback = true) const;
+	virtual bool GetAttribute(const char* name, TFlowInputData& val, bool bUseDefaultFallback = true) const;
 
 	// get all attributes available 
 	// all in this profile and inherited from default profile
-	VIRTUAL IAttributeEnumeratorPtr CreateAttributeEnumerator();
+	virtual IAttributeEnumeratorPtr CreateAttributeEnumerator();
 
 	// save game stuff
-	VIRTUAL ISaveGameEnumeratorPtr CreateSaveGameEnumerator();
-	VIRTUAL ISaveGame* CreateSaveGame();
-	VIRTUAL ILoadGame* CreateLoadGame();
-	VIRTUAL bool DeleteSaveGame(const char* name);
-  VIRTUAL ILevelRotationFile* GetLevelRotationFile(const char* name);
+	virtual ISaveGameEnumeratorPtr CreateSaveGameEnumerator();
+	virtual ISaveGame* CreateSaveGame();
+	virtual ILoadGame* CreateLoadGame();
+	virtual bool DeleteSaveGame(const char* name);
+  virtual ILevelRotationFile* GetLevelRotationFile(const char* name);
 	// ~IPlayerProfile
 
 	bool SerializeXML(CPlayerProfileManager::IProfileXMLSerializer* pSerializer);

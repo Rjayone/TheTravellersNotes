@@ -267,7 +267,7 @@ void CBullet::ProcessHit(CGameRules& gameRules, const EventPhysCollision& collis
 			hitInfo.projectileId = GetEntityId();
 			hitInfo.bulletType = m_pAmmoParams->bulletType;
 			hitInfo.knocksDown = CheckAnyProjectileFlags(ePFlag_knocksTarget) && ( damage > m_minDamageForKnockDown );
-			hitInfo.knocksDownLeg = m_chanceToKnockDownLeg>0 && damage>m_minDamageForKnockDownLeg && m_chanceToKnockDownLeg>(int)Random(100);
+			hitInfo.knocksDownLeg = m_chanceToKnockDownLeg>0 && damage>m_minDamageForKnockDownLeg && m_chanceToKnockDownLeg>cry_random(0, 99);
 			hitInfo.penetrationCount = m_penetrationCount;
 			hitInfo.hitViaProxy = CheckAnyProjectileFlags(ePFlag_firedViaProxy);
 			hitInfo.aimed = CheckAnyProjectileFlags(ePFlag_aimedShot);

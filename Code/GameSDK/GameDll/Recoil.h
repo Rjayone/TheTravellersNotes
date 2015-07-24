@@ -39,9 +39,6 @@ struct SRecoilParams
 	f(float,	randomness) \
 	f(float,	tilt) \
 	f(float,	impulse) \
-	f(float,	angular_impulse) \
-	f(float,	back_impulse) \
-	f(int,		hint_loop_start) \
 	f(float,	recoil_crouch_m) \
 	f(float,	recoil_jump_m) \
 	f(float,	recoil_holdBreathActive_m)
@@ -105,7 +102,6 @@ struct SSpreadParams
 	f(float, spread_crouch_m) \
 	f(float, spread_jump_m) \
 	f(float, spread_slide_m) \
-	f(float, spread_finalBreath_m) \
 	f(float, spread_holdBreathActive_m)
 
 	REGISTER_STRUCT(SPREAD_PARAMS_MEMBERS, SSpreadParams)
@@ -152,8 +148,6 @@ struct SRecoilModParams
 	float end_decay_mod;
 	Vec2 max_mod;
 	float impulse_mod;
-	float angular_impulse_mod;
-	float back_impulse_mod;
 
 	//Stance modifiers
 	float recoil_crouch_m_mod;
@@ -183,8 +177,6 @@ public:
 
 	ILINE float GetMinSpread() const { return m_spreadParams.min; }
 	ILINE float GetMaxSpread() const { return m_spreadParams.max; }
-	ILINE float GetBackImpulse() const { return m_recoilParams.back_impulse; }
-	ILINE float GetAngularImpulse() const { return m_recoilParams.angular_impulse; }
 
 	ILINE void ApplyMaxSpread(float multiplier = 1.f) { m_spread = multiplier * m_spreadParams.max; m_maxSpreadMultiplier = max(multiplier, 1.f); }
 

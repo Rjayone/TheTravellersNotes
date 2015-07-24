@@ -42,6 +42,7 @@
 #include "StringUtils.h"
 #include "EntityAttributesProxy.h"
 #include "ClipVolumeProxy.h"
+#include "DynamicResponseProxy.h"
 
 // enable this to check nan's on position updates... useful for debugging some weird crashes
 #define ENABLE_NAN_CHECK
@@ -905,7 +906,7 @@ void CEntity::AttachChild( IEntity *pChildEntity, const SChildAttachParams &atta
 	{
 		pChild->m_pBinds->parentBindingType = SBindings::eBT_CharacterBone;
 		CCharacterBoneAttachmentManager *pCharacterBoneAttachmentManager = static_cast<CEntitySystem*>(GetEntitySystem())->GetCharacterBoneAttachmentManager();
-		const uint32 targetCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(attachParams.m_target);		
+		const uint32 targetCRC = CCrc32::ComputeLowercase(attachParams.m_target);		
 		pCharacterBoneAttachmentManager->RegisterAttachment(pChild, this, targetCRC);
 	}
 
@@ -1140,12 +1141,6 @@ Matrix34 CEntity::GetLocalTM() const
 	Matrix34 tm;
 	CalcLocalTM( tm );
 	return tm;
-}
-
-//////////////////////////////////////////////////////////////////////////
-const Matrix34& CEntity::GetWorldTM() const
-{
-	return m_worldTM;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1584,6 +1579,10 @@ IEntityProxyPtr CEntity::CreateProxy( EEntityProxy proxy )
 		case ENTITY_PROXY_CLIPVOLUME:
 			pProxy = ComponentCreateAndRegister_DeleteWithRelease<CClipVolumeProxy>( IComponent::SComponentInitializer(this), IComponent::EComponentFlags_Enable|IComponent::EComponentFlags_LazyRegistration );
 			SetProxy( ENTITY_PROXY_CLIPVOLUME, pProxy );
+			break; 
+		case ENTITY_PROXY_DYNAMICRESPONSE:
+			pProxy = ComponentCreateAndRegister_DeleteWithRelease<CDynamicResponseProxy>( IComponent::SComponentInitializer(this), IComponent::EComponentFlags_Enable|IComponent::EComponentFlags_LazyRegistration );
+			SetProxy( ENTITY_PROXY_DYNAMICRESPONSE, pProxy );
 			break; 
 		}
 		return pProxy;
@@ -2503,7 +2502,6 @@ bool CEntity::UpdateLightClipBounds(CDLight &light)
 	return bLightBoxValid || (light.m_pClipVolumes[0] || light.m_pClipVolumes[1]);
 }
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 //////////////////////////////////////////////////////////////////////////
 int CEntity::LoadCloud( int nSlot,const char *sFilename )
 {
@@ -2519,7 +2517,6 @@ int CEntity::SetCloudMovementProperties(int nSlot, const SCloudMovementPropertie
 		CreateProxy(ENTITY_PROXY_RENDER);
 	return GetRenderProxy()->SetCloudMovementProperties(nSlot, properties);
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 int CEntity::LoadFogVolume( int nSlot, const SFogVolumeProperties& properties )
@@ -2537,7 +2534,6 @@ int CEntity::FadeGlobalDensity( int nSlot, float fadeTime, float newGlobalDensit
 	return GetRenderProxy()->FadeGlobalDensity(nSlot, fadeTime, newGlobalDensity);
 }
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 //////////////////////////////////////////////////////////////////////////
 int CEntity::LoadVolumeObject(int nSlot, const char *sFilename)
 {
@@ -2553,7 +2549,6 @@ int CEntity::SetVolumeObjectMovementProperties(int nSlot, const SVolumeObjectMov
 		CreateProxy(ENTITY_PROXY_RENDER);
 	return GetRenderProxy()->SetVolumeObjectMovementProperties(nSlot, properties);
 }
-#endif
 
 #if !defined(EXCLUDE_DOCUMENTATION_PURPOSE)
 int CEntity::LoadPrismObject(int nSlot)
@@ -2681,8 +2676,7 @@ IEntityLink* CEntity::AddEntityLink( const char *sLinkName,EntityId entityId,Ent
 
 	IEntityLink *pNewLink = new IEntityLink;
 	assert(strlen(sLinkName) <= ENTITY_LINK_NAME_MAX_LENGTH);
-	strncpy( pNewLink->name,sLinkName,sizeof(pNewLink->name) );
-	pNewLink->name[sizeof(pNewLink->name)-1] = 0; // Null terminate string.
+	cry_strcpy(pNewLink->name, sLinkName);
 	pNewLink->entityId = entityId;
 	pNewLink->entityGuid = entityGuid;
 	pNewLink->next = 0;
@@ -2919,5 +2913,4 @@ bool CEntity::HandleVariableChange(const char* szVarName, const void* pVarData)
 	return false;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntity)
 

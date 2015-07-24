@@ -50,27 +50,27 @@ public:
 
 	void Release() { delete this; };
 
-	VIRTUAL void Reset();
-	VIRTUAL void Reload();
+	virtual void Reset();
+	virtual void Reload();
 
 	// IActorSystem
-	VIRTUAL IActor *GetActor(EntityId entityId);
-	VIRTUAL IActor *GetActorByChannelId(uint16 channelId);
-	VIRTUAL IActor *CreateActor(uint16 channelId, const char *name, const char *actorClass, const Vec3 &pos, const Quat &rot, const Vec3 &scale, EntityId id);
+	virtual IActor *GetActor(EntityId entityId);
+	virtual IActor *GetActorByChannelId(uint16 channelId);
+	virtual IActor *CreateActor(uint16 channelId, const char *name, const char *actorClass, const Vec3 &pos, const Quat &rot, const Vec3 &scale, EntityId id);
 
-	VIRTUAL int GetActorCount() const { return (int)m_actors.size(); };	
-	VIRTUAL IActorIteratorPtr CreateActorIterator();
+	virtual int GetActorCount() const { return (int)m_actors.size(); };	
+	virtual IActorIteratorPtr CreateActorIterator();
 
-	VIRTUAL void SetDemoPlaybackMappedOriginalServerPlayer(EntityId id);
-	VIRTUAL EntityId GetDemoPlaybackMappedOriginalServerPlayer() const;
-	VIRTUAL void SwitchDemoSpectator(EntityId id = 0);
-	VIRTUAL IActor *GetCurrentDemoSpectator();
-	VIRTUAL IActor *GetOriginalDemoSpectator();
+	virtual void SetDemoPlaybackMappedOriginalServerPlayer(EntityId id);
+	virtual EntityId GetDemoPlaybackMappedOriginalServerPlayer() const;
+	virtual void SwitchDemoSpectator(EntityId id = 0);
+	virtual IActor *GetCurrentDemoSpectator();
+	virtual IActor *GetOriginalDemoSpectator();
 
-	VIRTUAL void Scan(const char *folderName);
-	VIRTUAL const IItemParamsNode *GetActorParams(const char *actorClass) const;
+	virtual void Scan(const char *folderName);
+	virtual const IItemParamsNode *GetActorParams(const char *actorClass) const;
 
-	VIRTUAL bool IsActorClass(IEntityClass *pClass) const;
+	virtual bool IsActorClass(IEntityClass *pClass) const;
 
 	// ~IActorSystem
 

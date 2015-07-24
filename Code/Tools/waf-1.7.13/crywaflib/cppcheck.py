@@ -129,8 +129,6 @@ class cppcheck(Task):
 		for i in incn:
 			if task.generator.bld.CreateRootRelativePath('Code/SDKs') in i.abspath():
 				continue
-			if task.generator.bld.CreateRootRelativePath('Code/Sandbox/SDKs') in i.abspath():
-				continue
 			if task.generator.bld.CreateRootRelativePath('Code/Tools') in i.abspath():
 				continue
 			incn_new.append(i)

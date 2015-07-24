@@ -8,7 +8,6 @@ History:
 - 10/04/2013   : Tomasz Jonarski, Created
 
 *************************************************************************/
-//#include DEVIRTUALIZE_HEADER_FIX(IServiceNetwork.h)
 
 #ifndef __ISERVICENETWORK_H__
 #define __ISERVICENETWORK_H__

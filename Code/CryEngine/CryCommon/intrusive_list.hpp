@@ -58,7 +58,6 @@ struct list {
   bool linked() const { return !empty(); }
 
 	// Get the host instance of the instrusive list 
-# if !defined(__SPU__)
 	template<list Host::*member>
 	Host* item() {
 		return ((Host*)((uintptr_t)(this)-(uintptr_t)(&(((Host*)0)->*member))));
@@ -72,7 +71,6 @@ struct list {
     uintptr_t value = (uintptr_t)this-(uintptr_t)&((((Host*)(NULL))->*Member)[threadId]);
 		return alias_cast<Host*>(value);
 	}
-# endif 
 
 	// Insert & relink functions 
 	void insert_tail(list *_list) { insert(_list->prev, _list); }

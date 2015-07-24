@@ -2762,7 +2762,7 @@ void CTurret::NotifyGroupTargetSpotted( const IEntity* pTargetEntity )
 	pTargetTrackManager->HandleStimulusEventInRange( groupMemberAiObjectId, "TurretSpottedTarget", stimulusEventInfo, radius );
 
 	const char* const signalName = "GroupMemberEnteredCombat";
-	const uint32 signalNameCrc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32( signalName );
+	const uint32 signalNameCrc32 = CCrc32::Compute( signalName );
 	gEnv->pAISystem->SendSignal( SIGNALFILTER_GROUPONLY, 1, signalName, pGroupMemeberAiObject, NULL, signalNameCrc32 );
 }
 
@@ -2892,10 +2892,10 @@ void CTurret::UpdateFactionChange()
 
 void CTurret::ProcessScriptEvent( const char* const eventName )
 {
-	static const uint32 s_dropPodLaunchCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( "DropPod_Launch" );
-	static const uint32 s_dropPodLandCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( "DropPod_Land" );
+	static const uint32 s_dropPodLaunchCrc = CCrc32::Compute( "DropPod_Launch" );
+	static const uint32 s_dropPodLandCrc = CCrc32::Compute( "DropPod_Land" );
 
-	const uint32 eventNameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( eventName );
+	const uint32 eventNameCrc = CCrc32::Compute( eventName );
 	if ( eventNameCrc == s_dropPodLaunchCrc )
 	{
 		ResetActionController();

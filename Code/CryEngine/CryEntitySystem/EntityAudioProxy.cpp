@@ -15,11 +15,9 @@ CEntityAudioProxy::CEntityAudioProxy()
 	:	m_pEntity(NULL)
 	,	m_nAudioProxyIDCounter(INVALID_AUDIO_PROXY_ID)
 	,	m_nAudioEnvironmentID(INVALID_AUDIO_ENVIRONMENT_ID)
-	,	m_bHide(false)
+	,	m_nFlags(eEAPF_CAN_MOVE_WITH_ENTITY)
 	,	m_fFadeDistance(0.0f)
 	,	m_fEnvironmentFadeDistance(0.0f)
-	,	m_nBoneHead(-1)
-	,	m_nAttachmentIndex(-1)
 {
 }
 
@@ -39,8 +37,7 @@ void CEntityAudioProxy::Initialize(SComponentInitializer const& init)
 
 	// Creating the default AudioProxy.
 	CreateAuxAudioProxy();
-
-	m_bHide	= m_pEntity->IsHidden();
+	UpdateHideStatus();
 	SetObstructionCalcType(eAOOCT_IGNORE);
 	OnMove();
 }
@@ -49,12 +46,11 @@ void CEntityAudioProxy::Initialize(SComponentInitializer const& init)
 void CEntityAudioProxy::Reload(IEntity* pEntity, SEntitySpawnParams& params)
 {
 	m_pEntity										= static_cast<CEntity*>(pEntity);
-	m_bHide											= m_pEntity->IsHidden();
 	m_fFadeDistance							= 0.0f;
 	m_fEnvironmentFadeDistance	= 0.0f;
-	m_nBoneHead									= -1;
-	m_nAttachmentIndex					= -1;
 	m_nAudioEnvironmentID				= INVALID_AUDIO_ENVIRONMENT_ID;
+
+	UpdateHideStatus();
 
 	std::for_each(m_mapAuxAudioProxies.begin(), m_mapAuxAudioProxies.end(), SResetAudioProxy());
 
@@ -66,9 +62,6 @@ void CEntityAudioProxy::Reload(IEntity* pEntity, SEntitySpawnParams& params)
 
 	SetObstructionCalcType(eAOOCT_IGNORE);
 	OnMove();
-
-	REINST("needs voice attachement placement");
-	//PrecacheHeadBone();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -78,42 +71,18 @@ void CEntityAudioProxy::Release()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CEntityAudioProxy::PrecacheHeadBone()
-{
-	// checking for and caching HeadBone
-	if (m_nBoneHead == -1 && m_nAttachmentIndex == -1)
-	{
-		if (ICharacterInstance* const pCharacter = m_pEntity->GetCharacter(0))
-		{
-			if (IAttachmentManager const* const pAttachmentManager = pCharacter->GetIAttachmentManager())
-			{
-				m_nAttachmentIndex = pAttachmentManager->GetIndexByName("voice");
-
-				if (m_nAttachmentIndex == -1)
-				{
-					// There's no attachment so let's try to find the head bone.
-					IDefaultSkeleton& rIDefaultSkeleton = pCharacter->GetIDefaultSkeleton();
-					m_nBoneHead = rIDefaultSkeleton.GetJointIDByName("Bip01 Head");
-					if (m_nBoneHead == -1)
-					{
-						// Has it been named differently?
-						m_nBoneHead = rIDefaultSkeleton.GetJointIDByName("def_head");
-					}
-				}
-			}
-		}
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////
 void CEntityAudioProxy::OnMove()
 {
-	Matrix34 tm = m_pEntity->GetWorldTM();
+	const Matrix34& tm = m_pEntity->GetWorldTM();
 
 	if (tm.IsValid())
 	{
-		SATLWorldPosition const oPosition(tm, ZERO);
-		std::for_each(m_mapAuxAudioProxies.begin(), m_mapAuxAudioProxies.end(), SRepositionAudioProxy(oPosition));
+		SATLWorldPosition const oPosition(tm);
+
+		if ((m_nFlags & eEAPF_CAN_MOVE_WITH_ENTITY) != 0)
+		{
+			std::for_each(m_mapAuxAudioProxies.begin(), m_mapAuxAudioProxies.end(), SRepositionAudioProxy(oPosition));
+		}
 
 		if ((m_pEntity->GetFlagsExtended() & ENTITY_FLAG_EXTENDED_AUDIO_LISTENER) != 0)
 		{
@@ -122,6 +91,11 @@ void CEntityAudioProxy::OnMove()
 			oRequest.pOwner = this;
 
 			SAudioListenerRequestData<eALRT_SET_POSITION> oRequestData(oPosition);
+
+			//we make sure direction and up vector are normalized
+			oRequestData.oNewPosition.NormalizeForwardVec();
+			oRequestData.oNewPosition.NormalizeUpVec();
+
 			oRequest.pData = &oRequestData;
 
 			gEnv->pAudioSystem->PushRequest(oRequest);
@@ -253,12 +227,6 @@ void CEntityAudioProxy::OnMoveNear(IEntity const* const __restrict pEntity, IEnt
 			pIEntityAudioProxy->SetEnvironmentAmount(m_nAudioEnvironmentID, 1.0f - (fDist/m_fEnvironmentFadeDistance), INVALID_AUDIO_PROXY_ID);
 		}
 	}
-}
-
-//////////////////////////////////////////////////////////////////////////
-void CEntityAudioProxy::OnHide(bool const bHide)
-{
-	m_bHide = bHide;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -441,11 +409,12 @@ void CEntityAudioProxy::ProcessEvent( SEntityEvent &event )
 					break;
 			}
 		case ENTITY_EVENT_HIDE:
-			OnHide(true);
-			break;
 		case ENTITY_EVENT_UNHIDE:
-			OnHide(false);
-			break;
+			{
+				UpdateHideStatus();
+
+				break;
+			}
 		}
 	}
 }
@@ -463,16 +432,83 @@ void CEntityAudioProxy::Serialize(TSerialize ser)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CEntityAudioProxy::ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TAudioProxyID const nAudioProxyLocalID /* = DEFAULT_AUDIO_PROXY_ID */)
+bool CEntityAudioProxy::ExecuteTrigger(
+	TAudioControlID const nTriggerID,
+	ELipSyncMethod const eLipSyncMethod,
+	TAudioProxyID const nAudioProxyLocalID /* = DEFAULT_AUDIO_PROXY_ID */,
+	SAudioCallBackInfos const& rCallBackInfos /* = SAudioCallBackInfos::GetEmptyObject() */)
 {
-	ExecuteTriggerInternal(nTriggerID, eLipSyncMethod, NULL, NULL, nAudioProxyLocalID);
+	if (m_pEntity != NULL)
+	{
+		Matrix34 const& tm = m_pEntity->GetWorldTM();
+#if defined(INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE)
+		if (tm.GetTranslation() == Vec3Constants<float>::fVec3_Zero)
+		{
+			gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Trying to execute an audio trigger at (0,0,0) position in the entity %s. Entity may not be initialized correctly!", m_pEntity->GetEntityTextDescription());
+		}
+#endif // INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE
+
+		if ((m_nFlags & eEAPF_HIDDEN) == 0 || (m_pEntity->GetFlags() & ENTITY_FLAG_UPDATE_HIDDEN) != 0)
+		{
+			SATLWorldPosition const oPosition(tm);
+
+			if (nAudioProxyLocalID != INVALID_AUDIO_PROXY_ID)
+			{
+				TAudioProxyPair const& rAudioProxyPair = GetAuxAudioProxyPair(nAudioProxyLocalID);
+
+				if (rAudioProxyPair.first != INVALID_AUDIO_PROXY_ID)
+				{
+					(SRepositionAudioProxy(oPosition))(rAudioProxyPair);
+					rAudioProxyPair.second.pIAudioProxy->ExecuteTrigger(nTriggerID, eLipSyncMethod, rCallBackInfos);
+					return true;
+				}
+#if defined(INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE)
+				else
+				{
+					gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Could not find AuxAudioProxy with id '%u' on entity '%s' to ExecuteTrigger '%s'", nAudioProxyLocalID, m_pEntity->GetEntityTextDescription(), gEnv->pAudioSystem->GetAudioControlName(eACT_TRIGGER, nTriggerID));
+				}
+#endif // INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE
+			}
+			else
+			{
+				for (TAuxAudioProxies::iterator it = m_mapAuxAudioProxies.begin(); it != m_mapAuxAudioProxies.end(); ++it)
+				{
+					(SRepositionAudioProxy(oPosition))(*it);
+					it->second.pIAudioProxy->ExecuteTrigger(nTriggerID, eLipSyncMethod, rCallBackInfos);
+				}
+				return !m_mapAuxAudioProxies.empty();
+			}
+
+			REINST("lip sync on EntityAudioProxy in executetrigger")
+				//if (lipSyncMethod != eLSM_None)
+				//{
+				//	// If voice is playing inform provider (if present) about it to apply lip-sync.
+				//	if (m_pLipSyncProvider)
+				//	{
+				//		m_currentLipSyncId = pSound->GetId();
+				//		m_currentLipSyncMethod = lipSyncMethod;
+				//		m_pLipSyncProvider->RequestLipSync(this, m_currentLipSyncId, m_currentLipSyncMethod);
+				//	}
+				//}
+		}
+		else
+		{
+			gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Trying to execute an audio trigger on %s which is hidden!", m_pEntity->GetEntityTextDescription());
+		}
+	}
+	else
+	{
+		gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Trying to execute an audio trigger on an EntityAudioProxy without a valid entity!");
+	}
+
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CEntityAudioProxy::ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TTriggerFinishedCallback const pCallback, void* const pCallbackCookie, TAudioProxyID const nAudioProxyLocalID /* = DEFAULT_AUDIO_PROXY_ID */)
-{
-	ExecuteTriggerInternal(nTriggerID, eLipSyncMethod, pCallback, pCallbackCookie, nAudioProxyLocalID);
-}
+//void CEntityAudioProxy::ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TTriggerFinishedCallback const pCallback, void* const pCallbackCookie, TAudioProxyID const nAudioProxyLocalID /* = DEFAULT_AUDIO_PROXY_ID */)
+//{
+//	ExecuteTriggerInternal(nTriggerID, eLipSyncMethod, pCallback, pCallbackCookie, nAudioProxyLocalID);
+//}
 
 //////////////////////////////////////////////////////////////////////////
 void CEntityAudioProxy::StopTrigger(TAudioControlID const nTriggerID, TAudioProxyID const nAudioProxyLocalID /* = DEFAULT_AUDIO_PROXY_ID */)
@@ -583,6 +619,41 @@ void CEntityAudioProxy::SetCurrentEnvironments(TAudioProxyID const nAudioProxyLo
 }
 
 //////////////////////////////////////////////////////////////////////////
+void CEntityAudioProxy::AuxAudioProxiesMoveWithEntity(bool const bCanMoveWithEntity)
+{
+	if (bCanMoveWithEntity)
+	{
+		m_nFlags |= eEAPF_CAN_MOVE_WITH_ENTITY;
+	}
+	else
+	{
+		m_nFlags &= ~eEAPF_CAN_MOVE_WITH_ENTITY;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CEntityAudioProxy::AddAsListenerToAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID, void (*func)(SAudioRequestInfo const* const), EAudioRequestType requestType /* = eART_AUDIO_ALL_REQUESTS */, TATLEnumFlagsType specificRequestMask /* = ALL_AUDIO_REQUEST_SPECIFIC_TYPE_FLAGS */)
+{
+	TAuxAudioProxies::const_iterator const Iter(m_mapAuxAudioProxies.find(nAudioProxyLocalID));
+
+	if (Iter != m_mapAuxAudioProxies.end())
+	{
+		gEnv->pAudioSystem->AddRequestListener(func, Iter->second.pIAudioProxy, requestType, specificRequestMask);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CEntityAudioProxy::RemoveAsListenerFromAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID, void (*func)(SAudioRequestInfo const* const))
+{
+	TAuxAudioProxies::const_iterator const Iter(m_mapAuxAudioProxies.find(nAudioProxyLocalID));
+
+	if (Iter != m_mapAuxAudioProxies.end())
+	{
+		gEnv->pAudioSystem->RemoveRequestListener(func, Iter->second.pIAudioProxy);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
 void CEntityAudioProxy::SetAuxAudioProxyOffset(SATLWorldPosition const& rOffset, TAudioProxyID const nAudioProxyLocalID /* = DEFAULT_AUDIO_PROXY_ID */)
 {
 	if (nAudioProxyLocalID != INVALID_AUDIO_PROXY_ID)
@@ -668,18 +739,19 @@ bool CEntityAudioProxy::RemoveAuxAudioProxy(TAudioProxyID const nAudioProxyLocal
 
 		if (Iter != m_mapAuxAudioProxies.end())
 		{
+			Iter->second.pIAudioProxy->Release();
 			m_mapAuxAudioProxies.erase(Iter);
 			bSuccess = true;
 		}
 		else
 		{
-			gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> AudioProxy not found during CEntityAudioProxy::RemoveAudioProxy (%s)!", m_pEntity->GetEntityTextDescription());
+			gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> AuxAudioProxy with ID '%u' not found during CEntityAudioProxy::RemoveAuxAudioProxy (%s)!", nAudioProxyLocalID, m_pEntity->GetEntityTextDescription());
 			assert(false);
 		}
 	}
 	else
 	{
-		gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_ERROR, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Trying to remove the default AudioProxy during CEntityAudioProxy::RemoveAudioProxy (%s)!", m_pEntity->GetEntityTextDescription());
+		gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_ERROR, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Trying to remove the default AudioProxy during CEntityAudioProxy::RemoveAuxAudioProxy (%s)!", m_pEntity->GetEntityTextDescription());
 		assert(false);
 	}
 
@@ -700,59 +772,6 @@ CEntityAudioProxy::TAudioProxyPair& CEntityAudioProxy::GetAuxAudioProxyPair(TAud
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CEntityAudioProxy::ExecuteTriggerInternal(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TTriggerFinishedCallback const pCallback, void* const pCallbackCookie, TAudioProxyID const nAudioProxyLocalID)
-{
-	if (m_pEntity != NULL)
-	{
-#if defined(INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE)
-		Matrix34 const& tm = m_pEntity->GetWorldTM();
-
-		if (tm.GetTranslation() == Vec3Constants<float>::fVec3_Zero)
-		{
-			gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Trying to execute an audio trigger at (0,0,0) position in the entity %s. Entity may not be initialized correctly!", m_pEntity->GetEntityTextDescription());
-		}
-#endif // INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE
-
-		if (!m_bHide || (m_pEntity->GetFlags() & ENTITY_FLAG_UPDATE_HIDDEN) != 0)
-		{
-			if (nAudioProxyLocalID != INVALID_AUDIO_PROXY_ID)
-			{
-				TAudioProxyPair const& rAudioProxyPair = GetAuxAudioProxyPair(nAudioProxyLocalID);
-
-				if (rAudioProxyPair.first != INVALID_AUDIO_PROXY_ID)
-				{
-					(SExecuteTrigger(nTriggerID, eLipSyncMethod, pCallback, pCallbackCookie))(rAudioProxyPair);
-				}
-			}
-			else
-			{
-				std::for_each(m_mapAuxAudioProxies.begin(), m_mapAuxAudioProxies.end(), SExecuteTrigger(nTriggerID, eLipSyncMethod, pCallback, pCallbackCookie));
-			}
-
-			REINST("lip sync on EntityAudioProxy in executetrigger")
-			//if (lipSyncMethod != eLSM_None)
-			//{
-			//	// If voice is playing inform provider (if present) about it to apply lip-sync.
-			//	if (m_pLipSyncProvider)
-			//	{
-			//		m_currentLipSyncId = pSound->GetId();
-			//		m_currentLipSyncMethod = lipSyncMethod;
-			//		m_pLipSyncProvider->RequestLipSync(this, m_currentLipSyncId, m_currentLipSyncMethod);
-			//	}
-			//}
-		}
-		else
-		{
-			gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Trying to execute an audio trigger on %s which is hidden!", m_pEntity->GetEntityTextDescription());
-		}
-	}
-	else
-	{
-		gEnv->pSystem->Warning(VALIDATOR_MODULE_ENTITYSYSTEM, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, 0, "<Audio> Trying to execute an audio trigger on an EntityAudioProxy without a valid entity!");
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////
 void CEntityAudioProxy::SetEnvironmentAmountInternal(IEntity const* const pEntity, float const fAmount) const
 {
 	IEntityAudioProxy* const pIEntityAudioProxy = static_cast<IEntityAudioProxy*>(pEntity->GetProxy(ENTITY_PROXY_AUDIO));
@@ -765,10 +784,23 @@ void CEntityAudioProxy::SetEnvironmentAmountInternal(IEntity const* const pEntit
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
+void CEntityAudioProxy::UpdateHideStatus()
+{
+	if (m_pEntity->IsHidden())
+	{
+		m_nFlags |= eEAPF_HIDDEN;
+	}
+	else
+	{
+		m_nFlags &= ~eEAPF_HIDDEN;
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////
 void CEntityAudioProxy::Done()
 {
 	m_pEntity = NULL;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityAudioProxy)
+

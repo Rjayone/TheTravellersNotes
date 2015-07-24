@@ -9,14 +9,13 @@ Description:  console variables list processor
 History:
 - 05/01/2007   00:31 : Created by Stas Spivakov
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(CVarListProcessor.h)
 
 #ifndef __CVARLISTPROCESSOR_H__
 #define __CVARLISTPROCESSOR_H__
 
 struct ICVar;
 
-UNIQUE_IFACE struct ICVarListProcessorCallback
+struct ICVarListProcessorCallback
 {
 	virtual	~ICVarListProcessorCallback(){}
   virtual void OnCVar(ICVar*) = 0;

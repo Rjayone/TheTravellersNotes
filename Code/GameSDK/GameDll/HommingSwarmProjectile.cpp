@@ -34,11 +34,11 @@ CHommingSwarmProjectile::CHommingSwarmProjectile()
 	,	m_fixedTarget(0)
 	,	m_wanderTimer(0.0f)
 	,	m_hommingBehaviour(true)
-	,	m_curlDirection(fsgnf(cry_frand()*2.0f-1.0f))
+	,	m_curlDirection(fsgnf(cry_random(-1.0f, 1.0f)))
 	,	m_curlTime(0.0f)
-	,	m_curlShift(cry_frand())
+	,	m_curlShift(cry_random(0.0f, 1.0f))
 {
-  m_Roll = cry_frand() * gf_PI;
+  m_Roll = cry_random(0.0f, gf_PI);
 }
 
 
@@ -239,7 +239,7 @@ Vec3 CHommingSwarmProjectile::Wander(const SVehicleStatus& vehicle, float deltaT
 
 	const float dist = params.wanderDistance;
 	const float radius = params.wanderSphereRadius;
-	const float rand = params.wanderRand;
+	const float randomness = params.wanderRand;
 	const float frequency = params.wanderFrequency;
 	const float dampingTime = params.wanderDampingTime;
 	const float damping = SATURATE(m_totalLifetime/dampingTime);
@@ -247,7 +247,7 @@ Vec3 CHommingSwarmProjectile::Wander(const SVehicleStatus& vehicle, float deltaT
 
 	const float wanderDist = LERP(0.0f, dist, damping);
 	const float wanderRadius = LERP(60.0f, radius, damping);
-	const float wanderRand = LERP(1.0f, rand, damping);
+	const float wanderRand = LERP(1.0f, randomness, damping);
 
 	m_wanderTimer += deltaTime;
 	Vec3 result(ZERO);
@@ -255,9 +255,7 @@ Vec3 CHommingSwarmProjectile::Wander(const SVehicleStatus& vehicle, float deltaT
 	while (m_wanderTimer > invFrequency)
 	{
 		m_wanderTimer -= invFrequency;
-		m_wanderState.x += (cry_frand()*2-1)*wanderRadius;
-		m_wanderState.y += (cry_frand()*2-1)*wanderRadius;
-		m_wanderState.z += (cry_frand()*2-1)*wanderRadius;
+		m_wanderState += cry_random_componentwise(Vec3(-wanderRadius), Vec3(wanderRadius));
 		m_wanderState.Normalize();
 		result += vehicle.front*wanderDist + m_wanderState*wanderRadius;
 	}

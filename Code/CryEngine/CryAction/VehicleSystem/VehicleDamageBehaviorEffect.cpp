@@ -234,7 +234,7 @@ void CVehicleDamageBehaviorEffect::UpdateEffect(float randomness, float damageRa
 		{
 			SpawnParams	spawnParams;
 
-			spawnParams.fPulsePeriod = m_pDamageEffect->pulsePeriod * ((1.0f - randomness) * Random());
+			spawnParams.fPulsePeriod = m_pDamageEffect->pulsePeriod * ((1.0f - randomness) * cry_random(0.0f, 1.0f));
 
 			pParticleEmitter->SetSpawnParams(spawnParams);
 		}

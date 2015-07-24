@@ -110,7 +110,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
   virtual void SetMinSpec(int nMinSpec);
-	virtual bool GetLodDistances(const SFrameLodInfo& frameLodInfo, float *distances) const OVERRIDE;
+	virtual bool GetLodDistances(const SFrameLodInfo& frameLodInfo, float *distances) const override;
 	void UpdateLodDistance(const SFrameLodInfo& frameLodInfo);
 
 	virtual bool PhysicalizeFoliage(bool bPhysicalize=true, int iSource=0, int nSlot=0);
@@ -176,10 +176,8 @@ public:
 	int	LoadParticleEmitter( int nSlot, IParticleEffect *pEffect, SpawnParams const* params=NULL, bool bPrime = false, bool bSerialize = false );
 	int	SetParticleEmitter( int nSlot, IParticleEmitter* pEmitter, bool bSerialize = false );
 	int LoadLight( int nSlot,CDLight *pLight,uint16 layerId );
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 	int LoadCloud( int nSlot,const char *sFilename );
 	int SetCloudMovementProperties(int nSlot, const SCloudMovementProperties& properties);
-#endif
 	int LoadFogVolume( int nSlot, const SFogVolumeProperties& properties );
 	int FadeGlobalDensity( int nSlot, float fadeTime, float newGlobalDensity );
 #if defined(USE_GEOM_CACHES)
@@ -190,11 +188,8 @@ public:
 	int LoadPrismObject(int nSlot);
 #endif // EXCLUDE_DOCUMENTATION_PURPOSE
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 	int LoadVolumeObject(int nSlot, const char* sFilename);
 	int SetVolumeObjectMovementProperties(int nSlot, const SVolumeObjectMovementProperties& properties);
-#endif
-
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

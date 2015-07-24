@@ -784,7 +784,7 @@ void CPickAndThrowWeapon::OnSelected(bool selected)
 			if(pActionController)
 			{
 				CTagState &tagState = pActionController->GetContext().state;
-				uint32 grabTypeCRC  = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pGrabTagOverride);
+				uint32 grabTypeCRC  = CCrc32::ComputeLowercase(pGrabTagOverride);
 				tagState.SetByCRC(grabTypeCRC, selected);
 			}
 		}
@@ -809,7 +809,7 @@ void CPickAndThrowWeapon::OnSelected(bool selected)
 	if(pActionController && (fullBodyRootedAction || !selected) && pRootedGrabTagOverride && pRootedGrabTagOverride[0])
 	{
 		CTagState &tagState = pActionController->GetContext().state;
-		uint32 grabTypeCRC  = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pRootedGrabTagOverride);
+		uint32 grabTypeCRC  = CCrc32::ComputeLowercase(pRootedGrabTagOverride);
 		tagState.SetByCRC(grabTypeCRC, selected);
 	}
 
@@ -1105,7 +1105,7 @@ void CPickAndThrowWeapon::UpdateTags(const class IActionController *pActionContr
 {
 	CWeapon::UpdateTags(pActionController, tagState, selected);
 
-	uint32 tagCrC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(GetGrabTypeParams().tag.c_str());
+	uint32 tagCrC = CCrc32::ComputeLowercase(GetGrabTypeParams().tag.c_str());
 	tagState.SetByCRC(tagCrC, selected);
 }
 
@@ -2054,7 +2054,7 @@ void CPickAndThrowWeapon::PerformCameraShake(const SPickAndThrowParams::SCameraS
 		Vec3 shift = camShake.shift * attenuation;
 		Vec3 rotate = camShake.rotate * attenuation;
 
-		bool changeCamDir = camShake.randomDirection && (cry_rand()%2);
+		bool changeCamDir = camShake.randomDirection && cry_random(0, 1);
 		if (changeCamDir)
 		{
 			shift.x = -shift.x;
@@ -2451,9 +2451,7 @@ void CPickAndThrowWeapon::ThrowObject()
 					pEntity->GetWorldBounds(box);
 					Vec3 finalW = -gEnv->pSystem->GetViewCamera().GetMatrix().GetColumn0()*(8.0f/max(0.1f,box.GetRadius()));
 
-					finalW.x *= Random(0.5f,1.3f);
-					finalW.y *= Random(0.5f,1.3f);
-					finalW.z *= Random(0.5f,1.3f);
+					finalW = finalW.CompMul(cry_random_componentwise(Vec3(0.5f), Vec3(1.3f)));
 
 					asv.w = finalW;
 				}
@@ -3246,7 +3244,7 @@ int CPickAndThrowWeapon::DoSimpleMeleeHit( const ray_hit& hitResult, EntityId co
 					damage, 0.0f, hitResult.surface_idx, hitResult.partid,
 					hitTypeId, hitResult.pt, collisionParams.m_dir, hitResult.n);
 
-				info.knocksDown = (Random(20.0f, 50.0f) < m_objectMass);
+				info.knocksDown = (cry_random(20.0f, 50.0f) < m_objectMass);
 				info.remote = collisionParams.m_remote;
 
 				pGameRules->ClientHit(info);

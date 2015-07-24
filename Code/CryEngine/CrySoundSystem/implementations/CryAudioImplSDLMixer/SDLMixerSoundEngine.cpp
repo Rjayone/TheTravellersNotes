@@ -37,6 +37,9 @@ namespace SDLMixer
 		};
 		SChannelData g_channels[SDL_MIXER_NUM_CHANNELS];
 
+		typedef std::queue<int> TChannelQueue;
+		TChannelQueue g_freeChannels;
+
 		enum EChannelFinishedRequestQueueID
 		{
 			eCFRQID_ONE	= 0,
@@ -58,7 +61,7 @@ namespace SDLMixer
 		SATLWorldPosition g_listenerPosition;
 		bool g_bListenerPosChanged;
 
-		int g_nVolume;
+		bool g_bMuted;
 
 		TFnEventCallback g_fnEventFinishedCallback;
 
@@ -107,7 +110,9 @@ namespace SDLMixer
 								}
 							}
 						}
+						g_channels[nChannel].pAudioObject = NPTR;
 					}
+					g_freeChannels.push(nChannel);
 				}
 				queue.clear();
 			}
@@ -137,14 +142,10 @@ namespace SDLMixer
 					if (sName != "." && sName != ".." && !sName.empty())
 					{
 
-						if (sName.find(".wav") != string::npos || sName.find(".ogg") != string::npos /*|| sName.find(".mp3") != string::npos*/)
+						if (sName.find(".wav") != string::npos || sName.find(".ogg") != string::npos)
 						{
 							// For now there's a 1 to 1 mapping between sample files and events
 							g_sampleNames[GetIDFromFilePath(sName)] = sName;
-							TSDLMixerID nID = SDLMixer::GetIDFromString(sName);
-							std::vector<TSDLMixerID> samples;
-							samples.push_back(nID);
-							g_eventsConfiguration[nID] = samples;
 						}
 					}
 				}
@@ -177,7 +178,12 @@ namespace SDLMixer
 
 			Mix_AllocateChannels(g_nNumMixChannels);
 
-			g_nVolume = Mix_Volume(-1, -1);
+			g_bMuted = false;
+			Mix_Volume(-1, SDL_MIX_MAXVOLUME);
+			for (int i = 0; i < SDL_MIXER_NUM_CHANNELS; ++i)
+			{
+				g_freeChannels.push(i);
+			}
 
 			Mix_ChannelFinished(ChannelFinishedPlaying);
 
@@ -218,6 +224,7 @@ namespace SDLMixer
 
 		bool LoadSampleImpl(const TSDLMixerID nID, const string& sSamplePath)
 		{
+			bool bSuccess = true;
 			Mix_Chunk* pSample = Mix_LoadWAV(sSamplePath.c_str());
 			if (pSample != NPTR)
 			{
@@ -226,10 +233,23 @@ namespace SDLMixer
 			}
 			else
 			{
-				g_SDLMixerImplLogger.Log(eALT_ERROR, "SDL Mixer failed to load sample %s. Error: \"%s\"", sSamplePath, Mix_GetError());
-				return false;
+				// Sample could be inside a pak file so we need to open it manually and load it from the raw file
+				const size_t nFileSize = gEnv->pCryPak->FGetSize(sSamplePath);
+				FILE* const pFile = gEnv->pCryPak->FOpen(sSamplePath, "rbx", ICryPak::FOPEN_HINT_DIRECT_OPERATION);
+				if (pFile && nFileSize > 0)
+				{
+					void* const pData = AUDIO_ALLOCATOR_MEMORY_POOL.AllocateRaw(nFileSize, AUDIO_MEMORY_ALIGNMENT, "SDLMixerSample");
+					gEnv->pCryPak->FReadRawAll(pData, nFileSize, pFile);
+					const TSDLMixerID nNewID = LoadSample(pData, nFileSize, sSamplePath);
+					if (nNewID == SDL_MIXER_INVALID_ID)
+					{
+						g_SDLMixerImplLogger.Log(eALT_ERROR, "SDL Mixer failed to load sample %s. Error: \"%s\"", sSamplePath, Mix_GetError());
+						bSuccess = false;
+					}
+					AUDIO_ALLOCATOR_MEMORY_POOL.Free(pData);
+				}
 			}
-			return true;
+			return bSuccess;
 		}
 
 		const TSDLMixerID LoadSample(const string& sSampleFilePath)
@@ -309,12 +329,37 @@ namespace SDLMixer
 
 		void Mute()
 		{
-			g_nVolume = Mix_Volume(-1, 0);
+			Mix_Volume(-1, 0);
+			g_bMuted = true;
 		}
 
 		void UnMute()
 		{
-			Mix_Volume(-1, g_nVolume);
+			TAudioObjectList::const_iterator audioObjectIt = g_audioObjects.begin();
+			const TAudioObjectList::const_iterator audioObjectEnd = g_audioObjects.end();
+			for (; audioObjectIt != audioObjectEnd; ++audioObjectIt)
+			{
+				SSDLMixerAudioObjectData* pAudioObject = *audioObjectIt;
+				if (pAudioObject)
+				{
+					TEventInstanceSet::const_iterator eventIt = pAudioObject->events.begin();
+					const TEventInstanceSet::const_iterator eventEnd = pAudioObject->events.end();
+					for (; eventIt != eventEnd; ++eventIt)
+					{
+						SSDLMixerEventInstanceData* pEventInstance = *eventIt;
+						if (pEventInstance)
+						{
+							TChannelSet::const_iterator channelIt = pEventInstance->channels.begin();
+							TChannelSet::const_iterator channelEnd = pEventInstance->channels.end();
+							for (; channelIt != channelEnd; ++channelIt)
+							{
+								Mix_Volume(*channelIt, pEventInstance->pStaticData->nVolume);
+							}
+						}
+					}
+				}
+			}
+			g_bMuted = false;
 		}
 
 		void SetChannelPosition(SSDLMixerEventInstanceData* const pEventInstance, const int channelID, const float fDistance, const float fAngle)
@@ -377,7 +422,6 @@ namespace SDLMixer
 							// Trying to play sample that hasn't been loaded yet, load it in place
 							// NOTE: This should be avoided as it can cause lag in audio playback
 							const string sSampleName = g_sampleNames[pEventStaticData->samples[i]];
-							g_SDLMixerImplLogger.Log(eALT_WARNING, "Using sample %s without pre-loading it first, consider using a preload request to avoid lag in playback.", sSampleName);
 							if (LoadSampleImpl(GetIDFromFilePath(sSampleName), g_sampleDataRootDir + sSampleName))
 							{
 								pSample = stl::find_in_map(g_sampleData, pEventStaticData->samples[i], NPTR);
@@ -395,24 +439,33 @@ namespace SDLMixer
 							// For SDL Mixer 0 loops means play only once, 1 loop play twice, etc ...
 							--nLoopCount;
 						}
-						int nChannelID = Mix_PlayChannel(-1, pSample, nLoopCount);
-						if (nChannelID >= 0)
+
+						if (!g_freeChannels.empty())
 						{
-							Mix_Volume(nChannelID, pEventStaticData->nVolume);
+							int nChannelID = Mix_PlayChannel(g_freeChannels.front(), pSample, nLoopCount);
+							if (nChannelID >= 0)
+							{
+								g_freeChannels.pop();
+								Mix_Volume(nChannelID, g_bMuted ? 0 : pEventStaticData->nVolume);
 
-							// Get distance and angle from the listener to the audio object
-							float fDistance = 0.0f;
-							float fAngle = 0.0f;
-							GetDistanceAngleToObject(g_listenerPosition, pAudioObject->position, fDistance, fAngle);
-							SetChannelPosition(pEventInstance, nChannelID, fDistance, fAngle);
+								// Get distance and angle from the listener to the audio object
+								float fDistance = 0.0f;
+								float fAngle = 0.0f;
+								GetDistanceAngleToObject(g_listenerPosition, pAudioObject->position, fDistance, fAngle);
+								SetChannelPosition(pEventInstance, nChannelID, fDistance, fAngle);
 
-							g_channels[nChannelID].pAudioObject = pAudioObject;
-							pAudioObject->events.insert(pEventInstance);
-							pEventInstance->channels.insert(nChannelID);
+								g_channels[nChannelID].pAudioObject = pAudioObject;
+								pAudioObject->events.insert(pEventInstance);
+								pEventInstance->channels.insert(nChannelID);
+							}
+							else
+							{
+								g_SDLMixerImplLogger.Log(eALT_ERROR, "Could not play sample. Error: %s", Mix_GetError());
+							}
 						}
 						else
 						{
-							g_SDLMixerImplLogger.Log(eALT_ERROR, "Could not play sample. Error: %s", Mix_GetError());
+							g_SDLMixerImplLogger.Log(eALT_ERROR, "Ran out of free audio channels. Are you trying to play more than %d samples?", SDL_MIXER_NUM_CHANNELS);
 						}
 					}
 					bSuccess = nSize > 0;
@@ -428,7 +481,7 @@ namespace SDLMixer
 						{
 							if (pEventInstance->pStaticData->nEventID == pEventStaticData->nEventID)
 							{
-								StopEvent(pAudioObject, pEventInstance);
+								StopEvent(pEventInstance);
 							}
 						}
 					}
@@ -476,7 +529,7 @@ namespace SDLMixer
 			return false;
 		}
 
-		bool StopEvent(SSDLMixerAudioObjectData* const pAudioObject, SSDLMixerEventInstanceData const* const pEventInstance)
+		bool StopEvent(SSDLMixerEventInstanceData const* const pEventInstance)
 		{
 			if (pEventInstance)
 			{
@@ -494,12 +547,39 @@ namespace SDLMixer
 			return false;
 		}
 
+
+		bool StopEvents(const SDLMixer::TSDLMixerID nEventID)
+		{
+			bool bResult = false;
+			TAudioObjectList::const_iterator audioObjectIt = g_audioObjects.begin();
+			const TAudioObjectList::const_iterator audioObjectEnd = g_audioObjects.end();
+			for (; audioObjectIt != audioObjectEnd; ++audioObjectIt)
+			{
+				SSDLMixerAudioObjectData* pAudioObject = *audioObjectIt;
+				if (pAudioObject)
+				{
+					TEventInstanceSet::const_iterator eventIt = pAudioObject->events.begin();
+					const TEventInstanceSet::const_iterator eventEnd = pAudioObject->events.end();
+					for (; eventIt != eventEnd; ++eventIt)
+					{
+						SSDLMixerEventInstanceData* pEventInstance = *eventIt;
+						if (pEventInstance && pEventInstance->pStaticData && pEventInstance->pStaticData->nEventID == nEventID)
+						{
+							StopEvent(pEventInstance);
+							bResult = true;
+						}
+					}
+				}
+			}
+			return bResult;
+		}
+
 		SSDLMixerEventStaticData* CreateEventData(const TSDLMixerID nEventID)
 		{
 			SSDLMixerEventStaticData* pNewTriggerImpl = NPTR;
 			if (nEventID != SDLMixer::SDL_MIXER_INVALID_ID)
 			{
-				POOL_NEW(SSDLMixerEventStaticData, pNewTriggerImpl)(stl::find_in_map_ref(g_eventsConfiguration, nEventID, std::vector<TSDLMixerID>()), nEventID);
+				POOL_NEW(SSDLMixerEventStaticData, pNewTriggerImpl)(g_eventsConfiguration[nEventID], nEventID);
 			}
 			else
 			{

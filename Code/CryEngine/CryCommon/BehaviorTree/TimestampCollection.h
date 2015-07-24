@@ -3,7 +3,7 @@
 
 #pragma once
 
-#if defined( USING_BEHAVIOR_TREE_DEBUG_TIMESTAMPS ) || defined( USING_BEHAVIOR_TREE_EDITOR )
+#if defined( USING_BEHAVIOR_TREE_TIMESTAMP_DEBUGGING ) || defined( USING_BEHAVIOR_TREE_EDITOR )
 #define STORE_EXTRA_TIMESTAMP_DATA
 #endif
 
@@ -28,7 +28,7 @@ namespace BehaviorTree
 			timestampName = name;
 #endif
 
-			id = gEnv->pSystem->GetCrc32Gen()->GetCRC32(name);
+			id = CCrc32::Compute(name);
 		}
 
 		bool operator == (const TimestampID& rhs) const
@@ -240,7 +240,7 @@ namespace BehaviorTree
 
 				Timestamp timestamp;
 				timestamp.id = TimestampID(name);
-				timestamp.setOnEventNameCRC32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32(setOnEvent);
+				timestamp.setOnEventNameCRC32 = CCrc32::Compute(setOnEvent);
 				timestamp.exclusiveTo = TimestampID(exclusiveTo);
 #if defined ( STORE_EXTRA_TIMESTAMP_DATA )
 				timestamp.setOnEventName = setOnEvent;

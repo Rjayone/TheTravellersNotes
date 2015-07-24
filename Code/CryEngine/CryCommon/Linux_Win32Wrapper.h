@@ -40,10 +40,13 @@ typedef struct _MEMORYSTATUS
 	SIZE_T dwAvailVirtual;
 } MEMORYSTATUS, *LPMEMORYSTATUS;
 
-
-
-
 extern void GlobalMemoryStatus(LPMEMORYSTATUS lpmem);
+
+#if defined(PLATFORM_64BIT)
+#	define MEMORY_ALLOCATION_ALIGNMENT 16
+#else
+#	define MEMORY_ALLOCATION_ALIGNMENT 8
+#endif
 
 #define S_OK 0
 #define THREAD_PRIORITY_NORMAL				0
@@ -55,54 +58,54 @@ extern void GlobalMemoryStatus(LPMEMORYSTATUS lpmem);
 #define THREAD_PRIORITY_TIME_CRITICAL	0
 #define MAX_COMPUTERNAME_LENGTH 15 // required by CryOnline module
 
+#if 0
+//for compatibility reason we got to create a class which actually contains an int rather than a void* and make sure it does not get mistreated
+template <class T, T U>//U is default type for invalid handle value, T the encapsulated handle type to be used instead of void* (as under windows and never linux)
+class CHandle
+{
+public:
+	typedef T			HandleType;
+	typedef void* PointerType;	//for compatibility reason to encapsulate a void* as an int
 
+	static const HandleType sciInvalidHandleValue = U;
 
+	CHandle(const CHandle<T,U>& cHandle) : m_Value(cHandle.m_Value){}
+	CHandle(const HandleType cHandle = U) : m_Value(cHandle){}
+	//CHandle(const PointerType cpHandle) : m_Value(reinterpret_cast<HandleType>(cpHandle)){}
+	//CHandle(INVALID_HANDLE_VALUE_ENUM) : m_Value(U){}//to be able to use a common value for all InvalidHandle - types
 
+	operator HandleType(){return m_Value;}
+	bool operator!() const{return m_Value == sciInvalidHandleValue;}
+	const CHandle& operator =(const CHandle& crHandle){m_Value = crHandle.m_Value;return *this;}
+	const CHandle& operator =(const PointerType cpHandle){m_Value = reinterpret_cast<HandleType>(cpHandle);return *this;}
+	const bool operator ==(const CHandle& crHandle)		const{return m_Value == crHandle.m_Value;}
+	const bool operator ==(const HandleType cHandle)	const{return m_Value == cHandle;}
+	//const bool operator ==(const PointerType cpHandle)const{return m_Value == reinterpret_cast<HandleType>(cpHandle);}
+	const bool operator !=(const HandleType cHandle)	const{return m_Value != cHandle;}
+	const bool operator !=(const CHandle& crHandle)		const{return m_Value != crHandle.m_Value;}
+	//const bool operator !=(const PointerType cpHandle)const{return m_Value != reinterpret_cast<HandleType>(cpHandle);}
+	const bool operator <	(const CHandle& crHandle)		const{return m_Value < crHandle.m_Value;}
+	HandleType Handle()const{return m_Value;}
 
+private:
+	HandleType m_Value;	//the actual value, remember that file descriptors are ints under linux
 
+	typedef void	ReferenceType;//for compatibility reason to encapsulate a void* as an int
+	//forbid these function which would actually not work on an int
+	PointerType operator->();
+	PointerType operator->() const;
+	ReferenceType operator*();
+	ReferenceType operator*() const;
+	operator PointerType();
+};
 
+typedef CHandle<INT_PTR, (INT_PTR)0> HANDLE;
 
+typedef HANDLE EVENT_HANDLE;
+typedef HANDLE THREAD_HANDLE;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
+#endif
 
 //-------------------------------------socket stuff------------------------------------------
 // These are already in LinuxSpecific.h ...
@@ -143,22 +146,6 @@ extern void GlobalMemoryStatus(LPMEMORYSTATUS lpmem);
 //  __asm__ __volatile__("mfence" : : : "memory");
 //}
 
-// Missing std::iota active when not using the c++11 standard
-#if defined(__GNUC__) && defined(GCC_NO_CPP11) && !(__clang_major__ >= 5)
-#if (defined(LINUX) && !defined(ANDROID)) ||  (defined(ANDROID) && !defined(USING_STLPORT))
-namespace std{
-    template<class ForwardIterator, class T>
-    void iota(ForwardIterator first, ForwardIterator last, T value)
-    {
-        while(first != last) {
-            *first++ = value;
-            ++value;
-        }
-    }
-}
-#endif
-#define nullptr (void*)0
-#endif
 // Replacement for MoveFileEx
 // TODO: Flag implementations for the editor
 inline int MoveFileEx(const char* pOld, const char* pNew,const uint32 flags) {
@@ -175,7 +162,7 @@ unsigned char _InterlockedCompareExchange128( int64 volatile *dst, int64 exchang
 #endif
 //////////////////////////////////////////////////////////////////////////
 // io.h stuff
-#if !defined(PS3) && !defined(ANDROID)
+#if !defined(ANDROID)
 extern int errno;
 #endif
 typedef unsigned int _fsize_t;
@@ -335,6 +322,26 @@ inline uint32 GetTickCount()
 //////////////////////////////////////////////////////////////////////////
 
 typedef int64 __time64_t;     /* 64-bit time value */
+
+//////////////////////////////////////////////////////////////////////////
+// function renaming
+#define _TRUNCATE (size_t(-1))
+#define _chmod chmod 
+#define _snprintf snprintf
+#define stricmp strcasecmp
+#define _stricmp strcasecmp
+#define strnicmp strncasecmp
+#define _strnicmp strncasecmp
+
+#define _strlwr	strlwr 
+#define _strlwr_s(BUF, SIZE) strlwr(BUF) 
+#define _strups	strupr
+
+#define _vsnprintf vsnprintf
+#define _wtof( str ) wcstod( str, 0 )
+
+// Need to include this before using it's used in finddata, but after the strnicmp definition
+#include "CryString.h"
 
 typedef struct __finddata64_t
 {
@@ -603,85 +610,6 @@ extern long long _atoi64( const char *str );
 extern int *_errno();
 
 template <size_t SIZE>
-int strcpy_s(char (&dst)[SIZE], const char *src)
-{
-  strncpy(dst, src, SIZE);
-	dst[SIZE - 1] = 0;
-	return 0;
-}
-
-inline int strcpy_s(char *dst, size_t size, const char *src)
-{
-	strncpy(dst, src, size);
-	dst[size - 1] = 0;
-	return 0;
-}
-
-//try to put some securty
-inline DWORD memcpy_s(void *dest, size_t nElem, const void *source, size_t count)
-{
-  if(count <= nElem)
-  {
-  // disabled, _msize causes a SIGSEV
-  // Comparing _msize(dest) == nElem might fail since it is not guaranteed to return
-  // the exact allocated size
-  /*#if defined(LINUX)
-    //_msize does no have a const void* argument on linux
-    if(_msize(dest) == nElem && _msize(const_cast<void*>(source)) <= count) 
-  #else
-    if(_msize(dest) == nElem && _msize(source) <= count) 
-  #endif
-  */
-      memcpy(dest,source,count);
-  }
-
-  return GetLastError();
-}
-
-//note that behaviour is different from strncpy. 
-//this will not pad string with zeroes if length of src is less than 'size'
-
-inline int strncpy_s(char *dst, size_t buf_size, const char *src, size_t size)
-{
-	size_t to_copy = std::min(size, strlen(src));
-	size_t term = std::min(buf_size-1, to_copy);//length of result
-	strncpy(dst, src, term);
-	dst[term] = 0;
-	return 0;
-}
-
-template <size_t SIZE>
-inline int strncpy_s(char (&dst)[SIZE], const char *src, size_t size)
-{
-	size_t to_copy = std::min(size, strlen(src));
-	size_t term = std::min(SIZE-1, to_copy);//length of result
-	strncpy(dst, src, term);
-	dst[term] = 0;
-	return 0;
-}
-
-inline int strcat_s(char* dst, size_t size, const char* src)
-{
-  if (!dst || !src) {
-    return EINVAL;
-  }
-  size_t len_dst = strlen(dst);
-  size_t len_src = strlen(src);
-	if (size == 0 || len_dst + len_src + 1 >= size) {
-	  return ERANGE;
-	}
-	memcpy(dst + len_dst, src, len_src);
-	dst[len_dst + len_src] = 0;
-	return 0;
-}
-
-template <size_t SIZE>
-int strcat_s(char (&dst)[SIZE], const char* src)
-{
-	return strcat_s(dst, SIZE, src);
-}
-
-template <size_t SIZE>
 int vsprintf_s(char (&dst)[SIZE], const char* format, va_list argptr)
 {
 	vsnprintf(dst, SIZE, format, argptr);
@@ -695,23 +623,6 @@ inline int vsprintf_s(char* dst, size_t size, const char* format, va_list argptr
 	dst[size - 1] = 0;
 	return 0;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// function renaming
-#define _TRUNCATE (size_t(-1))
-#define _chmod chmod 
-#define _snprintf snprintf
-#define stricmp strcasecmp
-#define _stricmp strcasecmp
-#define strnicmp strncasecmp
-#define _strnicmp strncasecmp
-
-#define _strlwr	strlwr 
-#define _strlwr_s(BUF, SIZE) strlwr(BUF) 
-#define _strups	strupr
-
-#define _vsnprintf vsnprintf
-#define _wtof( str ) wcstod( str, 0 )
 
 inline int sprintf_s(char* buffer, size_t sizeOfBuffer, const char* format, ...)
 {
@@ -756,32 +667,32 @@ extern char *ltoa ( long i , char *a , int radix );
 #define itoa ltoa
 
 //////////////////////////////////////////////////////////////////////////
+#if 0
+inline long int abs(long int x)
+{
+	return labs(x);
+}
 
+inline float abs(float x)
+{
+	return fabsf(x);
+}
 
+inline double abs(double x)
+{
+	return fabs(x);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+inline float sqrt(float x)
+{
+	return sqrtf(x);
+}
+#else
 #include <cmath>
 using std::abs;
 using std::sqrt;
 using std::fabs;
-
+#endif
 
 extern char* _strtime(char* date);
 extern char* _strdate(char* date);

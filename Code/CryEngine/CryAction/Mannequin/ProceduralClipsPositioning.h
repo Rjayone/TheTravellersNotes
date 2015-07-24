@@ -12,7 +12,7 @@ struct SProceduralClipPosAdjustTargetLocatorParams
 
 	virtual void Serialize(Serialization::IArchive& ar);
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = targetScopeName.c_str();
 	}

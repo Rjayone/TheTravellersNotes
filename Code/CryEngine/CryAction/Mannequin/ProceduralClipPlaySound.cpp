@@ -20,6 +20,12 @@
 */
 #define TEMPORARY_SOUND_FLAGS
 
+SERIALIZATION_ENUM_BEGIN(EAudioObjectObstructionCalcType, "SoundObstructionType");
+SERIALIZATION_ENUM(eAOOCT_IGNORE, "Ignore", "Ignore");
+SERIALIZATION_ENUM(eAOOCT_SINGLE_RAY, "SingleRay", "Single Ray");
+SERIALIZATION_ENUM(eAOOCT_MULTI_RAY, "MultiRay", "Multi Ray");
+SERIALIZATION_ENUM_END();
+
 class CAudioContext : public IProceduralContext
 {
 private:
@@ -41,10 +47,11 @@ public:
 	{
 	}
 
-	void ExecuteAudioTrigger(TAudioControlID const nID, bool playFacial)
+	void ExecuteAudioTrigger(TAudioControlID const nID, EAudioObjectObstructionCalcType const eObstOcclCalcType, bool playFacial)
 	{
 		if (m_pIEntityAudioProxy != NULL)
 		{
+			m_pIEntityAudioProxy->SetObstructionCalcType(eObstOcclCalcType);
 			m_pIEntityAudioProxy->ExecuteTrigger(nID, playFacial ? eLSM_MatchAnimationToSoundName : eLSM_None);
 		}
 	}
@@ -61,7 +68,7 @@ public:
 	{
 		if (m_pIEntityAudioProxy != NULL)
 		{
-			m_pIEntityAudioProxy->SetAuxAudioProxyOffset(SATLWorldPosition(Matrix34(IDENTITY, rOffset.t), ZERO));
+			m_pIEntityAudioProxy->SetAuxAudioProxyOffset(SATLWorldPosition(rOffset.t));
 		}
 	}
 
@@ -91,7 +98,8 @@ typedef enum
 struct SAudioParams : public IProceduralParams
 {
 	SAudioParams()
-		: radius(0.f)
+		: audioObjectObstructionCalcType(eAOOCT_IGNORE)
+		, radius(0.f)
 		, isVoice(false)
 		, playFacial(false)
 #if defined(TEMPORARY_SOUND_FLAGS)
@@ -104,22 +112,28 @@ struct SAudioParams : public IProceduralParams
 	{
 		ar(Serialization::Decorators::SoundName<TProcClipString>(startTrigger), "StartTrigger", "Start Trigger");
 		ar(Serialization::Decorators::SoundName<TProcClipString>(stopTrigger), "StopTrigger", "Stop Trigger");
-		ar(Serialization::Decorators::JointName<SProcDataCRC>(attachmentJoint), "AttachmentJoint", "Attachment Joint");
-		ar(radius, "Radius", "AI Radius");
-		ar(isVoice, "IsVoice", "Is Voice");
-		ar(playFacial, "PlayFacial", "Play Facial");
+		ar(audioObjectObstructionCalcType, "SoundObstructionType", "Sound Obstruction Type");
+		ar(Serialization::Decorators::JointName<SProcDataCRC>(attachmentJoint), "AttachmentJoint", "Joint Name");
+		if (!ar.IsEdit())
+		{
+			// Disabled the following deprecated options in the UI, but still read/write old data in case we need them back
+			ar(radius, "Radius", "AI Radius"); 
+			ar(isVoice, "IsVoice", "Is Voice");
+		}
+		ar(playFacial, "PlayFacial", "Request Anim Matching Start Trigger");
 #if defined(TEMPORARY_SOUND_FLAGS)
-		ar(soundFlags, "SoundFlags", "Sound Flags");
+		ar(soundFlags, "SoundFlags", "Sound Flags (deprecated)");
 #endif
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = startTrigger.c_str();
 	}
 
 	TProcClipString startTrigger;
 	TProcClipString stopTrigger;
+	EAudioObjectObstructionCalcType audioObjectObstructionCalcType;
 	SProcDataCRC attachmentJoint;
 	float radius;
 	bool synchStop;
@@ -205,7 +219,8 @@ public:
 
 				if (m_nAudioControlIDStart != INVALID_AUDIO_CONTROL_ID)
 				{
-					m_context->ExecuteAudioTrigger(m_nAudioControlIDStart, playFacial);
+					m_eObstOcclCalcType = params.audioObjectObstructionCalcType;
+					m_context->ExecuteAudioTrigger(m_nAudioControlIDStart, m_eObstOcclCalcType, playFacial);
 				}
 			}
 
@@ -220,7 +235,7 @@ public:
 	{
 		if (m_nAudioControlIDStop != INVALID_AUDIO_CONTROL_ID)
 		{
-			m_context->ExecuteAudioTrigger(m_nAudioControlIDStop, false);
+			m_context->ExecuteAudioTrigger(m_nAudioControlIDStop, m_eObstOcclCalcType, false);
 		}
 		else if (m_nAudioControlIDStart != INVALID_AUDIO_CONTROL_ID)
 		{
@@ -283,6 +298,7 @@ private:
 
 	TAudioControlID m_nAudioControlIDStart;
 	TAudioControlID m_nAudioControlIDStop;
+	EAudioObjectObstructionCalcType m_eObstOcclCalcType;
 };
 
 typedef CProceduralClipAudio CProceduralClipPlaySound;

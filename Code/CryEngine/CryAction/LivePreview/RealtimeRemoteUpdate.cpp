@@ -26,10 +26,6 @@ History:
 #include "IGameFramework.h"
 #include "IGameRulesSystem.h"
 
-#ifdef XENON
-#include "Xtl.h"
-#endif //XENON
-
 // Should CERTAINLY be moved to CryCommon.
 template <typename TObjectType,bool bArray=false>
 class TScopedPointer
@@ -267,7 +263,7 @@ void  CRealtimeRemoteUpdateListener::LoadTerrainLayer(XmlNodeRef &root, unsigned
 	int posx(0),posy(0);
 	int w(0),h(0);
 	int					nSourceFormat(0);
-	ETEX_Format	eTFSrc(eTF_R8G8B8);
+	ETEX_Format	eTFSrc(eTF_B8G8R8);
 
 	if (!root->getAttr("Posx",posx))
 	{
@@ -363,28 +359,6 @@ void CRealtimeRemoteUpdateListener::LoadEntities( XmlNodeRef &root )
 					continue;
 				}
 			}
-
-			//// Specific for GDCE
-			//// This should ALWAYS be true
-			//if (pEntityClass)
-			//{
-			//	// We don't want to sync guns now.
-			//	string strClassName(pEntityClass->GetName());
-			//	strClassName.MakeLower();
-			//	if (strstr(strClassName.c_str(),"gun"))
-			//	{
-			//		continue;
-			//	}
-			//}
-
-#if 0
-#ifdef XENON
-			OutputDebugString(pEntity->GetName());
-			OutputDebugString(":");
-			OutputDebugString(pEntity->GetClass()->GetName());
-			OutputDebugString("\n");
-#endif //XENON
-#endif //0
 
 			pEntity->ClearFlags(ENTITY_FLAG_UNREMOVABLE);
 			pEntitySystem->RemoveEntity( pEntity->GetId() );
@@ -517,12 +491,6 @@ void CRealtimeRemoteUpdateListener::Update()
 		{
 			continue;
 		}
-
-#ifdef XENON
-		// We are, this way, reseting the timer for the screensaver.
-		XEnableScreenSaver(FALSE);
-		XEnableScreenSaver(TRUE);
-#endif //XENON
 
 		bool requiresFurtherProcessing = false;
 

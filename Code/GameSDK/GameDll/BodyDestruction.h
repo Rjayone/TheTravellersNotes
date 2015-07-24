@@ -265,21 +265,21 @@ private:
 	{
 		int GetAttachmentIndex(const char* attachmentName) const
 		{
-			TNameHashToIdxMap::const_iterator cit = attachmentIndices.find(HashString(attachmentName));
+			TNameHashToIdxMap::const_iterator cit = attachmentIndices.find(CryStringUtils::HashString(attachmentName));
 			
 			return (cit != attachmentIndices.end()) ? cit->second : -1;
 		}
 
 		int GetBoneIndex(const char* boneName) const
 		{
-			TNameHashToIdxMap::const_iterator cit = boneIndices.find(HashString(boneName));
+			TNameHashToIdxMap::const_iterator cit = boneIndices.find(CryStringUtils::HashString(boneName));
 
 			return (cit != boneIndices.end()) ? cit->second : -1;
 		}
 
 		int GetEventIndex(const char* eventName) const
 		{
-			TNameHashToIdxMap::const_iterator cit = eventIndices.find(HashString(eventName));
+			TNameHashToIdxMap::const_iterator cit = eventIndices.find(CryStringUtils::HashString(eventName));
 
 			return (cit != eventIndices.end()) ? cit->second : -1;
 		}

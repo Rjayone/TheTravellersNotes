@@ -59,62 +59,62 @@ class CFlashUI
 
 public:
 	// IFlashUI
-	VIRTUAL void Init();
-	VIRTUAL bool PostInit();
-	VIRTUAL void Update(float fDeltatime);
-	VIRTUAL void Reload();
-	VIRTUAL void Shutdown();
+	virtual void Init();
+	virtual bool PostInit();
+	virtual void Update(float fDeltatime);
+	virtual void Reload();
+	virtual void Shutdown();
 
-	VIRTUAL bool LoadElementsFromFile( const char* sFileName );
-	VIRTUAL bool LoadActionFromFile( const char* sFileName, IUIAction::EUIActionType type );
+	virtual bool LoadElementsFromFile( const char* sFileName );
+	virtual bool LoadActionFromFile( const char* sFileName, IUIAction::EUIActionType type );
 
-	VIRTUAL IUIElement* GetUIElement( const char* sName ) const { return const_cast<IUIElement*>(m_elements(sName)); };
-	VIRTUAL IUIElement* GetUIElement( int index ) const { return index < m_elements.size() ? const_cast<IUIElement*>(m_elements[index]) : NULL; };
-	VIRTUAL int GetUIElementCount() const { return m_elements.size(); };
-	VIRTUAL IUIElement* GetUIElementByInstanceStr( const char* sUIInstanceStr) const;
+	virtual IUIElement* GetUIElement( const char* sName ) const { return const_cast<IUIElement*>(m_elements(sName)); };
+	virtual IUIElement* GetUIElement( int index ) const { return index < m_elements.size() ? const_cast<IUIElement*>(m_elements[index]) : NULL; };
+	virtual int GetUIElementCount() const { return m_elements.size(); };
+	virtual IUIElement* GetUIElementByInstanceStr( const char* sUIInstanceStr) const;
 
-	VIRTUAL IUIAction* GetUIAction( const char* sName ) const { return const_cast<IUIAction*>(m_actions(sName)); };
-	VIRTUAL IUIAction* GetUIAction( int index ) const { return index < m_actions.size() ? const_cast<IUIAction*>(m_actions[index]) : NULL; };
-	VIRTUAL int GetUIActionCount() const { return m_actions.size(); }
+	virtual IUIAction* GetUIAction( const char* sName ) const { return const_cast<IUIAction*>(m_actions(sName)); };
+	virtual IUIAction* GetUIAction( int index ) const { return index < m_actions.size() ? const_cast<IUIAction*>(m_actions[index]) : NULL; };
+	virtual int GetUIActionCount() const { return m_actions.size(); }
 
-	VIRTUAL IUIActionManager* GetUIActionManager() const;
-	VIRTUAL void UpdateFG();
-	VIRTUAL void EnableEventStack( bool bEnable );
-	VIRTUAL void RegisterModule( IUIModule* pModule, const char* name );
-	VIRTUAL void UnregisterModule( IUIModule* pModule );
+	virtual IUIActionManager* GetUIActionManager() const;
+	virtual void UpdateFG();
+	virtual void EnableEventStack( bool bEnable );
+	virtual void RegisterModule( IUIModule* pModule, const char* name );
+	virtual void UnregisterModule( IUIModule* pModule );
 
-	VIRTUAL void SetHudElementsVisible(bool bVisible);
+	virtual void SetHudElementsVisible(bool bVisible);
 
-	VIRTUAL IUIEventSystem* CreateEventSystem( const char* sName, IUIEventSystem::EEventSystemType eType );
-	VIRTUAL IUIEventSystem* GetEventSystem( const char* name, IUIEventSystem::EEventSystemType eType );
-	VIRTUAL IUIEventSystemIteratorPtr CreateEventSystemIterator( IUIEventSystem::EEventSystemType eType ); 
+	virtual IUIEventSystem* CreateEventSystem( const char* sName, IUIEventSystem::EEventSystemType eType );
+	virtual IUIEventSystem* GetEventSystem( const char* name, IUIEventSystem::EEventSystemType eType );
+	virtual IUIEventSystemIteratorPtr CreateEventSystemIterator( IUIEventSystem::EEventSystemType eType ); 
 
-	VIRTUAL void DispatchControllerEvent( IUIElement::EControllerInputEvent event, IUIElement::EControllerInputState state, float value );
-	VIRTUAL void SendFlashMouseEvent( SFlashCursorEvent::ECursorState evt, int iX, int iY, int iButton = 0, float wheel = 0.f, bool bFromController = false );
-	VIRTUAL bool DisplayVirtualKeyboard( unsigned int flags, const wchar_t* title, const wchar_t* initialInput, int maxInputLength, IVirtualKeyboardEvents *pInCallback );
-	VIRTUAL bool IsVirtualKeyboardRunning();
-	VIRTUAL bool CancelVirtualKeyboard();
+	virtual void DispatchControllerEvent( IUIElement::EControllerInputEvent event, IUIElement::EControllerInputState state, float value );
+	virtual void SendFlashMouseEvent( SFlashCursorEvent::ECursorState evt, int iX, int iY, int iButton = 0, float wheel = 0.f, bool bFromController = false );
+	virtual bool DisplayVirtualKeyboard( unsigned int flags, const char* title, const char* initialInput, int maxInputLength, IVirtualKeyboardEvents *pInCallback );
+	virtual bool IsVirtualKeyboardRunning();
+	virtual bool CancelVirtualKeyboard();
 
-	VIRTUAL void GetScreenSize(int &width, int &height);
-	VIRTUAL void SetEditorScreenSizeCallback(TEditorScreenSizeCallback& cb); 
-	VIRTUAL void RemoveEditorScreenSizeCallback();
+	virtual void GetScreenSize(int &width, int &height);
+	virtual void SetEditorScreenSizeCallback(TEditorScreenSizeCallback& cb); 
+	virtual void RemoveEditorScreenSizeCallback();
 
-	VIRTUAL void SetEditorUILogEventCallback(TEditorUILogEventCallback& cb);
-	VIRTUAL void RemoveEditorUILogEventCallback();
+	virtual void SetEditorUILogEventCallback(TEditorUILogEventCallback& cb);
+	virtual void RemoveEditorUILogEventCallback();
 
-	VIRTUAL void SetEditorPlatformCallback(TEditorPlatformCallback& cb);
-	VIRTUAL void RemoveEditorPlatformCallback();
+	virtual void SetEditorPlatformCallback(TEditorPlatformCallback& cb);
+	virtual void RemoveEditorPlatformCallback();
 
-	VIRTUAL bool UseSharedRT(const char* instanceStr, bool defVal) const;
+	virtual bool UseSharedRT(const char* instanceStr, bool defVal) const;
 
-	VIRTUAL void CheckPreloadedTexture(ITexture* pTexture) const;
+	virtual void CheckPreloadedTexture(ITexture* pTexture) const;
 
-	VIRTUAL void GetMemoryStatistics(ICrySizer * s) const;
+	virtual void GetMemoryStatistics(ICrySizer * s) const;
 
 #if !defined(_LIB) || defined(IS_EAAS)
-	VIRTUAL SUIItemLookupSet_Impl<SUIParameterDesc>* CreateLookupParameter() { return new SUIItemLookupSet_Impl<SUIParameterDesc>(); };
-	VIRTUAL SUIItemLookupSet_Impl<SUIMovieClipDesc>* CreateLookupMovieClip() { return new SUIItemLookupSet_Impl<SUIMovieClipDesc>(); };
-	VIRTUAL SUIItemLookupSet_Impl<SUIEventDesc>* CreateLookupEvent() { return new SUIItemLookupSet_Impl<SUIEventDesc>(); };
+	virtual SUIItemLookupSet_Impl<SUIParameterDesc>* CreateLookupParameter() { return new SUIItemLookupSet_Impl<SUIParameterDesc>(); };
+	virtual SUIItemLookupSet_Impl<SUIMovieClipDesc>* CreateLookupMovieClip() { return new SUIItemLookupSet_Impl<SUIMovieClipDesc>(); };
+	virtual SUIItemLookupSet_Impl<SUIEventDesc>* CreateLookupEvent() { return new SUIItemLookupSet_Impl<SUIEventDesc>(); };
 #endif
 	// ~IFlashUI
 
@@ -124,7 +124,7 @@ public:
 
 	// IInputEventListener
 	virtual bool OnInputEvent( const SInputEvent &event );
-	virtual bool OnInputEventUI( const SInputEvent &event );
+	virtual bool OnInputEventUI( const SUnicodeEvent &event );
 	// ~IInputEventListener
 
 	// ISystemEventListener

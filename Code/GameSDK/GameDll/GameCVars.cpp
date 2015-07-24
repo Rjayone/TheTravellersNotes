@@ -75,8 +75,6 @@ static void ChangeDebugState( ICVar* piCVar )
 }
 #endif
 
-#define AI_CORPSES_CONSOLE_DEFAULTS 0
-
 static void OnGameRulesChanged( ICVar * pCVar )
 {
 	CGameRules * pGameRules = g_pGame->GetGameRules();
@@ -611,6 +609,11 @@ void SCVars::InitCVars(IConsole *pConsole)
 	REGISTER_CVAR(cl_bobVerticalMultiplier, 4.0f, 0, "Multiplier to add additional camera bobbing while the player is moving vertically");
 	REGISTER_CVAR(cl_bobMaxHeight, 0.08f, 0, "Clamps the maximum amount of vertical camera movement while the player is moving at maximum speed");
 	REGISTER_CVAR(cl_strafeHorzScale, 0.05f, 0, "Desired amount of horizontal camera movement while the player is strafing");
+	REGISTER_CVAR(cl_controllerYawSnapEnable, 0, 0, "Enable snap rotation with controller/mouse when using a head mounted display");
+	REGISTER_CVAR(cl_controllerYawSnapAngle, 30.0f, 0, "Snap amount in degrees");
+	REGISTER_CVAR(cl_controllerYawSnapTime, 0.1f, 0, "Snap time in seconds");
+	REGISTER_CVAR(cl_controllerYawSnapMax, 0.8f, 0, "Input threshold that must be reached to trigger snapping");
+	REGISTER_CVAR(cl_controllerYawSnapMin, 0.5f, 0, "Input threshold that must be reached to reset snapping");
 
 	REGISTER_CVAR(i_grenade_showTrajectory, 1, 0, "Switches on trajectory display");
 	REGISTER_CVAR(i_grenade_trajectory_resolution, 0.03f, 0, "Trajectory display resolution");
@@ -790,17 +793,10 @@ void SCVars::InitCVars(IConsole *pConsole)
 	REGISTER_CVAR(g_aiCorpses_DebugDraw, 0, VF_CHEAT, "Enable AI corpse debugging");
 	REGISTER_CVAR(g_aiCorpses_DelayTimeToSwap, 10.0f, 0, "Time in seconds the Ai will remain on the ground before being swap for a corpse");
 	
-#if AI_CORPSES_CONSOLE_DEFAULTS
-	REGISTER_CVAR(g_aiCorpses_Enable, 1, 0, "Enable AI corpse spawning");
-	REGISTER_CVAR(g_aiCorpses_MaxCorpses, 12, 0, "Max number of corpses allowed");
-	REGISTER_CVAR(g_aiCorpses_CullPhysicsDistance, 30.0f, 0, "Corpses at this distance from the player will have their physics disabled");
-	REGISTER_CVAR(g_aiCorpses_ForceDeleteDistance, 170.0f, 0, "Corpses at this distance will be removed as soon as not visible");
-#else
 	REGISTER_CVAR(g_aiCorpses_Enable, 1, 0, "Enable AI corpse spawning");
 	REGISTER_CVAR(g_aiCorpses_MaxCorpses, 24, 0, "Max number of corpses allowed");
 	REGISTER_CVAR(g_aiCorpses_CullPhysicsDistance, 50.0f, 0, "Corpses at this distance from the player will have their physics disabled");
 	REGISTER_CVAR(g_aiCorpses_ForceDeleteDistance, 250.0f, 0, "Corpses at this distance will be removed as soon as not visible");
-#endif //AI_CORPSES_CONSOLE_DEFAULTS
 
 	REGISTER_CVAR(g_debugaimlook, 0, VF_CHEAT, "Debug aim/look direction");
 
@@ -884,6 +880,8 @@ void SCVars::InitCVars(IConsole *pConsole)
 #if !defined(_RELEASE)
 	REGISTER_CVAR(g_debugShowGainedAchievementsOnHUD, 0, 0, "When an achievement is/would be given, the achievement name is shown on the HUD");
 #endif
+
+	REGISTER_CVAR(g_hmdFadeoutNearWallThreshold, 0.0f, VF_NULL, "Distance from the wall when fadeout to black starts (0 = disabled)");
 
 	REGISTER_CVAR(g_debugNetPlayerInput, 0, VF_NULL, "Show some debug for player input");
 	REGISTER_CVAR(g_debug_fscommand, 0, 0, "Print incoming fscommands to console");
@@ -970,6 +968,8 @@ void SCVars::InitCVars(IConsole *pConsole)
 	REGISTER_CVAR(g_detachedCameraDebug, 0, VF_CHEAT, "Display debug graphics for detached camera spline playback.");
 
 #if !defined(_RELEASE)
+	REGISTER_CVAR_DEV_ONLY(g_skipStartupSignIn, 0, VF_NULL, "Skip Sign-in for online services at startup. (useful for Xbox One offline demonstration)");
+
 	REGISTER_CVAR(g_debugOffsetCamera, 0, VF_CHEAT, "Debug offset the camera");
 	REGISTER_CVAR(g_debugLongTermAwardDays, 182, VF_CHEAT, "Debug number of days required for long term award");
 #endif //!defined(_RELEASE)
@@ -1066,7 +1066,6 @@ void SCVars::InitCVars(IConsole *pConsole)
 	REGISTER_CVAR(pl_jump_baseTimeAddedPerJump, 0.4f, 0, "The amount of time that is added on per jump");
 	REGISTER_CVAR(pl_jump_currentTimeMultiplierOnJump, 1.5f, 0, "Multiplier for the current timer per jump");
 
-	REGISTER_CVAR(pl_jump_quickPressThresh, 0.25f, 0, "If jump button is released quicker than this threshold (in secs) then the jump will be flagged as 'quick'. In Power mode, this will do a normal (Tactical) jump instead of a power jump");
 	REGISTER_CVAR(pl_boostedMelee_allowInMP, 0, 0, "Define whether or not the boosted melee mechanic can be used in multiplayer");
 
 	REGISTER_CVAR(pl_velocityInterpAirControlScale, 1.0f, 0, "Use velocity based interpolation method with gravity adjustment");	
@@ -1101,7 +1100,7 @@ void SCVars::InitCVars(IConsole *pConsole)
 #endif
 
 	REGISTER_CVAR(pl_pickAndThrow.debugDraw, 0, VF_CHEAT, "Turn on debug drawing of Pick And Throw");
-	REGISTER_CVAR2_CB("pl_pickAndThrow.useProxies", &pl_pickAndThrow.useProxies, 1, 0, CVARHELP("Enables/Disables PickAndThrow proxies. Needs reload"), ReloadPickAndThrowProxiesOnChange);
+	REGISTER_CVAR2_CB("pl_pickAndThrow.useProxies", &pl_pickAndThrow.useProxies, 1, 0, "Enables/Disables PickAndThrow proxies. Needs reload", ReloadPickAndThrowProxiesOnChange);
 
 	// Melee weaps
 	REGISTER_CVAR(pl_pickAndThrow.maxOrientationCorrectionTime, 0.3f, 0,	"Maximum time period over which orientation/position correction will occur before grab anim is commenced");
@@ -2033,10 +2032,6 @@ void SCVars::InitCVars(IConsole *pConsole)
 	REGISTER_CVAR(g_hud3d_cameraOffsetZ, 0.f, VF_NULL, "3D Hud z pos offset");
 	REGISTER_CVAR(g_hud3D_cameraOverride, 0, VF_NULL, "if true g_hud3d_cameraDistance and g_hud3d_cameraOffsetZ can be used to change offsets, otherwise auto offsets");
 	
-	//Traveller
-	REGISTER_CVAR(td_draw, 0, VF_NULL, "Show Sovereign debug helpers");
-	//~
-
 	m_pGameLobbyCVars = new CGameLobbyCVars();
 }
 
@@ -2208,6 +2203,8 @@ void SCVars::ReleaseCVars()
 	pConsole->UnregisterVariable("cl_bobHeight", true);
 	pConsole->UnregisterVariable("cl_bobSprintMultiplier", true);
 
+	pConsole->UnregisterVariable("g_hmdFadeoutNearWallThreshold", true);
+
 	pConsole->UnregisterVariable("g_timelimit", true);
 	pConsole->UnregisterVariable("g_timelimitextratime", true);
 	pConsole->UnregisterVariable("g_roundScoreboardTime", true);
@@ -2220,6 +2217,7 @@ void SCVars::ReleaseCVars()
 	pConsole->UnregisterVariable("g_goToCampaignAfterTutorial", true);
 	pConsole->UnregisterVariable("kc_enable", true);
 #ifndef _RELEASE
+	pConsole->UnregisterVariable("g_skipStartupSignIn", true);
 	pConsole->UnregisterVariable("kc_debug", true);
 	pConsole->UnregisterVariable("kc_debugVictimPos", true);
 	pConsole->UnregisterVariable("kc_debugWinningKill", true);
@@ -2500,7 +2498,6 @@ void SCVars::ReleaseCVars()
 #ifndef _RELEASE
 	pConsole->UnregisterVariable("pl_debug_view", true);	
 #endif
-	pConsole->UnregisterVariable("pl_jump_quickPressThresh", true);
 	pConsole->UnregisterVariable("pl_switchTPOnKill", true);
 	pConsole->UnregisterVariable("pl_stealthKill_allowInMP", true);
 	pConsole->UnregisterVariable("pl_stealthKill_uncloakInMP", true);
@@ -2863,10 +2860,6 @@ void SCVars::ReleaseCVars()
 #ifdef INCLUDE_GAME_AI_RECORDER
 	CGameAIRecorderCVars::UnregisterVariables(pConsole);
 #endif //INCLUDE_GAME_AI_RECORDER
-
-	//Traveller
-	pConsole->UnregisterVariable("td_draw", true);
-	//~
 }
 
 //------------------------------------------------------------------------
@@ -3091,8 +3084,6 @@ void CGame::RegisterConsoleCommands()
 {
 	assert(m_pConsole);
 
-	REGISTER_COMMAND("quit", "System.Quit()", VF_RESTRICTEDMODE, "Quits the game");
-
 	REGISTER_COMMAND("playerGoto", CmdPlayerGoto, VF_CHEAT, 
 		"Get or set the current position and orientation for the player - unlike goto it actually sets the player rotation correctly\n"
 		"Usage: goto\n"
@@ -3213,7 +3204,6 @@ void CGame::UnregisterConsoleCommands()
 {
 	assert(m_pConsole);
 
-	m_pConsole->RemoveCommand("quit");
 	m_pConsole->RemoveCommand("playerGoto");
 	m_pConsole->RemoveCommand("goto");
 	m_pConsole->RemoveCommand("sv_moveClientsTo");
@@ -4307,11 +4297,11 @@ void CGame::CmdInspectConnectedStorage(IConsoleCmdArgs* pArgs)
 
 		size_t numConverted = 0;
 
-		wchar_t containerNameW[64];
-		mbstowcs_s(&numConverted, containerNameW, ARRAY_COUNT(containerNameW), containerName, _TRUNCATE);
+		wstring containerNameW;
+		Unicode::Convert(containerNameW, containerName);
 
-		wchar_t blobNameW[64];
-		mbstowcs_s(&numConverted, blobNameW, ARRAY_COUNT(blobNameW), blobName, _TRUNCATE);
+		wstring blobNameW;
+		Unicode::Convert(blobNameW, blobName);
 
 		IPlatformOS* pOS = gEnv->pSystem->GetPlatformOS();
 
@@ -4321,11 +4311,11 @@ void CGame::CmdInspectConnectedStorage(IConsoleCmdArgs* pArgs)
 		IPlatformOS::TContainerDataBlocks block;
 		block.resize(1);
 
-		block[0].blockName = blobNameW;
+		block[0].blockName = blobNameW.c_str();
 		block[0].pDataBlock = readBuffer;
 		block[0].dataBlockSize = expectedBlockSize;
 
-		if (pOS->LoadFromStorage(type, containerNameW, block))
+		if (pOS->LoadFromStorage(type, containerNameW.c_str(), block))
 		{
 			if (dumpToFile)
 			{
@@ -4333,7 +4323,7 @@ void CGame::CmdInspectConnectedStorage(IConsoleCmdArgs* pArgs)
 				gEnv->pCryPak->AdjustFileName(string("%USER%\\ConnectedStorageDump\\") + containerName + "\\", path, ICryPak::FLAGS_PATH_REAL | ICryPak::FLAGS_FOR_WRITING);
 				if (gEnv->pCryPak->MakeDir(path))
 				{
-					strcat_s(path, blobName);
+					cry_strcat(path, blobName);
 
 					if (FILE* pFile = gEnv->pCryPak->FOpen(path, "wt"))
 					{

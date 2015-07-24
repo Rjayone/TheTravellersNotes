@@ -266,7 +266,7 @@ int CRapid::GetShootAmmoCost(bool playerIsShooter)
 	{
 		if(!gEnv->bMultiplayer)
 		{
-			cost += Random(m_fireParams->fireparams.fake_fire_rate);
+			cost += cry_random(0, m_fireParams->fireparams.fake_fire_rate - 1);
 		}
 		else
 		{

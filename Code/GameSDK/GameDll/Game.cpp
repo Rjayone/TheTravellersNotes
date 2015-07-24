@@ -186,19 +186,6 @@ Crytek Source File.
 
 #include "WorldBuilder.h"
 
-////////////////////
-//Traveller includes
-#include "CharDevSys.h"
-#include "RPGInventory.h"
-#include "CraftSystem.h"
-#include "PlayerStatsManager.h"
-#include "RPGInventoryManager.h"
-#include "BuildMenu.h"
-#include "DialogSystem.h"
-#include "Economics.h"
-#include "Events.h"
-//~
-
 
 //#define GAME_DEBUG_MEM  // debug memory usage
 #undef  GAME_DEBUG_MEM
@@ -442,59 +429,6 @@ public:
 
 #endif // ENABLE_VISUAL_DEBUG_PROTOTYPE
 
-//Contains logic for determining if a language select screen should be shown. The rules vary per platform
-bool CGame::ShouldShowLanguageSelect()
-{
-	return false;
-
-	if( g_pGameCVars->g_enableLanguageSelectionMenu == false || gEnv->IsEditor() == true )
-		return false;
-
-	//Get the system selected language and check that we know about it
-	ILocalizationManager::EPlatformIndependentLanguageID systemPilid = gEnv->pSystem->GetPlatformOS()->GetSystemLanguage();
-	if( systemPilid == ILocalizationManager::ePILID_MAX_OR_INVALID )
-	{
-		//We've encountered an unexpected/unknown language, platform language awareness hasn't been implemented on this platform or there was a minor error determining the selected system language.
-		//In these cases show the language selection screen.
-		return true;
-	}
-
-	ILocalizationManager::EPlatformIndependentLanguageID skuPilid = systemPilid;
-
-	const int max = ILocalizationManager::ePILID_MAX_OR_INVALID;
-	int numLanguagesSupported = 0;
-	for(int i=0; i<max; ++i)
-	{
-		ILocalizationManager::EPlatformIndependentLanguageID id = (ILocalizationManager::EPlatformIndependentLanguageID)i;
-		ILocalizationManager::TLocalizatonBitfield isLanguageSupportedBitField = gEnv->pSystem->GetLocalizationManager()->IsLanguageSupported(id);
-		if(isLanguageSupportedBitField!=0)
-		{
-			skuPilid = id;
-			++numLanguagesSupported;
-		}
-	}
-
-	if( numLanguagesSupported==1 )
-	{
-		const char *sLangName = gEnv->pSystem->GetLocalizationManager()->LangNameFromPILID( skuPilid );
-		if(ICVar* pCVar = gEnv->pConsole->GetCVar("g_language"))
-		{
-			pCVar->Set( sLangName );
-		}
-
-		if(ICVar* pCVar = gEnv->pConsole->GetCVar("g_languageAudio"))
-		{
-			pCVar->Set( sLangName );
-		}
-
-		return false;
-	}
-
-	//For all other platforms return true, which is the value of g_enableLanguageSelectionMenu
-	return true;
-}
-
-
 CGame::CGame()
 : m_pFramework(0),
 	m_pConsole(0),
@@ -601,17 +535,8 @@ CGame::CGame()
 #endif
 	m_pMovingPlatformMgr(NULL)
 #if ENABLE_MANUAL_FRAME_STEP
-	, m_pManualFrameStep(new CManualFrameStepManager()),
+	, m_pManualFrameStep(new CManualFrameStepManager())
 #endif
-	pCraftSystem(NULL),
-	pCharDevSys(NULL),
-	pRPGInventory(NULL),
-	pDialogMenu(NULL),
-	pRPGInventoryManager(NULL),
-	pPlayerStatsManager(NULL),
-	pBuildMenu(NULL),
-	pEconomics(NULL),
-	pEventsDispatcher(NULL)
 {
 	COMPILE_TIME_ASSERT( eCGE_Last <= 64 );
 
@@ -761,18 +686,6 @@ CGame::~CGame()
 #if ENABLE_MANUAL_FRAME_STEP
 	SAFE_DELETE(m_pManualFrameStep);
 #endif
-
-	//Traveller
-	SAFE_DELETE(pCharDevSys);
-	SAFE_DELETE(pRPGInventory);
-	SAFE_DELETE(pCraftSystem);
-	SAFE_DELETE(pDialogMenu);
-	SAFE_DELETE(pRPGInventoryManager);
-	SAFE_DELETE(pPlayerStatsManager);
-	SAFE_DELETE(pBuildMenu);
-	SAFE_DELETE(pEconomics);
-	SAFE_DELETE(pEventsDispatcher);
-	//~
 
 	if (m_pLobbySessionHandler != NULL)
 	{
@@ -948,14 +861,18 @@ bool CGame::Init(IGameFramework *pFramework)
 		profileOptions->Init();
 	
 	InlineInitializationProcessing("CGame::Init PlayerProfileManager");
-#if defined(DURANGO)
-	gEnv->pSystem->GetPlatformOS()->UserDoSignIn(1, 0);
 
-	XboxLiveGameEvents::CreateGUID(m_playerSessionId);
-#else
-	gEnv->pSystem->GetPlatformOS()->UserDoSignIn(0); // sign in the default user
+#if !defined(_RELEASE)
+	if (!g_pGameCVars->g_skipStartupSignIn)
 #endif
+	{
+		gEnv->pSystem->GetPlatformOS()->UserDoSignIn(0); // sign in the default user
+	}
 
+#if defined(DURANGO)
+	XboxLiveGameEvents::CreateGUID(m_playerSessionId);
+#endif
+	
 	InlineInitializationProcessing("CGame::Init ProfileOptions");
 	if (!gEnv->IsEditor())
 	{
@@ -1149,22 +1066,19 @@ bool CGame::Init(IGameFramework *pFramework)
 	if (!gEnv->IsDedicated())
 	{
 			// This needs to be scheduled regardless of if we're showing the language selection screen or not, for autotest multiplayer (which we don't know about at this point)
-			if (!ShouldShowLanguageSelect())
+			LoadPatchLocalizationData();
+
+			//No localization is going to be shown. Perform post-loc checking immediately
+			gEnv->pSystem->GetPlatformOS()->PostLocalizationBootChecks();
+			InitGameType(g_pGameCVars->g_multiplayerDefault!=0, true);
+
+			// we need this to setup the xmb buttons
+			ICryLobby *pLobby = gEnv->pNetwork->GetLobby();
+			ICryLobbyService *pLobbyService = pLobby ? pLobby->GetLobbyService(eCLS_Online) : NULL;
+			ICryLobbyUI *pLobbyUI = pLobbyService ? pLobbyService->GetLobbyUI() : NULL;
+			if(pLobbyUI)
 			{
-				LoadPatchLocalizationData();
-
-				//No localization is going to be shown. Perform post-loc checking immediately
-				gEnv->pSystem->GetPlatformOS()->PostLocalizationBootChecks();
-				InitGameType(g_pGameCVars->g_multiplayerDefault!=0, true);
-
-				// we need this to setup the xmb buttons
-				ICryLobby *pLobby = gEnv->pNetwork->GetLobby();
-				ICryLobbyService *pLobbyService = pLobby ? pLobby->GetLobbyService(eCLS_Online) : NULL;
-				ICryLobbyUI *pLobbyUI = pLobbyService ? pLobbyService->GetLobbyUI() : NULL;
-				if(pLobbyUI)
-				{
-					pLobbyUI->PostLocalizationChecks();
-				}
+				pLobbyUI->PostLocalizationChecks();
 			}
 	}
 	else
@@ -1227,48 +1141,6 @@ bool CGame::Init(IGameFramework *pFramework)
 	{
 		m_pWaterPuddleManager = new CWaterPuddleManager();
 	}
-
-
-	//Traveller
-	if (!pEventsDispatcher)
-	{
-		pEventsDispatcher = new CEventsDispatcher();
-	}
-	if (!pCraftSystem)
-	{
-		pCraftSystem = new CCraftSystem();
-	}
-
-	if (!pCharDevSys)
-	{
-		pCharDevSys = new CCharacterDevelopmentSystem();
-	}
-
-	if (!pRPGInventory)
-	{
-		pRPGInventory = new CRPGInventory();
-	}
-	if (!pDialogMenu)
-	{
-		pDialogMenu = new CUIDialogMenu();
-	}
-	if (!pRPGInventoryManager)
-	{
-		pRPGInventoryManager = new CRPGInventoryManager();
-	}
-	if (!pPlayerStatsManager)
-	{
-		pPlayerStatsManager = new CPlayerStatsManager();
-	}
-	if (!pBuildMenu)
-	{
-		pBuildMenu = new CUIBuildMenu();
-	}
-	if (!pEconomics)
-	{
-		pEconomics = new CEconomics();
-	}
-	//~
 
 	InlineInitializationProcessing("CGame::Init LedgeManager");
 
@@ -1435,11 +1307,6 @@ void CGame::InitGameType(bool multiplayer, bool fromInit /*= false*/)
 		multiplayer = true;
 	}
 #endif
-
-	if(multiplayer)
-		gEnv->pJobManager->EnableSuspendWorkerForMP();
-	else
-		gEnv->pJobManager->DisableSuspendWorkerForMP();
 
 	MEMSTAT_CONTEXT(EMemStatContextTypes::MSC_Other, 0, "CGame::InitGameType");
 
@@ -2426,15 +2293,6 @@ void CGame::UpdateInviteAcceptedState()
 
 				SetInviteAcceptedState(eIAS_None);
 				InvalidateInviteData();
-
-				ICryLobby *pLobby = gEnv->pNetwork->GetLobby();
-				ICryLobbyService *pLobbyService = pLobby ? pLobby->GetLobbyService(eCLS_Online) : NULL;
-				ICryLobbyUI *pLobbyUI = pLobbyService ? pLobbyService->GetLobbyUI() : NULL;
-
-				if (pLobbyUI)
-				{
-					pLobbyUI->HandleOldNotSignedInInviteGame();
-				}
 			}
 			else
 			{
@@ -3332,7 +3190,9 @@ EPlatform CGame::GetPlatform() const
 #if defined(WIN32) || defined(WIN64) || defined(DURANGO) || defined(APPLE) || defined(LINUX)
 	platform = ePlatform_PC;
 #elif defined(ORBIS)
-	platform = ePlatform_PS3;
+	platform = ePlatform_PS4;
+#else
+# error Unsupported Platform
 #endif
 
 	return platform;
@@ -3539,7 +3399,7 @@ bool CGame::OnInputEvent(const SInputEvent& inputEvent)
 }
 
 
-bool CGame::OnInputEventUI(const SInputEvent& inputEvent)
+bool CGame::OnInputEventUI(const SUnicodeEvent& inputEvent)
 {
 	bool result = false;
 	if (m_pInputEventListenerOverride)
@@ -3944,7 +3804,7 @@ bool CGame::ReadProfilePlatform(XmlNodeRef &platformsNode, EPlatform platformId)
 		"Unknown",
 		"PC",
 		"Xbox",
-		"PS3"
+		"PS4"
 	};
 	IActionMapManager *pActionMapMan = m_pFramework->GetIActionMapManager();
 
@@ -3956,9 +3816,9 @@ bool CGame::ReadProfilePlatform(XmlNodeRef &platformsNode, EPlatform platformId)
 			if (!strcmp(platform->getAttr("keyboard"), "0"))
 				m_platformInfo.devices &= ~eAID_KeyboardMouse;
 			if (!strcmp(platform->getAttr("xboxpad"), "0"))
-				m_platformInfo.devices &= ~eAID_XboxPad;
-			if (!strcmp(platform->getAttr("ps3pad"), "0"))
-				m_platformInfo.devices &= ~eAID_PS3Pad;
+				m_platformInfo.devices &= ~eAID_XboxPad; 
+			if (!strcmp(platform->getAttr("ps4pad"), "0"))
+				m_platformInfo.devices &= ~eAID_PS4Pad;
 
 			if (m_platformInfo.devices & eAID_KeyboardMouse)
 			{
@@ -3970,9 +3830,9 @@ bool CGame::ReadProfilePlatform(XmlNodeRef &platformsNode, EPlatform platformId)
 				pActionMapMan->AddInputDeviceMapping(eAID_XboxPad, "xboxpad");
 			}
 			
-			if (m_platformInfo.devices & eAID_PS3Pad)
+			if (m_platformInfo.devices & eAID_PS4Pad)
 			{
-				pActionMapMan->AddInputDeviceMapping(eAID_PS3Pad, "ps3pad");
+				pActionMapMan->AddInputDeviceMapping(eAID_PS4Pad, "ps4pad");
 			}
 
 			bResult = true;
@@ -4072,7 +3932,7 @@ bool CGame::LoadControllerLayoutFile(const char* szLayoutKeyName)
 		return false;
 	}
 
-	return true;
+	return true; 
 }
 
 void CGame::InitScriptBinds()
@@ -5267,6 +5127,11 @@ void CGame::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam)
 			s_levelCVars.RevertCVarChanges();
 
 			CornerSmoothing::OnLevelUnload();
+
+			if (m_pGameCache)
+			{
+				m_pGameCache->Reset();
+			}
 		}
 		break;
 
@@ -5464,10 +5329,6 @@ void CGame::SetRichPresenceCallback(CryLobbyTaskID taskID, ECryLobbyError error,
 	g_pGame->m_pendingRichPresenceState = eRPS_none;
 	g_pGame->m_pendingRichPresenceSessionID = CrySessionInvalidID;
 	g_pGame->m_bRefreshRichPresence = false;
-}
-
-void CGame::RefreshRichPresence()
-{
 }
 
 bool CGame::SetRichPresence(ERichPresenceState state)
@@ -5857,23 +5718,6 @@ bool CGame::GameEndLevel(const char* nextLevel)
 	return false;
 }
 
-
-const static uint8* g_PublicKey = NULL;
-const uint32 g_PublicKeySize = 0;
-const static char* drmFiles = NULL;
-
-
-const uint8* CGame::GetDRMKey(uint32 *pKeySize)
-{
-	*pKeySize = g_PublicKeySize;
-	return g_PublicKey;
-}
-
-const char* CGame::GetDRMFileList()
-{
-	return drmFiles;
-}
-
 void CGame::OnRenderScene(const SRenderingPassInfo &passInfo)
 {
 	TRenderSceneListeners::const_iterator it = m_renderSceneListeners.begin();
@@ -6111,45 +5955,12 @@ bool CGame::IsGameActive() const
 
 void CGame::SetCrashDebugMessage(const char* const msg)
 {
-	//JAT - don't use strcpy_s because it throws exception when buffer overflows
-	const int bufferSize = SSystemGlobalEnvironment::MAX_DEBUG_STRING_LENGTH;
-	char* const dest = gEnv->szDebugStatus;
-	for (int i=0; i<bufferSize; i++)
-	{
-		dest[i] = msg[i];
-		if (msg[i] == '\0')
-		{
-			break;
-		}
-	}
-	gEnv->szDebugStatus[bufferSize-1]='\0';
+	cry_strcpy(gEnv->szDebugStatus, msg);
 }
 
 void CGame::AppendCrashDebugMessage(const char* const msg)
 {
-	//JAT - don't use strcat_s because it throws exception when buffer overflows
-	const int bufferSize = SSystemGlobalEnvironment::MAX_DEBUG_STRING_LENGTH;
-	char* const dest = gEnv->szDebugStatus;
-	int startIndex = 0;
-	for ( int i=0; i<bufferSize; i++)
-	{
-		if (dest[i] == '\0')
-		{
-			startIndex = i;
-			break;
-		}
-	}
-	int msgIndex = 0;
-	for ( int i=startIndex; i<bufferSize; i++)
-	{
-		dest[i] = msg[msgIndex];
-		if (msg[msgIndex] == '\0')
-		{
-			break;
-		}
-		msgIndex++;
-	}
-	gEnv->szDebugStatus[bufferSize-1]='\0';
+	cry_strcat(gEnv->szDebugStatus, msg);
 }
 
 void CGame::OnDedicatedConfigEntry( const char *szKey, const char *szValue )
@@ -6578,4 +6389,4 @@ void CGame::EnsureSigninState()
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-#include UNIQUE_VIRTUAL_WRAPPER(IGame)
+

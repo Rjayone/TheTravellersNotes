@@ -165,23 +165,28 @@ CAnimActionAICoverAction::CAnimActionAICoverAction( int priority, CPlayer* pPlay
 	CRY_ASSERT( actionName );
 	CRY_ASSERT( m_pPlayer );
 
-	const Crc32Gen* const pCrc32Gen = gEnv->pSystem->GetCrc32Gen();
+	{
+		CCrc32 c;
+		c.AddLowercase("To");
+		c.AddLowercase(actionName);
+		m_toActionCrc = c.Get();
+	}
 
-	static const uint32 s_toCrcXor = pCrc32Gen->GetCRC32Lowercase( "To" ) ^ 0xFFFFFFFF;
-	static const uint32 s_fromCrcXor = pCrc32Gen->GetCRC32Lowercase( "From" ) ^ 0xFFFFFFFF;
-
-	const uint32 actionNameLength = strlen( actionName );
-	m_toActionCrc = pCrc32Gen->GetCRC32Lowercase( actionName, actionNameLength, s_toCrcXor );
-	m_fromActionCrc = pCrc32Gen->GetCRC32Lowercase( actionName, actionNameLength, s_fromCrcXor );
+	{
+		CCrc32 c;
+		c.AddLowercase("From");
+		c.AddLowercase(actionName);
+		m_fromActionCrc = c.Get();
+	}
 }
 
 
 //////////////////////////////////////////////////////////////////////////
 void CAnimActionAICoverAction::OnInitialise( )
 {
-	static const uint32 s_coverActionCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "CoverAction" );
-	static const uint32 s_coverActionInCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "CoverActionIn" );
-	static const uint32 s_coverActionOutCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "CoverActionOut" );
+	static const uint32 s_coverActionCrc = CCrc32::ComputeLowercase( "CoverAction" );
+	static const uint32 s_coverActionInCrc = CCrc32::ComputeLowercase( "CoverActionIn" );
+	static const uint32 s_coverActionOutCrc = CCrc32::ComputeLowercase( "CoverActionOut" );
 
 	const bool actionInitSuccess = m_actionStates[ eAction ].Init( *m_context, s_coverActionCrc, m_action.crc, SStateInfo::eType_Normal );
 	const bool transitionInInitSuccess = m_actionStates[ eTransitionIn ].Init( *m_context, s_coverActionInCrc, m_toActionCrc, SStateInfo::eType_Transition );
@@ -200,7 +205,7 @@ void CAnimActionAICoverAction::OnInitialise( )
 //////////////////////////////////////////////////////////////////////////
 ActionScopes CAnimActionAICoverAction::FindCoverActionScopeMask( const SAnimationContext& context ) const
 {
-	static const uint32 s_coverActionCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( "CoverAction" );
+	static const uint32 s_coverActionCrc = CCrc32::ComputeLowercase( "CoverAction" );
 
 	SStateInfo stateInfo;
 	const bool initSuccess = stateInfo.Init( context, s_coverActionCrc, m_action.crc, SStateInfo::eType_Normal );
@@ -368,8 +373,7 @@ void CAnimActionAICoverAction::CancelAction()
 //////////////////////////////////////////////////////////////////////////
 bool CAnimActionAICoverAction::IsTargetActionName( const char* actionName ) const
 {
-	const Crc32Gen* const pCrc32Gen = gEnv->pSystem->GetCrc32Gen();
-	const uint32 actionNameCrc = pCrc32Gen->GetCRC32Lowercase( actionName );
+	const uint32 actionNameCrc = CCrc32::ComputeLowercase( actionName );
 
 	const bool namesCrcMatch = ( actionNameCrc == m_action.crc );
 	return namesCrcMatch;

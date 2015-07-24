@@ -182,22 +182,15 @@ public:
 // method will return a reference to a static dummy instance of this
 // structure.  It is currently undecided if NO_THREADINFO will be defined for
 // release builds!
-//
-// PS3 NOTE: Make sure the same NO_THREADINFO setting is used on SPU and PPU.
-// On SPU the 'm_Name' field is replaced by a dummy field.
+
 struct CryThreadInfo
 {
-#ifndef __SPU__
 	// The symbolic name of the thread.
 	//
 	// You may set this name directly or through the SetName() method of
 	// CrySimpleThread (or derived class).
 	string m_Name;
-#else
-        // Placeholder (for data layout compatibility).
-        char _m_Name[sizeof(string)]
-          __attribute__ ((aligned (__alignof__ (string))));
-#endif
+
 
 	// A thread identification number.
 	// The number is unique but architecture specific.  Do not assume anything
@@ -243,9 +236,7 @@ template<class Runnable = CryRunnable> class CryThread;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Include architecture specific code.
-#if defined(PS3)
-#include <CryThread_ps3.h>
-#elif defined(LINUX) || defined(ORBIS)
+#if defined(LINUX) || defined(ORBIS)
 #include <CryThread_pthreads.h>
 #elif defined(APPLE)
 #include <CryThread_pthreads.h>
@@ -253,9 +244,7 @@ template<class Runnable = CryRunnable> class CryThread;
 
 #include <CryThread_windows.h>
 
-#elif defined(XENON) || defined(DURANGO)
-// Note: After verifying one of the new CryThread implementations for
-// Win32/Win64, the XENON should switch to the same implementation.
+#elif defined(DURANGO)
 #include <CryThread_windows.h>
 #else
 // Put other platform specific includes here!
@@ -552,22 +541,11 @@ public:
 		{ m_lock.UnlockModify(); }
 };
 
-// On PS3, __FUNC__ isn't a char*, it provides some code to mimic
-// the behaivor of __FUNC__ of other plattforms, but it wasn't threadsafe
-// so we use __PRETTY_FUNCTION__ for PS3, also we don't want the runtime overhead
-// of the macro emulation
-// AUTO_READLOCK_PROT is special as it maps to a modify lock for PS3 always	
-#if defined(PS3)
-	#define AUTO_READLOCK(p) AutoLockRead<CryReadModifyLock> __readlock##__LINE__(p, __PRETTY_FUNCTION__)
-	#define AUTO_READLOCK_PROT(p) AutoLockModify<CryReadModifyLock> __readlock_prot##__LINE__(p, __PRETTY_FUNCTION__)
-	#define AUTO_MODIFYLOCK(p) AutoLockModify<CryReadModifyLock> __modifylock##__LINE__(p, __PRETTY_FUNCTION__)
-#else
-	#define AUTO_READLOCK(p) PREFAST_SUPPRESS_WARNING(6246) AutoLockRead<CryReadModifyLock> __readlock##__LINE__(p, __FUNC__)
-	#define AUTO_READLOCK_PROT(p) PREFAST_SUPPRESS_WARNING(6246) AutoLockRead<CryReadModifyLock> __readlock_prot##__LINE__(p, __FUNC__)
-	#define AUTO_MODIFYLOCK(p) PREFAST_SUPPRESS_WARNING(6246) AutoLockModify<CryReadModifyLock> __modifylock##__LINE__(p, __FUNC__)
-#endif
+#define AUTO_READLOCK(p) PREFAST_SUPPRESS_WARNING(6246) AutoLockRead<CryReadModifyLock> __readlock##__LINE__(p, __FUNC__)
+#define AUTO_READLOCK_PROT(p) PREFAST_SUPPRESS_WARNING(6246) AutoLockRead<CryReadModifyLock> __readlock_prot##__LINE__(p, __FUNC__)
+#define AUTO_MODIFYLOCK(p) PREFAST_SUPPRESS_WARNING(6246) AutoLockModify<CryReadModifyLock> __modifylock##__LINE__(p, __FUNC__)
 
-#if defined(_DEBUG) && !defined(PS3) // Disabled for PS3 as it's debug only and has high overhead.
+#if defined(_DEBUG) 
 	#define DEBUG_READLOCK(p) AutoLockRead<CryReadModifyLock> __readlock##__LINE__(p, __FUNC__)
 	#define DEBUG_MODIFYLOCK(p) AutoLockModify<CryReadModifyLock> __modifylock##__LINE__(p, __FUNC__)
 #else
@@ -638,52 +616,7 @@ namespace CryMT
 	{
 		assert(m_arrBuffer != NULL);
 		assert(m_nBufferSize != 0);
-#if defined(__SPU__)
-		uint64 startTime = rdtsc();
-		uint64 endTime = startTime - 10 * 79800; // 10ms
-		char queueBuffer[sizeof(SingleProducerSingleConsumerQueue)] _ALIGN(128);
-		SingleProducerSingleConsumerQueue *pSPUQueue = alias_cast<SingleProducerSingleConsumerQueue*>(queueBuffer);
-		do
-		{
-			__spu_mfc_load_cacheline(pSPUQueue, this);
-
-			// busy-loop if queue is full			
-			if(pSPUQueue->m_nProducerIndex - pSPUQueue->m_nComsumerIndex == pSPUQueue->m_nBufferSize)			
-				continue;
-
-			// got a element
-			break;
-
-		}while(true);
-
-		T *pTargetAddress = &pSPUQueue->m_arrBuffer[pSPUQueue->m_nProducerIndex % pSPUQueue->m_nBufferSize];
-
-		// fast path if object aligned is 16 or larger		
-		if( alignof(T) >= 16 )
-		{
-			memtransfer_to_main(pTargetAddress,&rObj,sizeof(T),0);
-			memtransfer_sync(0);
-		}
-		else
-		{
-			char objectBuffer[sizeof(T) + 128] _ALIGN(128);
-			uint32 eaTarget = alias_cast<uint32>(pTargetAddress);
-			uint32 eaTargetAligned = eaTarget & ~127;
-			uint32 eaTargetOffset = eaTarget & 127;
-			// copy to SPU local temp buffer to ensure same offset as in main memory
-			memcpy( SPU_LOCAL_PTR(&objectBuffer[eaTargetOffset]), SPU_LOCAL_PTR(&rObj), sizeof(T) );
-
-			memtransfer_to_main(pTargetAddress,&objectBuffer[eaTargetOffset],sizeof(T),0);
-			memtransfer_sync(0);
-		}
-
-		// publish updated
-		uint32 nUpdatedProducerIndex _ALIGN(16) = pSPUQueue->m_nProducerIndex + 1;
-		memtransfer_to_main(&m_nProducerIndex, &nUpdatedProducerIndex, 16, 0 );
-		memtransfer_sync(0);
-#else
 		SingleProducerSingleConsumerQueueBase::Push((void*)&rObj, m_nProducerIndex, m_nComsumerIndex, m_nBufferSize, m_arrBuffer, sizeof(T));
-#endif
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -692,52 +625,7 @@ namespace CryMT
 	{
 		assert(m_arrBuffer != NULL);
 		assert(m_nBufferSize != 0);
-#if defined(__SPU__)
-		char queueBuffer[sizeof(SingleProducerSingleConsumerQueue)] _ALIGN(128);
-		SingleProducerSingleConsumerQueue *pSPUQueue = alias_cast<SingleProducerSingleConsumerQueue*>(queueBuffer);
-
-		do
-		{
-			__spu_mfc_load_cacheline(pSPUQueue, this);
-
-			// busy-loop if queue is empty			
-			if(pSPUQueue->m_nProducerIndex - pSPUQueue->m_nComsumerIndex == 0)
-				continue;
-
-			// got a element
-			break;
-
-		}while(true);
-
-		T *pSourceAddress = &pSPUQueue->m_arrBuffer[pSPUQueue->m_nComsumerIndex % pSPUQueue->m_nBufferSize];
-
-		// fast path if object aligenment is 16 or larger
-		if( alignof(T) >= 16 )
-		{
-			memtransfer_from_main(pResult,pSourceAddress,sizeof(T),0);
-			memtransfer_sync(0);
-		}
-		else
-		{
-			char objectBuffer[sizeof(T) + 128] _ALIGN(128);
-			uint32 eaSource = alias_cast<uint32>(pSourceAddress);
-			uint32 eaSourceAligned = eaSource & ~127;
-			uint32 eaSourceOffset = eaSource & 127;
-			
-			memtransfer_from_main(&objectBuffer[eaSourceOffset],pSourceAddress,sizeof(T),0);
-			memtransfer_sync(0);
-
-			// copy from SPU local temp buffer to ensure same offset as in main memory
-			memcpy( SPU_LOCAL_PTR(pResult), SPU_LOCAL_PTR(&objectBuffer[eaSourceOffset]), sizeof(T) );
-		}
-
-		// publish updated consumer pointer
-		uint32 nUpdatedConsumerIndex _ALIGN(16) = pSPUQueue->m_nComsumerIndex + 1;
-		memtransfer_to_main(&m_nComsumerIndex, &nUpdatedConsumerIndex, 16, 0 );
-		memtransfer_sync(0);
-#else
 		SingleProducerSingleConsumerQueueBase::Pop(pResult, m_nProducerIndex, m_nComsumerIndex, m_nBufferSize, m_arrBuffer,sizeof(T));
-#endif
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -827,25 +715,11 @@ namespace CryMT
 		assert( m_arrBuffer != NULL );
 		assert( m_arrStates != NULL );
 		assert( m_nBufferSize != 0 );
-
-#if defined(__SPU__)
-		char queueBuffer[sizeof(N_ProducerSingleConsumerQueue)] _ALIGN(128);
-		N_ProducerSingleConsumerQueue *pSPUQueue = alias_cast<N_ProducerSingleConsumerQueue*>(queueBuffer);
-		do
-		{
-			__spu_mfc_load_cacheline(pSPUQueue, this);
-			pSPUQueue->m_nProducerCount += 1;
-			
-			if( __spu_mfc_store_cacheline() )			
-				break;
-		}while(1);
-#else
 #if !defined(_RELEASE)
 		if(m_nRunning == 0)
 			__debugbreak();
 #endif
 		CryInterlockedIncrement((volatile int*)&m_nProducerCount);
-#endif		
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////
@@ -855,30 +729,12 @@ namespace CryMT
 		assert( m_arrBuffer != NULL );
 		assert( m_arrStates != NULL );
 		assert( m_nBufferSize != 0 );
-
-#if defined(__SPU__)
-		char queueBuffer[sizeof(N_ProducerSingleConsumerQueue)] _ALIGN(128);
-		N_ProducerSingleConsumerQueue *pSPUQueue = alias_cast<N_ProducerSingleConsumerQueue*>(queueBuffer);
-
-		do
-		{
-			__spu_mfc_load_cacheline(pSPUQueue, this);
-			pSPUQueue->m_nProducerCount -= 1;
-			
-			if(pSPUQueue->m_nProducerCount == 0)
-				pSPUQueue->m_nRunning = 0;
-				
-			if( __spu_mfc_store_cacheline() )			
-				break;
-		}while(1);
-#else	
 #if !defined(_RELEASE)
 		if(m_nRunning == 0)
 			__debugbreak();
 #endif
 		if( CryInterlockedDecrement((volatile int*)&m_nProducerCount) == 0 )
-			m_nRunning = 0;
-#endif			
+			m_nRunning = 0;	
 	}	
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -888,76 +744,7 @@ namespace CryMT
 		assert( m_arrBuffer != NULL );
 		assert( m_arrStates != NULL );
 		assert( m_nBufferSize != 0 );
-#if !defined(_RELEASE)
-		if(m_nRunning == 0)
-			__debugbreak();
-#endif
-#if defined(__SPU__)		
-		char queueBuffer[sizeof(N_ProducerSingleConsumerQueue)] _ALIGN(128);
-		N_ProducerSingleConsumerQueue *pSPUQueue = alias_cast<N_ProducerSingleConsumerQueue*>(queueBuffer);
-
-		uint64 startTime = rdtsc();
-		uint64 endTime = startTime - 10 * 79800; // 10ms
-		uint32 nProducerIndex = 0;
-		do
-		{			
-			__spu_mfc_load_cacheline(pSPUQueue, this);
-
-			// busy-loop if queue is full			
-			if(pSPUQueue->m_nProducerIndex - pSPUQueue->m_nComsumerIndex == pSPUQueue->m_nBufferSize)
-			{
-				if( rdtsc() < endTime )
-				{
-					uint32 nSizeToAlloc = sizeof(SFallbackList) + sizeof(T) - 1;
-					SFallbackList *pFallbackEntry = (SFallbackList *)CryModuleMemalign(nSizeToAlloc,128);
-					memcpy(pFallbackEntry->object, &rObj, sizeof(T));
-					__spu_flush_cache_range( ((char*)pFallbackEntry) + 128, sizeof(T));
-					CryInterlockedPushEntrySList( fallbackList,  pFallbackEntry->nextEntry );
-					return;
-				}
-				continue;
-			}
-
-			nProducerIndex = pSPUQueue->m_nProducerIndex;
-			pSPUQueue->m_nProducerIndex += 1;
-			
-			if( __spu_mfc_store_cacheline() )			
-				break;
-
-		}while(true);
-
-		T *pTargetAddress = &pSPUQueue->m_arrBuffer[nProducerIndex % pSPUQueue->m_nBufferSize];
-
-		// fast path if object aligned is 16 or larger		
-		if( alignof(T) >= 16 )
-		{
-			memtransfer_to_main(pTargetAddress,&rObj,sizeof(T),0);
-			memtransfer_sync(0);
-		}
-		else
-		{
-			char objectBuffer[sizeof(T) + 128] _ALIGN(128);
-			uint32 eaTarget = alias_cast<uint32>(pTargetAddress);
-			uint32 eaTargetAligned = eaTarget & ~127;
-			uint32 eaTargetOffset = eaTarget & 127;
-			// copy to SPU local temp buffer to ensure same offset as in main memory
-			memcpy( SPU_LOCAL_PTR(&objectBuffer[eaTargetOffset]), SPU_LOCAL_PTR(&rObj), sizeof(T) );
-			memtransfer_to_main(pTargetAddress,&objectBuffer[eaTargetOffset],sizeof(T),0);
-			memtransfer_sync(0);
-		}
-
-		// publish state change 
-		char buffer[128] _ALIGN(128);
-		uint32 eaState = (uint32)&pSPUQueue->m_arrStates[nProducerIndex % pSPUQueue->m_nBufferSize];
-		uint32 eaStateAligned = eaState & ~127;
-		uint32 eaStateOffset = eaState & 127;
-		uint32 *pState = (uint32*)&buffer[eaStateOffset];
-		*pState = 1;
-		memtransfer_to_main( SPU_MAIN_PTR((void*)eaState), &buffer[eaStateOffset], 4, 0 );
-		memtransfer_sync(0);
-#else
 		CryMT::detail::N_ProducerSingleConsumerQueueBase::Push((void*)&rObj, m_nProducerIndex, m_nComsumerIndex, m_nRunning, m_arrBuffer, m_nBufferSize, sizeof(T), m_arrStates);
-#endif
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -967,20 +754,12 @@ namespace CryMT
 		assert( m_arrBuffer != NULL );
 		assert( m_arrStates != NULL );
 		assert( m_nBufferSize != 0 );
-#if defined(__SPU__)
-		snPause(); //no supported yet
-		return false;
-#else
 		return CryMT::detail::N_ProducerSingleConsumerQueueBase::Pop(pResult, m_nProducerIndex, m_nComsumerIndex, m_nRunning, m_arrBuffer, m_nBufferSize, sizeof(T), m_arrStates);
-#endif
 	}
 
 } //namespace CryMT
 
 // Include all multithreading containers.
 #include "MultiThread_Containers.h"
-#ifdef XENON
-#	include <Xenon_MT.h>
-#endif
 
 #endif

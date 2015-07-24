@@ -173,4 +173,4 @@ int CGameStatsConfig::GetCodeByKeyName(const char* cat ,const char* key)const
 	return -1;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IGameStatsConfig)
+

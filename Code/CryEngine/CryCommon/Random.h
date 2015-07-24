@@ -1,73 +1,55 @@
-#ifndef _CRY_RANDOM__H__
-#define _CRY_RANDOM__H__
+// Copyright 2001-2015 Crytek GmbH. All rights reserved.
 
+#pragma once
+
+#include "BaseTypes.h"
 #include "LCGRandom.h"
 #include "MTPseudoRandom.h"
 
-#ifndef USE_SIMPLE_RANDOM
-#define USE_SIMPLE_RANDOM 1
-#endif
-
-#if USE_SIMPLE_RANDOM
-typedef CLCGRndGen CRndGen;
-#else
-typedef CMTRand_int32 CRndGen;
-#endif
-
-// wrapper structure to provide an SPU local random number generater
-// only needs to be set an seed, will then init the rng it is used for the first time
-// to prevent seeding an rng which isn't used
-struct SpuRandomNumberGeneratorWrapper
+namespace CryRandom_Internal
 {
-	// use char buffer to prevent using of an constructor in global spu data
-	char rng[sizeof(CRndGen)] _ALIGN(128);
-	
-	uint32 Generate()
-	{
-		IF( !bIsInit, false )
-			Init();
-
-		return GetRng()->GenerateUint32();
-	}
-	float GenerateFloat()
-	{
-		IF( !bIsInit, false )
-			Init();
-
-		return GetRng()->GenerateFloat();
-	}
-	SPU_NO_INLINE void Init()
-	{			
-		GetRng()->Seed(seed);
-		bIsInit = true;
-	}
-	
-	void SetSeed( uint32 s )
-	{
-		seed = s;
-		bIsInit = false;
-	}
-private:
-	CRndGen* GetRng()
-	{
-		return (CRndGen*)rng;
-	}
-
-	bool bIsInit;
-	uint32 seed;
-};
+// Private access point to the global random number generator.
+extern CRndGen g_random_generator;
+}
 
 
-#if defined(__SPU__)
-	SPU_LOCAL SpuRandomNumberGeneratorWrapper gSpuRandomNumberGen;
-	void SetSpuRNGSeed( uint32 seed )
-	{
-		gSpuRandomNumberGen.SetSeed( seed );
-	}
-#else
-	// dummy for non spu compilation
-	#define SetSpuRNGSeed( seed )
-#endif
+// Seed the global random number generator.
+inline void cry_random_seed(const uint32 nSeed)
+{ 
+	CryRandom_Internal::g_random_generator.Seed(nSeed);
+}
 
+inline uint32 cry_random_uint32()
+{
+	return CryRandom_Internal::g_random_generator.GenerateUint32();
+}
 
-#endif
+// Ranged function returns random value within the *inclusive* range
+// between minValue and maxValue.
+// Any orderings work correctly: minValue <= maxValue and 
+// minValue >= minValue.
+template <class T>
+inline T cry_random(const T minValue, const T maxValue)
+{
+	return CryRandom_Internal::g_random_generator.GetRandom(minValue, maxValue);
+}
+
+// Vector (Vec2, Vec3, Vec4) ranged function returns vector with
+// every component within the *inclusive* ranges between minValue.component
+// and maxValue.component.
+// All orderings work correctly: minValue.component <= maxValue.component and
+// minValue.component >= maxValue.component.
+template <class T>
+inline T cry_random_componentwise(const T& minValue, const T& maxValue)
+{
+	return CryRandom_Internal::g_random_generator.GetRandomComponentwise(minValue, maxValue);
+}
+
+// The function returns a random unit vector (Vec2, Vec3, Vec4).
+template <class T>
+inline T cry_random_unit_vector()
+{
+	return CryRandom_Internal::g_random_generator.GetRandomUnitVector<T>();
+}
+
+// eof

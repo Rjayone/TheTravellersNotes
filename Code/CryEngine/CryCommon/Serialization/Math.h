@@ -72,7 +72,7 @@ template<class T>
 struct SRadiansAsDeg 
 {
 	T* radians;
-	SRadiansAsDeg(T* radians) : radians(*radians) {}
+	SRadiansAsDeg(T* radians) : radians(radians) {}
 };
 
 template<class T>
@@ -87,23 +87,56 @@ template<class T>
 bool Serialize(Serialization::IArchive& ar, Serialization::SRadianAng3AsDeg<T>& value, const char* name, const char* label);
 
 // ---------------------------------------------------------------------------
-// AsAng3 provides a wrapper that allows editing of quaternions as Ang3 (in degrees).
+// QuatAsAng3 provides a wrapper that allows editing of quaternions as Ang3 (in degrees).
 //
 // Example:
 //   ...
 //   Quat q;
-//   ar(AsAng3(q), "orientation", "Orientation");
+//   ar(QuatAsAng3(q), "orientation", "Orientation");
 //
 
 template<class T>
-struct AsAng3
+struct QuatAsAng3
 {
 	Quat_tpl<T>* quat;
-	AsAng3(Quat_tpl<T>& quat) : quat(&quat) {}
+	QuatAsAng3(Quat_tpl<T>& quat) : quat(&quat) {}
 };
 
 template<class T>
-bool Serialize(Serialization::IArchive& ar, Serialization::AsAng3<T>& value, const char* name, const char* label);
+bool Serialize(Serialization::IArchive& ar, Serialization::QuatAsAng3<T>& value, const char* name, const char* label);
+
+// ---------------------------------------------------------------------------
+// QuatTAsVec3Ang3 provides a wrapper that allows editing of transforms as Vec3 and Ang3 (in degrees).
+//
+// Example:
+//   ...
+//   QuatT trans;
+//   ar(QuatTAsVec3Ang3(trans), "transform", "Transform");
+//
+
+template<class T>
+struct QuatTAsVec3Ang3
+{
+	QuatT_tpl<T>* trans;
+	QuatTAsVec3Ang3(QuatT_tpl<T>& trans) : trans(&trans) {}
+};
+
+template<class T>
+bool Serialize(Serialization::IArchive& ar, Serialization::QuatTAsVec3Ang3<T>& value, const char* name, const char* label);
+
+// ---------------------------------------------------------------------------
+// Helper functions for Ang3 
+//
+// Example: 
+//   ...
+//   Quat q; 
+//   QuatT trans;
+//   ar(AsAng3(q),"orientation","Orientation");
+//   ar(AsAnge(trans),"transform", "Transform");
+//
+
+template<class T> inline QuatAsAng3<T> AsAng3(Quat_tpl<T>& q){ return QuatAsAng3<T>(q); }
+template<class T> inline QuatTAsVec3Ang3<T> AsAng3(QuatT_tpl<T>& trans){ return QuatTAsVec3Ang3<T>(trans); } 
 
 }
 

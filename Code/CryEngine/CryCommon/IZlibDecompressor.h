@@ -22,7 +22,7 @@ enum EZInflateState
 	eZInfState_Error						// error has occurred and the stream has been closed and will no longer compress
 };
 
-UNIQUE_IFACE struct IZLibInflateStream
+struct IZLibInflateStream
 {
 protected:
 	virtual ~IZLibInflateStream() {}; // use Release()
@@ -71,7 +71,7 @@ public:
 	virtual void Release() = 0;
 };
 
-UNIQUE_IFACE struct IZLibDecompressor
+struct IZLibDecompressor
 {
 	protected:
 		virtual ~IZLibDecompressor()	{}; // use Release()

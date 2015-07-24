@@ -253,7 +253,7 @@ ITelemetryProducer::EResult CMMTelemetryProducer::ProduceTelemetry( char *pOutBu
 		entryString.Format( "<MatchMakingTelemetryXML>\n" );
 		if( (writtingIndex + entryString.length()) < bufferSize )
 		{
-			strncpy( pOutBuffer + writtingIndex, entryString.c_str(), entryString.length() );
+			memcpy( pOutBuffer + writtingIndex, entryString.c_str(), entryString.length() );
 			writtingIndex += entryString.length();
 		}
 	}
@@ -338,7 +338,7 @@ ITelemetryProducer::EResult CMMTelemetryProducer::ProduceTelemetry( char *pOutBu
 		//check we have space then add the data to the buffer
 		if( (writtingIndex + entryString.length()) < bufferSize )
 		{
-			strncpy( pOutBuffer + writtingIndex, entryString.c_str(), entryString.length() );
+			memcpy( pOutBuffer + writtingIndex, entryString.c_str(), entryString.length() );
 			writtingIndex += entryString.length();
 
 			//successfully written element, move onto next
@@ -359,7 +359,7 @@ ITelemetryProducer::EResult CMMTelemetryProducer::ProduceTelemetry( char *pOutBu
 		//check we're not going to run out of space
 		if( (writtingIndex + entryString.length()) < bufferSize )
 		{
-			strncpy( pOutBuffer + writtingIndex, entryString.c_str(), entryString.length() );
+			memcpy( pOutBuffer + writtingIndex, entryString.c_str(), entryString.length() );
 			writtingIndex += entryString.length();
 			retVal = eTS_EndOfStream;
 		}

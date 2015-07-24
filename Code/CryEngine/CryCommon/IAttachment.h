@@ -1,9 +1,9 @@
-#include DEVIRTUALIZE_HEADER_FIX(IAttachment.h)
 #ifndef IAttachment_h
 #define IAttachment_h
 
 #include <ICryAnimation.h>
 #include <IParticles.h>
+#include <CryName.h>
 
 struct IStatObj;
 struct IMaterial;
@@ -23,6 +23,7 @@ enum AttachmentTypes
 	CA_FACE,
 	CA_SKIN,
 	CA_PROX,
+	CA_PROW,
 	CA_VCLOTH,
 	CA_Invalid,
 };
@@ -50,6 +51,7 @@ enum AttachmentFlags
 	FLAGS_ATTACH_NO_BBOX_INFLUENCE  = 1<<21,
 	FLAGS_ATTACH_COMBINEATTACHMENT 	= 1<<24,
 };
+
 
 struct SVClothParams
 {
@@ -116,6 +118,8 @@ struct SVClothParams
 
 struct SimulationParams
 {
+	enum { MaxCollisionProxies = 10 };
+
 	enum ClampType
 	{
 		DISABLED  = 0x00,
@@ -123,47 +127,51 @@ struct SimulationParams
 		PENDULUM_CONE        = 0x01, //for pendula
 		PENDULUM_HINGE_PLANE = 0x02, //for pendula
 		PENDULUM_HALF_CONE   = 0x03, //for pendula
-		SPRING_ELLIPSOID     = 0x04  //for springs
+		SPRING_ELLIPSOID     = 0x04, //for springs
+		TRANSLATIONAL_PROJECTION = 0x05  //used to project joints out of proxies
 	};
 
 	ClampType m_nClampType;
-	bool m_useDebug;
-	bool m_useSimulation;
-	bool m_useRedirect;
-	uint8 m_nSimFPS;
+	bool     m_useDebugSetup;
+	bool     m_useDebugText;
+	bool     m_useSimulation;
+	bool     m_useRedirect;
+	uint8    m_nSimFPS;
 
-	f32   m_fMaxDeg;
-	f32   m_fHRotation;
-	f32   m_fScaleZP;
-	f32   m_fScaleZN;   
+	f32      m_fMaxAngle;
+	f32      m_fRadius;
+	Vec2     m_vSphereScale;
+	Vec2     m_vDiskRotation;
 
-	f32   m_fMass;
-	f32   m_fGravity;
-	f32   m_fDamping; 
-	f32   m_fStiffness;   
+	f32      m_fMass;
+	f32      m_fGravity;
+	f32      m_fDamping; 
+	f32      m_fStiffness;   
 
-	Vec3  m_vPivotOffset;
-	Vec3  m_vSimulationAxis;
-	Vec3  m_vStiffnessTarget;
-	Vec2  m_vCapsule;
-	uint32 m_crcProcFunction;
-	uint8 m_nProjectionType;
-	DynArray<uint32> m_arrProxyCRC32; //test jiggle joint against these colliders
-	DynArray<string> m_arrProxyName;  //name
+	Vec3     m_vPivotOffset;
+	Vec3     m_vSimulationAxis;
+	Vec3     m_vStiffnessTarget;
+	Vec2     m_vCapsule;
+	CCryName m_strProcFunction;
+
+	int32    m_nProjectionType;
+	CCryName m_strDirTransJoint;
+	DynArray<CCryName> m_arrProxyNames;  //test capsules/sphere joint against these colliders
 
 	SimulationParams()
 	{
 		m_nClampType      = DISABLED;
-		m_useDebug        = 0;
+		m_useDebugSetup   = 0;
+		m_useDebugText    = 0;
 		m_useSimulation   = 1;
 		m_useRedirect     = 0;
+		m_nSimFPS         = 10;       //don't put to 0
 
-		m_fMaxDeg         = 45.0f;
-		m_fHRotation      = 0.0f;
-		m_fScaleZP        = 1.0f;
-		m_fScaleZN        = 1.0f;
-		m_nSimFPS         = 10;  
-		m_nProjectionType = 0;
+		m_fMaxAngle       = 45.0f;
+		m_vDiskRotation.set(0,0);
+
+		m_fRadius         = 0.5f;
+		m_vSphereScale.set(1.0f,1.0f);
 
 		m_fMass           = 1.0f;
 		m_fGravity        = 9.81f;
@@ -171,19 +179,91 @@ struct SimulationParams
 		m_fStiffness      = 0.0f;   
 
 		m_vPivotOffset.zero();
-		m_vSimulationAxis=Vec3(0.0f,0.5f,0.0f);
+		m_vSimulationAxis =Vec3(0.0f,0.5f,0.0f);
 		m_vStiffnessTarget.zero();
 		m_vCapsule.set(0,0);
-		m_crcProcFunction=0;
+		m_nProjectionType = 0;
 	};
 };
 
-UNIQUE_IFACE struct IAttachmentManager
-{
 
+struct RowSimulationParams
+{
+	enum ClampMode
+	{
+		PENDULUM_CONE        = 0x00, //for pendula
+		PENDULUM_HINGE_PLANE = 0x01, //for pendula
+		PENDULUM_HALF_CONE   = 0x02, //for pendula
+		TRANSLATIONAL_PROJECTION = 0x03  //used to project joints out of proxies
+	};
+
+	ClampMode m_nClampMode;
+	bool     m_useDebugSetup;
+	bool     m_useDebugText;
+	bool     m_useSimulation;
+	uint8    m_nSimFPS;
+
+	f32      m_fConeAngle;
+	Vec3     m_vConeRotation;
+
+	f32      m_fMass;
+	f32      m_fGravity;
+	f32      m_fDamping; 
+	f32      m_fJointSpring;   
+	f32      m_fRodLength;   
+	Vec2     m_vStiffnessTarget;
+	Vec2     m_vTurbulence;
+	f32      m_fMaxVelocity;
+
+	bool     m_cycle;
+	f32      m_fStretch;   
+	uint32   m_relaxationLoops;
+
+
+	Vec3     m_vTranslationAxis;
+	CCryName m_strDirTransJoint;
+
+	Vec2     m_vCapsule;
+	int32    m_nProjectionType;
+	DynArray<CCryName> m_arrProxyNames;  //test capsules/sphere joint against these colliders
+
+	RowSimulationParams()
+	{
+		m_nClampMode      = PENDULUM_CONE;
+		m_useDebugSetup   = 0;
+		m_useDebugText    = 0;
+		m_useSimulation   = 1;
+		m_nSimFPS         = 10;  
+
+		m_fConeAngle      = 45.0f;
+		m_vConeRotation   = Vec3(0,0,0);
+
+		m_fMass           = 1.0f;
+		m_fGravity        = 9.81f;
+		m_fDamping        = 1.0f; 
+		m_fJointSpring    = 0.0f;   
+		m_fRodLength      = 0.0f;
+		m_vStiffnessTarget= Vec2(0.0f,0.0f);
+		m_vTurbulence     = Vec2(0.5f,0.0f);
+		m_fMaxVelocity    = 8.0f;
+
+		m_cycle           = 0;
+		m_relaxationLoops = 0;
+		m_fStretch        = 0.10f;
+
+
+		m_vCapsule.set(0,0);
+		m_nProjectionType = 0;
+		m_vTranslationAxis= Vec3(0.0f,1.0f,0.0f);
+	};
+};
+
+
+struct IAttachmentManager
+{
+	// <interfuscator:shuffle>
 	virtual ~IAttachmentManager(){}
 	virtual uint32 LoadAttachmentList(const char* pathname ) = 0;
-	virtual uint32 SaveAttachmentList(const char* pathname ) = 0;
 
 	virtual IAttachment* CreateAttachment( const char* szName, uint32 type, const char* szJointName=0,bool bCallProject=true) =0;
 	virtual int32 RemoveAttachmentByInterface( const IAttachment* ptr  ) =0;
@@ -218,11 +298,12 @@ UNIQUE_IFACE struct IAttachmentManager
 	virtual uint32 GetProcFunctionCount() const =0;
 	virtual const char* GetProcFunctionName(uint32 idx) const =0;
 
+	// </interfuscator:shuffle>
 };
 
 struct IAttachment
 {
-
+	// <interfuscator:shuffle>
 	virtual void AddRef()=0;
 	virtual void Release()=0;
 	virtual const char* GetName() const=0;   
@@ -251,8 +332,6 @@ struct IAttachment
 
 	virtual void UpdateAttModelRelative() = 0;
 
-	virtual uint32 ProjectAttachment()=0;
-
 	virtual void HideAttachment( uint32 x )=0;
 	virtual uint32 IsAttachmentHidden()=0;
 	virtual void HideInRecursion( uint32 x )=0;
@@ -270,19 +349,22 @@ struct IAttachment
 	virtual void ClearBinding(uint32 nLoadingFlags=0) =0; 
  	virtual uint32 SwapBinding(IAttachment* pNewAttachment) = 0; 
 
-	virtual SimulationParams GetSimulationParams() const = 0; 
-	virtual void SetSimulationParams(const SimulationParams& ap) = 0;	
+	virtual SimulationParams& GetSimulationParams() {	static SimulationParams ap;	return ap;	};
+	virtual void PostUpdateSimulationParams(bool bAttachmentSortingRequired, const char* pJointName=0) {};	
+
+	virtual RowSimulationParams& GetRowParams() {	static RowSimulationParams ap;	return ap;	};
+
 	virtual size_t SizeOfThis()=0;
 	virtual void Serialize(TSerialize ser)=0;
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const =0;
 	virtual ~IAttachment(){}
-
+	// </interfuscator:shuffle>
 };
 
 //Interface to a skin-attachment
-UNIQUE_IFACE struct IAttachmentSkin
+struct IAttachmentSkin
 {
-
+	// <interfuscator:shuffle>
 	virtual void AddRef()=0;
 	virtual void Release()=0;
 	virtual ISkin* GetISkin()=0;
@@ -292,7 +374,7 @@ UNIQUE_IFACE struct IAttachmentSkin
 	virtual void GetMemoryUsage(class ICrySizer* pSizer) const=0;
 	virtual void ComputeGeometricMean(SMeshLodInfo& lodInfo) const = 0;
 	virtual ~IAttachmentSkin(){}
-
+	// </interfuscator:shuffle>
 
 #ifdef EDITOR_PCDEBUGCODE
 	virtual void TriggerMeshStreaming(uint32 nDesiredRenderLOD, const SRenderingPassInfo &passInfo)=0;
@@ -318,6 +400,7 @@ struct IAttachmentObject
 		eAttachment_Effect,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IAttachmentObject(){}
 	virtual EType GetAttachmentType() = 0;
 
@@ -357,7 +440,7 @@ struct IAttachmentObject
 
   virtual void OnRemoveAttachment(IAttachmentManager* pManager, int idx){}
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -506,14 +589,10 @@ public:
 
 	void ProcessAttachment(IAttachment *pIAttachment )
 	{
-		const QuatT quatT = QuatT(pIAttachment->GetAttWorldAbsolute());
+		const QuatTS quatTS = QuatTS(pIAttachment->GetAttWorldAbsolute());
 		IEntity *pEntity = gEnv->pEntitySystem->GetEntity(m_id);
 		if (pEntity)
-		{
-			//	float white[] = {1.0f, 1.0f, 1.0f, 1.0f};
-			//	gEnv->pRenderer->Draw2dLabel(500.0f, 560.0f, 1.6f, white, false, "UpdateAttach transform: %.12f, %.12f, %.12f\n  rot: %.9f, %.9f, %.9f, %.9f", quatT.t.x, quatT.t.y, quatT.t.z, quatT.q.v.x, quatT.q.v.y, quatT.q.v.z, quatT.q.w);
-			pEntity->SetPosRotScale( quatT.t, quatT.q, m_scale, ENTITY_XFORM_NO_PROPOGATE);
-		}
+			pEntity->SetPosRotScale( quatTS.t, quatTS.q, m_scale * quatTS.s, ENTITY_XFORM_NO_PROPOGATE);
 	}
 
 	AABB GetAABB()
@@ -728,7 +807,9 @@ struct IProxy
 	virtual uint32 SetJointName(const char* szJointName=0)=0;
 	virtual uint32 GetJointID() const =0; 
 
-	virtual const QuatT& GetProxyAbsoluteDefault() const =0; 
+	virtual const QuatT& GetProxyAbsoluteDefault() const =0;
+	virtual const QuatT& GetProxyRelativeDefault() const =0; 
+	virtual const QuatT& GetProxyModelRelative() const =0; 
 	virtual void SetProxyAbsoluteDefault(const QuatT& rot)=0; 
 
 	virtual uint32 ProjectProxy()=0;

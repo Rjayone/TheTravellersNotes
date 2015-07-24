@@ -3,6 +3,7 @@
 // Based on: Yasli - the serialization library.
 #pragma once
 
+#include "Serializer.h"
 #include "IClassFactory.h"
 #include "ClassFactory.h"
 
@@ -27,12 +28,14 @@ inline void IPointer::Serialize(IArchive& ar) const
 	const char* const dataPropertyName = noEmptyNames ? "data" : "";
 
 	TypeID baseTypeID = baseType();
-	TypeID oldTypeID = type();
+	const char* oldRegisteredName = registeredTypeName();
+	if (!oldRegisteredName)
+		oldRegisteredName = "";
 	IClassFactory* factory = this->factory();
 
 	if(ar.IsOutput()){
-		if(oldTypeID){
-			TypeIDWithFactory pair(oldTypeID, factory);
+		if(oldRegisteredName[0] != '\0'){
+			TypeNameWithFactory pair(oldRegisteredName, factory);
 			if(ar(pair, typePropertyName)){
 				ar(serializer(), dataPropertyName);
 			}
@@ -41,20 +44,20 @@ inline void IPointer::Serialize(IArchive& ar) const
 		}
 	}
 	else{
-		TypeIDWithFactory pair(TypeID(), factory);
+		TypeNameWithFactory pair("", factory);
 		if(!ar(pair, typePropertyName)){
-			if(oldTypeID){
-				create(TypeID()); // 0
+			if(oldRegisteredName[0] != '\0'){
+				create(""); // 0
 			}
 			return;
 		}
 
-		if(oldTypeID && (!pair.type || (pair.type != oldTypeID)))
-			create(TypeID()); // 0
+		if(oldRegisteredName[0] != '\0' && (pair.registeredName.empty() || (pair.registeredName != oldRegisteredName)))
+			create(""); // 0
 
-		if(pair.type){
+		if(!pair.registeredName.empty()){
 			if(!get())
-				create(pair.type);
+				create(pair.registeredName.c_str());
 			ar(serializer(), dataPropertyName);
 		}
 	}	

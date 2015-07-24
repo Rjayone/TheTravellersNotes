@@ -7,14 +7,8 @@
 //  Created:     26/4/2002 by Timur.
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IMovieSystem.h)
 
-#ifndef __imoviesystem_h__
-#define __imoviesystem_h__
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #include <Range.h>
 #include <AnimKey.h>
@@ -37,7 +31,7 @@ typedef IMovieSystem* (*PFNCREATEMOVIESYSTEM)(struct ISystem*);
 //! Very high priority for cut scene sounds.
 #define MOVIE_SOUND_PRIORITY 230
 
-#if !defined(XENON) && !defined(PS3) && !defined(DURANGO) && !defined(ORBIS)
+#if !defined(CONSOLE)
 #define MOVIESYSTEM_SUPPORT_EDITING
 #endif
 
@@ -386,9 +380,9 @@ struct SCameraParams
 };
 
 //! Interface for movie-system implemented by user for advanced function-support
-UNIQUE_IFACE struct IMovieUser
+struct IMovieUser
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMovieUser(){}
 	//! Called when movie system requests a camera-change.
 	virtual void SetActiveCamera( const SCameraParams &Params ) = 0;
@@ -400,7 +394,7 @@ UNIQUE_IFACE struct IMovieUser
 	virtual void SendGlobalEvent( const char *pszEvent ) = 0;
 	//! Called to play subtitles for specified sound.
 	//virtual void PlaySubtitles( IAnimSequence* pSeq, ISound *pSound ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //! Callback-class
@@ -413,12 +407,13 @@ struct IMovieCallback
 		CBR_CHANGETRACK // Track of the node is changing.
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IMovieCallback(){}
 	// Called by movie system.
 	virtual void OnMovieCallback( ECallbackReason reason,IAnimNode *pNode ) = 0;
 	virtual void OnSetCamera( const SCameraParams &Params ) = 0;
 	virtual bool IsSequenceCamUsed() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 /**	Interface of Animation Track.
@@ -439,7 +434,8 @@ struct IAnimTrack : public _i_reference_target_t
 		eAnimTrackFlags_Hidden   = BIT(5), //!< Set when track is hidden in track view.
 		eAnimTrackFlags_Muted    = BIT(8), //!< Mute this sound track. This only affects the playback in editor.
 	};
-
+	
+	// <interfuscator:shuffle>
 	//////////////////////////////////////////////////////////////////////////
 	virtual EAnimCurveType GetCurveType() = 0;
 	virtual EAnimValue     GetValueType() = 0;
@@ -594,6 +590,7 @@ struct IAnimTrack : public _i_reference_target_t
 	// collect memory informations
 	virtual void GetMemoryUsage(ICrySizer *pSizer ) const =0;
 
+	// </interfuscator:shuffle>
 protected:
 	virtual ~IAnimTrack() {};
 };
@@ -603,12 +600,12 @@ protected:
 */
 struct IAnimNodeOwner
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAnimNodeOwner(){}
 	virtual void OnNodeAnimated( IAnimNode *pNode ) = 0;
 	virtual void OnNodeVisibilityChanged( IAnimNode *pNode, const bool bHidden ) = 0;
 	virtual void OnNodeReset( IAnimNode *pNode ) {}
-
+	// </interfuscator:shuffle>
 };
 
 /**	Base class for all Animation nodes,
@@ -628,6 +625,7 @@ public:
 
 public:
 
+	// <interfuscator:shuffle>
 	//! Set node name.
 	virtual void SetName( const char *name ) = 0;
 	
@@ -805,7 +803,7 @@ public:
 
 	// Called from editor if dynamic params need updating
 	virtual void UpdateDynamicParams() = 0;
-
+	// </interfuscator:shuffle>
 
 	// Used by AnimCameraNode
 	virtual bool GetShakeRotation(const float &time, Quat &rot){return false;}
@@ -830,6 +828,7 @@ struct ITrackEventListener
 		eTrackEventReason_MovedDown,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ITrackEventListener(){}
 	// Description:
 	//		Called when track event is updated
@@ -840,25 +839,25 @@ struct ITrackEventListener
 	//		pUserData - Data to accompany reason
 	virtual void OnTrackEvent(IAnimSequence *pSequence, int reason, const char* event, void* pUserData) = 0;
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const{};
-
+	// </interfuscator:shuffle>
 };
 
 struct IAnimSequenceOwner
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAnimSequenceOwner() {}
 	virtual void OnModified() = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IAnimStringTable : public _i_reference_target_t
+struct IAnimStringTable : public _i_reference_target_t
 {
 	virtual const char* Add(const char* p) = 0;
 };
 
 /**	Animation sequence, operates on animation nodes contained in it.
  */
-UNIQUE_IFACE struct IAnimSequence : public _i_reference_target_t
+struct IAnimSequence : public _i_reference_target_t
 {
 	static const int kSequenceVersion = 3;
 
@@ -1038,13 +1037,13 @@ UNIQUE_IFACE struct IAnimSequence : public _i_reference_target_t
 
 	// collect memory informations
 	virtual void GetMemoryUsage(ICrySizer *pSizer ) const =0;
-
+	// </interfuscator:shuffle>
 };
 
 /**	Movie Listener interface.
     Register at movie system to get notified about movie events
 */
-UNIQUE_IFACE struct IMovieListener
+struct IMovieListener
 {
 	enum EMovieEvent
 	{
@@ -1054,10 +1053,11 @@ UNIQUE_IFACE struct IMovieListener
 		eMovieEvent_Updated,			 // fired after sequence time or playback speed was updated
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IMovieListener(){}
 	//! callback on movie events
 	virtual void OnMovieEvent(EMovieEvent movieEvent, IAnimSequence* pAnimSequence) = 0;
-
+	// </interfuscator:shuffle>
 
 	void GetMemoryUsage(ICrySizer *pSizer ) const{}
 };
@@ -1066,7 +1066,7 @@ UNIQUE_IFACE struct IMovieListener
 		Main entrance point to engine movie capability.
 		Enumerate available movies, update all movies, create animation nodes and tracks.
  */
-UNIQUE_IFACE struct IMovieSystem
+struct IMovieSystem
 {
 	enum ESequenceStopBehavior
 	{
@@ -1075,6 +1075,7 @@ UNIQUE_IFACE struct IMovieSystem
 		eSSB_GotoStartTime = 2,	// Default behavior in editor, sequence is animated at start time before stop.
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IMovieSystem(){}
 
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const=0;
@@ -1303,6 +1304,7 @@ UNIQUE_IFACE struct IMovieSystem
 	virtual CAnimParamType GetParamTypeFromString(const char *pString) const = 0;
 #endif
 
+	// </interfuscator:shuffle>
 };
 
 inline void SAnimContext::Serialize(XmlNodeRef& xmlNode, bool bLoading)
@@ -1341,5 +1343,3 @@ void CAnimParamType::Serialize( XmlNodeRef &xmlNode, bool bLoading, const uint v
 {
 	gEnv->pMovieSystem->SerializeParamType(*this, xmlNode, bLoading, version);
 }
-
-#endif // __imoviesystem_h__

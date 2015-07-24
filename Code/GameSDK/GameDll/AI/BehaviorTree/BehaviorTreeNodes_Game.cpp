@@ -80,7 +80,7 @@ namespace BehaviorTree
 				return LoadFailure;
 			}
 
-			m_formationNameCRC32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(formationName);
+			m_formationNameCRC32 = CCrc32::ComputeLowercase(formationName);
 
 			return LoadChildFromXml(xml, context);
 		}
@@ -251,8 +251,7 @@ namespace BehaviorTree
 		{
 			assert(GetStatus() == Installed);
 
-			Crc32Gen* pCRC32 = gEnv->pSystem->GetCrc32Gen();
-			const static uint32 meleeHitLowercaseCRC32 = pCRC32->GetCRC32Lowercase("MeleeHit");
+			const static uint32 meleeHitLowercaseCRC32 = CCrc32::ComputeLowercase("MeleeHit");
 
 			if (event.m_EventNameLowercaseCRC32 == meleeHitLowercaseCRC32)
 			{
@@ -442,7 +441,7 @@ namespace BehaviorTree
 				Vec3 impulse = impulseDir * impulseScale;
 				bool hasBeenKnockedDown = false;
 
-				if (knockdownChance > .0f && (Random(1.0f) < knockdownChance))
+				if (knockdownChance > .0f && (cry_random(0.0f, 1.0f) < knockdownChance))
 				{
 					if (IEntity* pCollidedEntity = gEnv->pEntitySystem->GetEntityFromPhysics(pCollider))
 					{
@@ -582,7 +581,7 @@ namespace BehaviorTree
 			}
 
 			// Overriding IMeleeActionListener::OnMeleeHitAnimationEventReceived
-			virtual void OnMeleeHitAnimationEventReceived() OVERRIDE
+			virtual void OnMeleeHitAnimationEventReceived() override
 			{
 				StartHitTest(this->entityID);
 			}
@@ -597,7 +596,7 @@ namespace BehaviorTree
 		}
 		// ------------------------------------------------------------------------------------------------------------------------
 
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) override
 		{
 			s_dictionaries.target.Get(xml, "target", m_target, true);
 
@@ -627,7 +626,7 @@ namespace BehaviorTree
 		// ------------------------------------------------------------------------------------------------------------------------
 
 	protected:
-		virtual void OnInitialize(const UpdateContext& context) OVERRIDE
+		virtual void OnInitialize(const UpdateContext& context) override
 		{
 			Agent agent(context.entityId);
 			IF_UNLIKELY(!agent.IsValid())
@@ -644,13 +643,13 @@ namespace BehaviorTree
 			if (CanStartMeleeAttack(context, parameters.m_fMeleeAngleCosineThreshold))
 			{
 				AlignToTarget(context);
-				const static uint32 FRAGID_MELEE = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( MELEE_FRAGMENT_NAME );
+				const static uint32 FRAGID_MELEE = CCrc32::ComputeLowercase( MELEE_FRAGMENT_NAME );
 				QueueFragment(context.entityId, FRAGID_MELEE, runtimeData);
 			}
 		}
 		// ------------------------------------------------------------------------------------------------------------------------
 
-		virtual void OnTerminate(const UpdateContext& context) OVERRIDE
+		virtual void OnTerminate(const UpdateContext& context) override
 		{
 			RuntimeData& runtimeData = GetRuntimeData<RuntimeData>(context);
 			
@@ -659,7 +658,7 @@ namespace BehaviorTree
 		}
 		// ------------------------------------------------------------------------------------------------------------------------
 
-		virtual Status Update(const UpdateContext& context) OVERRIDE
+		virtual Status Update(const UpdateContext& context) override
 		{
 			RuntimeData& runtimeData = GetRuntimeData<RuntimeData>(context);
 			
@@ -857,7 +856,7 @@ namespace BehaviorTree
 		{
 		}
 
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) override
 		{
 			IF_UNLIKELY (BaseClass::LoadFromXml(xml, context) == LoadFailure)
 				return LoadFailure;
@@ -878,7 +877,7 @@ namespace BehaviorTree
 		}
 	
 	protected:	
-		virtual Status Update(const UpdateContext& context) OVERRIDE
+		virtual Status Update(const UpdateContext& context) override
 		{
 			Agent agent(context.entityId);
 			assert(agent.IsValid());
@@ -1088,7 +1087,7 @@ namespace BehaviorTree
 		{
 		}
 
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) override
 		{
 			IF_UNLIKELY (BaseClass::LoadFromXml(xml, context) == LoadFailure)
 				return LoadFailure;
@@ -1100,7 +1099,7 @@ namespace BehaviorTree
 		}
 
 	protected:
-		virtual Status Update(const UpdateContext& context) OVERRIDE
+		virtual Status Update(const UpdateContext& context) override
 		{
 			// Please read the description above for an overview of what the
 			// code below is trying to accomplish.

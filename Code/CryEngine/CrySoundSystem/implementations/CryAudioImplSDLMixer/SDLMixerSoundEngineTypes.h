@@ -28,7 +28,7 @@ struct SSDLMixerEventStaticData : public IATLTriggerImplData
 		, bPanningEnabled(true)
 		, bStartEvent(true)
 	{}
-	const TSampleList samples;
+	TSampleList samples;
 	const SDLMixer::TSDLMixerID nEventID;
 	float fAttenuationMinDistance;
 	float fAttenuationMaxDistance;
@@ -36,6 +36,27 @@ struct SSDLMixerEventStaticData : public IATLTriggerImplData
 	int nLoopCount;
 	bool bPanningEnabled;
 	bool bStartEvent;
+};
+
+struct SATLRtpcImplData_sdlmixer : public IATLRtpcImplData
+{
+	// Empty implementation so that the engine has something
+	// to refer to since RTPCs are not currently supported by
+	// the SDL Mixer implementation
+};
+
+struct SATLSwitchStateImplData_sdlmixer : public IATLSwitchStateImplData
+{
+	// Empty implementation so that the engine has something
+	// to refer to since switches are not currently supported by
+	// the SDL Mixer implementation
+};
+
+struct SATLEnvironmentImplData_sdlmixer : public IATLEnvironmentImplData
+{
+	// Empty implementation so that the engine has something
+	// to refer to since environments are not currently supported by
+	// the SDL Mixer implementation
 };
 
 struct SSDLMixerEventInstanceData : public IATLEventData

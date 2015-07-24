@@ -32,6 +32,8 @@ static const float PLAYER_CHECKTIME = 0.2f;    // check the player every 0.2 sec
 
 static const uint32 INVALID_FACIAL_CHANNEL_ID = ~0;
 
+#define DIALOG_VOICE_POSITION_NEEDS_UPDATE -2
+
 string CDialogActorContext::m_tempBuffer;
 
 void CDialogActorContext::ResetStaticData()
@@ -81,7 +83,11 @@ const char* CDialogActorContext::FullSoundName(const string& soundName, bool bWa
 
 ////////////////////////////////////////////////////////////////////////////
 CDialogActorContext::CDialogActorContext(CDialogSession* pSession, CDialogScript::TActorID actorID)
+	: m_pCurLine(0)
 {
+	static int uniqueID = 0;
+	m_ContextID = ++uniqueID;
+
 	m_pSession   = pSession;
 	m_actorID    = actorID;
 	m_entityID   = pSession->GetActorEntityId(m_actorID);
@@ -89,7 +95,8 @@ CDialogActorContext::CDialogActorContext(CDialogSession* pSession, CDialogScript
 	const char* debugName = pEntity ? pEntity->GetName() : "<no entity>";
 	m_pIActor = CCryAction::GetCryAction()->GetIActorSystem()->GetActor(m_entityID);
 	m_bIsLocalPlayer = m_pIActor != 0 && CCryAction::GetCryAction()->GetClientActor() == m_pIActor;
-
+	m_SpeechAuxProxy = INVALID_AUDIO_PROXY_ID;
+	
 	ResetState();
 	DiaLOG::Log(DiaLOG::eAlways, "[DIALOG] CDialogActorContext::ctor: %s 0x%p actorID=%d entity=%s entityId=%u",
 		m_pSession->GetDebugName(), this, m_actorID, debugName, m_entityID);
@@ -98,6 +105,20 @@ CDialogActorContext::CDialogActorContext(CDialogSession* pSession, CDialogScript
 ////////////////////////////////////////////////////////////////////////////
 CDialogActorContext::~CDialogActorContext()
 {
+	if (m_SpeechAuxProxy != INVALID_AUDIO_PROXY_ID)
+	{
+		IEntity* pActorEntity = m_pSession->GetActorEntity(m_actorID);
+		if (pActorEntity)
+		{
+			IEntityAudioProxy* pActorAudioProxy = m_pSession->GetEntityAudioProxy(pActorEntity);
+			if (pActorAudioProxy)
+			{
+				pActorAudioProxy->RemoveAsListenerFromAuxAudioProxy(m_SpeechAuxProxy, &CDialogActorContext::OnAudioTriggerFinished);
+				pActorAudioProxy->RemoveAuxAudioProxy(m_SpeechAuxProxy);
+			}
+		}
+	}
+
 	StopSound();
 	CancelCurrent();
 	IEntity* pEntity = gEnv->pEntitySystem->GetEntity(m_entityID);
@@ -135,6 +156,8 @@ void CDialogActorContext::ResetState()
 	m_currentEffectorChannelID = INVALID_FACIAL_CHANNEL_ID;
 	m_bNeedsCancel = false; // no cancel on start
 	m_bSoundStarted = false;
+	m_VoiceAttachmentIndex = DIALOG_VOICE_POSITION_NEEDS_UPDATE;
+	m_BoneHeadJointID = DIALOG_VOICE_POSITION_NEEDS_UPDATE;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -404,7 +427,7 @@ bool CDialogActorContext::Update(float dt)
 		case eDAC_ScheduleSoundPlay:
 			{
 				bAdvance = true;
-				const bool bHasSound  = !m_pCurLine->m_sound.empty();
+				const bool bHasSound  = m_pCurLine->m_audioID != INVALID_AUDIO_CONTROL_ID;
 				if (bHasSound)
 				{
 					if (m_bSoundScheduled == false)
@@ -414,95 +437,36 @@ bool CDialogActorContext::Update(float dt)
 							break;
 
 						IEntityAudioProxy* pActorAudioProxy = m_pSession->GetEntityAudioProxy(pActorEntity);
+
 						if (pActorAudioProxy == 0)
 							break;
 
-						REINST("play voice line");
-						// start a new sound
-						//int sFlags = CDialogActorContext::SOUND_FLAGS;
-						//if (CDialogSystem::sLoadSoundSynchronously != 0)
-						//	sFlags |= FLAG_SOUND_LOAD_SYNCHRONOUSLY;
-						//
-						//// if it's the local player make the sound relative to the entity
-						//if (m_bIsLocalPlayer)
-						//	sFlags |= FLAG_SOUND_RELATIVE;
+						if(m_SpeechAuxProxy == INVALID_AUDIO_PROXY_ID)
+						{
+							m_SpeechAuxProxy = pActorAudioProxy->CreateAuxAudioProxy();
+							pActorAudioProxy->AddAsListenerToAuxAudioProxy(m_SpeechAuxProxy, &CDialogActorContext::OnAudioTriggerFinished, eART_AUDIO_CALLBACK_MANAGER_REQUEST, eACMRT_REPORT_FINISHED_TRIGGER_INSTANCE);
+						}
+						UpdateAuxProxyPosition();
 
-						//const char* soundKey = GetSoundKey(m_pCurLine->m_sound);
-						//ISound* pSound = 0;
+						SAudioCallBackInfos callbackInfos(0, (void*)CDialogActorContext::GetClassIdentifier(), reinterpret_cast<void*>(m_ContextID), eARF_PRIORITY_NORMAL | eARF_SYNC_FINISHED_CALLBACK);
+						if(!pActorAudioProxy->ExecuteTrigger(m_pCurLine->m_audioID, eLSM_None, m_SpeechAuxProxy, callbackInfos))
+						{
+							m_bSoundStarted = false;
+							m_bHasScheduled = false;
+							m_pSession->ScheduleNextLine(2.0f);
+						}
+						else
+						{
+							m_bSoundStarted = true;
+							m_bHasScheduled = true;
+							//todo: get the length of the sound to schedule the next line (set m_soundLength). Currently we schedule the next line as soon as the current one is finished, ignoring the specified "delay" parameter. its done in: DialogTriggerFinishedCallback
 
-						//pSound = gEnv->pAudioSystem->CreateSound(soundKey, sFlags);
-
-						//DiaLOG::Log(DiaLOG::eDebugA, "[DIALOG] CDialogActorContex::Update: %s Now=%f actorID=%d phase=eDAC_ScheduleSoundPlay: Starting '%s' [key=%s]",
-						//	m_pSession->GetDebugName(), now, m_actorID, m_pCurLine->m_sound.c_str(), soundKey);
-
-						//if (!pSound) 
-						//{
-						//	GameWarning("[DIALOG] CDialogActorContext::Update: %s ActorID=%d: Cannot play sound '%s'",
-						//		m_pSession->GetDebugName(), m_actorID, m_pCurLine->m_sound.c_str());
-						//}
-
-						//if (pSound)
-						//{
-						//	if (m_bSoundStopsAnim)
-						//	{
-						//		m_bSoundStopsAnim = false;
-						//		if (m_pAGState != 0)
-						//		{
-						//			ResetAGState();
-						//			DiaLOG::Log(DiaLOG::eDebugA, "[DIALOG] CDialogActorContext::Update: %s Now=%f actorID=%d phase=eDAC_ScheduleSoundPlay: Stopping old animation",
-						//				m_pSession->GetDebugName(), now, m_actorID);
-						//		}
-						//	}
-						//	StopSound(); // apparently, if we dont explicitely stop the sound, in rare cases it never stops. Im pretty sure that is an engine/fmod bug.
-						//	             // stopping it this way may lead to some subtitles staying for an extra couple seconds on screen (this comes from another engine bug/problem related to an extra fade out time added to cover the dummy NAX soudns) 
-						//	m_soundID = pSound->GetId();
-						//	m_bSoundStarted = false;
-						//	m_bSoundScheduled = true;
-						//	// tell the animation whether to stop on sound stop
-						//	m_bSoundStopsAnim = m_pCurLine->m_flagSoundStopsAnim;
-
-						//	DiaLOG::Log(DiaLOG::eDebugA, "[DIALOG] CDialogActorContext::Update: %s Now=%f actorID=%d phase=eDAC_ScheduleSoundPlay: Reg as listener on 0x%p '%s'",
-						//		m_pSession->GetDebugName(), now, m_actorID, pSound, pSound->GetName());
-
-						//	pSound->SetSemantic(eSoundSemantic_Dialog);
-						//	pSound->AddEventListener(this, "DialogActor"); // event listener will set m_soundLength
-						//	// sound proxy uses head pos on dialog sounds
-						//	const bool bResult = pActorAudioProxy->PlaySound(pSound, Vec3(ZERO), FORWARD_DIRECTION, 1.0f);
-
-						//	if (bResult)
-						//	{
-						//		// Fetch some localization info for the sound
-						//		ILocalizationManager* pLocMgr = gEnv->pSystem->GetLocalizationManager();
-						//		if (pLocMgr && CDialogSystem::sWarnOnMissingLoc != 0)
-						//		{
-						//			SLocalizedInfoGame GameInfo;
-
-						//			const bool bFound = pLocMgr->GetLocalizedInfoByKey(soundKey, GameInfo);
-						//			if (!bFound)
-						//			{
-						//				GameWarning("[DIALOG] CDialogActorContext::Update: '%s' DialogScript '%s': Localized info for '%s' not found!", 
-						//					m_pSession->GetDebugName(), m_pSession->GetScript()->GetID().c_str(), m_pCurLine->m_sound.c_str());
-						//			}
-						//		}
-
-						//		bAdvance = false; // don't advance
-						//	}
-						//	else
-						//	{
-						//		GameWarning("[DIALOG] CDialogActorContext::Update: %s ActorID=%d: Cannot play sound '%s' [AudioProxy ignored playback]",
-						//			m_pSession->GetDebugName(), m_actorID, m_pCurLine->m_sound.c_str());
-
-						//		pSound->Stop(ESoundStopMode_AtOnce);
-						//		m_soundID = INVALID_SOUNDID;
-						//		pSound->RemoveEventListener(this);
-						//		pSound = NULL;
-						//	}
-						//}
-						//else
-						//{
-						//	GameWarning("[DIALOG] CDialogActorContext::Update: %s ActorID=%d: Cannot play sound '%s' [AudioProxy returns invalid sound]",
-						//		m_pSession->GetDebugName(), m_actorID, m_pCurLine->m_sound.c_str());
-						//}
+							const char* triggerName = gEnv->pAudioSystem->GetAudioControlName(eACT_TRIGGER, m_pCurLine->m_audioID);
+							if (triggerName == NULL)
+								triggerName =  "dialog trigger";
+							DiaLOG::Log(DiaLOG::eDebugA, "[DIALOG] CDialogActorContex::Update: %s Now=%f actorID=%d phase=eDAC_ScheduleSoundPlay: Starting '%s'",
+								m_pSession->GetDebugName(), now, m_actorID, triggerName);
+						}
 					}
 					else
 					{
@@ -526,7 +490,7 @@ bool CDialogActorContext::Update(float dt)
 		case eDAC_SoundFacial:
 			{
 				bAdvance = true;
-				const bool bHasSound  = !m_pCurLine->m_sound.empty();
+				const bool bHasSound  = m_pCurLine->m_audioID != INVALID_AUDIO_CONTROL_ID;
 				const bool bHasFacial = !m_pCurLine->m_facial.empty() || m_pCurLine->m_flagResetFacial;
 				if (bHasFacial)
 				{
@@ -535,29 +499,30 @@ bool CDialogActorContext::Update(float dt)
 						DoFacialExpression(pActorEntity, m_pCurLine->m_facial, m_pCurLine->m_facialWeight, m_pCurLine->m_facialFadeTime);
 				}
 
-				float delay = m_pCurLine->m_delay;
-				if (bHasSound && m_bSoundStarted)
-				{
-					if (m_soundLength < 0.0f)
-					{
-						m_soundLength = Random(2.0f,6.0f);
-						DiaLOG::Log(DiaLOG::eAlways, "[DIALOG] CDialogActorContext::Update: %s Now=%f actorID=%d phase=eDAC_SoundFacial Faking SoundTime to %f",
-							m_pSession->GetDebugName(), now, m_actorID, m_soundLength);
-					}
+				//hd-todo: re-add me, when we have a way to query the length of the audio-lines
+				//float delay = m_pCurLine->m_delay;
+				//if (bHasSound && m_bSoundStarted)
+				//{
+				//	if (m_soundLength <= 0.0f)
+				//	{
+				//		m_soundLength = cry_random(2.0f, 6.0f);
+				//		DiaLOG::Log(DiaLOG::eAlways, "[DIALOG] CDialogActorContext::Update: %s Now=%f actorID=%d phase=eDAC_SoundFacial Faking SoundTime to %f",
+				//			m_pSession->GetDebugName(), now, m_actorID, m_soundLength);
+				//	}
 
-					DiaLOG::Log(DiaLOG::eAlways, "[DIALOG] CDialogActorContext::Update: %s Now=%f actorID=%d phase=eDAC_SoundFacial Delay=%f SoundTime=%f",
-						m_pSession->GetDebugName(), now , m_actorID, delay, m_soundLength);
-					delay += m_soundLength;
-				}
+				//	DiaLOG::Log(DiaLOG::eAlways, "[DIALOG] CDialogActorContext::Update: %s Now=%f actorID=%d phase=eDAC_SoundFacial Delay=%f SoundTime=%f",
+				//		m_pSession->GetDebugName(), now , m_actorID, delay, m_soundLength);
+				//	delay += m_soundLength;
+				//}
 
-				// schedule END
-				if (delay < 0.0f)
-					delay = 0.0f;
-				m_pSession->ScheduleNextLine(delay+0.05f); // ~1 frame at 20 fps. we now stop the current line sound before going for next line. Sometimes, this stop call is right before the
-																									 // sound has actually stopped in engine side. When that happens, the engine is adding ~2 seconds extra to the sound duration (because fade problems related to NAX header)
-																									 // and that looks bad if subtitles are enabled. So we add this small delay here to try to minimize that situation.
-																									 // this is part of the workaround for some dialogs apparently never finishing in the engine side (rare).
-				m_bHasScheduled = true;
+				//// schedule END
+				//if (delay < 0.0f)
+				//	delay = 0.0f;
+				//m_pSession->ScheduleNextLine(delay+0.05f); // ~1 frame at 20 fps. we now stop the current line sound before going for next line. Sometimes, this stop call is right before the
+				//																					 // sound has actually stopped in engine side. When that happens, the engine is adding ~2 seconds extra to the sound duration (because fade problems related to NAX header)
+				//																					 // and that looks bad if subtitles are enabled. So we add this small delay here to try to minimize that situation.
+				//																					 // this is part of the workaround for some dialogs apparently never finishing in the engine side (rare).
+				//m_bHasScheduled = true;
 			}
 			break;
 
@@ -584,13 +549,85 @@ bool CDialogActorContext::Update(float dt)
 			}
 		}
 		else
+		{
+			if (IsStillPlaying())
+			{
+				UpdateAuxProxyPosition();
+			}
+
 			break;
+		}
 	}
 	while (true);
 
 	return true;
 }
+////////////////////////////////////////////////////////////////////////////
 
+void CDialogActorContext::UpdateAuxProxyPosition()
+{
+	IEntity* pActorEntity = m_pSession->GetActorEntity(m_actorID);
+	if (pActorEntity == 0)
+		return;
+
+	IEntityAudioProxy* pActorAudioProxy = m_pSession->GetEntityAudioProxy(pActorEntity);
+	if (pActorAudioProxy == 0)
+		return;
+
+	ICharacterInstance* const pCharacter = pActorEntity->GetCharacter(0);
+
+	//cache some IDs
+	if (m_VoiceAttachmentIndex == DIALOG_VOICE_POSITION_NEEDS_UPDATE && pCharacter)
+	{
+		const IAttachmentManager* pAttachmentManager = pCharacter->GetIAttachmentManager();
+		if (pAttachmentManager)
+		{
+			m_VoiceAttachmentIndex = pAttachmentManager->GetIndexByName("voice");  //First prio: get the "voice" attachment position
+
+			if (m_VoiceAttachmentIndex == -1)
+			{
+				// There's no attachment so let's try to find the head bone.
+				IDefaultSkeleton& rIDefaultSkeleton = pCharacter->GetIDefaultSkeleton();
+				m_BoneHeadJointID = rIDefaultSkeleton.GetJointIDByName("Bip01 Head");  //Second prio: use the Bip01 head bone position
+				if (m_BoneHeadJointID == -1)
+				{
+					// Has it been named differently?
+					m_BoneHeadJointID = rIDefaultSkeleton.GetJointIDByName("def_head");  //third prio: use the Bip01 head bone position
+				}
+			}
+		}
+	}
+
+	Matrix34 tmHead;
+
+	//try to get a position close to the "mouth" of our actor
+	if(m_VoiceAttachmentIndex > 0 && pCharacter)
+	{
+		const IAttachmentManager* pAttachmentManager = pCharacter->GetIAttachmentManager();
+		const IAttachment* pAttachment = pAttachmentManager->GetInterfaceByIndex(m_VoiceAttachmentIndex);
+		if (pAttachment)
+		{
+			tmHead = Matrix34(pAttachment->GetAttModelRelative());
+		}
+	}
+	else if (m_BoneHeadJointID > 0 && pCharacter)
+	{
+		// re-query SkeletonPose to prevent crash on removed Character
+		if (ISkeletonPose* const pSkeletonPose = pCharacter->GetISkeletonPose())
+		{
+			tmHead = Matrix34(pSkeletonPose->GetAbsJointByID(m_BoneHeadJointID));
+		}
+	}
+	else
+	{
+		//last-resort: if we could not find a head attachment point or a head-bone: Lets just assume the head is 1.80m above the feet
+		tmHead = Matrix34(IDENTITY, Vec3(0.0f, 1.80f, 0.0f));
+	}
+
+	pActorAudioProxy->SetAuxAudioProxyOffset(SATLWorldPosition(tmHead), m_SpeechAuxProxy);
+}
+
+////////////////////////////////////////////////////////////////////////////
 static const char* PhaseNames[] =
 {
 	"eDAC_Idle",
@@ -1060,20 +1097,24 @@ bool CDialogActorContext::ExecuteAI(int& goalPipeID, const char* signalText, IAI
 ////////////////////////////////////////////////////////////////////////////
 void CDialogActorContext::StopSound(bool bUnregisterOnly)
 {
-	// Stop Sound
-	//if (m_soundID != INVALID_SOUNDID)
-	//{
-	//	// Unregister as listener
-	//	ISound* pSound = gEnv->pAudioSystem->GetSound(m_soundID);
-	//	if (pSound)
-	//	{
-	//		if (bUnregisterOnly==false)
-	//			pSound->Stop();
+	if (bUnregisterOnly)
+	{
+		return;  //nothing to do here, because we dont registered for anything.
+	}
 
-	//		pSound->RemoveEventListener(this);
-	//	}
-	//	m_soundID = INVALID_SOUNDID;
-	//}
+	// Stop Sound
+	if(IsStillPlaying())
+	{
+		IEntity* pActorEntity = m_pSession->GetActorEntity(m_actorID);
+		if (pActorEntity == 0)
+			return;
+
+		IEntityAudioProxy* pActorAudioProxy = m_pSession->GetEntityAudioProxy(pActorEntity);
+		if (pActorAudioProxy == 0)
+			return;
+
+		pActorAudioProxy->StopTrigger(m_pCurLine->m_audioID, m_SpeechAuxProxy);
+	}
 }
 
 bool CDialogActorContext::DoLocalPlayerChecks(const float dt)
@@ -1196,7 +1237,7 @@ bool CDialogActorContext::DoLocalPlayerChecks(const float dt)
 ////////////////////////////////////////////////////////////////////////////
 bool CDialogActorContext::IsStillPlaying() const
 {
-	return false;//m_soundID != INVALID_SOUNDID && m_bSoundStarted;
+	return m_bSoundStarted && m_pCurLine && m_pCurLine->m_audioID != INVALID_AUDIO_CONTROL_ID; //m_soundID != INVALID_SOUNDID && m_bSoundStarted;
 }
 
 // IEntityEventListener
@@ -1269,49 +1310,36 @@ void CDialogActorContext::OnGoalPipeEvent( IPipeUser* pPipeUser, EGoalPipeEvent 
 }
 // ~IGoalPipeListener
 
-// ISoundEventListener
 ////////////////////////////////////////////////////////////////////////////
-//void CDialogActorContext::OnSoundEvent( ESoundCallbackEvent event,ISound *pSound )
-//{
-//	if (pSound == 0 || pSound->GetId() != m_soundID)
-//		return;
-//
-//	switch (event)
-//	{
-//		case SOUND_EVENT_ON_PLAYBACK_STARTED:
-//			m_soundLength = pSound->GetLengthMs() * 0.001f;
-//			m_bSoundStarted = true;
-//
-//			DiaLOG::Log(DiaLOG::eAlways, "[DIALOG] CDialogActorContext::OnSoundEvent: %s Actor=%d Sound '%s' started with length %f",
-//				m_pSession->GetDebugName(), m_actorID, pSound->GetName(), m_soundLength);
-//			break;
-//		case SOUND_EVENT_ON_STOP:
-//			pSound->RemoveEventListener(this);
-//			m_soundID = INVALID_SOUNDID;
-//			m_bSoundStarted = false;
-//			m_soundLength = 0.0f;
-//
-//			if (m_bSoundStopsAnim)
-//			{
-//				m_bSoundStopsAnim = false;
-//				if (m_pAGState != 0)
-//				{
-//					ResetAGState();
-//					DiaLOG::Log(DiaLOG::eDebugA, "[DIALOG] CDialogActorContext::OnSoundEvent: %s Actor=%d Stopping ANIM because sound '%s' stopped.",
-//						m_pSession->GetDebugName(), m_actorID, pSound->GetName());
-//				}
-//			}
-//			break;
-//		default:
-//			break;
-//	}
-//}
-// ~ISoundEventListener
-
 void CDialogActorContext::GetMemoryUsage(ICrySizer *pSizer) const 
 {
 	pSizer->AddObject(m_pSession);
 	pSizer->AddObject(m_pCurLine);
 	pSizer->AddObject(m_pIActor);
 	pSizer->AddObject(m_pAGState);
+}
+
+////////////////////////////////////////////////////////////////////////////
+void CDialogActorContext::OnAudioTriggerFinished(SAudioRequestInfo const* const pAudioRequestInfo)
+{
+	CDialogActorContext* dialogContext = GetDialogActorContextByAudioCallbackData(pAudioRequestInfo);
+	if (dialogContext)
+	{
+		//hd-todo: for now we schedule the next line, as soon as the current line has finished. replace this with the old manual delay system, as soon as we have a way to figure out the length of the audio-lines
+		dialogContext->m_pSession->ScheduleNextLine(0.2f);
+		//mark as finished
+		dialogContext->m_bSoundStarted = false;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+CDialogActorContext* CDialogActorContext::GetDialogActorContextByAudioCallbackData(SAudioRequestInfo const* const pAudioRequestInfo)
+{
+	if (pAudioRequestInfo->pUserDataOwner && pAudioRequestInfo->pUserData == CDialogActorContext::GetClassIdentifier())
+	{
+		EntityId const nContextID = static_cast<EntityId>(reinterpret_cast<UINT_PTR>(pAudioRequestInfo->pUserDataOwner));
+		CDialogSystem* pDS = CCryAction::GetCryAction()->GetDialogSystem();
+		return pDS->GetActiveSessionActorContext(nContextID);
+	}
+	return 0;
 }

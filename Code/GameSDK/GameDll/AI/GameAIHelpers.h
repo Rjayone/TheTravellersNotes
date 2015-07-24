@@ -206,8 +206,8 @@ public:
 	}
 
 protected:
-	std::auto_ptr<Instances> m_running;
-	std::auto_ptr<Instances> m_paused;
+	std::unique_ptr<Instances> m_running;
+	std::unique_ptr<Instances> m_paused;
 
 private:
 	AIModule(const AIModule<Module, Instance, NumPreallocatedInstances, GrowSize>&);
@@ -363,7 +363,7 @@ private:
 	}
 
 	typedef std::deque<InstanceID> FreeInstances;
-	std::auto_ptr<FreeInstances> m_free;
+	std::unique_ptr<FreeInstances> m_free;
 
 	typedef std::vector<char> InstancePool;
 	InstancePool m_pool;

@@ -615,7 +615,7 @@ void CRenderProxy::GetWorldBounds( AABB &bbox )
 		CalcLocalBounds();
 	}
 	bbox = m_localBBox;
-	bbox.SetTransformedAABB( m_pEntity->GetWorldTM_Fast(),bbox );
+	bbox.SetTransformedAABB( m_pEntity->GetWorldTM(),bbox );
 
 	CheckIfBBoxValid( bbox,m_pEntity );
 }
@@ -1052,11 +1052,7 @@ IStatObj *CRenderProxy::GetEntityStatObj( unsigned int nPartId, unsigned int nSu
 	
   if (pMatrix)
 	{
-#if defined(__SPU__)
-		snPause(); // SPU code doesn't pass a matrix pointer, thus spare the addional code complexity
-#else
 		*pMatrix = GetSlotWorldTM(nPartId|ENTITY_SLOT_ACTUAL);
-#endif
 	}
 
   if(!bReturnOnlyVisible || Slot(nPartId)->flags & ENTITY_SLOT_RENDER)
@@ -1071,11 +1067,7 @@ ICharacterInstance *CRenderProxy::GetEntityCharacter( unsigned int nSlot, Matrix
 		return NULL;
   if (pMatrix)
 	{
-#if defined(__SPU__)
-		snPause(); // SPU code doesn't pass a matrix pointer, thus spare the addional code complexity
-#else
 		*pMatrix = GetSlotWorldTM(nSlot);
-#endif
 	}
   
   if(!bReturnOnlyVisible || Slot(nSlot)->flags & ENTITY_SLOT_RENDER)
@@ -1092,11 +1084,7 @@ IGeomCacheRenderNode* CRenderProxy::GetGeomCacheRenderNode( unsigned int nSlot, 
 		return NULL;
 	if (pMatrix)
 	{
-#if defined(__SPU__)
-		snPause(); // SPU code doesn't pass a matrix pointer, thus spare the addional code complexity
-#else
 		*pMatrix = GetSlotWorldTM(nSlot);
-#endif
 	}
 
 	if(!bReturnOnlyVisible || Slot(nSlot)->flags & ENTITY_SLOT_RENDER)
@@ -1208,7 +1196,7 @@ void CRenderProxy::RegisterCharactersForRendering()
 
 		if (!pProxy->CheckFlags(FLAG_BBOX_INVALID) && !bBoxEmpty)
 		{
-			pProxy->m_WSBBox.SetTransformedAABB( pProxy->m_pEntity->GetWorldTM_Fast(),pProxy->m_localBBox );
+			pProxy->m_WSBBox.SetTransformedAABB( pProxy->m_pEntity->GetWorldTM(),pProxy->m_localBBox );
 
 			pProxy->AddFlags(FLAG_REGISTERED_IN_3DENGINE);
 			
@@ -1258,7 +1246,7 @@ void CRenderProxy::RegisterForRendering(  bool bEnable )
 
 		if (!CheckFlags(FLAG_BBOX_INVALID) && !bBoxEmpty)
 		{
-			m_WSBBox.SetTransformedAABB( m_pEntity->GetWorldTM_Fast(),m_localBBox );
+			m_WSBBox.SetTransformedAABB( m_pEntity->GetWorldTM(),m_localBBox );
 
 			AddFlags(FLAG_REGISTERED_IN_3DENGINE);
 			
@@ -1703,6 +1691,7 @@ int CRenderProxy::LoadLight( int nSlot,CDLight *pLight,uint16 layerId )
 		pSlot->pLight->SetLodRatio(GetLodRatio());
 		pSlot->pLight->SetMinSpec(GetMinSpec());
 		pSlot->pLight->SetLayerId(layerId);
+		pSlot->pLight->SetSrcEntity(m_pEntity);
 	}
 
 	m_nFlags |= FLAG_HAS_LIGHTS;
@@ -1717,7 +1706,6 @@ int CRenderProxy::LoadLight( int nSlot,CDLight *pLight,uint16 layerId )
 	return nSlot;
 }
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 //////////////////////////////////////////////////////////////////////////
 int CRenderProxy::LoadCloud( int nSlot,const char *sFilename )
 {
@@ -1755,7 +1743,6 @@ int CRenderProxy::SetCloudMovementProperties(int nSlot, const SCloudMovementProp
 	}
 	return nSlot;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 int CRenderProxy::LoadFogVolume( int nSlot, const SFogVolumeProperties& properties )
@@ -1822,7 +1809,6 @@ int CRenderProxy::LoadGeomCache( int nSlot, const char *sFilename )
 }
 #endif
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 //////////////////////////////////////////////////////////////////////////
 int CRenderProxy::LoadVolumeObject(int nSlot, const char* sFilename)
 {
@@ -1861,7 +1847,6 @@ int CRenderProxy::SetVolumeObjectMovementProperties(int nSlot, const SVolumeObje
 	}
 	return nSlot;
 }
-#endif
 
 #if !defined(EXCLUDE_DOCUMENTATION_PURPOSE)
 int CRenderProxy::LoadPrismObject(int nSlot)
@@ -2272,7 +2257,7 @@ float CRenderProxy::GetMaxViewDist()
 	if(CheckFlags(FLAG_POST_3D_RENDER))
 	{
 		// Always want to render models in post 3d render (menus), whatever distance they are
-		return 1E+37f; //should be FLT_MAX;, but FLT_MAX gets transform to INFINITY on the way to the SPU, which becomes QNAN when ariving back on PPU :(
+		return FLT_MAX;
 	}
 	else if (!(m_nEntityFlags & ENTITY_FLAG_CUSTOM_VIEWDIST_RATIO))
 	{
@@ -2391,11 +2376,11 @@ bool CRenderProxy::GetLodDistances(const SFrameLodInfo& frameLodInfo, float *dis
 		{
 			distances[i] = m_fLodDistance * (i + 1) * fDistMultiplier;
 		}
-	}
+}
 	else
-	{
+{
 		for (uint i = 0; i < SMeshLodInfo::s_nMaxLodCount; ++i)
-		{
+	{
 			distances[i] = FLT_MAX;
 		}
 	}
@@ -2407,22 +2392,22 @@ void CRenderProxy::UpdateLodDistance(const SFrameLodInfo& frameLodInfo)
 {
 	SMeshLodInfo lodInfo;
 
-	for (Slots::iterator it = m_slots.begin(),endit = m_slots.end(); it != endit; ++it) 
-	{
-		SMeshLodInfo subLodInfo;
-
-		CEntityObject *pSlot = *it;
-		if (pSlot && (pSlot->flags & ENTITY_SLOT_RENDER))
+		for (Slots::iterator it = m_slots.begin(),endit = m_slots.end(); it != endit; ++it) 
 		{
-			if (pSlot->pStatObj)
+			SMeshLodInfo subLodInfo;
+
+			CEntityObject *pSlot = *it;
+			if (pSlot && (pSlot->flags & ENTITY_SLOT_RENDER))
 			{
-				pSlot->pStatObj->ComputeGeometricMean(subLodInfo);
+				if (pSlot->pStatObj)
+				{
+					pSlot->pStatObj->ComputeGeometricMean(subLodInfo);
+				}
+				else if (pSlot->pCharacter)
+				{
+					pSlot->pCharacter->ComputeGeometricMean(subLodInfo);
+				}
 			}
-			else if (pSlot->pCharacter)
-			{
-				pSlot->pCharacter->ComputeGeometricMean(subLodInfo);
-			}
-		}
 
 		lodInfo.Merge(subLodInfo);
 	}
@@ -2565,14 +2550,12 @@ uint64 CRenderProxy::GetSubObjHideMask( int nSlot ) const
 }
 
 //////////////////////////////////////////////////////////////////////////
-SPU_INDIRECT(CRenderMesh_Render(ML),RenderContent(ML),InvokeShadowMapRenderJobs(ML))
 void CRenderProxy::FillBBox(AABB & aabb) 
 { 
 	aabb = CRenderProxy::GetBBox(); 
 }
 
 //////////////////////////////////////////////////////////////////////////
-SPU_INDIRECT(RenderContent(M),InvokeShadowMapRenderJobs(M))
 EERType CRenderProxy::GetRenderNodeType() 
 { 
 	return eERType_RenderProxy; 
@@ -2607,6 +2590,7 @@ bool CRenderProxy::CanExecuteRenderAsJob()
 	return false;
 #endif // SUPPORT_RENDERPROXY_RENDER_JOB
 }
+
 //////////////////////////////////////////////////////////////////////////
 void CRenderProxy::QueueSlotGeometryChange( int nSlot,IStatObj *pStatObj )
 {

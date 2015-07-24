@@ -215,9 +215,10 @@ void CRateOfDeathSimple::UpdateTargetOffset( const float elapsedSeconds )
 Vec3 CRateOfDeathSimple::CalculateTargetOffset( const float minRange, const float maxRange ) const
 {
 	// TODO: Change this later!
-	const float randomRange = Random( minRange, maxRange );
+	const float randomRange = cry_random( minRange, maxRange );
 
-	const Vec3 randomOffset = Random( Vec3( -1.0f, -1.0f, -1.0f ), Vec3( 1.0f, 1.0f, 1.0f ) ).GetNormalizedSafe( Vec3( 0.0f, 1.0f, 0.0f ) ) * randomRange;
+	const Vec3 randomOffset = cry_random_unit_vector<Vec3>() * randomRange;
+
 	return randomOffset;
 }
 

@@ -70,7 +70,7 @@ void CWriter::Init( const char* pNameRootNode, const char* pFileName )
 #endif	
 		m_tableStrDataConstants.CreateStringsFromConstants();
 		{
-			ScopedSwitchToGlobalHeap switchToGlobalHeap; // This object may live beyond the end of level shutdown, particularly on PS3. Use global heap for allocations
+			ScopedSwitchToGlobalHeap switchToGlobalHeap; // This object may live beyond the end of level shutdown. Use global heap for allocations
 			m_compressor = new CZLibCompressor(pFileName); // Don't delete this when finished, it is held by the compressor thread until finished with and destroyed by it.
 		}
 	}

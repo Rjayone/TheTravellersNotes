@@ -413,10 +413,15 @@ def verify_auto_run_bootstrap(ctx, option_name, value):
 		return (res, warning, error)
 	
 	try:
-		user_list = subprocess.check_output(['p4.exe'])
+		subprocess.check_output(['p4']) # use check output as we do not want to spam the waf cmd window
+		res = True
+	except CalledProcessError:
+		# The process ran but did not return 0.
+		# All we want to check here is that p4 exists.
+		# Hence this is valid
 		res = True
 	except:
-		error = "[ERROR] Unable to execute 'p4.exe'"
+		error = "[ERROR] Unable to execute 'p4'"
 		res = False
 		
 	return (res, warning, error)
@@ -471,31 +476,31 @@ def _p4user_helper(ctx, option_name, value, prefix, p4server):
 	# Try to figure out the current user to provide some default values
 	default_user = ""
 	try:
-		result = subprocess.check_output(['p4.exe', '-p', p4server, 'user', '-o'])
+		result = subprocess.check_output(['p4', '-p', p4server, 'user', '-o'])
 		for line in result.splitlines():
 			if line.lstrip().startswith('User:'):
 				default_user = line[len('User:'):].lstrip()
 				break
 	except:
-		error = "[ERROR] Cannot execute p4.exe to figure out a default user name"
+		error = "[ERROR] Cannot execute p4 to figure out a default user name"
 		return (False, "", error)
 		
 	# Ask user to input a value
 	user = _get_string_value(ctx, prefix, default_user)
 	
 	if not user:
-		error = "[ERROR] No 'P4 User Name' defined. Cannot execute p4.exe to verify user (%s)" % workspace
+		error = "[ERROR] No 'P4 User Name' defined. Cannot execute p4 to verify user (%s)" % workspace
 		return (False, "", error)
 		
 	if not p4server:
-		error = "[ERROR] No 'P4 Server Name' defined. Cannot execute p4.exe to verify user (%s)" % workspace
+		error = "[ERROR] No 'P4 Server Name' defined. Cannot execute p4 to verify user (%s)" % workspace
 		return (False, "", error)
 		
 	# Check if this user exists
 	try:
-		user_list = subprocess.check_output(['p4.exe', '-p', p4server, 'users'])
+		user_list = subprocess.check_output(['p4', '-p', p4server, 'users'])
 	except:
-		error = "[ERROR] Cannot execute p4.exe to verify user name (%s)" % user
+		error = "[ERROR] Cannot execute p4 to verify user name (%s)" % user
 		return (False, "", error)
 		
 	while True:			
@@ -526,14 +531,14 @@ def _verify_p4_user(p4user, p4server):
 		return (False, warning, error)
 		
 	if not p4server:
-		error = "[ERROR] No 'P4 Server Name' defined. Cannot execute p4.exe to verify user (%s)" % p4user
+		error = "[ERROR] No 'P4 Server Name' defined. Cannot execute p4 to verify user (%s)" % p4user
 		return (False, warning, error)
 	
 	# Check if this user exists
 	try:
-		user_list = subprocess.check_output(['p4.exe', '-p', p4server, 'users'])
+		user_list = subprocess.check_output(['p4', '-p', p4server, 'users'])
 	except:
-		error = "[ERROR] Cannot execute p4.exe to verify user name '%s' on server:'%s'" % (p4user, p4server)
+		error = "[ERROR] Cannot execute p4 to verify user name '%s' on server:'%s'" % (p4user, p4server)
 		return (False, warning, error)
 		
 	# Add space at the end of the user name to ensure we are checking the complete name and not just a subset.
@@ -614,17 +619,17 @@ def _p4_workspaces(p4user, p4server):
 	""" Helper function to get p4 workspace list for p4 user on p4 server"""
 	
 	if not p4user:
-		error = "[ERROR] No 'P4 User Name' defined. Cannot execute p4.exe to verify workspace"
+		error = "[ERROR] No 'P4 User Name' defined. Cannot execute p4 to verify workspace"
 		return ([], error)
 		
 	if not p4server:
-		error = "[ERROR] No 'P4 Server Name' defined. Cannot execute p4.exe to verify workspace"
+		error = "[ERROR] No 'P4 Server Name' defined. Cannot execute p4 to verify workspace"
 		return ([], error)
 		
 	try:
-		workspaces = subprocess.check_output(['p4.exe', '-p', p4server, 'workspaces', '-u', p4user])
+		workspaces = subprocess.check_output(['p4', '-p', p4server, 'workspaces', '-u', p4user])
 	except:
-		error = "[ERROR] Cannot execute p4.exe to verify workspace"
+		error = "[ERROR] Cannot execute p4 to verify workspace"
 		return [], error
 		
 	# Format of a P4 workspace is: Client <Workspace> root <...> 'Created by <user> '
@@ -789,9 +794,9 @@ def _verify_p4_host(p4server):
 
 	# Check if this workspace exists
 	try:
-		output = subprocess.check_output(['p4.exe', '-p', p4server, 'info'], stderr=subprocess.STDOUT)
+		output = subprocess.check_output(['p4', '-p', p4server, 'info'], stderr=subprocess.STDOUT)
 	except Exception,e:
-		error = "[ERROR] Cannot execute p4.exe to verify server (%s)" % p4server
+		error = "[ERROR] Cannot execute p4 to verify server (%s)" % p4server
 		return (False, error)
 		
 	if output.startswith("Perforce client error"):
@@ -888,9 +893,9 @@ def verify_third_party_p4host(ctx, option_name, value):
 def _get_rootfolder_for_workspace(ctx, p4host, p4user,  p4client):
 	""" Get rootfolder for p4 workspace """
 	try:
-		p4Info = subprocess.check_output(['p4.exe', '-z', 'tag' ,'-p', p4host, '-u', p4user, '-c', p4client, 'info'])
+		p4Info = subprocess.check_output(['p4', '-z', 'tag' ,'-p', p4host, '-u', p4user, '-c', p4client, 'info'])
 	except:
-		return ("", "[ERROR] Cannot execute p4.exe to get client_root")
+		return ("", "[ERROR] Cannot execute p4 to get client_root")
 		
 	client_root_offset = p4Info.find('clientRoot')
 	
@@ -907,9 +912,9 @@ def _get_rootfolder_for_workspace(ctx, p4host, p4user,  p4client):
 def _get_views_for_client(ctx, p4host, p4user, p4client):
 	""" Get perforce folder mappings for p4 workspace """
 	try:
-		workspace_info = subprocess.check_output(['p4.exe' ,'-p', p4host, '-u', p4user, '-c', p4client, 'workspace','-o'])
+		workspace_info = subprocess.check_output(['p4' ,'-p', p4host, '-u', p4user, '-c', p4client, 'workspace','-o'])
 	except:
-		return ([], "[ERROR] Cannot execute p4.exe to get client_root")
+		return ([], "[ERROR] Cannot execute p4 to get client_root")
 		
 	view_offset = workspace_info.rfind('View:')
 	workspace_info = workspace_info[view_offset:]

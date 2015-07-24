@@ -12,10 +12,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IMaterial.h)
 
-#ifndef __IMaterial_h__
-#define __IMaterial_h__
 #pragma once
 
 struct ISurfaceType;
@@ -153,54 +150,54 @@ enum EMaterialCopyFlags
   MTL_COPY_TEXTURES = BIT(2),       
 };
 
-UNIQUE_IFACE struct IMaterialHelpers
+struct IMaterialHelpers
 {
-	VIRTUAL ~IMaterialHelpers() {}
+	virtual ~IMaterialHelpers() {}
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL EEfResTextures FindTexSlot(const char* texName) const = 0;
-	VIRTUAL const char* FindTexName(EEfResTextures texSlot) const = 0;
-	VIRTUAL const char* LookupTexName(EEfResTextures texSlot) const = 0;
-	VIRTUAL const char* LookupTexEnum(EEfResTextures texSlot) const = 0;
-	VIRTUAL const char* LookupTexSuffix(EEfResTextures texSlot) const = 0;
-	VIRTUAL bool IsAdjustableTexSlot(EEfResTextures texSlot) const = 0;
+	virtual EEfResTextures FindTexSlot(const char* texName) const = 0;
+	virtual const char* FindTexName(EEfResTextures texSlot) const = 0;
+	virtual const char* LookupTexName(EEfResTextures texSlot) const = 0;
+	virtual const char* LookupTexEnum(EEfResTextures texSlot) const = 0;
+	virtual const char* LookupTexSuffix(EEfResTextures texSlot) const = 0;
+	virtual bool IsAdjustableTexSlot(EEfResTextures texSlot) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL bool SetGetMaterialParamFloat(IRenderShaderResources& pShaderResources, const char *sParamName, float &v, bool bGet) const = 0;
-	VIRTUAL bool SetGetMaterialParamVec3(IRenderShaderResources& pShaderResources, const char *sParamName, Vec3 &v, bool bGet) const = 0;
+	virtual bool SetGetMaterialParamFloat(IRenderShaderResources& pShaderResources, const char *sParamName, float &v, bool bGet) const = 0;
+	virtual bool SetGetMaterialParamVec3(IRenderShaderResources& pShaderResources, const char *sParamName, Vec3 &v, bool bGet) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetTexModFromXml(SEfTexModificator &pShaderResources, const XmlNodeRef &node) const = 0;
-	VIRTUAL void SetXmlFromTexMod(const SEfTexModificator &pShaderResources, XmlNodeRef &node) const = 0;
+	virtual void SetTexModFromXml(SEfTexModificator &pShaderResources, const XmlNodeRef &node) const = 0;
+	virtual void SetXmlFromTexMod(const SEfTexModificator &pShaderResources, XmlNodeRef &node) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetTexturesFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
-	VIRTUAL void SetXmlFromTextures(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
+	virtual void SetTexturesFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
+	virtual void SetXmlFromTextures(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetVertexDeformFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
-	VIRTUAL void SetXmlFromVertexDeform(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
+	virtual void SetVertexDeformFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
+	virtual void SetXmlFromVertexDeform(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetDetailDecalFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
-	VIRTUAL void SetXmlFromDetailDecal(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
+	virtual void SetDetailDecalFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
+	virtual void SetXmlFromDetailDecal(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetLightingFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
-	VIRTUAL void SetXmlFromLighting(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
+	virtual void SetLightingFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
+	virtual void SetXmlFromLighting(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetShaderParamsFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
-	VIRTUAL void SetXmlFromShaderParams(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
+	virtual void SetShaderParamsFromXml(SInputShaderResources &pShaderResources, const XmlNodeRef &node) const = 0;
+	virtual void SetXmlFromShaderParams(const SInputShaderResources &pShaderResources, XmlNodeRef &node) const = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Description:
 //    IMaterialLayer is group of material layer properties.
 //    Each layer is composed of shader item, specific layer textures, lod info, etc
-UNIQUE_IFACE struct IMaterialLayer
+struct IMaterialLayer
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMaterialLayer(){}
   // Reference counting
   virtual void AddRef() = 0;
@@ -234,16 +231,17 @@ UNIQUE_IFACE struct IMaterialLayer
   
   // todo: layer specific textures support
   // 
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IMaterial
+struct IMaterial
 {
 	// TODO: Remove it!
 	//! default texture mapping 
 	uint8 m_ucDefautMappingAxis;
 	float m_fDefautMappingScale;
 
+	// <interfuscator:shuffle>
 	virtual ~IMaterial() {};
 
 	//////////////////////////////////////////////////////////////////////////
@@ -391,10 +389,11 @@ UNIQUE_IFACE struct IMaterial
   // switch to. 
   virtual void SetMaterialLinkName(const char* name) = 0; 
   virtual const char* GetMaterialLinkName() const = 0; 
+	virtual void SetKeepLowResSysCopyForDiffTex()=0;
 
 	virtual CryCriticalSection& GetSubMaterialResizeLock() = 0;
 	virtual void ActivateDynamicTextureSources(bool activate) = 0;
-
+	// </interfuscator:shuffle>
 
 #if defined(WIN32) || defined(WIN64)
 	virtual void LoadConsoleMaterial() = 0;
@@ -407,21 +406,21 @@ UNIQUE_IFACE struct IMaterial
 //     for special events of material manager, (used by Editor).
 struct IMaterialManagerListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IMaterialManagerListener(){}
 	// Called when material manager tries to load a material.
 	//	nLoadingFlags - Zero or a bitwise combination of the flagas defined in ELoadingFlags.
   	virtual IMaterial* OnLoadMaterial( const char *sMtlName,bool bForceCreation=false,unsigned long nLoadingFlags=0 ) = 0;
 	virtual void OnCreateMaterial( IMaterial *pMaterial ) = 0;
 	virtual void OnDeleteMaterial( IMaterial *pMaterial ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 // Description:
 //     IMaterialManager interface provide access to the material manager
 //     implemented in 3d engine.
-UNIQUE_IFACE struct IMaterialManager
+struct IMaterialManager
 {
 	//! Loading flags
 	enum ELoadingFlags
@@ -429,6 +428,7 @@ UNIQUE_IFACE struct IMaterialManager
 		ELoadingFlagsPreviewMode		=BIT(0),
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IMaterialManager(){}
 
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const=0;
@@ -532,7 +532,5 @@ UNIQUE_IFACE struct IMaterialManager
 	//// Forcing to destroy ISurfaceTypeManager
 	//virtual void ReleaseSurfaceTypeManager() = 0;
 
+	// </interfuscator:shuffle>
 };
-
-
-#endif // __IMaterial_h__

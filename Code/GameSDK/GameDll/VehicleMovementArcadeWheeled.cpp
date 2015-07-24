@@ -1171,7 +1171,7 @@ void CVehicleMovementArcadeWheeled::OnEvent(EVehicleMovementEvent event, const S
 		m_largeObjectInfoWheelIdx = -1;
 
 		// 50 - 50 chance of which friction method to use
-		m_largeObjectFrictionType = cry_frand() > 0.5f ? 1 : 0;
+		m_largeObjectFrictionType = cry_random(0, 1);
 
 		// Side Hit
 		if (info->kickType == SVehicleMovementEventLargeObject::k_KickSide)

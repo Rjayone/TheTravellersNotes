@@ -105,6 +105,9 @@ void CVehiclePartAnimatedJoint::Reset()
 
 	if(m_pGeometry)
 		SetMaterial(m_pMaterial);
+
+	if (m_pCharInstance)
+		m_pCharInstance->SetFlags(m_pCharInstance->GetFlags() | CS_FLAG_UPDATE);
 }
 
 //------------------------------------------------------------------------
@@ -610,6 +613,30 @@ void CVehiclePartAnimatedJoint::OnVehicleEvent(EVehicleEvent event, const SVehic
       break;
     }
   }
+}
+
+//------------------------------------------------------------------------
+void CVehiclePartAnimatedJoint::OnEvent(const SVehiclePartEvent& event)
+{
+	CVehiclePartBase::OnEvent(event);
+
+	if (!m_pCharInstance || m_jointId < 0)		
+		return;
+
+	switch(event.type)
+	{
+		case eVPE_StopUsing:
+			{
+				m_pCharInstance->SetFlags(m_pCharInstance->GetFlags() & (~CS_FLAG_UPDATE));
+				break;
+			}
+
+		case eVPE_StartUsing:
+			{
+				m_pCharInstance->SetFlags(m_pCharInstance->GetFlags() | CS_FLAG_UPDATE);
+				break;
+			}
+	}
 }
 
 void CVehiclePartAnimatedJoint::GetMemoryUsage( ICrySizer * s ) const

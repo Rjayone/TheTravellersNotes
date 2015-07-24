@@ -50,7 +50,7 @@ public:
 	{
 	};
 
-	VIRTUAL void GetConfiguration(SFlowNodeConfig& config)
+	virtual void GetConfiguration(SFlowNodeConfig& config)
 	{
 		static const SInputPortConfig inputs[] = 
 		{
@@ -113,7 +113,7 @@ public:
 		}
 	}
 
-	VIRTUAL void Serialize(SActivationInfo* pActInfo, TSerialize ser)
+	virtual void Serialize(SActivationInfo* pActInfo, TSerialize ser)
 	{
 		bool bEnable = m_bEnable;
 		ser.BeginGroup("FlowAudioPreloadData");
@@ -127,7 +127,7 @@ public:
 	}
 
 
-	VIRTUAL void ProcessEvent(EFlowEvent event, SActivationInfo* pActInfo)
+	virtual void ProcessEvent(EFlowEvent event, SActivationInfo* pActInfo)
 	{
 		switch (event)
 		{
@@ -161,7 +161,7 @@ public:
 		}
 	}
 
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const
+	virtual void GetMemoryUsage(ICrySizer * s) const
 	{
 		s->Add(*this);
 	}

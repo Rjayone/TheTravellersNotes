@@ -113,5 +113,6 @@ void CMannequinInterface::RegisterCVars()
 	CAnimationDatabase::RegisterCVars();
 #ifndef _RELEASE
 	REGISTER_STRING("mn_sequence_path", "Animations/Mannequin/FragmentSequences/", VF_CHEAT, "Default path for CryMannequin sequence files");
+	REGISTER_STRING("mn_override_preview_file", "", VF_CHEAT, "Default CryMannequin preview file to use. When set it overrides the corresponding sandbox setting.");
 #endif
 }

@@ -55,7 +55,7 @@ namespace BehaviorTree
 #ifdef USING_BEHAVIOR_TREE_LOG
 				if (status == Success && !m_successLog.empty() )
 					context.behaviorLog.AddMessage( m_successLog.c_str() );
-				else if( !m_failureLog.empty() )
+				else if( status == Failure && !m_failureLog.empty() )
 					context.behaviorLog.AddMessage( m_failureLog.c_str() );
 #endif // USING_BEHAVIOR_TREE_LOG
 			}
@@ -89,7 +89,7 @@ namespace BehaviorTree
 		// The event will be dispatched to the correct HandleEvent method
 		// with validated runtime data.
 		// Never override!
-		virtual void SendEvent(const EventContext& unmodifiedContext, const Event& event) OVERRIDE
+		virtual void SendEvent(const EventContext& unmodifiedContext, const Event& event) override
 		{
 			void* runtimeData = GetCreator()->GetRuntimeData(MakeRuntimeDataID(unmodifiedContext.entityId, m_id));
 			if (runtimeData)
@@ -101,7 +101,7 @@ namespace BehaviorTree
 		}
 
 		// Load up a behavior tree node with information from an xml node.
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const struct LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const struct LoadContext& context) override
 		{
 
 #ifdef USING_BEHAVIOR_TREE_LOG
@@ -114,14 +114,14 @@ namespace BehaviorTree
 		}
 
 #ifdef USING_BEHAVIOR_TREE_XML_DESCRIPTION_CREATION
-		virtual XmlNodeRef CreateXmlDescription() OVERRIDE
+		virtual XmlNodeRef CreateXmlDescription() override
 		{
 			return GetISystem()->CreateXmlNode( "Node" );
 		}
 #endif
 
 #ifdef USING_BEHAVIOR_TREE_SERIALIZATION
-		virtual void Serialize( Serialization::IArchive& archive ) OVERRIDE	{}
+		virtual void Serialize( Serialization::IArchive& archive ) override	{}
 #endif
 
 		void SetCreator(INodeCreator* creator) { m_creator = creator; }

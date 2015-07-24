@@ -21,6 +21,12 @@
 #include <ICryPak.h>
 #include <IConsole.h>
 
+#if defined(APPLE) || defined(LINUX) || defined(ORBIS)
+#define CRY_NATIVE_PATH_SEPSTR "/"
+#else
+#define CRY_NATIVE_PATH_SEPSTR "\\"
+#endif
+
 namespace PathUtil
 {
 	inline string GetGameFolder() 
@@ -284,11 +290,7 @@ namespace PathUtil
 	//! get slash
 	inline string GetSlash()
 	{
-#if defined(PS3) || defined(LINUX) || defined(APPLE) || defined(ORBIS)
-		return "/";
-#else
-		return "\\";
-#endif
+		return CRY_NATIVE_PATH_SEPSTR;
 	}
 
 	//! add a backslash if needed

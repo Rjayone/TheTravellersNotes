@@ -26,12 +26,13 @@ struct IAIAction
 
 	struct IAIActionListener
 	{
-
+		// <interfuscator:shuffle>
 		virtual ~IAIActionListener(){}
 		virtual void OnActionEvent(EActionEvent event) = 0;
-
+		// </interfuscator:shuffle>
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IAIAction(){}
 	// returns the unique name of this AI Action
 	virtual const char* GetName() const = 0;
@@ -82,7 +83,7 @@ struct IAIAction
 
 	virtual void RegisterListener(IAIActionListener* eventListener, const char* name)=0;
 	virtual void UnregisterListener(IAIActionListener* eventListener)=0;
-
+	// </interfuscator:shuffle>
 };
 
 

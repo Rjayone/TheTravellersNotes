@@ -25,7 +25,7 @@ DECLARE_BOOST_POINTERS(ICryUnknown);
 
 struct ICryFactory
 {
-	virtual const char* GetClassName() const = 0;
+	virtual const char* GetName() const = 0;
 	virtual const CryClassID& GetClassID() const = 0;
 	virtual bool ClassSupports(const CryInterfaceID& iid) const = 0;
 	virtual void ClassSupports(const CryInterfaceID*& pIIDs, size_t& numIIDs) const = 0;

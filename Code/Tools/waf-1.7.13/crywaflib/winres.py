@@ -30,15 +30,7 @@ def rc_file(self, node):
 	#print rctask.env['INCLUDES']
 	rctask.env = rctask.env.derive()	
 	rctask.env.detach()
-	
-	# Add include folder for mfc
-	mfc_include_path = self.bld.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/include')
-	
-	try:
-		rctask.env['INCLUDES'].append( mfc_include_path )
-	except AttributeError:
-		rctask.env['INCLUDES'] = [mfc_include_path]
-	
+		
 	if hasattr(self, 'winres_includes'):		
 		if isinstance(self.winres_includes, list):
 			rctask.env['INCLUDES'] += self.winres_includes
@@ -176,11 +168,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // Cursor
 //
 
-IDC_CRYSISCURSOR_AMBER  CURSOR                  "${project.cursor_amber}"
-IDC_CRYSISCURSOR_BLUE   CURSOR                  "${project.cursor_blue}"
-IDC_CRYSISCURSOR_GREEN  CURSOR                  "${project.cursor_green}"
-IDC_CRYSISCURSOR_RED    CURSOR                  "${project.cursor_red}"
-IDC_CRYSISCURSOR_WHITE  CURSOR                  "${project.cursor_white}"
+"${project.cursor_resource_name}"   CURSOR                  "${project.cursor_name}"
+
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 ${endif}
@@ -220,7 +209,7 @@ END
 ${if hasattr(project, 'has_icons')}
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON                ICON                    "${project.icon_name}"
+${project.icon_resource_name}                ICON                    "${project.icon_name}"
 ${endif}
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
@@ -369,25 +358,6 @@ class create_rc_file(Task.Task):
 		self.copyright = bld.get_copyright()
 		self.product_name = bld.get_product_name(tgen.target, project_name)
 
-		# Set special flags for launcher
-		if tgen.target == 'WindowsLauncher':
-			self.has_cursors = True
-			self.has_icons = True			
-		
-			self.cursor_amber = 'Cursor_Amber.cur'
-			self.cursor_blue = 'Cursor_Blue.cur'
-			self.cursor_green = 'Cursor_Green.cur'
-			self.cursor_red = 'Cursor_Red.cur'
-			self.cursor_white = 'Cursor_White.cur'
-		
-			self.icon_name = 'WindowsIcon.ico'
-						
-		# Set special flags for launcher
-		if tgen.target == 'DedicatedLauncher':
-			self.has_icons = True			
-			
-			self.icon_name = 'WindowsServerIcon.ico'
-		
 		template = compile_template(RC_FILE_TEMPLATE)	
 		
 		# assing to outself
@@ -404,7 +374,6 @@ class create_rc_file(Task.Task):
 					
 		if not hasattr(self, 'file_content'):
 			self.generate_file_content()
-
 		
 		tgt = self.outputs[0].abspath()
 
@@ -455,19 +424,33 @@ def generate_rc_file(self):
 		target_file = rc_file_folder.make_node(file_name)
 		self.create_task( 'copy_outputs', source_file, target_file )
 		rc_task_inputs.append( target_file )
-		
-	if getattr(self, 'is_launcher', False):
-		for file in 'Cursor_Amber.cur Cursor_Blue.cur Cursor_Green.cur Cursor_Red.cur Cursor_White.cur WindowsIcon.ico'.split():
-			_copy_rc_resource(file)
-		
+
+	rc_task = self.create_task( 'create_rc_file', rc_task_inputs, rc_file )
+	
 	# Set special flags for launcher
-	if getattr(self, 'is_dedicated_server', False):
-		for file in 'WindowsServerIcon.ico'.split():
-			_copy_rc_resource(file)
+	if self.target == 'WindowsLauncher':			
+		rc_task.has_icons = True
+		rc_task.icon_name = 'WindowsIcon.ico'
+		rc_task.icon_resource_name = 'IDI_ICON' # has to match define in launchers resource.h file e.g. "#define IDI_ICON	101"
 
-	self.create_task( 'create_rc_file', rc_task_inputs, rc_file )
+		#[deprecated] Load cursor as resource (now loaded through .pak file)
+		#rc_task.has_cursors = True
+		#rc_task.cusor_name = 'Cursor_Green.cur'
+		#rc_task.cursor_resource_name = 'IDC_CUSOR' # has to match define in launchers resource.h file e.g. "#define IDC_CUSOR 105"
+					
+	# Set special flags for launcher
+	if self.target == 'DedicatedLauncher':
+		rc_task.has_icons = True
+		rc_task.icon_name = 'WindowsServerIcon.ico'
+		rc_task.icon_resource_name = 'IDI_ICON'
+		
+	# Copy resources
+	resources =  getattr(rc_task, 'icon_name', "") 
+	resources += getattr(rc_task, 'cusor_name', "")
+	for file in  resources.split():
+		_copy_rc_resource(file)			
 
-	# create rc compile task
+	# Create rc compile task
 	self.rc_file(rc_file)
 	
 	

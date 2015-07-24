@@ -21,7 +21,6 @@
 
 #include "IActionMapManager.h"
 
-class Crc32Gen;
 class CActionMapAction;
 
 typedef std::map<string, class CActionMap *>		TActionMapMap;
@@ -53,60 +52,60 @@ public:
 	// ~IInputEventListener
 
 	// IActionMapManager
-	VIRTUAL void Update();
-	VIRTUAL void Reset();
-	VIRTUAL void Clear();
+	virtual void Update();
+	virtual void Reset();
+	virtual void Clear();
 
-	VIRTUAL void SetLoadFromXMLPath(const char* szPath) { m_loadedXMLPath = szPath; }
-	VIRTUAL const char* GetLoadFromXMLPath() const { return m_loadedXMLPath; }
-	VIRTUAL bool LoadFromXML(const XmlNodeRef& node);
-	VIRTUAL bool LoadRebindDataFromXML(const XmlNodeRef& node);
-	VIRTUAL bool SaveRebindDataToXML(XmlNodeRef& node);
+	virtual void SetLoadFromXMLPath(const char* szPath) { m_loadedXMLPath = szPath; }
+	virtual const char* GetLoadFromXMLPath() const { return m_loadedXMLPath; }
+	virtual bool LoadFromXML(const XmlNodeRef& node);
+	virtual bool LoadRebindDataFromXML(const XmlNodeRef& node);
+	virtual bool SaveRebindDataToXML(XmlNodeRef& node);
 
-	VIRTUAL bool AddExtraActionListener(IActionListener* pExtraActionListener, const char* actionMap = NULL);
-	VIRTUAL bool RemoveExtraActionListener(IActionListener* pExtraActionListener, const char* actionMap = NULL);
-	VIRTUAL const TActionListeners& GetExtraActionListeners() const;
+	virtual bool AddExtraActionListener(IActionListener* pExtraActionListener, const char* actionMap = NULL);
+	virtual bool RemoveExtraActionListener(IActionListener* pExtraActionListener, const char* actionMap = NULL);
+	virtual const TActionListeners& GetExtraActionListeners() const;
 
-	VIRTUAL void AddAlwaysActionListener(TBlockingActionListener pActionListener); // TODO: Remove always action listeners and integrate into 1 prioritized type
-	VIRTUAL void RemoveAlwaysActionListener(TBlockingActionListener pActionListener);
-	VIRTUAL void RemoveAllAlwaysActionListeners();
+	virtual void AddAlwaysActionListener(TBlockingActionListener pActionListener); // TODO: Remove always action listeners and integrate into 1 prioritized type
+	virtual void RemoveAlwaysActionListener(TBlockingActionListener pActionListener);
+	virtual void RemoveAllAlwaysActionListeners();
 
-	VIRTUAL IActionMap *CreateActionMap(const char *name);
-	VIRTUAL bool RemoveActionMap(const char *name);
-	VIRTUAL void RemoveAllActionMaps();
-	VIRTUAL IActionMap *GetActionMap(const char *name);
-	VIRTUAL const IActionMap *GetActionMap(const char *name) const;
-	VIRTUAL IActionFilter *CreateActionFilter(const char *name, EActionFilterType type=eAFT_ActionFail);
-	VIRTUAL IActionFilter *GetActionFilter(const char *name);
-	VIRTUAL IActionMapIteratorPtr CreateActionMapIterator();
-	VIRTUAL IActionFilterIteratorPtr CreateActionFilterIterator();
+	virtual IActionMap *CreateActionMap(const char *name);
+	virtual bool RemoveActionMap(const char *name);
+	virtual void RemoveAllActionMaps();
+	virtual IActionMap *GetActionMap(const char *name);
+	virtual const IActionMap *GetActionMap(const char *name) const;
+	virtual IActionFilter *CreateActionFilter(const char *name, EActionFilterType type=eAFT_ActionFail);
+	virtual IActionFilter *GetActionFilter(const char *name);
+	virtual IActionMapIteratorPtr CreateActionMapIterator();
+	virtual IActionFilterIteratorPtr CreateActionFilterIterator();
 
-	VIRTUAL void Enable(const bool enable, const bool resetStateOnDisable = false);
-	VIRTUAL void EnableActionMap(const char *name, bool enable);
-	VIRTUAL void EnableFilter(const char *name, bool enable);
-	VIRTUAL bool IsFilterEnabled(const char *name);
-	VIRTUAL void ReleaseFilteredActions();
-	VIRTUAL void ClearStoredCurrentInputData();
+	virtual void Enable(const bool enable, const bool resetStateOnDisable = false);
+	virtual void EnableActionMap(const char *name, bool enable);
+	virtual void EnableFilter(const char *name, bool enable);
+	virtual bool IsFilterEnabled(const char *name);
+	virtual void ReleaseFilteredActions();
+	virtual void ClearStoredCurrentInputData();
 
-	VIRTUAL bool ReBindActionInput(const char* actionMapName, const ActionId& actionId, const char* szCurrentInput, const char* szNewInput);
+	virtual bool ReBindActionInput(const char* actionMapName, const ActionId& actionId, const char* szCurrentInput, const char* szNewInput);
 
-	VIRTUAL const SActionInput* GetActionInput(const char* actionMapName, const ActionId& actionId, const EActionInputDevice device, const int iByDeviceIndex) const;
+	virtual const SActionInput* GetActionInput(const char* actionMapName, const ActionId& actionId, const EActionInputDevice device, const int iByDeviceIndex) const;
 
-	VIRTUAL int GetVersion() const { return  m_version; }
-	VIRTUAL void SetVersion(int version) { m_version = version; }
-	VIRTUAL void EnumerateActions( IActionMapPopulateCallBack* pCallBack ) const;
-	VIRTUAL int GetActionsCount() const;
-	VIRTUAL int GetActionMapsCount() const {return m_actionMaps.size();}
+	virtual int GetVersion() const { return  m_version; }
+	virtual void SetVersion(int version) { m_version = version; }
+	virtual void EnumerateActions( IActionMapPopulateCallBack* pCallBack ) const;
+	virtual int GetActionsCount() const;
+	virtual int GetActionMapsCount() const {return m_actionMaps.size();}
 
-	VIRTUAL bool AddInputDeviceMapping(const EActionInputDevice deviceType, const char* szDeviceTypeStr);
-	VIRTUAL bool RemoveInputDeviceMapping(const EActionInputDevice deviceType);
-	VIRTUAL void ClearInputDevicesMappings();
-	VIRTUAL int GetNumInputDeviceData() const;
-	VIRTUAL const SActionInputDeviceData* GetInputDeviceDataByIndex(const int iIndex);
-	VIRTUAL const SActionInputDeviceData* GetInputDeviceDataByType(const EActionInputDevice deviceType);
-	VIRTUAL const SActionInputDeviceData* GetInputDeviceDataByType(const char* szDeviceType);
+	virtual bool AddInputDeviceMapping(const EActionInputDevice deviceType, const char* szDeviceTypeStr);
+	virtual bool RemoveInputDeviceMapping(const EActionInputDevice deviceType);
+	virtual void ClearInputDevicesMappings();
+	virtual int GetNumInputDeviceData() const;
+	virtual const SActionInputDeviceData* GetInputDeviceDataByIndex(const int iIndex);
+	virtual const SActionInputDeviceData* GetInputDeviceDataByType(const EActionInputDevice deviceType);
+	virtual const SActionInputDeviceData* GetInputDeviceDataByType(const char* szDeviceType);
 
-	VIRTUAL void RemoveAllRefireData();
+	virtual void RemoveAllRefireData();
 	// ~IActionMapManager
 
 	bool ActionFiltered(const ActionId& action);

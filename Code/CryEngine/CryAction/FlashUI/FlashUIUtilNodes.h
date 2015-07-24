@@ -35,8 +35,6 @@ private:
 	enum EOutputs
 	{
 		eO_IsPc = 0,
-		eO_IsX360,
-		eO_IsPS3,
 		eO_IsDurango,
 		eO_IsOrbis,
 		eO_IsConsole,

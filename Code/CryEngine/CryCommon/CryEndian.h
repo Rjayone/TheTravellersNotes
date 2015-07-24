@@ -36,7 +36,7 @@ typedef bool	EEndian;
 #	undef SYSTEM_IS_BIG_ENDIAN
 #endif
 
-#if defined(PS3) || defined(XENON)
+#if 0 // no big-endian platforms right now, but keep the code
 	// Big-endian platform
 #	define SYSTEM_IS_LITTLE_ENDIAN 0
 #	define SYSTEM_IS_BIG_ENDIAN 1
@@ -50,9 +50,7 @@ typedef bool	EEndian;
 	// Big-endian platform. Swap to/from little.
 	#define eBigEndian			false
 	#define eLittleEndian		true
-	#if !defined(__SPU__)
-		#define NEED_ENDIAN_SWAP
-	#endif
+	#define NEED_ENDIAN_SWAP	
 #else
 	// Little-endian platform. Swap to/from big.
 	#define eLittleEndian		false
@@ -189,15 +187,6 @@ ILINE void SwapEndian(T& t, bool bSwapEndian = eLittleEndian)
 	if (bSwapEndian)
 		SwapEndianBase(&t, 1);
 }
-
-#if defined(__SPU__)
-template<>
-ILINE void SwapEndian(uint32& t, bool bSwapEndian = eLittleEndian)
-{
-	if (bSwapEndian)
-		SwapEndianBase(&t, 1);
-}
-#endif 
 
 template<class T>
 ILINE T SwapEndianValue(T t, bool bSwapEndian = eLittleEndian)

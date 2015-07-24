@@ -251,7 +251,7 @@ void CLocalPlayerComponent::InitFollowCameraSettings( const IItemParamsNode* pFo
 
 
 		const string nameString = pCameraModeNode->GetAttribute("name");
-		mode.m_crcSettingsName = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(nameString.c_str());
+		mode.m_crcSettingsName = CCrc32::ComputeLowercase(nameString.c_str());
 #ifndef _RELEASE
 		mode.m_settingsName = nameString;
 #endif //_RELEASE

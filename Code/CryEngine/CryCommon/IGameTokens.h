@@ -12,10 +12,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IGameToken.h)
 
-#ifndef _IGameTokens_h_
-#define _IGameTokens_h_
 #pragma once
 
 #include <IFlowSystem.h> // <> required for Interfuscator
@@ -35,9 +32,9 @@ enum EGameTokenFlags
 //////////////////////////////////////////////////////////////////////////
 // Game Token can be used as any Plot event in the game.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IGameToken
+struct IGameToken
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameToken(){}
 	// Retrieve name of the game token.
 	virtual const char* GetName() const = 0;
@@ -61,7 +58,7 @@ UNIQUE_IFACE struct IGameToken
 	// Set token value from a string.
 	virtual void SetValueAsString( const char* sValue,bool bDefault=false ) = 0;
 	virtual const char* GetValueAsString() const = 0;
-
+	// </interfuscator:shuffle>
 
 	// a small template helper (yes, in the i/f) to get the value
 	// returns true if successful, false otherwise
@@ -89,9 +86,9 @@ enum EGameTokenEvent
 // Game Token iterator, used to access all game tokens currently loaded
 //////////////////////////////////////////////////////////////////////////
 
-UNIQUE_IFACE struct IGameTokenIt
+struct IGameTokenIt
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameTokenIt(){}
 
 	virtual void AddRef() = 0;
@@ -113,7 +110,7 @@ UNIQUE_IFACE struct IGameTokenIt
 
 	// Positions the iterator at the begining of the game token list
 	virtual void MoveFirst() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 typedef _smart_ptr<IGameTokenIt> IGameTokenItPtr;
@@ -126,20 +123,20 @@ typedef _smart_ptr<IGameTokenIt> IGameTokenItPtr;
 //////////////////////////////////////////////////////////////////////////
 struct IGameTokenEventListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameTokenEventListener(){}
 	virtual void OnGameTokenEvent( EGameTokenEvent event,IGameToken *pGameToken ) = 0;
 	virtual void GetMemoryUsage(class ICrySizer *pSizer) const =0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
 // Manages collection of game tokens.
 // Responsible for saving/loading and acessing game tokens.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IGameTokenSystem
+struct IGameTokenSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameTokenSystem(){}
 	virtual void GetMemoryStatistics( ICrySizer * ) = 0;
 	// Create a new token.
@@ -178,7 +175,7 @@ UNIQUE_IFACE struct IGameTokenSystem
 	virtual void Serialize( TSerialize ser ) = 0;
 
 	virtual void DebugDraw() = 0;
-
+	// </interfuscator:shuffle>
 
 	// a small template helper (yes, in the i/f) to get the value of a token
 	// returns true if successful (value found and conversion o.k), false otherwise (not found, or conversion failed)
@@ -195,5 +192,3 @@ UNIQUE_IFACE struct IGameTokenSystem
 	virtual void RemoveTokenFromDebugList( const char* pToken ) = 0;
 #endif
 };
-
-#endif // _IGameTokens_h_

@@ -276,4 +276,4 @@ void CEntityClass::SetClassAttributes( const TEntityAttributeArray& attributes )
 	m_classAttributes = attributes;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityClass)
+

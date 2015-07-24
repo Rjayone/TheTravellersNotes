@@ -35,10 +35,10 @@ bool CPlayerStumble::Update(float deltaTime, const pe_status_dynamics &dynamics)
   if ( m_currentPastTime > m_stumbleParameter.periodicTime )
   {
     m_currentPastTime -= m_stumbleParameter.periodicTime;
-    m_currentPeriodicScaleX = 1 - Random(0,m_stumbleParameter.randomness );
-    m_currentPeriodicScaleY = 1 - Random(0,m_stumbleParameter.randomness );
+    m_currentPeriodicScaleX = 1.0f - cry_random(0.0f, m_stumbleParameter.randomness);
+    m_currentPeriodicScaleY = 1.0f - cry_random(0.0f, m_stumbleParameter.randomness);
   }
-  m_finalActionImpulse = -(Random(m_stumbleParameter.minDamping, m_stumbleParameter.maxDamping)) * dynamics.v;
+  m_finalActionImpulse = -cry_random(m_stumbleParameter.minDamping, m_stumbleParameter.maxDamping) * dynamics.v;
 
   Vec3 stumblingImpulseDir;
   stumblingImpulseDir.x = cosf( m_currentPastTime / m_stumbleParameter.periodicTime * gf_PI2 ) * m_currentPeriodicScaleX * m_stumbleParameter.strengthX;
@@ -70,6 +70,6 @@ void CPlayerStumble::Start(StumbleParameters* stumbleParameters)
   m_stumbleParameter.strengthX    = stumbleParameters->strengthX;
   m_stumbleParameter.strengthY    = stumbleParameters->strengthY;
 
-  m_currentPeriodicScaleX = 1 - Random(0,stumbleParameters->randomness );
-  m_currentPeriodicScaleY = 1 - Random(0,stumbleParameters->randomness );
+  m_currentPeriodicScaleX = 1.0f - cry_random(0.0f, stumbleParameters->randomness);
+  m_currentPeriodicScaleY = 1.0f - cry_random(0.0f, stumbleParameters->randomness);
 }

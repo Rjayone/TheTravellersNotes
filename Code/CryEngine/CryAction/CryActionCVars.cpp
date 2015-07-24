@@ -60,9 +60,8 @@ CCryActionCVars::CCryActionCVars()
 
 	// AI stances
 	ag_defaultAIStance = REGISTER_STRING("ag_defaultAIStance", "combat", 0,  "Specifies default stance name for AI");
-	g_TweakProfile = REGISTER_STRING("g_TweakProfile","Default",VF_DUMPTODISK,"The currently active Tweak profile, used for all tweakable values and for saving/loading");
 
-	REGISTER_CVAR(g_syncClassRegistry, 0, VF_NULL, "syncronise class registry from server to clients");
+	REGISTER_CVAR(g_syncClassRegistry, 0, VF_NULL, "synchronize class registry from server to clients");
 
 	REGISTER_CVAR(g_allowSaveLoadInEditor, 0, VF_NULL, "Allow saving and loading games in the editor (DANGEROUS)");
 	REGISTER_CVAR(g_saveLoadBasicEntityOptimization, 1, VF_NULL, "Switch basic entity data optimization");
@@ -94,6 +93,8 @@ CCryActionCVars::CCryActionCVars()
 	REGISTER_INT("sw_draw_bbox", 1, 0, "Draw bounding box for segments.\nDefault is 1.\n");
 
 	REGISTER_INT("cl_initClientActor", 1, 0, "Enables actionmap and view setup for the client actor after connection.\nDefault is 1.\n");
+
+	REGISTER_CVAR2("g_enableMergedMeshRuntimeAreas", &g_enableMergedMeshRuntimeAreas, 0, VF_CHEAT|VF_REQUIRE_APP_RESTART, "Enables the Merged Mesh cluster generation and density precalculations at game/level load");
 
 	if( !gEnv->IsEditor() )
 	{
@@ -132,6 +133,7 @@ CCryActionCVars::~CCryActionCVars()
 	pConsole->UnregisterVariable("sw_debugInfo");
 	pConsole->UnregisterVariable("sw_draw_bbox");
 	pConsole->UnregisterVariable("g_disableSequencePlayback", true);
+	pConsole->UnregisterVariable("g_enableMergedMeshRuntimeAreas", true);
 }
 
 void CCryActionCVars::DumpEntitySerializationData( IConsoleCmdArgs* pArgs)

@@ -78,7 +78,7 @@ void CLightningArc::Update(SEntityUpdateContext& ctx, int updateSlot)
 	if (m_timer < 0.0f)
 	{
 		TriggerSpark();
-		m_timer += m_delay + (cry_frand()*0.5f+0.5f)*m_delayVariation;
+		m_timer += m_delay + cry_random(0.5f, 1.0f) * m_delayVariation;
 	}
 }
 
@@ -109,7 +109,7 @@ void CLightningArc::TriggerSpark()
 		return;
 	}
 
-	int nextSpark = Random(numLinks);
+	int nextSpark = cry_random(0, numLinks - 1);
 	IEntityLink* pNextSparkLink = pLinks;
 	for (; nextSpark && pNextSparkLink; pNextSparkLink = pNextSparkLink->next)
 	{

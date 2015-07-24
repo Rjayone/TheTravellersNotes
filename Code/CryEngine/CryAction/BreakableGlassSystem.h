@@ -27,10 +27,10 @@ public:
 	static int		HandleImpact(const EventPhys* pPhysEvent);
 	static void		OnEnabledCVarChange(ICVar* pCVar);
 
-	VIRTUAL void	Update(const float frameTime);
-	VIRTUAL bool	BreakGlassObject(const EventPhysCollision& physEvent, const bool forceGlassBreak = false);
-	VIRTUAL void	ResetAll();
-	VIRTUAL void	GetMemoryUsage(ICrySizer* pSizer) const;
+	virtual void	Update(const float frameTime);
+	virtual bool	BreakGlassObject(const EventPhysCollision& physEvent, const bool forceGlassBreak = false);
+	virtual void	ResetAll();
+	virtual void	GetMemoryUsage(ICrySizer* pSizer) const;
 
 private:
 	bool					ExtractPhysDataFromEvent(const EventPhysCollision& physEvent, SBreakableGlassPhysData& data, SBreakableGlassInitParams& initParams);

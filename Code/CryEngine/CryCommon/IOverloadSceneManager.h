@@ -13,10 +13,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include DEVIRTUALIZE_HEADER_FIX(IOverloadSceneManager.h)
-
-#ifndef _I_OVERLOAD_SCENE_MANAGER_
-#define _I_OVERLOAD_SCENE_MANAGER_
 #pragma once
 
 //==================================================================================================
@@ -26,10 +22,10 @@
 //			 various systems can use this information and control what is currently in the scene
 // Author: James Chilvers
 //==================================================================================================
-UNIQUE_IFACE struct IOverloadSceneManager
+struct IOverloadSceneManager
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IOverloadSceneManager() {}
   
 	virtual void Reset() = 0;
@@ -42,7 +38,5 @@ public:
 
   // Go back to auto-calculated scale from an overridden scale
   virtual void ResetScale(float dt) = 0;
-
+	// </interfuscator:shuffle>
 };//------------------------------------------------------------------------------------------------
-
-#endif //_I_OVERLOAD_SCENE_MANAGER_

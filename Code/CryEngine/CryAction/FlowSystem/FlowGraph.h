@@ -30,95 +30,95 @@ public:
 	// IFlowGraph
 	virtual void AddRef();
 	virtual void Release();
-	VIRTUAL IFlowGraphPtr Clone();
-	VIRTUAL void Clear();
-	VIRTUAL void RegisterHook( IFlowGraphHookPtr );
-	VIRTUAL void UnregisterHook( IFlowGraphHookPtr );
-	VIRTUAL IFlowNodeIteratorPtr CreateNodeIterator();
-	VIRTUAL IFlowEdgeIteratorPtr CreateEdgeIterator();
-	VIRTUAL void SetUserData(TFlowNodeId id, const XmlNodeRef& data );
-	VIRTUAL XmlNodeRef GetUserData(TFlowNodeId id );
-	VIRTUAL void SetGraphEntity( EntityId id,int nIndex=0 );
-	VIRTUAL EntityId GetGraphEntity( int nIndex ) const;
-	VIRTUAL SFlowAddress ResolveAddress( const char * addr, bool isOutput );
-	VIRTUAL TFlowNodeId ResolveNode( const char * name );
-	VIRTUAL void GetNodeConfiguration( TFlowNodeId id, SFlowNodeConfig& );
-	VIRTUAL bool LinkNodes( SFlowAddress from, SFlowAddress to );
-	VIRTUAL void UnlinkNodes( SFlowAddress from, SFlowAddress to );
-	VIRTUAL TFlowNodeId CreateNode( TFlowNodeTypeId typeId, const char *name, void *pUserData=0 );
-	VIRTUAL TFlowNodeId CreateNode( const char* typeName, const char *name, void *pUserData=0 );
-	VIRTUAL bool SetNodeName( TFlowNodeId id,const char *sName );
-	VIRTUAL IFlowNodeData* GetNodeData( TFlowNodeId id );
-	VIRTUAL const char* GetNodeName( TFlowNodeId id );
-	VIRTUAL TFlowNodeTypeId GetNodeTypeId( TFlowNodeId id );
-	VIRTUAL const char* GetNodeTypeName( TFlowNodeId id );
-	VIRTUAL void RemoveNode( const char * name );
-	VIRTUAL void RemoveNode( TFlowNodeId id );
-	VIRTUAL void SetEnabled(bool bEnabled);
-	VIRTUAL bool IsEnabled() const { return m_bEnabled; }
-	VIRTUAL void SetActive(bool bActive); 
-	VIRTUAL bool IsActive() const { return m_bActive; }
-	VIRTUAL void UnregisterFromFlowSystem();
+	virtual IFlowGraphPtr Clone();
+	virtual void Clear();
+	virtual void RegisterHook( IFlowGraphHookPtr );
+	virtual void UnregisterHook( IFlowGraphHookPtr );
+	virtual IFlowNodeIteratorPtr CreateNodeIterator();
+	virtual IFlowEdgeIteratorPtr CreateEdgeIterator();
+	virtual void SetUserData(TFlowNodeId id, const XmlNodeRef& data );
+	virtual XmlNodeRef GetUserData(TFlowNodeId id );
+	virtual void SetGraphEntity( EntityId id,int nIndex=0 );
+	virtual EntityId GetGraphEntity( int nIndex ) const;
+	virtual SFlowAddress ResolveAddress( const char * addr, bool isOutput );
+	virtual TFlowNodeId ResolveNode( const char * name );
+	virtual void GetNodeConfiguration( TFlowNodeId id, SFlowNodeConfig& );
+	virtual bool LinkNodes( SFlowAddress from, SFlowAddress to );
+	virtual void UnlinkNodes( SFlowAddress from, SFlowAddress to );
+	virtual TFlowNodeId CreateNode( TFlowNodeTypeId typeId, const char *name, void *pUserData=0 );
+	virtual TFlowNodeId CreateNode( const char* typeName, const char *name, void *pUserData=0 );
+	virtual bool SetNodeName( TFlowNodeId id,const char *sName );
+	virtual IFlowNodeData* GetNodeData( TFlowNodeId id );
+	virtual const char* GetNodeName( TFlowNodeId id );
+	virtual TFlowNodeTypeId GetNodeTypeId( TFlowNodeId id );
+	virtual const char* GetNodeTypeName( TFlowNodeId id );
+	virtual void RemoveNode( const char * name );
+	virtual void RemoveNode( TFlowNodeId id );
+	virtual void SetEnabled(bool bEnabled);
+	virtual bool IsEnabled() const { return m_bEnabled; }
+	virtual void SetActive(bool bActive); 
+	virtual bool IsActive() const { return m_bActive; }
+	virtual void UnregisterFromFlowSystem();
 
-	VIRTUAL void SetType(IFlowGraph::EFlowGraphType type){m_Type = type;}
-	VIRTUAL IFlowGraph::EFlowGraphType GetType() const {return m_Type;}
+	virtual void SetType(IFlowGraph::EFlowGraphType type){m_Type = type;}
+	virtual IFlowGraph::EFlowGraphType GetType() const {return m_Type;}
 
-	VIRTUAL void RegisterFlowNodeActivationListener(SFlowNodeActivationListener *listener);
-	VIRTUAL void RemoveFlowNodeActivationListener(SFlowNodeActivationListener *listener);
+	virtual void RegisterFlowNodeActivationListener(SFlowNodeActivationListener *listener);
+	virtual void RemoveFlowNodeActivationListener(SFlowNodeActivationListener *listener);
 
-	VIRTUAL void Update();
-	VIRTUAL void InitializeValues();
-	VIRTUAL bool SerializeXML( const XmlNodeRef& root, bool reading );
-	VIRTUAL void Serialize( TSerialize ser );
-	VIRTUAL void PostSerialize();
-	VIRTUAL void SetRegularlyUpdated( TFlowNodeId id, bool regularly );
-	VIRTUAL void RequestFinalActivation( TFlowNodeId );
-	VIRTUAL void ActivateNode( TFlowNodeId id ) { ActivateNodeInt(id); }
-	VIRTUAL void ActivatePortAny( SFlowAddress output, const TFlowInputData& );
-	VIRTUAL void ActivatePortCString( SFlowAddress output, const char *cstr );
-	VIRTUAL bool SetInputValue( TFlowNodeId node, TFlowPortId port, const TFlowInputData& );
-	VIRTUAL bool IsOutputConnected( SFlowAddress output );
-	VIRTUAL const TFlowInputData* GetInputValue( TFlowNodeId node, TFlowPortId port );
-	VIRTUAL bool GetActivationInfo(const char* nodeName, IFlowNode::SActivationInfo& actInfo);
-	VIRTUAL void SetEntityId(TFlowNodeId, EntityId);
-	VIRTUAL EntityId GetEntityId(TFlowNodeId);
+	virtual void Update();
+	virtual void InitializeValues();
+	virtual bool SerializeXML( const XmlNodeRef& root, bool reading );
+	virtual void Serialize( TSerialize ser );
+	virtual void PostSerialize();
+	virtual void SetRegularlyUpdated( TFlowNodeId id, bool regularly );
+	virtual void RequestFinalActivation( TFlowNodeId );
+	virtual void ActivateNode( TFlowNodeId id ) { ActivateNodeInt(id); }
+	virtual void ActivatePortAny( SFlowAddress output, const TFlowInputData& );
+	virtual void ActivatePortCString( SFlowAddress output, const char *cstr );
+	virtual bool SetInputValue( TFlowNodeId node, TFlowPortId port, const TFlowInputData& );
+	virtual bool IsOutputConnected( SFlowAddress output );
+	virtual const TFlowInputData* GetInputValue( TFlowNodeId node, TFlowPortId port );
+	virtual bool GetActivationInfo(const char* nodeName, IFlowNode::SActivationInfo& actInfo);
+	virtual void SetEntityId(TFlowNodeId, EntityId);
+	virtual EntityId GetEntityId(TFlowNodeId);
 
-	VIRTUAL IFlowGraphPtr GetClonedFlowGraph() const { return m_pClonedFlowGraph; }
+	virtual IFlowGraphPtr GetClonedFlowGraph() const { return m_pClonedFlowGraph; }
 
-	VIRTUAL void PrecacheResources();
+	virtual void PrecacheResources();
 
-	VIRTUAL void RemoveGraphTokens();
-	VIRTUAL bool AddGraphToken(const IFlowGraph::SGraphToken& token);
-	VIRTUAL size_t GetGraphTokenCount() const;
-	VIRTUAL const IFlowGraph::SGraphToken* GetGraphToken(size_t index) const;
-	VIRTUAL string GetGlobalNameForGraphToken(const string& tokenName) const;
+	virtual void RemoveGraphTokens();
+	virtual bool AddGraphToken(const IFlowGraph::SGraphToken& token);
+	virtual size_t GetGraphTokenCount() const;
+	virtual const IFlowGraph::SGraphToken* GetGraphToken(size_t index) const;
+	virtual string GetGlobalNameForGraphToken(const string& tokenName) const;
 
-	VIRTUAL TFlowGraphId GetGraphId() const { return m_graphId; }
+	virtual TFlowGraphId GetGraphId() const { return m_graphId; }
 
-	VIRTUAL void EnsureSortedEdges()
+	virtual void EnsureSortedEdges()
 	{
 		if (!m_bEdgesSorted)
 			SortEdges();
 	}
 	// ~IFlowGraph
 
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const;
+	virtual void GetMemoryUsage(ICrySizer * s) const;
 	
 	// temporary solutions [ ask Dejan ]
 
 	// Suspended flow graphs were needed for AI Action flow graphs.
 	// Suspended flow graphs aren't updated... 
 	// Nodes in suspended flow graphs should ignore OnEntityEvent notifications!
-	VIRTUAL void SetSuspended( bool suspend = true );
-	VIRTUAL bool IsSuspended() const;
+	virtual void SetSuspended( bool suspend = true );
+	virtual bool IsSuspended() const;
 
 	// AI action related
-	VIRTUAL void SetAIAction( IAIAction* pAIAction );
-	VIRTUAL IAIAction* GetAIAction() const;
+	virtual void SetAIAction( IAIAction* pAIAction );
+	virtual IAIAction* GetAIAction() const;
 	
 	// Custom action related
-	VIRTUAL void SetCustomAction( ICustomAction* pCustomAction );
-	VIRTUAL ICustomAction* GetCustomAction() const;
+	virtual void SetCustomAction( ICustomAction* pCustomAction );
+	virtual ICustomAction* GetCustomAction() const;
 	IFlowGraphPtr GetClonedFlowGraph() { return m_pClonedFlowGraph; }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -378,6 +378,18 @@ template<>
 inline string CFlowGraphBase::ToString(const string &value)
 {
 	return value;
+}
+
+template<>
+inline string CFlowGraphBase::ToString(const SFlowSystemVoid &value)
+{
+	return "unknown";
+}
+
+template<>
+inline string CFlowGraphBase::ToString(const TFlowInputData &value)
+{
+	return "unknown";
 }
 
 

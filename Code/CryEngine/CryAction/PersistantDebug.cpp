@@ -408,21 +408,16 @@ void CPersistantDebug::PostUpdate( float frameTime )
 			static const float TEXT_SPACING = 2;
 			float textSize = textObj.size * 12.f;
 			float sizeX,sizeY;
-			const string& textLabel = textObj.text;
-			if (!textLabel.empty() && textLabel[0] == '@')
+			const string *pTextLabel = &textObj.text;
+			string localizedString;
+			if (!pTextLabel->empty() && pTextLabel->at(0) == '@')
 			{
-				wstring localizedString;
-				gEnv->pSystem->GetLocalizationManager()->LocalizeString(textLabel, localizedString);
-				pUIDraw->GetTextDimW(m_pDefaultFont,&sizeX, &sizeY, textSize, textSize, localizedString.c_str());
-				pUIDraw->DrawTextW(m_pDefaultFont,x, y, textSize, textSize, localizedString.c_str(), clr.a, clr.r, clr.g, clr.b, 
-					UIDRAWHORIZONTAL_CENTER,UIDRAWVERTICAL_TOP,UIDRAWHORIZONTAL_CENTER,UIDRAWVERTICAL_TOP);
+				gEnv->pSystem->GetLocalizationManager()->LocalizeString(*pTextLabel, localizedString);
+				pTextLabel = &localizedString;
 			}
-			else
-			{
-				pUIDraw->GetTextDim(m_pDefaultFont,&sizeX, &sizeY, textSize, textSize, textLabel.c_str());
-				pUIDraw->DrawText(m_pDefaultFont,x, y, textSize, textSize, textLabel.c_str(), clr.a, clr.r, clr.g, clr.b, 
-					UIDRAWHORIZONTAL_CENTER,UIDRAWVERTICAL_TOP,UIDRAWHORIZONTAL_CENTER,UIDRAWVERTICAL_TOP);
-			}
+			pUIDraw->GetTextDim(m_pDefaultFont,&sizeX, &sizeY, textSize, textSize, pTextLabel->c_str());
+			pUIDraw->DrawText(m_pDefaultFont,x, y, textSize, textSize, pTextLabel->c_str(), clr.a, clr.r, clr.g, clr.b, 
+				UIDRAWHORIZONTAL_CENTER,UIDRAWVERTICAL_TOP,UIDRAWHORIZONTAL_CENTER,UIDRAWVERTICAL_TOP);
 			y+=sizeY+TEXT_SPACING;
 		}
 		else
@@ -488,4 +483,4 @@ void CPersistantDebug::OnWriteToConsole( const char *sText, bool bNewLine )
 }
 
 
-#include UNIQUE_VIRTUAL_WRAPPER(IPersistantDebug)
+

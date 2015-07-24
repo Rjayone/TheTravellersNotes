@@ -24,6 +24,7 @@ struct IEngineModule : public ICryUnknown
 {
 	CRYINTERFACE_DECLARE(IEngineModule, 0xf899cf661df04f61, 0xa341a8a7ffdf9de4);
 
+	// <interfuscator:shuffle>
 	// Retrieve name of the extension module.
 	virtual const char *GetName() = 0;
 
@@ -32,7 +33,7 @@ struct IEngineModule : public ICryUnknown
 
 	// This is called to initialize the new module.
 	virtual bool Initialize( SSystemGlobalEnvironment &env,const SSystemInitParams &initParams ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__IEngineModule_h__

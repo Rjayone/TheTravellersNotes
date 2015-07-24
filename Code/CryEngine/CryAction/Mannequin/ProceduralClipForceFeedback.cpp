@@ -29,7 +29,7 @@ struct SForceFeedbackClipParams : public IProceduralParams
 		ar(onlyLocal, "OnlyLocal", "OnlyLocal");
 	}
 
-	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const OVERRIDE
+	virtual void GetExtraDebugInfo(StringWrapper& extraInfoOut) const override
 	{
 		extraInfoOut = forceFeedbackId.c_str();
 	}

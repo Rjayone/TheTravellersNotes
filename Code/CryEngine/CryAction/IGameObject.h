@@ -19,6 +19,7 @@
 #include "SerializeFwd.h"
 #include "IActionMapManager.h"
 #include "PoolAllocator.h"
+#include "IFlowSystem.h"
 
 inline void GameWarning(const char * ,...) PRINTF_PARAMS(1, 2);
 
@@ -524,8 +525,34 @@ public:
 	{
 		return ms_statics.m_vMessages;
 	}
+
+	static void SetExtensionId(IGameObjectSystem::ExtensionID id) { ms_statics.m_extensionId = id; }
 	
 protected:
+
+	static T_Derived* QueryExtension(EntityId id)
+	{
+		IGameObject* pGO = gEnv->pGame->GetIGameFramework()->GetGameObject(id);
+		if(pGO)
+		{
+			return static_cast<T_Derived*>(pGO->QueryExtension(T_Derived::ms_statics.m_extensionId));
+		}
+
+		return NULL;
+	}
+
+	static void ActivateOutputPort(EntityId id, int port, const TFlowInputData& data)
+	{
+		SEntityEvent evnt;
+		evnt.event = ENTITY_EVENT_ACTIVATE_FLOW_NODE_OUTPUT;
+		evnt.nParam[0] = port;
+		evnt.nParam[1] = (INT_PTR)&data;
+		
+		IEntity* pEntity = gEnv->pEntitySystem->GetEntity(id);
+		if(pEntity)
+			pEntity->SendEvent(evnt);
+	}
+
 	static const SGameObjectExtensionRMI * Helper_AddMessage( SGameObjectExtensionRMI::DecoderFunction decoder, const char * description, ERMIAttachmentType attach, bool isServerCall, ENetReliabilityType reliability, bool lowDelay )
 	{
 		if (ms_statics.m_nMessages >= MAX_STATIC_MESSAGES)
@@ -552,6 +579,7 @@ private:
 	{
 		size_t m_nMessages;
 		SGameObjectExtensionRMI m_vMessages[MAX_STATIC_MESSAGES];
+		IGameObjectSystem::ExtensionID m_extensionId;
 	};
 
 	static Statics ms_statics;

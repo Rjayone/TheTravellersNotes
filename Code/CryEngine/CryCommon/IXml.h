@@ -12,14 +12,8 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IXml.h)
 
-#ifndef __ixml_h__
-#define __ixml_h__
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #include <platform.h>
 #include <Cry_Math.h>
@@ -81,15 +75,15 @@ public:
 
 // Summary:
 //	 XML string data.
-UNIQUE_IFACE struct IXmlStringData
+struct IXmlStringData
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IXmlStringData(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
 	virtual const char* GetString() = 0;
 	virtual size_t      GetStringLength() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 class IXmlNode;
@@ -137,13 +131,14 @@ protected:
 	int m_nRefCount;
 
 protected:
-
+	// <interfuscator:shuffle>
 	virtual void DeleteThis() = 0;
 	virtual ~IXmlNode() {};
-
+	// </interfuscator:shuffle>
 
 public:
 
+	// <interfuscator:shuffle>
 	// Summary:
 	//	 Creates new XML node.
 	virtual XmlNodeRef createNode( const char *tag ) = 0;
@@ -342,9 +337,10 @@ public:
     }
 #endif
 
+	// </interfuscator:shuffle>
 
 #if !defined(RESOURCE_COMPILER)
-
+	// <interfuscator:shuffle>
 	// Summary:
 	//	 Collect all allocated memory
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const =0;
@@ -366,7 +362,7 @@ public:
 	// Notes:
 	//	 Save in small memory chunks.
 	virtual bool saveToFile( const char *fileName, size_t chunkSizeBytes, FILE *file = NULL) = 0; 
-
+	// </interfuscator:shuffle>
 #endif
 
 	//##@}
@@ -478,16 +474,16 @@ inline XmlNodeRef&  XmlNodeRef::operator=( const XmlNodeRef &newp )
 }
 
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IXmlSerializer
+struct IXmlSerializer
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IXmlSerializer(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
 
 	virtual ISerialize* GetWriter( XmlNodeRef &node ) = 0;
 	virtual ISerialize* GetReader( XmlNodeRef &node ) = 0;
-
+	// </interfuscator:shuffle>
 #if !defined(RESOURCE_COMPILER)
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const = 0;
 #endif
@@ -497,9 +493,9 @@ UNIQUE_IFACE struct IXmlSerializer
 //////////////////////////////////////////////////////////////////////////
 // Summary:
 //	 XML Parser interface.
-UNIQUE_IFACE struct IXmlParser
+struct IXmlParser
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IXmlParser(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -513,7 +509,7 @@ UNIQUE_IFACE struct IXmlParser
 	virtual XmlNodeRef ParseBuffer( const char *buffer,int nBufLen,bool bCleanPools ) = 0;
 
 	virtual void GetMemoryUsage( ICrySizer* pSizer ) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -532,9 +528,9 @@ UNIQUE_IFACE struct IXmlParser
 //       ...
 //     }
 //   }
-UNIQUE_IFACE struct IXmlTableReader
+struct IXmlTableReader
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IXmlTableReader(){}
 
 	virtual void Release() = 0;
@@ -560,16 +556,16 @@ UNIQUE_IFACE struct IXmlTableReader
 	// to know absolute cell index (i.e. column).
 	// Returns false if no cells left in the row.
 	virtual bool ReadCell(int& columnIndex, const char*& pContent, size_t& contentSize) = 0;
-
+	// </interfuscator:shuffle>
 };
 #endif
 
 //////////////////////////////////////////////////////////////////////////
 // Summary:
 //	 IXmlUtils structure.
-UNIQUE_IFACE struct IXmlUtils
+struct IXmlUtils
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IXmlUtils(){}
 
 	// Summary:
@@ -593,10 +589,10 @@ UNIQUE_IFACE struct IXmlUtils
 	// See also:
 	//	 IXmlSerializer
 	virtual IXmlSerializer* CreateXmlSerializer() = 0;
-
+	// </interfuscator:shuffle>
 
 #if !defined(RESOURCE_COMPILER)
-
+	// <interfuscator:shuffle>
 	// Summary:
 	//	 Creates XML Parser.
 	// Notes:
@@ -639,8 +635,6 @@ UNIQUE_IFACE struct IXmlUtils
 	// Sets the patch which is used to transform loaded XML files. the patch itself is encoded into XML
 	// Set to NULL to clear an existing transform and disable further patching
 	virtual void SetXMLPatcher(XmlNodeRef *pPatcher) = 0;
-
+	// </interfuscator:shuffle>
 #endif
 };
-
-#endif // __ixml_h__

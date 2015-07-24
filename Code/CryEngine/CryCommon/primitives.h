@@ -1,18 +1,9 @@
-#ifndef primitives_h
-#define primitives_h
+#ifndef _PRIMATIVES_H_
+#define _PRIMATIVES_H_
+#pragma once
 
-#ifdef __SPU__
-  extern float getHFPatchHeight(int ix,int iy);
-	extern unsigned char getHFPatchSurfType(int ix,int iy);
-#endif 
-
-#if defined(PS3) || defined(XENON)
-typedef short index_t;
-enum { PHYS_MAX_INDICES = 1<<15 };
-#else
 typedef int index_t;
 enum { PHYS_MAX_INDICES = 1<<30 };
-#endif
 
 #include "stridedptr.h"
 
@@ -78,22 +69,11 @@ namespace primitives {
 		}
 
 		ILINE float getheight(int ix,int iy) const { 
-			float result; 
-#ifdef __SPU__
-      result = getHFPatchHeight(ix,iy); 
-#else
-      result = (*fpGetHeightCallback)(ix,iy);
-#endif
+      float result = (*fpGetHeightCallback)(ix,iy);
       return result*heightscale;
 		}
 		ILINE int gettype(int ix,int iy) const {
-			int itype = 
-#ifdef __SPU__
-				(((getHFPatchSurfType)
-#else
-				(((*fpGetSurfTypeCallback)
-#endif
-				(ix,iy)) & typemask)>>typepower, idelta=itype-typehole;
+			int itype = (((*fpGetSurfTypeCallback)(ix,iy)) & typemask)>>typepower, idelta=itype-typehole;
 			return itype | ((idelta-1)>>31 ^ idelta>>31);
 		}
 
@@ -147,11 +127,11 @@ namespace primitives {
 		Vec3 offset;
 		float scale,rscale;
 		strided_pointer<Vec3> pVtx;
-		SPU_DOMAIN_LOCAL index_t *pIndices;
-		SPU_DOMAIN_LOCAL Vec3 *pNormals;
-		SPU_DOMAIN_LOCAL char *pIds;
-		SPU_DOMAIN_LOCAL int *pCellTris;
-		SPU_DOMAIN_LOCAL int *pTriBuf;
+		index_t *pIndices;
+		Vec3 *pNormals;
+		char *pIds;
+		int *pCellTris;
+		int *pTriBuf;
 	};
 
 	struct plane : primitive {
@@ -178,7 +158,7 @@ struct prim_inters {
 	float minPtDist2;
 	short id[2];
 	int iNode[2];
-	SPU_DOMAIN_LOCAL Vec3 *ptborder;
+	Vec3 *ptborder;
 	int nborderpt,nbordersz;
 	Vec3 ptbest;
 	int nBestPtVal;
@@ -201,8 +181,8 @@ struct geom_contact_area {
 	int npt;
 	int nmaxpt;
 	float minedge;
-	SPU_DOMAIN_LOCAL int *piPrim[2];
-	SPU_DOMAIN_LOCAL int *piFeature[2];
+	int *piPrim[2];
+	int *piFeature[2];
 	Vec3 *pt;
 	Vec3 n1; // normal of other object surface (or edge)
 };
@@ -222,13 +202,13 @@ struct geom_contact {
 	int iPrim[2];
 	int iFeature[2];
 	int iNode[2]; // BV-tree nodes of contacting primitives
-	SPU_DOMAIN_LOCAL Vec3 *ptborder; // intersection border
+	Vec3 *ptborder; // intersection border
 	int (*idxborder)[2]; // primitive index | primitive's feature's id << IFEAT_LOG2
 	int nborderpt;
 	int bClosed;
 	Vec3 center;
 	bool bBorderConsecutive;
-	SPU_DOMAIN_LOCAL geom_contact_area *parea;
+	geom_contact_area *parea;
 };
 
 #endif

@@ -11,14 +11,8 @@
   - 17:9:2004 : Created by Filippo De Luca
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IViewSystem.h)
 
-#ifndef __IVIEWSYSTEM_H__
-#define __IVIEWSYSTEM_H__
-
-#if _MSC_VER > 1000
-# pragma once
-#endif
+#pragma once
 
 #include <ISerialize.h>
 
@@ -187,7 +181,7 @@ struct IEntity;
 struct IAnimSequence;
 struct SCameraParams;
 
-UNIQUE_IFACE struct IView
+struct IView
 {
 	virtual ~IView(){}
 	struct SShakeParams
@@ -250,7 +244,7 @@ struct IViewSystemListener
 	virtual bool OnCameraChange(const SCameraParams& cameraParams) = 0;
 };
 
-UNIQUE_IFACE struct IViewSystem
+struct IViewSystem
 {
 	virtual ~IViewSystem(){}
 	virtual IView *CreateView() = 0;
@@ -287,8 +281,7 @@ UNIQUE_IFACE struct IViewSystem
 
 	virtual void UpdateSoundListeners() = 0;
 
+	virtual void SetDeferredViewSystemUpdate(bool const bDeferred) = 0; 
 	virtual bool UseDeferredViewSystemUpdate() const = 0;
 	virtual void SetControlAudioListeners(bool const bActive) = 0;
 };
-
-#endif //__IVIEWSYSTEM_H__

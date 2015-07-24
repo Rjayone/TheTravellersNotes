@@ -4,7 +4,7 @@
 #ifndef STL_SOUND_ALLOCATOR_H_INCLUDED
 #define STL_SOUND_ALLOCATOR_H_INCLUDED
 
-#define AUDIO_MEMORY_ALIGNMENT 16
+#define AUDIO_MEMORY_ALIGNMENT MEMORY_ALLOCATION_ALIGNMENT
 
 class ICrySizer;
 
@@ -62,19 +62,22 @@ public:
 		return INT_MAX;
 	}
 
-	void construct(pointer p, const T& val)
+	template<class U>
+	void construct(U* p, const U& val)
 	{
-		new(static_cast<void*>(p)) T(val);
+		new((void*)p) U(val);
 	}
 
-	void construct(pointer p)
+	template<class U>
+	void construct(U* p)
 	{
-		new(static_cast<void*>(p)) T();
+		new((void*)p) U();
 	}
 
-	void destroy(pointer p)
+	template<class U>
+	void destroy(U* p)
 	{
-		p->~T();
+		p->~U();
 	}
 
 	pointer new_pointer()

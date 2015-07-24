@@ -81,7 +81,7 @@ bool CEntityLayer::IsSkippedBySpec() const
 		}
 		break;
 
-	case eRT_DX9:
+	case eRT_OpenGL:
 	case eRT_DX11:
 	default:
 		if (m_specs & eSpecType_PC)

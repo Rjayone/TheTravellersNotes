@@ -135,7 +135,6 @@ public:
 
 	virtual void* pointer() const = 0;
 	virtual bool next() = 0;
-	virtual void extractInPlacePointers(IArchive& ar) const { YASLI_ASSERT(0 && "Not implemented"); }
 	virtual TypeID containerType() const = 0;
 	
 	virtual TypeID elementType() const = 0;
@@ -155,10 +154,6 @@ public:
 	: array_(array)
 	, index_(0)
 	, size_(size)
-	{
-	}
-
-	virtual void extractInPlacePointers(IArchive& ar) const
 	{
 	}
 
@@ -204,15 +199,14 @@ class IPointer
 public:
 	virtual ~IPointer() { }
 
-	virtual TypeID type() const = 0;
-	virtual void create(TypeID type) const = 0;
+	virtual const char* registeredTypeName() const = 0;
+	virtual void create(const char* registedTypeName) const = 0;
 	virtual TypeID baseType() const = 0;
 	virtual SStruct serializer() const = 0;
 	virtual void* get() const = 0;
 	virtual const void* handle() const = 0;
 	virtual TypeID pointerType() const = 0;
 	virtual IClassFactory* factory() const = 0;
-	virtual void extractInPlacePointers(IArchive& ar) const{ YASLI_ASSERT(0 && "Not implemented"); }
 	
 	void Serialize(IArchive& ar) const;
 };
@@ -224,7 +218,6 @@ public:
 
 	virtual void set(const char* value) = 0;
 	virtual const char* get() const = 0;
-	virtual const char** getInplacePointer() const{ return 0; }
 	virtual const void* handle() const = 0;
 	virtual TypeID type() const = 0;
 };
@@ -235,7 +228,6 @@ public:
 
 	virtual void set(const wchar_t* value) = 0;
 	virtual const wchar_t* get() const = 0;
-	virtual const wchar_t** getInplacePointer() const{ return 0; }
 	virtual const void* handle() const = 0;
 	virtual TypeID type() const = 0;
 };

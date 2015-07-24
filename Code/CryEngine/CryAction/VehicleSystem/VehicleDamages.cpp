@@ -198,8 +198,8 @@ bool CVehicleDamages::ProcessHit(float& damage, const HitInfo& hitInfo, bool spl
 		bFound = true;
 
 #if ENABLE_VEHICLE_DEBUG
-		char str[256] = {0};
-		if( gEnv->pGame->GetIGameFramework()->GetNetworkSafeClassName( str, 256, hitInfo.projectileClassId ) )
+		char str[256];
+		if( gEnv->pGame->GetIGameFramework()->GetNetworkSafeClassName( str, sizeof(str), hitInfo.projectileClassId ) )
 		{
 			displayDamageType = "ProjClass: ";
 			displayDamageType += str;

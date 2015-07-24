@@ -96,10 +96,10 @@ void CClipVolumeProxy::SerializeXML(XmlNodeRef &entityNodeXML, bool loading)
 			if(pVolumeNode->getAttr("GeometryFileName",&szFileName))
 			{
 				// replace %level% by level path
-				char szFilePath[_MAX_PATH] = { '\0' };
+				char szFilePath[_MAX_PATH];
 				const int nAliasNameLen = sizeof("%level%")-1;
 
-				strncpy_s( szFilePath, gEnv->p3DEngine->GetLevelFilePath(szFileName+nAliasNameLen), _MAX_PATH );
+				cry_strcpy(szFilePath, gEnv->p3DEngine->GetLevelFilePath(szFileName+nAliasNameLen));
 
 				if(m_pEntity && LoadFromFile(szFilePath))
 					gEnv->p3DEngine->UpdateClipVolume(m_pClipVolume, m_pRenderMesh, m_pBspTree, m_pEntity->GetWorldTM(), !m_pEntity->IsHidden(), m_pEntity->GetName());

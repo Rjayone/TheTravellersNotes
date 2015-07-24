@@ -89,7 +89,7 @@ private:
 	void NotifyLeaveNode(const SNodeLocator& locator, const char* serializeName, IStatsContainer& container, EStatNodeState state);
 	static IScriptTable* GetGameRulesTable();
 
-	std::auto_ptr<CScriptBind_GameStatistics>	m_scriptBind;
+	std::unique_ptr<CScriptBind_GameStatistics> m_scriptBind;
 	IGameStatisticsCallback* m_gsCallback;
 	IStatsStorageFactory* m_storageFactory;
 	CDefaultStorageFactory m_defaultStorageFactory;

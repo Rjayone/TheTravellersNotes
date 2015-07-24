@@ -34,21 +34,13 @@ namespace Boid
 	// Return random value in [-1,1] range.
 	inline float Frand()
 	{
-		return cry_frand()*2.0f - 1.0f;
+		return cry_random(-1.0f, 1.0f);
 	}
 
 	// Fast normalize vector and return square distance.
 	inline float Normalize_fast( Vec3 &v )
 	{
-		f32 fLenSqr = v.x*v.x + v.y*v.y + v.z*v.z;
-		union {f32 *pF; int32 *pUI;} u; 
-		u.pF = &fLenSqr;
-		union {f32 F; int32 UI;} uN;
-		uN.UI = 0x5f3759df - (*u.pUI >> 1);
-		f32 *n2 = &uN.F;
-		f32 d = (1.5f - (fLenSqr * 0.5f) * *n2 * *n2) * *n2;
-		v.x*=d; v.y*=d; v.z*=d;
-		return fLenSqr;
+		return v.NormalizeSafe();
 	}
 }
 

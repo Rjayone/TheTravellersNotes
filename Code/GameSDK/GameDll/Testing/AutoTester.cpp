@@ -95,7 +95,7 @@ void CAutoTester::Start(const char *stateSetup, const char *outputPath, bool qui
 	if (success && stricmp(tokenName, "state") == 0)
 	{
 		m_state = FindStateFromStr(valueName);
-		cry_strncpy(m_includeThisInFileName, valueName, sizeof(m_includeThisInFileName));
+		cry_strcpy(m_includeThisInFileName, valueName);
 
 		CryLogAlways("CAutoTester::Start initializing state (name='%s', id=%d, %s)", valueName, m_state, (m_state == ATEST_STATE_NONE) ? "invalid" : "valid");
 		DesignerWarning (m_state != ATEST_STATE_NONE, "'%s' is not the name of an auto-test state", valueName);
@@ -115,7 +115,7 @@ void CAutoTester::Start(const char *stateSetup, const char *outputPath, bool qui
 
 			if (stricmp(tokenName, "outputName") == 0)
 			{
-				cry_strncpy(m_includeThisInFileName, valueName, sizeof(m_includeThisInFileName));
+				cry_strcpy(m_includeThisInFileName, valueName);
 				CryLogAlways("CAutoTester::Start has set output name to '%s'", m_includeThisInFileName);
 				m_createVerboseFilename=false;
 				paramUsed = true;
@@ -191,12 +191,12 @@ void CAutoTester::Start(const char *stateSetup, const char *outputPath, bool qui
 					}
 					else if (stricmp(tokenName, "set") == 0)
 					{
-						cry_strncpy(m_stateData.testRunFeatureTests.m_setNames, valueName, sizeof(m_stateData.testRunFeatureTests.m_setNames));
+						cry_strcpy(m_stateData.testRunFeatureTests.m_setNames, valueName);
 						paramUsed = true;
 					}
 					else if (stricmp(tokenName, "file") == 0)
 					{
-						cry_strncpy(m_stateData.testRunFeatureTests.m_loadFileName, valueName, sizeof(m_stateData.testRunFeatureTests.m_loadFileName));
+						cry_strcpy(m_stateData.testRunFeatureTests.m_loadFileName, valueName);
 						paramUsed = true;
 					}
 					break;
@@ -205,7 +205,7 @@ void CAutoTester::Start(const char *stateSetup, const char *outputPath, bool qui
 				case ATEST_STATE_TEST_PERFORMANCE:
 					if (stricmp(tokenName, "configFile") == 0)
 					{
-						cry_strncpy(m_stateData.testPerformance.m_configFile, valueName, 256);
+						cry_strcpy(m_stateData.testPerformance.m_configFile, valueName);
 						//m_stateData.testPerformance.m_configFile = valueName;
 						CryLogAlways ("CAutoTester::Start configFile set '%s'", valueName);
 						paramUsed = true;
@@ -452,8 +452,8 @@ void CAutoTester::GetOutputPathFileName(const string& baseName, string& outputFi
 	char mapNameChrs[256];
 	char gameRulesNameChrs[256];
 
-	cry_strncpy(mapNameChrs, mapName, sizeof(mapNameChrs));
-	cry_strncpy(gameRulesNameChrs, gameRulesName, sizeof(gameRulesNameChrs));
+	cry_strcpy(mapNameChrs, mapName);
+	cry_strcpy(gameRulesNameChrs, gameRulesName);
 
 	for (int i=0; mapNameChrs[i]; i++)
 	{
@@ -621,8 +621,8 @@ void CAutoTester::WriteResults(TBitfield flags, const string * additionalTestSui
 	char mapNameChrs[256];
 	char gameRulesNameChrs[256];
 
-	cry_strncpy(mapNameChrs, mapName, sizeof(mapNameChrs));
-	cry_strncpy(gameRulesNameChrs, gameRulesName, sizeof(gameRulesNameChrs));
+	cry_strcpy(mapNameChrs, mapName);
+	cry_strcpy(gameRulesNameChrs, gameRulesName);
 
 	for (int i=0; mapNameChrs[i]; i++)
 	{

@@ -571,10 +571,10 @@ int CInteractiveObjectEx::CalculateSelectedInteractionIndex( const EntityId enti
 			}
 		}
 
-		const uint32 candidateCount = ((uint32)interactionCandidates.size());
-		const uint32 selectedIdx = CLAMP(Random(candidateCount), 0, candidateCount - 1);
-		
-		return interactionCandidates[selectedIdx];
+		if (!interactionCandidates.empty())
+		{
+			return interactionCandidates[cry_random(0U, interactionCandidates.size() - 1)];
+		}
 	}
 
 	return 0; 
@@ -707,7 +707,7 @@ uint32 CInteractiveObjectEx::GetCrcForName( const char* name ) const
 {
 	assert(name);
 
-	return gEnv->pSystem->GetCrc32Gen()->GetCRC32(name);
+	return CCrc32::Compute(name);
 }
 
 void CInteractiveObjectEx::Physicalize( pe_type physicsType, bool forcePhysicalization /*= false*/ )

@@ -64,8 +64,8 @@ void CVehiclePartEntityDelayedDetach::OnVehicleEvent( EVehicleEvent event, const
 			//don't reset timer if all ready set
 			if( m_detachTimer < 0.0f && EntityAttached() )
 			{
-				//rand time between min + max wait
-				m_detachTimer = Random( params.fParam, params.fParam2 );
+				//random time between min + max wait
+				m_detachTimer = cry_random( params.fParam, params.fParam2 );
 			}
 			break;
 		}

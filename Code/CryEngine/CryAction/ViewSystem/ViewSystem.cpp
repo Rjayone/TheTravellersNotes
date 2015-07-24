@@ -49,10 +49,8 @@ CViewSystem::CViewSystem(ISystem *pSystem) :
 	m_fBlendInPosSpeed(0.0f),
 	m_fBlendInRotSpeed(0.0f),
 	m_bPerformBlendOut(false),
-	m_fDefaultCameraNearZ(DEFAULT_NEAR),
 	m_useDeferredViewSystemUpdate(false),
-	m_bControlsAudioListeners(true),
-	m_bInvalidateAudioListeners(false)
+	m_bControlsAudioListeners(true)
 {	
 	REGISTER_CVAR2("cl_camera_noise",&m_fCameraNoise,-1,0,
 		"Adds hand-held like camera noise to the camera view. \n The higher the value, the higher the noise.\n A value <= 0 disables it.");
@@ -61,6 +59,9 @@ CViewSystem::CViewSystem(ISystem *pSystem) :
 
 	REGISTER_CVAR2("cl_ViewSystemDebug",&m_nViewSystemDebug,0,VF_CHEAT,
 		"Sets Debug information of the ViewSystem.");
+
+	REGISTER_CVAR2("cl_DefaultNearPlane", &m_fDefaultCameraNearZ, DEFAULT_NEAR, VF_CHEAT,
+		"The default camera near plane. ");
 
 	//Register as level system listener
 	if(CCryAction::GetCryAction()->GetILevelSystem())
@@ -77,6 +78,7 @@ CViewSystem::~CViewSystem()
 	pConsole->UnregisterVariable("cl_camera_noise", true);
 	pConsole->UnregisterVariable("cl_camera_noise_freq", true);
 	pConsole->UnregisterVariable("cl_ViewSystemDebug", true);
+	pConsole->UnregisterVariable("cl_DefaultNearPlane", true);
 
 	//Remove as level system listener
 	if(CCryAction::GetCryAction()->GetILevelSystem())
@@ -107,7 +109,7 @@ void CViewSystem::Update(float frameTime)
 		if (bIsActive)
 		{
 			CCamera& rCamera = pView->GetCamera();
-			pView->UpdateAudioListener(rCamera.GetMatrix(), false);
+			pView->UpdateAudioListener(rCamera.GetMatrix());
 			SViewParams currentParams = *(pView->GetCurrentParams());
 
 			rCamera.SetJustActivated(currentParams.justActivated);
@@ -634,25 +636,19 @@ void CViewSystem::UpdateSoundListeners()
 	assert(gEnv->IsEditor() && !gEnv->IsEditorGameMode());
 
 	// In Editor we may want to control global listeners outside of the game view.
-	if (!m_bControlsAudioListeners)
-		return;
-
-	CView* const __restrict pActiveView = static_cast<CView*>(GetActiveView());
-	TViewMap::const_iterator Iter(m_views.begin());
-	TViewMap::const_iterator const IterEnd(m_views.end());
-
-	bool bInvalidateListeners = m_bInvalidateAudioListeners;
-	if (bInvalidateListeners)
-		m_bInvalidateAudioListeners = false;
-
-	for (; Iter != IterEnd; ++Iter)
+	if (m_bControlsAudioListeners)
 	{
-		CView* const __restrict pView = Iter->second;
+		CView* const __restrict pActiveView = static_cast<CView*>(GetActiveView());
+		TViewMap::const_iterator Iter(m_views.begin());
+		TViewMap::const_iterator const IterEnd(m_views.end());
 
-		bool const bIsActive = (pView == pActiveView);
-
-		CCamera const& rCamera = bIsActive ? gEnv->pSystem->GetViewCamera() : pView->GetCamera();
-		pView->UpdateAudioListener(rCamera.GetMatrix(), bInvalidateListeners);
+		for (; Iter != IterEnd; ++Iter)
+		{
+			CView* const __restrict pView = Iter->second;
+			bool const bIsActive = (pView == pActiveView);
+			CCamera const& rCamera = bIsActive ? gEnv->pSystem->GetViewCamera() : pView->GetCamera();
+			pView->UpdateAudioListener(rCamera.GetMatrix());
+		}
 	}
 }
 
@@ -806,8 +802,14 @@ void CViewSystem::PostSerialize()
 void CViewSystem::SetControlAudioListeners(bool bActive)
 {
 	m_bControlsAudioListeners = bActive;
-	if (bActive)
-		m_bInvalidateAudioListeners = true;
+
+	TViewMap::const_iterator Iter(m_views.begin());
+	TViewMap::const_iterator const IterEnd(m_views.end());
+
+	for (; Iter != IterEnd; ++Iter)
+	{
+		Iter->second->SetActive(bActive);
+	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IViewSystem)
+

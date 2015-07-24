@@ -41,6 +41,8 @@ const CPlayerStateAnimationControlled::TStateIndex CPlayerStateAnimationControll
 	{
 	case PLAYER_EVENT_INTERACTIVE_ACTION:
 		return State_InteractiveAction;
+	case PLAYER_EVENT_STEALTHKILL:
+		return State_StealthKill;
 	case PLAYER_EVENT_CUTSCENE:
 		if( static_cast<const SStateEventCutScene&> (event).IsEnabling() )
 		{
@@ -77,6 +79,18 @@ const CPlayerStateAnimationControlled::TStateIndex CPlayerStateAnimationControll
 		if(player.IsPlayer())
 		{
 			gEnv->pGame->GetIGameFramework()->AllowSave( true );
+		}
+		break;
+	case PLAYER_EVENT_COOP_ANIMATION_FINISHED:
+		{
+			EntityId targetEntityID = static_cast<const SStateEventCoopAnim&> (event).GetTargetEntityId();
+			CActor* pTarget = static_cast<CActor*> (g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor( targetEntityID ));
+			player.m_stealthKill.Leave( pTarget );
+			if ( pTarget )
+			{
+				pTarget->HandleEvent( SGameObjectEvent( eCGE_ReactionEnd, eGOEF_ToExtensions ) );
+			}
+			RequestTransitionState( player, PLAYER_STATE_MOVEMENT );
 		}
 		break;
 	}

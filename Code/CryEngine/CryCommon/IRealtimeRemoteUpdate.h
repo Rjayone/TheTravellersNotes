@@ -16,17 +16,17 @@ History:
 
 #pragma once
 
-UNIQUE_IFACE struct IRealtimeUpdateGameHandler
+struct IRealtimeUpdateGameHandler
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IRealtimeUpdateGameHandler(){}
 	virtual bool UpdateGameData(XmlNodeRef oXmlNode, unsigned char * auchBinaryData) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IRealtimeRemoteUpdate
+struct IRealtimeRemoteUpdate
 { 
-
+	// <interfuscator:shuffle>
 	virtual ~IRealtimeRemoteUpdate(){}
 	// Description:
 	//   Enables or disables the realtime remote update system.
@@ -87,7 +87,7 @@ UNIQUE_IFACE struct IRealtimeRemoteUpdate
 	// Return Value:
 	//   none
 	virtual void Update()=0;
-
+	// </interfuscator:shuffle>
 };
 
 

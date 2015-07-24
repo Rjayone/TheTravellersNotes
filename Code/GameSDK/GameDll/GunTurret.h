@@ -148,7 +148,7 @@ protected:
     TRandomVal() { Range(0); }    
     
     ILINE void Range(T r) { range = r; New(); }
-    ILINE void New() { val = Random(-range, range); }
+    ILINE void New() { val = cry_random(-range, range); }
     ILINE T Val() { return val; }
     
     T val;    

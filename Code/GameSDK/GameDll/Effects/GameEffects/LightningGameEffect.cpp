@@ -120,7 +120,7 @@ CLightningGameEffect::STarget::STarget(EntityId targetEntity, int slot, const ch
 	:	m_position(ZERO)
 	,	m_entityId(targetEntity)
 	,	m_characterAttachmentSlot(slot)
-	,	m_characterAttachmentNameCRC(gEnv->pSystem->GetCrc32Gen()->GetCRC32(attachment))
+	,	m_characterAttachmentNameCRC(CCrc32::Compute(attachment))
 {
 }
 
@@ -186,7 +186,7 @@ void CLightningGameEffect::LoadData()
 	{
 		XmlNodeRef preset = rootNode->getChild(i);
 		const char* presetName = preset->getAttr("name");
-		m_lightningParams[i].m_nameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32(presetName);
+		m_lightningParams[i].m_nameCRC = CCrc32::Compute(presetName);
 		m_lightningParams[i].Reset(preset);
 	}
 }
@@ -367,7 +367,7 @@ int CLightningGameEffect::FindEmptySlot() const
 
 int CLightningGameEffect::FindPreset(const char* name) const
 {
-	uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32(name);
+	uint32 crc = CCrc32::Compute(name);
 	for (size_t i = 0; i < m_lightningParams.size(); ++i)
 		if (m_lightningParams[i].m_nameCRC == crc)
 			return int(i);

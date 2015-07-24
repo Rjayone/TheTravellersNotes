@@ -133,6 +133,7 @@
 #include "PlayerProfiles/PlayerProfileImplFS.h"
 #include "PlayerProfiles/PlayerProfileImplConsole.h"
 #include "PlayerProfiles/PlayerProfileImplDurango.h"
+#include "PlayerProfiles/PlayerProfileImplOrbis.h"
 
 #include "RemoteControl/RConServerListener.h"
 #include "RemoteControl/RConClientListener.h"
@@ -146,17 +147,12 @@
 #include "RangeSignalingSystem/RangeSignaling.h"
 
 #include "LivePreview/RealtimeRemoteUpdate.h"
-#include "TweakMenu/TweakMenuController.h"
 
 #include "CustomActions/CustomActionManager.h"
 #include "CustomEvents/CustomEventsManager.h"
 
 #ifdef GetUserName
 #undef GetUserName
-#endif
-
-#ifdef _XENON_WAT
-#include "RemoteControl/GameRemoteControl.h"
 #endif
 
 #include "TestSystem/TimeDemoRecorder.h"
@@ -174,6 +170,8 @@
 #include "Mannequin/MannequinInterface.h"
 
 #include "GameVolumes/GameVolumesManager.h"
+
+#include "RuntimeAreas.h"
 
 #include <IFlashUI.h>
 
@@ -193,11 +191,8 @@
 
 CCryAction * CCryAction::m_pThis = 0;
 
-#ifndef XENON
+
 #define DLL_INITFUNC_SYSTEM "CreateSystemInterface"
-#else
-#define DLL_INITFUNC_SYSTEM (LPCSTR)1
-#endif
 
 static const int s_saveGameFrameDelay = 3; // enough to render enough frames to display the save warning icon before the save generation
 
@@ -212,7 +207,7 @@ public:
 		switch (event)
 		{
 		case ESYSTEM_EVENT_RANDOM_SEED:
-			g_random_generator.Seed(gEnv->bNoRandomSeed?0:(uint32)wparam);
+			cry_random_seed(gEnv->bNoRandomSeed?0:(uint32)wparam);
 			break;
 
 		case ESYSTEM_EVENT_LEVEL_POST_UNLOAD:
@@ -247,11 +242,6 @@ public:
 	}
 };
 static CSystemEventListner_Action g_system_event_listener_action;
-
-void CCryAction::SeedRandomGenerator(uint32 seed)
-{
-	g_random_generator.Seed(gEnv->bNoRandomSeed?0:seed);
-}
 
 void CCryAction::DumpMemInfo(const char* format, ...)
 {
@@ -334,6 +324,7 @@ CCryAction::CCryAction()
 	m_pDevMode(0),
 	m_pTimeDemoRecorder(0),
 	m_pGameQueryListener(0),
+	m_pRuntimeAreaManager(NULL),
 	m_pVisualLog(0),
 	m_pScriptA(0),
 	m_pScriptIS(0),
@@ -389,8 +380,7 @@ CCryAction::CCryAction()
 
 	m_editorLevelName[0] = 0;
 	m_editorLevelFolder[0] = 0;
-	strncpy(m_gameGUID, "{00000000-0000-0000-0000-000000000000}", sizeof(m_gameGUID));
-	m_gameGUID[sizeof(m_gameGUID)-1] = '\0';
+	cry_strcpy(m_gameGUID, "{00000000-0000-0000-0000-000000000000}");
 }
 
 //------------------------------------------------------------------------
@@ -1780,17 +1770,8 @@ void CCryAction::rcon_command(IConsoleCmdArgs* args)
 		gEnv->pLog->LogToConsole("RCON: command [%08x]%s is sent to server for execution", cmdid, command.c_str());
 }
 
-#if defined(_RELEASE) && defined(XENON) && defined(_LIB)
-extern void EngineStartProfiler(const char * name);
-#else
 #define EngineStartProfiler(x)
-#endif
-
-#ifdef PS3
-extern void InitTerminationCheck(const char * sDescription);
-#else
 #define InitTerminationCheck(x)
-#endif
 
 static inline void InlineInitializationProcessing(const char *sDescription)
 {
@@ -1809,15 +1790,11 @@ bool CCryAction::Init(SSystemInitParams &startupParams)
 	
 	if (!startupParams.pSystem)
 	{
-#if !defined(_LIB) && !defined(PS3)
-#if defined(APPLE) 
-		m_systemDll = CryLoadLibrary("libCrySystem.dylib");
-#elif defined(LINUX)
-		m_systemDll = CryLoadLibrary("libCrySystem.so");
-#elif defined(_RELEASE) && defined(IS_EAAS)
+#if !defined(_LIB)
+#if defined(_RELEASE) && defined(IS_EAAS)
 		m_systemDll = GetModuleHandle(0);
 #else
-		m_systemDll = CryLoadLibrary("crysystem.dll");
+		m_systemDll = CryLoadLibraryDefName("CrySystem");
 #endif
 		if (!m_systemDll)
 		{
@@ -1950,12 +1927,6 @@ bool CCryAction::Init(SSystemInitParams &startupParams)
 	m_pNetworkCVars = new CNetworkCVars();
 	m_pCryActionCVars = new CCryActionCVars();
 	
-	//-- Network Stall ticker thread - PS3 only
-#ifdef PS3
-	m_pNetworkStallTickerThread = NULL;
-	m_networkStallTickerReferences = 0;
-#endif
-
 	if(m_pCryActionCVars->g_gameplayAnalyst)
 		m_pGameplayAnalyst = new CGameplayAnalyst();
 
@@ -1992,13 +1963,15 @@ bool CCryAction::Init(SSystemInitParams &startupParams)
 		m_pCallbackTimer = new CallbackTimer();
 	m_pPersistantDebug = new CPersistantDebug();
 	m_pPersistantDebug->Init();
-#if defined(XENON) || defined(PS3) || defined(DURANGO)
+#if defined(CONSOLE)
  #if PROFILE_CONSOLE_NO_SAVE
 	// Used for demos
 	m_pPlayerProfileManager = new CPlayerProfileManager(new CPlayerProfileImplNoSave());
  #else
 	#if defined(DURANGO)
 		m_pPlayerProfileManager = new CPlayerProfileManager(new CPlayerProfileImplDurango());
+	#elif defined(ORBIS)
+		m_pPlayerProfileManager = new CPlayerProfileManager(new CPlayerProfileImplOrbis());
 	#else
 		m_pPlayerProfileManager = new CPlayerProfileManager(new CPlayerProfileImplConsole());
 	#endif
@@ -2045,10 +2018,6 @@ bool CCryAction::Init(SSystemInitParams &startupParams)
 
 	// TODO: temporary testing stuff
 //	REGISTER_COMMAND( "flow_test", FlowTest,VF_NULL,"" );
-
-#ifdef _XENON_WAT
-	InitGameRemoteControl();
-#endif
 
 	m_pLocalAllocs = new SLocalAllocs();
 
@@ -2100,7 +2069,7 @@ bool CCryAction::Init(SSystemInitParams &startupParams)
 
 		RegisterActionBehaviorTreeNodes();
 	}
-	
+
 	if (gEnv->IsEditor())
 		CreatePhysicsQueues();
 
@@ -2304,6 +2273,11 @@ bool CCryAction::CompleteInit()
 		gEnv->pMaterialEffects->CompleteInit();
 	}
 
+	if (gEnv->pConsole->GetCVar("g_enableMergedMeshRuntimeAreas")->GetIVal() > 0)
+	{
+		m_pRuntimeAreaManager = new CRuntimeAreaManager();
+	}
+
 	InlineInitializationProcessing("CCryAction::CompleteInit End");
 	return true;
 }
@@ -2375,7 +2349,12 @@ void CCryAction::Shutdown()
 	//NOTE: m_pGFListeners->erase got commented out in UnregisterListener
 	//	CRY_ASSERT(0 == m_pGFListeners->size());
 	SAFE_DELETE(m_pGFListeners);
-	EndGameContext();
+
+	if (gEnv)
+	{
+		EndGameContext();
+	}
+
 	if(m_pEntitySystem)
 	{
 		m_pEntitySystem->Unload();
@@ -2434,6 +2413,8 @@ void CCryAction::Shutdown()
 	SAFE_DELETE(m_pCustomActionManager)
 
 	SAFE_DELETE(m_pGameVolumesManager);
+
+	SAFE_DELETE(m_pRuntimeAreaManager);
 
 	ReleaseScriptBinds();
 	ReleaseCVars();
@@ -3150,9 +3131,6 @@ void CCryAction::EndGameContext()
 		stl::free_container(m_pLocalAllocs->m_nextLevelToLoad);
 	}
 
-#if defined(PS3)
-	gPS3Env->pSPUBackend->ForceClearAllSPUBuckets();
-#endif
 
 #if CAPTURE_REPLAY_LOG
 	if ( addedUnloadLabel )
@@ -3323,8 +3301,8 @@ void CCryAction::InitEditor(IGameToEditorInterface* pGameToEditor)
 //------------------------------------------------------------------------
 void CCryAction::SetEditorLevel(const char *levelName, const char *levelFolder)
 {
-	strncpy(m_editorLevelName, levelName, sizeof(m_editorLevelName));
-	strncpy(m_editorLevelFolder, levelFolder, sizeof(m_editorLevelFolder));
+	cry_strcpy(m_editorLevelName, levelName);
+	cry_strcpy(m_editorLevelFolder, levelFolder);
 }
 
 //------------------------------------------------------------------------
@@ -3338,7 +3316,7 @@ void CCryAction::GetEditorLevel(char **levelName, char **levelFolder)
 const char* CCryAction::GetStartLevelSaveGameName()
 {
 	static string levelstart;
-#if defined(XENON) || defined(PS3) || defined(DURANGO)
+#if defined(CONSOLE)
 	levelstart = CRY_SAVEGAME_FILENAME;
 #else
 	levelstart = (gEnv->pGame->GetIGameFramework()->GetLevelName());
@@ -4029,15 +4007,19 @@ bool CCryAction::GetNetworkSafeClassId(uint16 &id, const char *className)
 		return false;
 }
 
-bool CCryAction::GetNetworkSafeClassName(char *className, size_t maxn, uint16 id)
+bool CCryAction::GetNetworkSafeClassName(char *className, size_t classNameSizeInBytes, uint16 id)
 {
-	string name;
-	if (CGameContext * pGameContext = GetGameContext())
+	if (className && classNameSizeInBytes > 0)
 	{
-		if (pGameContext->ClassNameFromId(name, id))
+		className[0] = 0;
+		if (CGameContext * const pGameContext = GetGameContext())
 		{
-			strncpy(className,name.c_str(), maxn);
-			return true;
+			string name;
+			if (pGameContext->ClassNameFromId(name, id))
+			{
+				cry_strcpy(className, classNameSizeInBytes, name.c_str());
+				return true;
+			}
 		}
 	}
 
@@ -4249,14 +4231,14 @@ IVisualLog * CCryAction::GetIVisualLog()
 	return m_pVisualLog;
 }
 
-ITweakMenuController* CCryAction::CreateITweakMenuController()
-{
-	return new CTweakMenuController;
-}
-
 IRealtimeRemoteUpdate * CCryAction::GetIRealTimeRemoteUpdate()
 {
 	return &CRealtimeRemoteUpdateListener::GetRealtimeRemoteUpdateListener();
+}
+
+ITimeDemoRecorder * CCryAction::GetITimeDemoRecorder() const
+{
+	return m_pTimeDemoRecorder;
 }
 
 IPlayerProfileManager * CCryAction::GetIPlayerProfileManager()
@@ -4875,8 +4857,7 @@ void CCryAction::NotifyForceFlashLoadingListeners()
 
 void CCryAction::SetGameGUID(const char * gameGUID)
 {
-	strncpy(m_gameGUID, gameGUID, sizeof(m_gameGUID)-1);
-	m_gameGUID[sizeof(m_gameGUID)-1] = '\0';
+	cry_strcpy(m_gameGUID, gameGUID);
 }
 
 INetContext* CCryAction::GetNetContext()
@@ -5267,4 +5248,4 @@ void CCryAction::GoToSegment(int x, int y)
 #include "TypeInfo_impl.h"
 #include "PlayerProfiles/RichSaveGameTypes_info.h"
 
-#include UNIQUE_VIRTUAL_WRAPPER(IGameFramework)
+

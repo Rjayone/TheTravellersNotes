@@ -19,16 +19,17 @@ BitFlagsWrapper BitFlags(Enum& value)
 {
 	BitFlagsWrapper wrapper;
 	wrapper.variable = (int*)&value;
+	wrapper.visibleMask = ~0U;
 	wrapper.description = &getEnumDescription<Enum>();
 	return wrapper;
 }
 
 template<class Enum>
-BitFlagsWrapper BitFlags(int& value)
+BitFlagsWrapper BitFlags(int& value, int visibleMask = ~0)
 {
 	BitFlagsWrapper wrapper;
 	wrapper.variable = &value;
-	wrapper.visibleMask = ~0U;
+	wrapper.visibleMask = visibleMask;
 	wrapper.description = &getEnumDescription<Enum>();
 	return wrapper;
 }

@@ -902,8 +902,8 @@ void CGameRules::ClientExplosion(SExplosionContainer &explosionContainer)
 //------------------------------------------------------------------------
 void CGameRules::ProjectileExplosion(const SProjectileExplosionParams &projectileExplosionInfo)
 {
-	char projectileNetClassName[256] = {0};
-	if(g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileNetClassName, 255, projectileExplosionInfo.m_projectileClass))
+	char projectileNetClassName[256];
+	if(g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileNetClassName, sizeof(projectileNetClassName), projectileExplosionInfo.m_projectileClass))
 	{
 		IEntityClass *pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(projectileNetClassName);
 		const SAmmoParams *pAmmoParams = pClass ? g_pGame->GetWeaponSystem()->GetAmmoParams(pClass) : NULL;
@@ -1073,7 +1073,13 @@ void CGameRules::CalculateExplosionAffectedEntities(const ExplosionInfo &explosi
 	if (gEnv->bServer)
 	{
 		UpdateAffectedEntitiesSet(affectedEntities, explosion);
-		RemoveFriendlyAffectedEntities(explosionInfo, affectedEntities);
+
+		const bool bIsClient = (explosionInfo.shooterId == g_pGame->GetIGameFramework()->GetClientActorId());
+		const bool bEnableFriendlyHit = (bIsClient ? g_pGameCVars->g_enableFriendlyPlayerHits : g_pGameCVars->g_enableFriendlyAIHits) != 0;
+		if (!bEnableFriendlyHit)
+		{
+			RemoveFriendlyAffectedEntities(explosionInfo, affectedEntities);
+		}
 	}
 }
 
@@ -1704,8 +1710,8 @@ IMPLEMENT_RMI(CGameRules, ClProcessHit)
 		IEntityClass *pProjectileClass = NULL;
 		if(params.projectileClassId != 0xFFFF)
 		{
-			char projectileClassName[129]={0};
-			if (g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileClassName, 128, params.projectileClassId))
+			char projectileClassName[128];
+			if (g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileClassName, sizeof(projectileClassName), params.projectileClassId))
 			{
 				pProjectileClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(projectileClassName);
 			}

@@ -58,7 +58,7 @@ bool CCarryEntity::Init( IGameObject *pGameObject )
 			const char* tagName = NULL;
 			if(pProperties->GetValue("PlayerTag", tagName))
 			{
-				m_playerTagCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(tagName);
+				m_playerTagCRC = CCrc32::ComputeLowercase(tagName);
 			}
 		}
 	}

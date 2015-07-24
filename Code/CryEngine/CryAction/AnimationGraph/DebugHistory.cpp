@@ -634,5 +634,4 @@ void CDebugHistoryManager::LayoutHelper(const char* id, const char* name, bool v
 }
 
 //--------------------------------------------------------------------------------
-#include UNIQUE_VIRTUAL_WRAPPER(IDebugHistoryManager)
-#include UNIQUE_VIRTUAL_WRAPPER(IDebugHistory)
+

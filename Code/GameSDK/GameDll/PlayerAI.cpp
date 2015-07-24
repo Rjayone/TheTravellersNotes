@@ -266,7 +266,7 @@ static void UpdateTagFromAGInput(CTagState* pTagState, const char* szInputValue,
 {
 	if (szInputValue && (szInputValue[0] != '\0'))
 	{
-		uint32 inputValueCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(szInputValue);
+		uint32 inputValueCRC = CCrc32::ComputeLowercase(szInputValue);
 		if (inputValueCRC == defaultAGCRC)
 		{
 			inputValueCRC = defaultTagCRC;
@@ -280,7 +280,7 @@ static void UpdateTagFromAGInput(CTagState* pTagState, const char* szInputValue,
 {
 	if (szInputValue && (szInputValue[0] != '\0'))
 	{
-		uint32 inputValueCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(szInputValue);
+		uint32 inputValueCRC = CCrc32::ComputeLowercase(szInputValue);
 		if (remapFunction)
 		{
 			inputValueCRC = remapFunction(inputValueCRC);

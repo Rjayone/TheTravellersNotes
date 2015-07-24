@@ -15,7 +15,7 @@
 #include "ActionMapManager.h"
 #include "ActionMap.h"
 #include "ActionFilter.h"
-#include <crc32.h>
+#include "CryCrc32.h"
 #include "GameObjects/GameObject.h"
 
 //------------------------------------------------------------------------
@@ -662,7 +662,7 @@ bool CActionMapManager::CreateEventPriorityList(const SInputEvent &inputEvent, T
 	bool bRes = false;
 
 	// Look up the actions which are associated with this
-	uint32 inputCRC = CRC_GEN->GetCRC32Lowercase(inputEvent.keyName.c_str());
+	uint32 inputCRC = CCrc32::ComputeLowercase(inputEvent.keyName.c_str());
 	TInputCRCToBind::iterator itCRCBound = m_inputCRCToBind.lower_bound(inputCRC);
 	TInputCRCToBind::const_iterator itCRCBoundEnd = m_inputCRCToBind.end();
 
@@ -1677,4 +1677,4 @@ void CActionMapManager::UpdateRefiringInputs()
 	removeList.clear();
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IActionMapManager)
+

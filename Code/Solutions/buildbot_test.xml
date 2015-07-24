@@ -1,0 +1,45 @@
+<project>
+	<settings>
+		<name>Crysis 3</name>
+		<execBase>Crysis3</execBase>
+		<gameBase>C3</gameBase>
+		<solution>Code\Solutions\Crysis3.sln</solution>
+		<make>Code\Solutions\Crysis3.mk</make>
+		<buildDir>\\storage\builds\builds\dev_c3</buildDir>
+		<remoteShaderDir>\\8core5\RemoteShaderCompiler</remoteShaderDir>
+		<assetDir>dev_c3</assetDir>
+		<min_xdk>2.0.20764.0</min_xdk>
+		<emails>
+			<crash>morgan@crytek.com;sven@crytek.com;nielsst@crytek.de;francescod@crytek.de</crash>
+		</emails>
+	</settings>
+	<tools>
+		<platform name="cppcheck"/>
+		<platform name="prepare_shader" solution="Code\Solutions\ShaderCacheBuild.sln">
+			<test name="shader_pc" />
+		</platform>
+	</tools>
+	<trybuild>
+		<platform name="try_win32_debug" />
+		<platform name="try_win32_profile" required="true" />
+		<platform name="try_win32_release" required="true" />
+		<platform name="try_win64_profile" required="true" />
+		<platform name="try_win32_profile_server" required="true" />
+		<platform name="try_win32_release_server" required="true" />
+		<platform name="try_win32_debug_server" />
+		<platform name="try_rc" solution="Code\Tools\Solutions\Pipeline.sln" required="true" />
+		<platform name="try_sandbox_plugin" solution="Code\Sandbox\Plugins\Plugins.sln" required="true" />
+		<platform name="try_astyle" required="false" />
+		<platform name="val_xml_lua">
+			<test name="basic_ai" />
+			<test name="advanced_ai" />
+			<test name="smartobject_ai" />
+			<test name="leveldesign" />
+			<test name="physics" />
+		</platform>
+	</trybuild>
+	<autocompile>
+	</autocompile>
+	<nightly>
+	</nightly>
+</project>

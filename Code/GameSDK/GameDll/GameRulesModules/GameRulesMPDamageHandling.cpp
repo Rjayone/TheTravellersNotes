@@ -329,8 +329,8 @@ bool CGameRulesMPDamageHandling::SvOnHit( const HitInfo &hitInfo )
 						{
 							const SFireModeParams * pParams = pFireMode->GetShared();
 
-							char projectileClassName[129] = {0};
-							g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileClassName, 128, hitInfo.projectileClassId);
+							char projectileClassName[128];
+							g_pGame->GetIGameFramework()->GetNetworkSafeClassName(projectileClassName, sizeof(projectileClassName), hitInfo.projectileClassId);
 							IEntityClass * pProjectileClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(projectileClassName);
 
 							if((pProjectileClass && (pProjectileClass == pParams->fireparams.ammo_type_class ||	pProjectileClass == pParams->plantparams.ammo_type_class)))

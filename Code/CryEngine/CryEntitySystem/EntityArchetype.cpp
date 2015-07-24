@@ -213,4 +213,4 @@ bool CEntityArchetypeManager::LoadLibrary( const string &library )
 	return true;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityArchetype)
+

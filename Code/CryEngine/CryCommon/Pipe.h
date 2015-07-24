@@ -530,8 +530,8 @@ namespace PipeTest
 		for (int iteration = 0; iteration < ITERATION_COUNT; ++iteration)
 		{
 			fprintf(f, "\n******************************   ITERATION %d   **************************************\n", iteration);
-			int pushCount = rand() % PUSH_COUNT;
-			int popCount = rand() % PUSH_COUNT;
+			int pushCount = cry_random(0,PUSH_COUNT - 1);
+			int popCount = cry_random(0,PUSH_COUNT - 1);
 
 			for (int i = 0; i < pushCount; ++i)
 			{

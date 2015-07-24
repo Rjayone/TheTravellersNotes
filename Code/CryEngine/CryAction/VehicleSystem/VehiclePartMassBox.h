@@ -58,11 +58,11 @@ protected:
 private:
 	enum EMassBoxDrivingType
 	{
-		eMASSBOXDRIVING_DEFAULT		=   1<<0,
-		eMASSBOXDRIVING_NORMAL		=   1<<1,
-		eMASSBOXDRIVING_INTHEAIR	=   1<<2,
-		eMASSBOXDRIVING_INTHEWATER	=	1<<3,
-		eMASSBOXDRIVING_DESTOYED	=	1<<4,
+		eMASSBOXDRIVING_DEFAULT			= 1<<0,
+		eMASSBOXDRIVING_NORMAL			= 1<<1,
+		eMASSBOXDRIVING_INTHEAIR		= 1<<2,
+		eMASSBOXDRIVING_INTHEWATER	= 1<<3,
+		eMASSBOXDRIVING_DESTROYED		= 1<<4,
 	};
 	void SetupDriving(EMassBoxDrivingType drive);
 	EMassBoxDrivingType m_Driving; //0 default 1 driving 2 in the air

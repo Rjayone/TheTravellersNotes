@@ -16,10 +16,9 @@
 #include <ITimer.h>
 #include <ICryAnimation.h>
 
-#undef MAX_REST_TIME
-#define MAX_REST_TIME 2.0f
+#define MIN_REST_TIME 2.0f
+#define MAX_REST_TIME 4.0f
 #define MAX_WALK_TIME 5.0f
-#define SCARE_DISTANCE 10
 
 #define FROG_JUMP_ANIM   0
 #define FROG_IDLE_ANIM   1
@@ -82,8 +81,8 @@ bool CFrogFlock::CreateEntities()
 CFrogBoid::CFrogBoid( SBoidContext &bc )
 : CBoidBird( bc )
 {
-	m_maxIdleTime = 2.0f + cry_frand()*MAX_REST_TIME;
-	m_maxActionTime = cry_frand()*MAX_WALK_TIME;
+	m_maxIdleTime = cry_random(MIN_REST_TIME, MAX_REST_TIME);
+	m_maxActionTime = cry_random(0.0f, MAX_WALK_TIME);
 	m_avoidanceAccel.Set(0,0,0);
 	m_bThrown = false;
 	m_fTimeToNextJump = 0;
@@ -286,11 +285,11 @@ void CFrogBoid::Think( float dt,SBoidContext &bc )
 		float sqrPlayerDist = m_pos.GetSquaredDistance(bc.playerPos);
 		if (m_fTimeToNextJump <= 0 || sqrPlayerDist < fScareDist*fScareDist || bScaredJump)
 		{
-			if ((cry_rand() % 128) == 0)
+			if (cry_random(0, 127) == 0)
 				ExecuteTrigger(FROG_SOUND_SCARED);
 			PlayAnimationId( FROG_JUMP_ANIM,false,0 );
 			
-			m_fTimeToNextJump = 2.0f + cry_frand()*5.0f; // about every 5-6 second.
+			m_fTimeToNextJump = cry_random(2.0f, 7.0f);
 			//m_fTimeToNextJump = 0;
 
 			// Scared by player or random jump.
@@ -357,7 +356,7 @@ void CFrogBoid::Think( float dt,SBoidContext &bc )
 				} while (!bCollision && retries-- > 0);
 			}
 
-			m_speed = bc.MinSpeed + cry_frand()*(bc.MaxSpeed-bc.MinSpeed);
+			m_speed = cry_random(bc.MinSpeed, bc.MaxSpeed);
 		}
 	}
 
@@ -422,6 +421,6 @@ void CFrogBoid::Think( float dt,SBoidContext &bc )
 	}
 
 	// Do random idle sounds.
-	if ((cry_rand() % 255) == 0)
+	if (cry_random(0, 254) == 0)
 		ExecuteTrigger(FROG_SOUND_IDLE);
 }

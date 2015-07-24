@@ -13,8 +13,6 @@ public:
 	enum EOutPort
 	{
 		eOutPort_Pc = 0,
-		eOutPort_Xbox360,
-		eOutPort_PS3,
 		eOutPort_PS4,
 		eOutPort_XboxOne
 	};
@@ -29,8 +27,6 @@ public:
 		static const SOutputPortConfig out_config[] =
 		{
 			OutputPortConfig_AnyType("PC", _HELP("Outputs the signal from Check input if the game runs on PC")),
-			OutputPortConfig_AnyType("Xbox360", _HELP("Outputs the signal from Check input if the game runs on Xbox360")),
-			OutputPortConfig_AnyType("PS3", _HELP("Outputs the signal from Check input if the game runs on PS3")),
 			OutputPortConfig_AnyType("PS4", _HELP("Outputs the signal from Check input if the game runs on PS4")),
 			OutputPortConfig_AnyType("XboxOne", _HELP("Outputs the signal from Check input if the game runs on XboxOne")),
 			{0}
@@ -49,10 +45,6 @@ public:
 				return;
 #if defined(WIN32) || defined(WIN64)
 			ActivateOutput(pActInfo, eOutPort_Pc, GetPortAny(pActInfo, eInPort_Get));
-#elif defined(XENON)
-			ActivateOutput(pActInfo, eOutPort_Xbox360, GetPortAny(pActInfo, eInPort_Get));
-#elif defined(PS3)
-			ActivateOutput(pActInfo, eOutPort_PS3, GetPortAny(pActInfo, eInPort_Get));
 #elif defined(ORBIS)
 			ActivateOutput(pActInfo, eOutPort_PS4, GetPortAny(pActInfo, eInPort_Get));
 #elif defined(DURANGO)

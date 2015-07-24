@@ -6,6 +6,8 @@
 CGameActions::CGameActions()
 : m_pFilterNoMove(0)
 , m_pFilterNoMouse(0)
+, m_pFilterMouseX(0)
+, m_pFilterMouseY(0)
 , m_pFilterNoWeaponCustomization(0)
 , m_pFilterNoFireModeSwitch(0)
 , m_pFilterMindControlMenu(0)
@@ -20,7 +22,6 @@ CGameActions::CGameActions()
 , m_pFilterCutsceneTrain(0)
 , m_pFilterVehicleNoSeatChangeAndExit(0)
 , m_pFilterNoConnectivity(0)
-, m_pFilterTweakMenu(0)
 , m_pFilterStrikePointer(0)
 , m_pFilterUseKeyOnly(0)
 , m_pFilterInfictionMenu(0)
@@ -40,6 +41,8 @@ void CGameActions::Init()
 {
 	CreateFilterNoMove();
 	CreateFilterNoMouse();
+	CreateFilterMouseX();
+	CreateFilterMouseY();
 	CreateTutorialNoMove();
 	CreateFilterNoWeaponCustomization();
 	CreateFilterNoFireModeSwitch();
@@ -56,7 +59,6 @@ void CGameActions::Init()
 	CreateFilterCutscenePlayerMoving();
 	CreateFilterVehicleNoSeatChangeAndExit();
 	CreateFilterNoConnectivity();
-	CreateFilterTweakMenu();
 	CreateFilterIngameMenu();
 	CreateFilterScoreboard();
 	CreateFilterStrikePointer();
@@ -127,18 +129,21 @@ void CGameActions::CreateFilterNoMouse()
 	m_pFilterNoMouse->Filter(attack2_xi);
 }
 
-
-void CGameActions::CreateFilterNoMouseMove()
+void CGameActions::CreateFilterMouseX()
 {
 	IActionMapManager* pActionMapMan = g_pGame->GetIGameFramework()->GetIActionMapManager();
-	m_pFilterNoMouseMove = pActionMapMan->CreateActionFilter("no_mouse_move", eAFT_ActionFail);
-
-	m_pFilterNoMouseMove->Filter(rotateyaw);
-	m_pFilterNoMouseMove->Filter(v_rotateyaw);
-	m_pFilterNoMouseMove->Filter(rotatepitch);
-	m_pFilterNoMouseMove->Filter(v_rotatepitch);
+	m_pFilterMouseX = pActionMapMan->CreateActionFilter("no_mouseX", eAFT_ActionFail);
+	m_pFilterMouseX->Filter(rotateyaw);
+	m_pFilterMouseX->Filter(xi_rotateyaw);
 }
 
+void CGameActions::CreateFilterMouseY()
+{
+	IActionMapManager* pActionMapMan = g_pGame->GetIGameFramework()->GetIActionMapManager();
+	m_pFilterMouseY = pActionMapMan->CreateActionFilter("no_mouseY", eAFT_ActionFail);
+	m_pFilterMouseY->Filter(rotatepitch);
+	m_pFilterMouseY->Filter(xi_rotatepitch);
+}
 
 void CGameActions::CreateTutorialNoMove()
 {
@@ -416,16 +421,6 @@ void CGameActions::CreateFilterNoConnectivity()
 
 	m_pFilterNoConnectivity = pActionMapMan->CreateActionFilter("no_connectivity", eAFT_ActionPass);
 	m_pFilterNoConnectivity->Filter(scores);
-}
-
-void CGameActions::CreateFilterTweakMenu()
-{
-	IActionMapManager* pActionMapMan = g_pGame->GetIGameFramework()->GetIActionMapManager();
-
-	m_pFilterTweakMenu = pActionMapMan->CreateActionFilter("tweak_menu_active", eAFT_ActionFail);
-	m_pFilterTweakMenu->Filter(toggle_explosive);
-	m_pFilterTweakMenu->Filter(toggle_weapon);
-	m_pFilterTweakMenu->Filter(toggle_grenade);
 }
 
 void CGameActions::CreateFilterIngameMenu()

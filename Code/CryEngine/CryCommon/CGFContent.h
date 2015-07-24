@@ -19,9 +19,10 @@
 
 #include <IIndexedMesh.h> // <> required for Interfuscator
 #include <IChunkFile.h> // <> required for Interfuscator
-#include "CryHeaders.h"
+#include <CryHeaders.h>
 #include <Cry_Color.h>
 #include <CryArray.h>
+#include <StringUtils.h>
 
 struct CMaterialCGF;
 
@@ -188,25 +189,6 @@ struct IntSkinVertex
 	void GetMemoryUsage(ICrySizer *pSizer) const{}
 	AUTO_STRUCT_INFO
 };
-
-struct ExtraWeightInfo
-{
-	uint16 boneIDs[4];
-	f32 weights[4];
-};
-
-struct ExtSkinVertex
-{
-	Vec3 pos;
-	f32	 u,v;
-	Vec4sf QTangent;  //stored as four int16 
-	ColorB color;			//index for blend-array
-	ColorB boneIDs;		//boneIDs per render-batch
-	ColorB weights;   //weights for every bone (four in16)
-	//	AUTO_STRUCT_INFO
-};
-
-
 
 
 
@@ -572,7 +554,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	CContentCGF( const char* filename )
 	{
-		strncpy_s(m_filename, sizeof(m_filename), filename, _TRUNCATE);
+		cry_strcpy(m_filename, filename);
 		memset(&m_exportInfo, 0, sizeof(m_exportInfo));
 		m_exportInfo.bMergeAllNodes = true;		
 		m_exportInfo.bUseCustomNormals = false;

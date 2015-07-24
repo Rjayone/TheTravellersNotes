@@ -52,7 +52,7 @@ struct ClusterPoint
 struct IClusterRequest
 {
 	typedef Functor1<IClusterRequest*> Callback;
-
+	// <interfuscator:shuffle>
 	virtual ~IClusterRequest() {};
 	virtual void SetNewPointInRequest(const uint32 pointId, const Vec3& location) = 0;
 	virtual void SetCallback(Callback callback) = 0;
@@ -60,7 +60,7 @@ struct IClusterRequest
 	virtual void SetMaximumSqDistanceAllowedPerCluster(float maxDistance) = 0;
 	virtual const ClusterPoint* GetPointAt(const size_t pointIndex) const = 0;
 	virtual size_t GetTotalClustersNumber() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -68,11 +68,11 @@ struct IClusterDetector
 {
 	typedef unsigned int ClusterRequestID;
 	typedef std::pair<ClusterRequestID, IClusterRequest*> IClusterRequestPair;
-
+	// <interfuscator:shuffle>
 	virtual ~IClusterDetector() {}
 	virtual IClusterRequestPair CreateNewRequest() = 0; 
 	virtual void QueueRequest(const ClusterRequestID requestId) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __I_Cluster_Detector_h__

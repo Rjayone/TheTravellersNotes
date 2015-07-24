@@ -458,7 +458,6 @@ struct SZoomParams
 		s->AddObject(stages);
 		s->AddObject(suffix);
 		s->AddObject(suffixAG);
-		s->AddObject(transitionAnimation);
 		s->AddObject(blur_mask);
 		s->AddObject(zoom_overlay);
 	}
@@ -468,7 +467,6 @@ struct SZoomParams
 	Quat								fp_rot_offset;
 	ItemString					suffix;
 	ItemString					suffixAG;
-	ItemString					transitionAnimation;
 	float								blur_amount;
 	ItemString					blur_mask;
 	ItemString					dof_mask;
@@ -492,7 +490,6 @@ struct SZoomParams
 	float								ironsightStrafeAnimFactor;
 	float								ironsightMovementAnimFactor;
 	float								cameraShakeMultiplier;
-	float								recoilDamping;
 
 	float								scope_nearFov;
 	bool								scope_mode;
@@ -518,8 +515,6 @@ struct SZoomSway
 	float stabilizeTime;
 	float holdBreathScale;
 	float holdBreathTime;
-	float coverScale;
-	float coverScaleTime;
 	float minScale;
 	float scaleAfterFiring;
 

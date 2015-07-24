@@ -12,17 +12,16 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(IJoystick.h)
 
 #ifndef __IJOYSTICK_H__
 #define __IJOYSTICK_H__
 
 struct ISplineInterpolator;
 
-UNIQUE_IFACE class IJoystickChannel
+class IJoystickChannel
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IJoystickChannel(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -44,10 +43,10 @@ public:
 	// TODO: Many of the above functions can be removed due to this function.
 	virtual int GetSplineCount() = 0;
 	virtual ISplineInterpolator* GetSpline(int splineIndex) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE class IJoystick
+class IJoystick
 {
 public:
 	typedef Vec3_tpl<unsigned char> Color;
@@ -58,6 +57,7 @@ public:
 		ChannelTypeVertical
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IJoystick(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -77,13 +77,13 @@ public:
 
 	virtual void SetColor(const Color& colour) = 0;
 	virtual IJoystick::Color GetColor() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE class IJoystickSet
+class IJoystickSet
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IJoystickSet(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
@@ -97,19 +97,19 @@ public:
 	virtual IJoystick* GetJoystickAtPoint(const Vec2& vPosition) = 0;
 	virtual IJoystick* GetJoystickByID(uint64 id) = 0;
 	virtual void Serialize(XmlNodeRef &nodeJoysticks,bool bLoading) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE class IJoystickContext
+class IJoystickContext
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IJoystickContext(){}
 	// Create a new joystick channel for an effector.
 	virtual IJoystick* CreateJoystick(uint64 id) = 0;
 	virtual IJoystickSet* CreateJoystickSet() = 0;
 	virtual IJoystickSet* LoadJoystickSet(const char* filename, bool bNoWarnings = false) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //__IJOYSTICK_H__

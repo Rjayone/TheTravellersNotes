@@ -18,16 +18,16 @@ public:
 	virtual ~CGroundEffect();
 
 	// IGroundEffect
-	VIRTUAL void SetHeight(float height);
-  VIRTUAL void SetHeightScale(float sizeScale, float countScale); 
-  VIRTUAL void SetBaseScale(float sizeScale, float countScale, float speedScale = 1.0f);
-  VIRTUAL void SetInterpolation(float speed);
-	VIRTUAL void SetFlags(int flags);
-	VIRTUAL int GetFlags() const;
-	VIRTUAL bool SetParticleEffect(const char *pName);
-  VIRTUAL void SetInteraction(const char *pName);  
-	VIRTUAL void Update();
-	VIRTUAL void Stop(bool stop);
+	virtual void SetHeight(float height);
+  virtual void SetHeightScale(float sizeScale, float countScale); 
+  virtual void SetBaseScale(float sizeScale, float countScale, float speedScale = 1.0f);
+  virtual void SetInterpolation(float speed);
+	virtual void SetFlags(int flags);
+	virtual int GetFlags() const;
+	virtual bool SetParticleEffect(const char *pName);
+  virtual void SetInteraction(const char *pName);  
+	virtual void Update();
+	virtual void Stop(bool stop);
 	// ~IGroundEffect
 
 	void OnRayCastDataReceived(const QueuedRayID &rayID, const RayCastResult &result);

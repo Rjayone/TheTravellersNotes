@@ -12,6 +12,7 @@ struct IShaderParamCallback : public ICryUnknown
 {
 	CRYINTERFACE_DECLARE(IShaderParamCallback, 0x4fb87a5f83f74323, 0xa7e42ca947c549d8)
 
+	// <interfuscator:shuffle>
 	// setting actual object to be worked on, but should ideally all derive 
 	// from a same base pointer for characters, rendermeshes, vegetation
 	virtual void SetCharacterInstance(ICharacterInstance* pCharInstance) {}
@@ -24,7 +25,7 @@ struct IShaderParamCallback : public ICryUnknown
 	virtual void SetupShaderParams(IShaderPublicParams* pParams, IMaterial* pMaterial) = 0;
 
 	virtual void Disable( IShaderPublicParams* pParams ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_BOOST_POINTERS(IShaderParamCallback);

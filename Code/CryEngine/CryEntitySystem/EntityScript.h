@@ -147,6 +147,10 @@ public:
 	// Initialize entity script, return true if success.
 	// Init does not load the script. you must also call LoadScript before using it.
 	virtual bool Init( const char *sTableName,const char *sScriptFilename );
+
+	// Initialise entity script from a (code-created) script table.
+	// Allows pure-C++ entities with no script file present.
+	virtual bool Init( const char *sTableName, IScriptTable* pScriptTable );
 	virtual void Release() { delete this; };
 
 	// Description:
@@ -233,6 +237,7 @@ private:
 	void Clear();
 	void EnumStates();
 	void LoadEvents();
+	void DelegateProperties();
 	void InitializeStateTable( IScriptTable *pStateTable,SScriptStateFunctions *scriptState );
 	void InitializeNamedStates( IScriptTable *pTable,int nStateNum );
 

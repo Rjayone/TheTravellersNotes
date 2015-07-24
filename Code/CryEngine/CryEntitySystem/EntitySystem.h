@@ -122,90 +122,90 @@ public:
 	bool Init(ISystem *pSystem);
 
 	// interface IEntitySystem ------------------------------------------------------
-	VIRTUAL void RegisterCharactersForRendering();
+	virtual void RegisterCharactersForRendering();
 	virtual void Release();
-	VIRTUAL void Update();
-	VIRTUAL void DeletePendingEntities();
-	VIRTUAL void PrePhysicsUpdate();
-	VIRTUAL void Reset();
-	VIRTUAL void Unload();
-	VIRTUAL void PurgeHeaps();
-	VIRTUAL IEntityClassRegistry* GetClassRegistry();	
-	VIRTUAL IEntity* SpawnEntity( SEntitySpawnParams &params,bool bAutoInit=true );
-	VIRTUAL bool InitEntity( IEntity* pEntity,SEntitySpawnParams &params );
-	VIRTUAL IEntity* GetEntity( EntityId id ) const;
-	VIRTUAL EntityId GetClonedEntityId( EntityId origId, EntityId refId ) const;
-	VIRTUAL IEntity* FindEntityByName( const char *sEntityName ) const;
-	VIRTUAL void ReserveEntityId( const EntityId id );
-	VIRTUAL EntityId ReserveUnknownEntityId();
-	VIRTUAL void RemoveEntity( EntityId entity,bool bForceRemoveNow=false );
-	VIRTUAL uint32 GetNumEntities() const;
-	VIRTUAL IEntityIt* GetEntityIterator();
-	VIRTUAL void SendEventViaEntityEvent( IEntity* piEntity, SEntityEvent &event );
-	VIRTUAL void SendEventToAll( SEntityEvent &event );
-	VIRTUAL int QueryProximity( SEntityProximityQuery &query );
-	VIRTUAL void ResizeProximityGrid( int nWidth,int nHeight );
-	VIRTUAL int GetPhysicalEntitiesInBox( const Vec3 &origin, float radius,IPhysicalEntity **&pList, int physFlags ) const;
-	VIRTUAL IEntity* GetEntityFromPhysics( IPhysicalEntity *pPhysEntity ) const;
-	VIRTUAL void AddSink( IEntitySystemSink *pSink, uint32 subscriptions, uint64 onEventSubscriptions );
-	VIRTUAL void RemoveSink( IEntitySystemSink *pSink );
-	VIRTUAL void PauseTimers(bool bPause,bool bResume=false);
-	VIRTUAL bool IsIDUsed( EntityId nID ) const;
-	VIRTUAL void GetMemoryStatistics(ICrySizer *pSizer) const;
-	VIRTUAL ISystem* GetSystem() const { return m_pISystem; };
-	VIRTUAL void SetNextSpawnId(EntityId id);
-	VIRTUAL void ResetAreas();
-	VIRTUAL void UnloadAreas();
+	virtual void Update();
+	virtual void DeletePendingEntities();
+	virtual void PrePhysicsUpdate();
+	virtual void Reset();
+	virtual void Unload();
+	virtual void PurgeHeaps();
+	virtual IEntityClassRegistry* GetClassRegistry();	
+	virtual IEntity* SpawnEntity( SEntitySpawnParams &params,bool bAutoInit=true );
+	virtual bool InitEntity( IEntity* pEntity,SEntitySpawnParams &params );
+	virtual IEntity* GetEntity( EntityId id ) const;
+	virtual EntityId GetClonedEntityId( EntityId origId, EntityId refId ) const;
+	virtual IEntity* FindEntityByName( const char *sEntityName ) const;
+	virtual void ReserveEntityId( const EntityId id );
+	virtual EntityId ReserveUnknownEntityId();
+	virtual void RemoveEntity( EntityId entity,bool bForceRemoveNow=false );
+	virtual uint32 GetNumEntities() const;
+	virtual IEntityIt* GetEntityIterator();
+	virtual void SendEventViaEntityEvent( IEntity* piEntity, SEntityEvent &event );
+	virtual void SendEventToAll( SEntityEvent &event );
+	virtual int QueryProximity( SEntityProximityQuery &query );
+	virtual void ResizeProximityGrid( int nWidth,int nHeight );
+	virtual int GetPhysicalEntitiesInBox( const Vec3 &origin, float radius,IPhysicalEntity **&pList, int physFlags ) const;
+	virtual IEntity* GetEntityFromPhysics( IPhysicalEntity *pPhysEntity ) const;
+	virtual void AddSink( IEntitySystemSink *pSink, uint32 subscriptions, uint64 onEventSubscriptions );
+	virtual void RemoveSink( IEntitySystemSink *pSink );
+	virtual void PauseTimers(bool bPause,bool bResume=false);
+	virtual bool IsIDUsed( EntityId nID ) const;
+	virtual void GetMemoryStatistics(ICrySizer *pSizer) const;
+	virtual ISystem* GetSystem() const { return m_pISystem; };
+	virtual void SetNextSpawnId(EntityId id);
+	virtual void ResetAreas();
+	virtual void UnloadAreas();
 
-	VIRTUAL void AddEntityEventListener( EntityId nEntity,EEntityEvent event,IEntityEventListener *pListener );
-	VIRTUAL void RemoveEntityEventListener( EntityId nEntity,EEntityEvent event,IEntityEventListener *pListener );
+	virtual void AddEntityEventListener( EntityId nEntity,EEntityEvent event,IEntityEventListener *pListener );
+	virtual void RemoveEntityEventListener( EntityId nEntity,EEntityEvent event,IEntityEventListener *pListener );
 
 
-	VIRTUAL EntityId FindEntityByGuid( const EntityGUID &guid ) const;
-	VIRTUAL EntityId FindEntityByEditorGuid( const char* pGuid ) const;
+	virtual EntityId FindEntityByGuid( const EntityGUID &guid ) const;
+	virtual EntityId FindEntityByEditorGuid( const char* pGuid ) const;
 
-	VIRTUAL EntityId GenerateEntityIdFromGuid( const EntityGUID &guid );
+	virtual EntityId GenerateEntityIdFromGuid( const EntityGUID &guid );
 
-	VIRTUAL IEntityArchetype* LoadEntityArchetype( XmlNodeRef oArchetype);
-	VIRTUAL IEntityArchetype* LoadEntityArchetype( const char *sArchetype );
-	VIRTUAL IEntityArchetype* CreateEntityArchetype( IEntityClass *pClass,const char *sArchetype );
+	virtual IEntityArchetype* LoadEntityArchetype( XmlNodeRef oArchetype);
+	virtual IEntityArchetype* LoadEntityArchetype( const char *sArchetype );
+	virtual IEntityArchetype* CreateEntityArchetype( IEntityClass *pClass,const char *sArchetype );
 
-	VIRTUAL void Serialize(TSerialize ser);
+	virtual void Serialize(TSerialize ser);
 
-	VIRTUAL void DumpEntities();
+	virtual void DumpEntities();
 
-	VIRTUAL void ResumePhysicsForSuppressedEntities(bool bWakeUp);
-	VIRTUAL void SaveInternalState(struct IDataWriteStream& writer) const;
-	VIRTUAL void LoadInternalState(struct IDataReadStream& reader);
+	virtual void ResumePhysicsForSuppressedEntities(bool bWakeUp);
+	virtual void SaveInternalState(struct IDataWriteStream& writer) const;
+	virtual void LoadInternalState(struct IDataReadStream& reader);
 
-	VIRTUAL int GetLayerId(const char* szLayerName) const;
-	VIRTUAL const char* GetLayerName(int layerId) const;
-	VIRTUAL int GetLayerChildCount(const char* szLayerName) const;
-	VIRTUAL const char* GetLayerChild(const char* szLayerName, int childIdx) const;
+	virtual int GetLayerId(const char* szLayerName) const;
+	virtual const char* GetLayerName(int layerId) const;
+	virtual int GetLayerChildCount(const char* szLayerName) const;
+	virtual const char* GetLayerChild(const char* szLayerName, int childIdx) const;
 
-	VIRTUAL int GetVisibleLayerIDs(uint8* pLayerMask, const uint32 maxCount) const;
+	virtual int GetVisibleLayerIDs(uint8* pLayerMask, const uint32 maxCount) const;
 
-	VIRTUAL void ToggleLayerVisibility(const char* layer, bool isEnabled, bool includeParent = true);
+	virtual void ToggleLayerVisibility(const char* layer, bool isEnabled, bool includeParent = true);
 
-	VIRTUAL void ToggleLayersBySubstring(const char* pSearchSubstring, const char* pExceptionSubstring, bool isEnable);
+	virtual void ToggleLayersBySubstring(const char* pSearchSubstring, const char* pExceptionSubstring, bool isEnable);
 
-	VIRTUAL void LockSpawning(bool lock) {m_bLocked = lock;}
+	virtual void LockSpawning(bool lock) {m_bLocked = lock;}
 	
-	VIRTUAL bool OnLoadLevel(const char* szLevelPath);
+	virtual bool OnLoadLevel(const char* szLevelPath);
 	void OnLevelLoadStart();
 
-	VIRTUAL CEntityLayer* AddLayer(const char* name, const char* parent, uint16 id, bool bHasPhysics, int specs, bool bDefaultLoaded);
-	VIRTUAL void LoadLayers(const char* dataFile);
-	VIRTUAL void LinkLayerChildren();
-	VIRTUAL void AddEntityToLayer(const char* layer, EntityId id);
-	VIRTUAL void RemoveEntityFromLayers(EntityId id);
-	VIRTUAL void ClearLayers();
-	VIRTUAL void EnableDefaultLayers(bool isSerialized = true);
-	VIRTUAL void EnableLayer(const char* layer, bool isEnable, bool isSerialized = true);
-	VIRTUAL bool IsLayerEnabled(const char* layer, bool bMustBeLoaded) const;
-	VIRTUAL bool ShouldSerializedEntity(IEntity* pEntity);
-	VIRTUAL void RegisterPhysicCallbacks();
-	VIRTUAL void UnregisterPhysicCallbacks();
+	virtual CEntityLayer* AddLayer(const char* name, const char* parent, uint16 id, bool bHasPhysics, int specs, bool bDefaultLoaded);
+	virtual void LoadLayers(const char* dataFile);
+	virtual void LinkLayerChildren();
+	virtual void AddEntityToLayer(const char* layer, EntityId id);
+	virtual void RemoveEntityFromLayers(EntityId id);
+	virtual void ClearLayers();
+	virtual void EnableDefaultLayers(bool isSerialized = true);
+	virtual void EnableLayer(const char* layer, bool isEnable, bool isSerialized = true);
+	virtual bool IsLayerEnabled(const char* layer, bool bMustBeLoaded) const;
+	virtual bool ShouldSerializedEntity(IEntity* pEntity);
+	virtual void RegisterPhysicCallbacks();
+	virtual void UnregisterPhysicCallbacks();
 	CEntityLayer* FindLayer(const char* layer);
 
 	// ------------------------------------------------------------------------
@@ -254,10 +254,10 @@ public:
 	IAreaManager* GetAreaManager() const { return (IAreaManager*)(m_pAreaManager); }
 
 	// Access to breakable manager.
-	VIRTUAL IBreakableManager* GetBreakableManager() const { return m_pBreakableManager; };
+	virtual IBreakableManager* GetBreakableManager() const { return m_pBreakableManager; };
 
 	// Access to entity pool manager.
-	VIRTUAL IEntityPoolManager* GetIEntityPoolManager() const { return (IEntityPoolManager*)m_pEntityPoolManager; }
+	virtual IEntityPoolManager* GetIEntityPoolManager() const { return (IEntityPoolManager*)m_pEntityPoolManager; }
 	CEntityPoolManager* GetEntityPoolManager() const { return m_pEntityPoolManager; }
 	
 	CEntityLoadManager* GetEntityLoadManager() const { return m_pEntityLoadManager; }
@@ -284,18 +284,18 @@ public:
 	CEntity* GetEntityFromID( EntityId id ) const;
 	ILINE bool HasEntity( EntityId id ) const {	return GetEntityFromID(id) != 0; };
 
-	VIRTUAL void PurgeDeferredCollisionEvents( bool bForce = false );
+	virtual void PurgeDeferredCollisionEvents( bool bForce = false );
 
 	void ComponentRegister( EntityId id, IComponentPtr pComponent, const int flags );
-	VIRTUAL	void ComponentEnableEvent( const EntityId id, const int eventID, const bool enable );
+	virtual void ComponentEnableEvent( const EntityId id, const int eventID, const bool enable );
 
-	VIRTUAL void DebugDraw();
+	virtual void DebugDraw();
 	
-	VIRTUAL bool EntitiesUseGUIDs() const { return m_bEntitiesUseGUIDs; }
-	VIRTUAL void SetEntitiesUseGUIDs(const bool bEnable) { m_bEntitiesUseGUIDs = bEnable; }
+	virtual bool EntitiesUseGUIDs() const { return m_bEntitiesUseGUIDs; }
+	virtual void SetEntitiesUseGUIDs(const bool bEnable) { m_bEntitiesUseGUIDs = bEnable; }
 	
-	VIRTUAL IBSPTree3D* CreateBSPTree3D( const IBSPTree3D::FaceList& faceList );
-	VIRTUAL void ReleaseBSPTree3D(IBSPTree3D*& pTree);
+	virtual IBSPTree3D* CreateBSPTree3D( const IBSPTree3D::FaceList& faceList );
+	virtual void ReleaseBSPTree3D(IBSPTree3D*& pTree);
 
 private: // -----------------------------------------------------------------
 	void DoPrePhysicsUpdate();

@@ -37,42 +37,42 @@ public:
 	virtual void AddRef() { m_nRefCount++; }
 	virtual void Release() { if (--m_nRefCount <= 0) DeleteThis(); };
 	
-	VIRTUAL IScriptSystem* GetScriptSystem() const;
-	VIRTUAL void Delegate( IScriptTable *pMetatable );
+	virtual IScriptSystem* GetScriptSystem() const;
+	virtual void Delegate( IScriptTable *pMetatable );
 
-	VIRTUAL void * GetUserDataValue();
+	virtual void * GetUserDataValue();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Set/Get chain.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL bool BeginSetGetChain(); 
-	VIRTUAL void EndSetGetChain(); 
+	virtual bool BeginSetGetChain(); 
+	virtual void EndSetGetChain(); 
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetValueAny( const char *sKey,const ScriptAnyValue &any,bool bChain=false );
-	VIRTUAL bool GetValueAny( const char *sKey,ScriptAnyValue &any,bool bChain=false );
+	virtual void SetValueAny( const char *sKey,const ScriptAnyValue &any,bool bChain=false );
+	virtual bool GetValueAny( const char *sKey,ScriptAnyValue &any,bool bChain=false );
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetAtAny( int nIndex,const ScriptAnyValue &any );
-	VIRTUAL bool GetAtAny( int nIndex,ScriptAnyValue &any );
+	virtual void SetAtAny( int nIndex,const ScriptAnyValue &any );
+	virtual bool GetAtAny( int nIndex,ScriptAnyValue &any );
 	
-	VIRTUAL ScriptVarType GetValueType( const char *sKey );
-	VIRTUAL ScriptVarType GetAtType( int nIdx );
+	virtual ScriptVarType GetValueType( const char *sKey );
+	virtual ScriptVarType GetAtType( int nIdx );
 	
 	//////////////////////////////////////////////////////////////////////////
 	// Iteration.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL IScriptTable::Iterator BeginIteration(bool resolvePrototypeTableAsWell = false);
-	VIRTUAL bool MoveNext( Iterator &iter );
-	VIRTUAL void EndIteration( const Iterator &iter );
+	virtual IScriptTable::Iterator BeginIteration(bool resolvePrototypeTableAsWell = false);
+	virtual bool MoveNext( Iterator &iter );
+	virtual void EndIteration( const Iterator &iter );
 	//////////////////////////////////////////////////////////////////////////
 
-	VIRTUAL void Clear();
-	VIRTUAL int  Count();
-	VIRTUAL bool Clone( IScriptTable *pSrcTable,bool bDeepCopy=false,bool bCopyByReference=false );
-	VIRTUAL void Dump(IScriptTableDumpSink *p);
+	virtual void Clear();
+	virtual int  Count();
+	virtual bool Clone( IScriptTable *pSrcTable,bool bDeepCopy=false,bool bCopyByReference=false );
+	virtual void Dump(IScriptTableDumpSink *p);
 	
-	VIRTUAL bool AddFunction( const SUserFunctionDesc &fd );
+	virtual bool AddFunction( const SUserFunctionDesc &fd );
 
 	// --------------------------------------------------------------------------
 	void CreateNew();

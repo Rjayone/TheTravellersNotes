@@ -931,4 +931,4 @@ IFlowGraphPtr CMaterialEffects::LoadNewMatFXFlowGraph(const string& filename)
 }
 
 
-#include UNIQUE_VIRTUAL_WRAPPER(IMaterialEffects)
+

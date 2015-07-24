@@ -16,7 +16,7 @@ namespace
 		IAIObject* const pAiObject = pEntity->GetAI();
 		if ( pAiObject )
 		{
-			const uint32 signalNameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( signalName );
+			const uint32 signalNameCrc = CCrc32::Compute( signalName );
 			gEnv->pAISystem->SendSignal( SIGNALFILTER_SENDER, 1, signalName, pAiObject, NULL, signalNameCrc );
 		}
 	}
@@ -330,11 +330,11 @@ public:
 		}
 
 		const char* eventName = reinterpret_cast< const char* >( event.nParam[ 0 ] );
-		const uint32 eventNameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( eventName );
+		const uint32 eventNameCrc = CCrc32::Compute( eventName );
 
-		static const uint32 s_arrivedAtPathEndCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( "ArrivedAtPathEnd" );
-		static const uint32 s_arrivedCloseToPathEndCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( "ArrivedCloseToPathEnd" );
-		static const uint32 s_pathFollowingStoppedCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( "PathFollowingStopped" );
+		static const uint32 s_arrivedAtPathEndCrc = CCrc32::Compute( "ArrivedAtPathEnd" );
+		static const uint32 s_arrivedCloseToPathEndCrc = CCrc32::Compute( "ArrivedCloseToPathEnd" );
+		static const uint32 s_pathFollowingStoppedCrc = CCrc32::Compute( "PathFollowingStopped" );
 
 		if ( eventNameCrc == s_arrivedAtPathEndCrc )
 		{
@@ -643,9 +643,9 @@ public:
 		}
 
 		const char* eventName = reinterpret_cast< const char* >( event.nParam[ 0 ] );
-		const uint32 eventNameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( eventName );
+		const uint32 eventNameCrc = CCrc32::Compute( eventName );
 
-		static const uint32 s_forceAttentionTargetFinishedCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32( "ForceAttentionTargetFinished" );
+		static const uint32 s_forceAttentionTargetFinishedCrc = CCrc32::Compute( "ForceAttentionTargetFinished" );
 		
 		if ( eventNameCrc == s_forceAttentionTargetFinishedCrc )
 		{

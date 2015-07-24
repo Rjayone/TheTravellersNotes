@@ -374,89 +374,102 @@ private:
 
 class CFlowNode_WeaponAmmo : public CFlowBaseNode<eNCT_Singleton>
 {
-public:
-	CFlowNode_WeaponAmmo( SActivationInfo * pActInfo )
-	{
-	}
+	enum EInputs
+	{ 
+		IN_SET = 0,
+		IN_GET,
+		IN_AMMOTYPE,
+		IN_AMMOCOUNT,
+		IN_ADD
+	};
 
-	void GetConfiguration( SFlowNodeConfig& config )
+	enum EOutputs
 	{
-		static const SInputPortConfig inputs[] = 
-		{ 
-			InputPortConfig_Void   ( "Trigger", _HELP("Trigger this port to give/take ammo and clips")),
-			InputPortConfig<string>( "Weapon", _HELP("Weapon name"), 0, _UICONFIG("enum_global:weapon") ),
-			InputPortConfig<string>( "AmmoType", _HELP("Ammo name"), 0, _UICONFIG("enum_global_ref:ammo_%s:weapon") ),
-			InputPortConfig<int>   ( "AmmoCount", _HELP("Ammo amount to give/take")),
+		OUT_MAGAZINE = 0,
+		OUT_INVENTORY,
+		OUT_TOTAL
+	};
+
+public:
+	CFlowNode_WeaponAmmo(SActivationInfo* pActInfo) {}
+
+	void GetConfiguration(SFlowNodeConfig& config)
+	{
+		static const SInputPortConfig in_ports[] = 
+		{
+			InputPortConfig_Void( "Set", _HELP("" )),
+			InputPortConfig_Void( "Get", _HELP("" )),
+			InputPortConfig<string>( "AmmoType", _HELP("Select Ammo type" ), _HELP(""), _UICONFIG("enum_global:ammos")),
+			InputPortConfig<int>( "AmountCount", _HELP("Select amount to add/set" ), _HELP("")),
+			InputPortConfig<bool>( "Add", _HELP("Add or Set the ammo count" ), _HELP("")),
 			{0}
 		};
-		static const SOutputPortConfig outputs[] = 
-		{
-			OutputPortConfig<int>("outAmmo", _HELP("Returns the amount of ammo after adding ammo." )),
-			{0}
-		};  
 
-		config.sDescription = "Give or Take ammo to/from local player. Weapon and AmmoType must match [e.g. \"SOCOM\" and \"bullet\"]";
-		config.pInputPorts = inputs;
-		config.pOutputPorts = outputs;
+		static const SOutputPortConfig out_ports[] = 
+		{
+			OutputPortConfig<int>("MagazineAmmo", _HELP("")),
+			OutputPortConfig<int>("InventoryAmmo", _HELP("")),
+			OutputPortConfig<int>("TotalAmmo", _HELP("")),
+			{0}
+		};
+
+		config.sDescription = _HELP("Add a specified amount of ammo, of a specified ammo type to the inventory.");
+		config.nFlags |= EFLN_TARGET_ENTITY;
+		config.pInputPorts = in_ports;
+		config.pOutputPorts = out_ports;
 		config.SetCategory(EFLN_APPROVED);
 	}
 
-	void ProcessEvent( EFlowEvent event, SActivationInfo *pActInfo )
-	{ 
-		switch (event)
+	void ProcessEvent(EFlowEvent event, SActivationInfo* pActInfo)
+	{
+		if (event == eFE_Activate && (IsPortActive(pActInfo, IN_GET) || IsPortActive(pActInfo, IN_SET)))
 		{
-		case (eFE_Activate):
+			IActor* pActor = GetInputActor(pActInfo);
+			if (!pActor) 
+				return;
+			
+			IInventory *pInventory = pActor->GetInventory();
+			if (pInventory)
 			{
-				if (!IsPortActive(pActInfo, 0))
-					return;
-
-				IItemSystem* pItemSys = CCryAction::GetCryAction()->GetIItemSystem();
-
-				// get actor
-				IActor* pActor = CCryAction::GetCryAction()->GetClientActor();
-				if (!pActor) 
-					return;
-
-				IInventory *pInventory = pActor->GetInventory();
-				if (!pInventory)
-					return;
-
-				IEntityClass* pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(GetPortString(pActInfo,1));
-				IItem* pItem = pItemSys->GetItem(pInventory->GetItemByClass(pClass));
-				if (!pItem || !pItem->GetIWeapon())
-				{
-					pItem = pActor->GetCurrentItem();
-					if (!pItem || pItem->GetEntity()->GetClass() != pClass || !pItem->GetIWeapon())
-					{
-						GameWarning("[flow] CFlowNode_WeaponAmmo: No item/weapon %s!", GetPortString(pActInfo,1).c_str());
-						return;
-					}
-				}
-				IWeapon *pWeapon = pItem->GetIWeapon();
-				const string& ammoType = GetPortString(pActInfo,2);
+				const string& ammoType = GetPortString(pActInfo, IN_AMMOTYPE);
 				IEntityClass* pAmmoClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ammoType.c_str());
-				CRY_ASSERT(pAmmoClass);
-				IFireMode* pCurrentFireMode = pWeapon->GetFireMode(pWeapon->GetCurrentFireMode());
-				if (pCurrentFireMode)
-				{
-					int clipSize = pCurrentFireMode->GetClipSize();
-					int ammo = pWeapon->GetAmmoCount(pAmmoClass) + GetPortInt(pActInfo,3);
-					ammo = CLAMP(ammo, 0, clipSize);
-					pWeapon->SetAmmoCount(pAmmoClass, ammo);
-				}
 
-				ActivateOutput(pActInfo, 0, pWeapon->GetAmmoCount(pAmmoClass));
+				if (pAmmoClass)
+				{
+					if (IsPortActive(pActInfo, IN_SET))
+					{
+						const bool bAdd = GetPortBool(pActInfo, IN_ADD);
+						const int ammoAmount = GetPortInt(pActInfo, IN_AMMOCOUNT);
+
+						pInventory->SetAmmoCount(pAmmoClass, bAdd ? (ammoAmount + pInventory->GetAmmoCount(pAmmoClass)) : (ammoAmount));
+					}
+
+					int magazineAmmo = 0;
+					int inventoryAmmo = pInventory->GetAmmoCount(pAmmoClass);
+
+					if (IItem* pItem = pActor->GetCurrentItem())
+					{
+						IWeapon* pCurrentWeapon = GetWeapon(pItem->GetEntityId());
+
+						if (pCurrentWeapon)
+						{
+							magazineAmmo = pCurrentWeapon->GetAmmoCount(pAmmoClass);
+						}
+					}
+
+					ActivateOutput(pActInfo, OUT_MAGAZINE, magazineAmmo);
+					ActivateOutput(pActInfo, OUT_INVENTORY, inventoryAmmo);
+					ActivateOutput(pActInfo, OUT_TOTAL, (magazineAmmo + inventoryAmmo));
+				}
 			}
-			break;
 		}
 	}
 
-	virtual void GetMemoryUsage(ICrySizer * s) const
+	virtual void GetMemoryUsage(ICrySizer* s) const
 	{
 		s->Add(*this);
 	}
 };
-
 //#define DEBUG_NODEFIREWEAPON 
 
 #ifdef DEBUG_NODEFIREWEAPON
@@ -583,7 +596,7 @@ public:
 		float acc = GetPortFloat( pActInfo, IN_ACCURACY );
 		if (acc<1)
 		{
-			bool itHits = cry_frand() < acc;
+			bool itHits = cry_random(0.0f, 1.0f) < acc;
 			if (!itHits)
 			{
 				// what this code does is: 
@@ -596,10 +609,10 @@ public:
 				const float MAX_ERROR_ANGLE = 5.f; // degrees
 
 				// error angle from weapon to target				
-				float errorAngle = MIN_ERROR_ANGLE + (MAX_ERROR_ANGLE-MIN_ERROR_ANGLE) * cry_frand();
+				float errorAngle = cry_random(MIN_ERROR_ANGLE, MAX_ERROR_ANGLE);
 				
 				// 2d angle, in the plane normal to the vector from weapon to target.
-				float dirErrorAngle = cry_frand() * 360;
+				float dirErrorAngle = cry_random(0.0f, 360.0f);
 				
 				// could be done with just 1 sqrt instead 2, but is not really worth it here.
 				Vec3 vecToTarget = pActInfo->pEntity->GetPos() - realTargetPos;
@@ -849,5 +862,5 @@ public:
 REGISTER_FLOW_NODE("Weapon:AutoSightWeapon",CFlowNode_AutoSightWeapon);
 REGISTER_FLOW_NODE("Weapon:FireWeapon",CFlowNode_FireWeapon);
 REGISTER_FLOW_NODE("Weapon:WeaponListener",CFlowNode_WeaponListener);
-REGISTER_FLOW_NODE("Weapon:ChangeAmmo",CFlowNode_WeaponAmmo);
+REGISTER_FLOW_NODE("Weapon:Ammo", CFlowNode_WeaponAmmo);
 REGISTER_FLOW_NODE("Weapon:ChangeFireMode",CFlowNode_ChangeFireMode);

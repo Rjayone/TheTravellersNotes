@@ -175,7 +175,6 @@ inline float AngleDifference(float a, float b)
 // not the best place for this
 namespace GameUtils
 {
-#if !defined(__SPU__)
 	inline void timeToString(time_t value, string& outString)
 	{
 		struct tm dateTime;
@@ -223,7 +222,6 @@ namespace GameUtils
 		sTimeString.Format("%02d:%02d:%02d.%03d", (int)hours, (int)minutes, (int)seconds, (int)milliseconds);
 		return sTimeString.c_str();
 	}
-#endif
 };
 
 template<class T, class U>

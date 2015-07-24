@@ -87,7 +87,7 @@ void CVehicleDamageBehaviorBlowTire::Activate(bool activate)
       {
         // add angular impulse
         pe_action_impulse angImp;
-        float amount = m_pVehicle->GetMass() * status.speed * Random(0.25f, 0.45f) * -sgn(wheelTM.GetTranslation().x);
+        float amount = m_pVehicle->GetMass() * status.speed * cry_random(0.25f, 0.45f) * -sgn(wheelTM.GetTranslation().x);
         angImp.angImpulse = pEntity->GetWorldTM().TransformVector(Vec3(0,0,amount));    
         pPhysics->Action(&angImp);
       }
@@ -101,7 +101,7 @@ void CVehicleDamageBehaviorBlowTire::Activate(bool activate)
       pe_action_impulse imp;
       imp.point = pPart->GetWorldTM().GetTranslation();
 
-      float amount = m_pVehicle->GetMass() * Random(0.1f, 0.15f);
+      float amount = m_pVehicle->GetMass() * cry_random(0.1f, 0.15f);
 
       if (pWheel)
       {

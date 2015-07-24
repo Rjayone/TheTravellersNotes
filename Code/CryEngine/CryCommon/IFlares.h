@@ -107,18 +107,18 @@ struct SLensFlareRenderParam
 	IShader* pShader;
 };
 
-UNIQUE_IFACE class ISoftOcclusionQuery
+class ISoftOcclusionQuery
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~ISoftOcclusionQuery() {}
 
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE class IOpticsElementBase MFP_SIZE_ENFORCE
+class IOpticsElementBase MFP_SIZE_ENFORCE
 {
 public:
 
@@ -135,6 +135,7 @@ public:
 			delete this;
 	}
 
+	// <interfuscator:shuffle>
 	virtual EFlareType GetType() = 0;
 	virtual bool IsGroup() const = 0;
 	virtual string GetName() const = 0;
@@ -161,7 +162,7 @@ public:
 
 	virtual void SetOpticsReference( IOpticsElementBase* pReference ) {}
 	virtual IOpticsElementBase* GetOpticsReference() const	{	return NULL; }
-
+	// </interfuscator:shuffle>
 
 #if defined(FLARES_SUPPORT_EDITING)
 	virtual DynArray<FuncVariableGroup> GetEditorParamGroups()=0;
@@ -172,10 +173,10 @@ private:
 	volatile int m_nRefCount;
 };
 
-UNIQUE_IFACE class IOpticsManager
+class IOpticsManager
 {	
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IOpticsManager(){}
 	virtual void Reset() = 0;
 	virtual IOpticsElementBase* Create( EFlareType type ) const = 0;
@@ -186,7 +187,7 @@ public:
 	virtual bool Rename( const char* fullFlareName, const char* newFullFlareName ) = 0;
 	virtual void GetMemoryUsage( ICrySizer* pSizer ) const = 0;
 	virtual void Invalidate() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 typedef _smart_ptr<IOpticsElementBase> IOpticsElementBasePtr;

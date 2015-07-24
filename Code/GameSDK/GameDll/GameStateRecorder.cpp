@@ -1114,10 +1114,7 @@ float CGameStateRecorder::RenderInfo(float y, bool bRecording)
 
 							char itemName[32];
 							const char* originalItemName = pItem->GetEntity() ? pItem->GetEntity()->GetName():"(null)";
-							int length = strlen(originalItemName);
-							length = min(length,31);
-							strncpy(itemName,originalItemName,length);
-							itemName[length]=0;
+							cry_strcpy(itemName,originalItemName);
 							pRenderer->Draw2dLabel( 1,y+retY, 1.3f, bError? fColorWarning : fColor, false,"     %s",itemName);
 
 							if(bError)
@@ -1203,10 +1200,7 @@ float CGameStateRecorder::RenderInfo(float y, bool bRecording)
 							pRenderer->Draw2dLabel( 1,y+retY, 1.3f, fColor,false," %2d)",i+1);
 
 							char itemName[32];
-							int length = strlen(szItemName);
-							length = min(length,31);
-							strncpy(itemName,szItemName,length);
-							itemName[length]=0;
+							cry_strcpy(itemName,szItemName);
 							pRenderer->Draw2dLabel( 1,y+retY, 1.3f, bError? fColorWarning : fColor, false,"     %s",itemName);
 
 							if(bError)

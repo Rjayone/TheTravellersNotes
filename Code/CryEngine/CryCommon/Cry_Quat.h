@@ -17,7 +17,7 @@
 //----------------------------------------------------------------------
 // Quaternion
 //----------------------------------------------------------------------
-template <typename F> struct __passinreg Quat_tpl
+template <typename F> struct Quat_tpl
 {
 
 	Vec3_tpl<F> v;	F w;
@@ -994,7 +994,7 @@ template<class F1,class F2> ILINE void operator %= (Quat_tpl<F1> &q, const Quat_
 //----------------------------------------------------------------------
 // Quaternion with translation vector
 //----------------------------------------------------------------------
-template <typename F> struct __passinreg QuatT_tpl
+template <typename F> struct QuatT_tpl
 {
 	Quat_tpl<F> q; //this is the quaternion  
 	Vec3_tpl<F> t; //this is the translation vector and a scalar (for uniform scaling?)
@@ -1262,7 +1262,7 @@ template<class F,class F2> Vec3_tpl<F> operator * (const QuatT_tpl<F> &q, const 
 // Similar to QuatT, but s is not ignored. 
 // Most functions then differ, so we don't inherit.
 //----------------------------------------------------------------------
-template <typename F> struct __passinreg QuatTS_tpl
+template <typename F> struct QuatTS_tpl
 {
 	Quat_tpl<F>	q;
 	Vec3_tpl<F>	t; 
@@ -1455,7 +1455,7 @@ template<class F,class F2> ILINE Vec3_tpl<F> operator * ( const QuatTS_tpl<F> &q
 //----------------------------------------------------------------------
 // Quaternion with translation vector and non-uniform scale
 //----------------------------------------------------------------------
-template <typename F> struct __passinreg QuatTNS_tpl
+template <typename F> struct QuatTNS_tpl
 {
 	Quat_tpl<F>	q;
 	Vec3_tpl<F>	t; 
@@ -1658,7 +1658,7 @@ template<class F1,class F2> ILINE Vec3_tpl<F1> operator * ( const QuatTNS_tpl<F1
 //----------------------------------------------------------------------
 // Dual Quaternion
 //----------------------------------------------------------------------
-template <typename F> struct __passinreg DualQuat_tpl
+template <typename F> struct DualQuat_tpl
 {
 	Quat_tpl<F>	nq;
 	Quat_tpl<F>	dq; 
@@ -1747,9 +1747,13 @@ template <typename F> struct __passinreg DualQuat_tpl
 	AUTO_STRUCT_INFO
 };
 
+#ifndef MAX_API_NUM
 typedef DualQuat_tpl<f32>  DualQuat; //always 32 bit
 typedef DualQuat_tpl<f64>  DualQuatd;//always 64 bit
 typedef DualQuat_tpl<real> DualQuatr;//variable float precision. depending on the target system it can be between 32, 64 or 80 bit
+#else
+typedef DualQuat_tpl<f32> CryDualQuat;
+#endif
 
 template<class F1, class F2> 
 ILINE DualQuat_tpl<F1> operator*(const DualQuat_tpl<F1> &l, const F2 r) 
@@ -1801,12 +1805,12 @@ template<class F1, class F2>
 ILINE Vec3_tpl<F1> operator*(const DualQuat_tpl<F1> &dq, const Vec3_tpl<F2> &v) 
 {
   F2 t;
-  register const F2 ax=dq.nq.v.y*v.z-dq.nq.v.z*v.y+dq.nq.w*v.x;
-  register const F2 ay=dq.nq.v.z*v.x-dq.nq.v.x*v.z+dq.nq.w*v.y;
-  register const F2 az=dq.nq.v.x*v.y-dq.nq.v.y*v.x+dq.nq.w*v.z;
-  register F2 x=dq.dq.v.x*dq.nq.w-dq.nq.v.x*dq.dq.w+dq.nq.v.y*dq.dq.v.z-dq.nq.v.z*dq.dq.v.y; x+=x; t=(az*dq.nq.v.y-ay*dq.nq.v.z); x+=t+t+v.x; 
-  register F2 y=dq.dq.v.y*dq.nq.w-dq.nq.v.y*dq.dq.w+dq.nq.v.z*dq.dq.v.x-dq.nq.v.x*dq.dq.v.z; y+=y; t=(ax*dq.nq.v.z-az*dq.nq.v.x); y+=t+t+v.y; 
-  register F2 z=dq.dq.v.z*dq.nq.w-dq.nq.v.z*dq.dq.w+dq.nq.v.x*dq.dq.v.y-dq.nq.v.y*dq.dq.v.x; z+=z; t=(ay*dq.nq.v.x-ax*dq.nq.v.y); z+=t+t+v.z; 
+  const F2 ax=dq.nq.v.y*v.z-dq.nq.v.z*v.y+dq.nq.w*v.x;
+  const F2 ay=dq.nq.v.z*v.x-dq.nq.v.x*v.z+dq.nq.w*v.y;
+  const F2 az=dq.nq.v.x*v.y-dq.nq.v.y*v.x+dq.nq.w*v.z;
+  F2 x=dq.dq.v.x*dq.nq.w-dq.nq.v.x*dq.dq.w+dq.nq.v.y*dq.dq.v.z-dq.nq.v.z*dq.dq.v.y; x+=x; t=(az*dq.nq.v.y-ay*dq.nq.v.z); x+=t+t+v.x; 
+  F2 y=dq.dq.v.y*dq.nq.w-dq.nq.v.y*dq.dq.w+dq.nq.v.z*dq.dq.v.x-dq.nq.v.x*dq.dq.v.z; y+=y; t=(ax*dq.nq.v.z-az*dq.nq.v.x); y+=t+t+v.y; 
+  F2 z=dq.dq.v.z*dq.nq.w-dq.nq.v.z*dq.dq.w+dq.nq.v.x*dq.dq.v.y-dq.nq.v.y*dq.dq.v.x; z+=z; t=(ay*dq.nq.v.x-ax*dq.nq.v.y); z+=t+t+v.z; 
   return Vec3_tpl<F2>(x,y,z);
 }
 

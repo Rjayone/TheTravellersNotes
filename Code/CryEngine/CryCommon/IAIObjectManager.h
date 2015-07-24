@@ -20,7 +20,7 @@ enum EGetFirstFilter
 
 struct IAIObjectManager
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIObjectManager(){}
 	virtual IAIObject *CreateAIObject(const AIObjectParams& params) = 0;
 	virtual void RemoveObject(tAIObjectID objectID) = 0;//same as destroy??
@@ -37,7 +37,7 @@ struct IAIObjectManager
 	// Iterates over AI objects within specified range.
 	// Parameter 'pos' and 'rad' specify the enclosing sphere, for other parameters see GetFirstAIObject.
 	virtual IAIObjectIter* GetFirstAIObjectInRange(EGetFirstFilter filter, short n, const Vec3& pos, float rad, bool check2D) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 

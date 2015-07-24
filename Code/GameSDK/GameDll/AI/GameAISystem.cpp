@@ -48,6 +48,7 @@ GameAISystem Tasks
 
 	#define FULL_WINDOWS_HEADER
 	#include "CryWindows.h"
+	#include <shellapi.h>
 
 	#define AssertEntityManipulationIsAllowed() if (m_state != Idle) Error(__FUNCTION__);
 
@@ -476,7 +477,7 @@ void CGameAISystem::InformContentCreatorOfError(string logMessage) const
 						"Here is the callstack:%%0A"
 						+ callstack);
 
-					ShellExecute(0, "open", command.c_str(), "", "", SW_NORMAL);
+					::ShellExecute(0, "open", command.c_str(), "", "", SW_NORMAL);
 					CryMessageBox("Thanks! The email is being created for you.\nHave a nice day! :)", dialogCaption, MB_ICONINFORMATION | MB_OK);
 				}
 				else

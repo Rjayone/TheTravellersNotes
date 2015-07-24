@@ -5,29 +5,6 @@
 #include "IRenderAuxGeom.h"
 
 
-
-
-namespace
-{
-
-
-
-	Vec3 RandomUnitSphere()
-	{
-		Vec3 result;
-		result.x = Random(-1.0f, 1.0f);
-		result.y = Random(-1.0f, 1.0f);
-		result.z = Random(-1.0f, 1.0f);
-		result.NormalizeSafe(Vec3Constants<float>::fVec3_OneX);
-		return result;
-	}
-
-
-}
-
-
-
-
 void CLightningRenderNode::CTriStrip::Reset()
 {
 	m_vertices.clear();
@@ -135,8 +112,8 @@ void CLightningRenderNode::CSegment::Create(const SLightningParams& desc, SPoint
 	m_pointData->m_velocity.push_back(Vec3(ZERO));
 	for (int i = 1; i < numSegs; ++i)
 	{
-		m_pointData->m_points.push_back(RandomUnitSphere());
-		m_pointData->m_velocity.push_back(RandomUnitSphere() + Vec3(0.0f, 0.0f, 1.0f));
+		m_pointData->m_points.push_back(cry_random_unit_vector<Vec3>());
+		m_pointData->m_velocity.push_back(cry_random_unit_vector<Vec3>() + Vec3(0.0f, 0.0f, 1.0f));
 	}
 	m_pointData->m_points.push_back(Vec3(ZERO));
 	m_pointData->m_velocity.push_back(Vec3(ZERO));
@@ -144,7 +121,7 @@ void CLightningRenderNode::CSegment::Create(const SLightningParams& desc, SPoint
 	m_pointData->m_fuzzyPoints.push_back(Vec3(ZERO));
 	for (int i = 1; i < numFuzzySegs; ++i)
 	{
-		m_pointData->m_fuzzyPoints.push_back(RandomUnitSphere());
+		m_pointData->m_fuzzyPoints.push_back(cry_random_unit_vector<Vec3>());
 	}
 	m_pointData->m_fuzzyPoints.push_back(Vec3(ZERO));
 
@@ -438,7 +415,7 @@ float CLightningRenderNode::TriggerSpark()
 	m_dirtyBBox = true;
 	m_deviationMult = 1.0f;
 
-	float lightningTime = Random(
+	float lightningTime = cry_random(
 		m_pLightningDesc->m_strikeTimeMin,
 		m_pLightningDesc->m_strikeTimeMax);
 
@@ -498,7 +475,7 @@ void CLightningRenderNode::CreateSegment(Vec3 originPosition, int parentIdx, int
 	segmentData.Create(*m_pLightningDesc, &m_pointData, parentIdx, parentPointIdx, originPosition, m_receiverPosition, duration, 1.0f/(level+1));
 	m_segments.push_back(segmentData);
 
-	float randVal = Random(
+	float randVal = cry_random(
 		0.0f,
 		max(1.0f, m_pLightningDesc->m_branchProbability));
 	float prob = m_pLightningDesc->m_branchProbability;
@@ -509,7 +486,7 @@ void CLightningRenderNode::CreateSegment(Vec3 originPosition, int parentIdx, int
 	
 	for (int i = 0; i < numBranches; ++i)
 	{
-		int point = Random(m_pLightningDesc->m_strikeNumSegments * m_pLightningDesc->m_strikeNumPoints);
+		int point = cry_random(0, m_pLightningDesc->m_strikeNumSegments * m_pLightningDesc->m_strikeNumPoints - 1);
 		CreateSegment(
 			segmentData.GetPoint(*m_pLightningDesc, m_pointData, point, m_deviationMult),
 			segmentIdx, point, duration, level + 1);

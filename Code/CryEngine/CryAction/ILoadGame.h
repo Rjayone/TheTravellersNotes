@@ -20,7 +20,7 @@ struct ILoadGame
 	virtual bool GetMetadata( const char * tag, int& value ) = 0;
 	virtual bool HaveMetadata( const char * tag ) = 0;
 	// create a serializer for some data section
-	virtual std::auto_ptr<TSerialize> GetSection( const char * section ) = 0;
+	virtual std::unique_ptr<TSerialize> GetSection( const char * section ) = 0;
 	virtual bool HaveSection( const char * section ) = 0;
 
 	// finish - indicate success (negative success *must* remove file)

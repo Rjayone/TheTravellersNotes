@@ -19,10 +19,11 @@ History:
 
 struct IAIObject;
 
-UNIQUE_IFACE struct INavigation
+struct INavigation
 {
 	enum EIFMode {IF_AREASBOUNDARIES, IF_AREAS, IF_BOUNDARIES};
 
+	// <interfuscator:shuffle>
 	virtual ~INavigation() {}
 
 	virtual uint32 GetPath(const char *szPathName, Vec3 *points, uint32 maxpoints) const = 0;
@@ -61,7 +62,7 @@ UNIQUE_IFACE struct INavigation
 	
 	/// returns the names of the region files generated during volume generation
 	virtual void GetVolumeRegionFiles(const char * szLevel, const char * szMission , DynArray<CryStringT<char> > & filenames) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif //_INAVIGATION_H_

@@ -20,19 +20,8 @@
 #pragma once
 #include <algorithm>
 
-#ifdef PS3_USE_SYSTEM_MEM_CONTAINER
-	extern "C" void *malloc_non_system(size_t size);
-#endif
 
 #define TRACK_NODE_ALLOC_WITH_MEMREPLAY 1 
-
-//#if ( defined(WIN32) || defined(WIN64) ) && ( defined(_DEBUG) || defined(DEBUG) )
-//#undef CRY_MEMORY_ALLOCATOR
-//#define _CRTDBG_MAP_ALLOC
-//#include "crtdbg.h"
-//#else
-
-
 #define CRY_STL_ALLOC
 
 #if defined(LINUX64) || defined(APPLE)
@@ -44,7 +33,7 @@
 // DON't USE _MAX_BYTES as identifier for Max Bytes, STLPORT defines the same enum
 // this leads to situation where the wrong enum is choosen in different compilation units
 // which in case leads to errors(The stlport one is defined as 128)
-#if defined (__OS400__) || defined (_WIN64) || defined(MAC) || defined(LINUX64) /*|| defined (XENON)*/
+#if defined (__OS400__) || defined (_WIN64) || defined(MAC) || defined(LINUX64)
 enum {_ALIGNMENT = 16, _ALIGN_SHIFT = 4, __MAX_BYTES = 512, NFREELISTS=32, ADDRESSSPACE = 2 * 1024 * 1024, ADDRESS_SHIFT = 40};
 #else
 enum {_ALIGNMENT = 8, _ALIGN_SHIFT = 3, __MAX_BYTES = 512, NFREELISTS = 64, ADDRESSSPACE = 2 * 1024 * 1024, ADDRESS_SHIFT = 20};
@@ -71,13 +60,7 @@ public:
 #define MASK_SHIFT 12
 #endif
 
-#ifdef PS3
-	//seems to be a better value for PS3 wasting memory less
-	#define NUM_OBJ 128
-#else
-	#define NUM_OBJ 64
-#endif
-
+#define NUM_OBJ 64
 
 struct _Obj_Address {
 	//	short int * _M_next;
@@ -162,13 +145,6 @@ struct Node_Allocator
 	{
 		return CryModuleMalloc(size);
 	};
-#if defined(PS3)
-	inline void * pool_alloc(size_t size, size_t alignment) 
-	{
-		return CryModuleMemalign(size, alignment);
-	};
-#endif // PS3
-
 	inline void * cleanup_alloc(size_t size) 
 	{
 		return CryCrtMalloc(size);
@@ -197,12 +173,6 @@ struct Node_Allocator<eCryDefaultMalloc>
 	{
 		return malloc(size);
 	};
-#if defined(PS3)
-	inline void * pool_alloc(size_t size, size_t alignment) 
-	{
-		return memalign(alignment, size);
-	};
-#endif
 	inline void * cleanup_alloc(size_t size) 
 	{
 		return malloc(size);
@@ -232,13 +202,6 @@ struct Node_Allocator<eCryMallocCryFreeCRTCleanup>
 	{
 		return CryCrtMalloc(size);
 	};
-
-#if defined(PS3)
-	inline void * pool_alloc(size_t size, size_t alignment) 
-	{
-		return CryModuleMemalign(size, alignment);
-	};
-#endif
 	inline void * cleanup_alloc(size_t size) 
 	{
 		return CryCrtMalloc(size);
@@ -318,22 +281,15 @@ struct Node_Allocator<eCryLinuxMalloc>
 
 #include "MultiThread.h"
 
-//#ifdef PS3
-//#define USE_WRITELOCKS
-//#endif
 
 #if defined(LINUX) || defined(APPLE)
 #define USE_WRITELOCKS
 #endif
 
-#if !defined(__SPU__)
+
 struct InternalCriticalSectionDummy {
-	char padding[128]; // PS3 has a bigger size
-} 
-#ifdef PS3
-_ALIGN(128)
-#endif
-;
+	char padding[128];
+} ;
 
 inline void CryInternalCreateCriticalSection(void * pCS)
 {
@@ -522,7 +478,7 @@ public:
 	//#else /*_WIN64*/
 };
 
-#endif
+
 
 #define _malloc ::malloc
 #define _free ::free
@@ -716,13 +672,13 @@ public:
 	// this one is needed for proper simple_alloc wrapping
 	static LONG volatile _S_allocations;
 	typedef char value_type;
-#if !defined(PS3)
+
 	static void *allocate(size_t __n, size_t nAlignment)
 	{
 		// forward to the core function (alignment is checked in calling function)
 		return allocate(__n);
 	}
-#endif
+
 	/* __n must be > 0      */
 	static void *  allocate(size_t __n) 
 	{
@@ -730,7 +686,6 @@ public:
 
 		void* ret;
 
-#if !defined(__SPU__)
 		if (__n > (size_t)__MAX_BYTES) 
 		{
 #if !defined(LINUX64) && !defined(APPLE)
@@ -742,9 +697,6 @@ public:
 		}
 		else
 			ret =  _M_allocate(__n); 
-#else
-		ret =  CryModuleMalloc(__n);
-#endif 
 
 		MEMREPLAY_SCOPE_ALLOC(ret, __n, _ALIGNMENT);
 		
@@ -756,37 +708,6 @@ public:
 		return allocate(__n);
 	}
 
-#if defined(PS3)
-	static void *  allocate(size_t __n, size_t alignment)
-	{
-		MEMREPLAY_SCOPE(EMemReplayAllocClass::C_UserPointer, EMemReplayUserPointerClass::C_CryMalloc);
-
-		void* ret;
-
-#if !defined(__SPU__)
-		if (__n > (size_t)__MAX_BYTES)
-		{
-			Node_Allocator<_alloc> all;
-			ret = all.pool_alloc(__n, alignment);
-		}
-		else
-			ret = _M_allocate(__n);
-#else
-		ret = CryModuleMemalign(__n, alignment);
-#endif
-		
-		MEMREPLAY_SCOPE_ALLOC(ret, __n, _ALIGNMENT);
-
-		return ret;
-	}
-
-	static void *  alloc(size_t __n, size_t alignment)
-	{
-		return allocate(__n, alignment);
-	}
-
-#endif // PS3
-
 	static size_t _Find_binary_search(void * p, _Node_Allocations_Tree<_Size> * pBlock) {
 
 		size_t size = __MAX_BYTES + 1;
@@ -796,9 +717,9 @@ public:
 		size_t pSubBlock = (size_t)p;//& 0x1FFFF;
 
 		size_t pInBlock;
-		register size_t low = 0;
-		register size_t high = pBlock->_M_allocations_count;
-		register size_t mid=0;
+		size_t low = 0;
+		size_t high = pBlock->_M_allocations_count;
+		size_t mid=0;
 		while(low <= high) {
 			mid = (low + high) / 2;
 			pInBlock = pAddress[mid].GetNext(pBase);
@@ -869,7 +790,6 @@ public:
 
 		size_t ret;
 
-#if !defined(__SPU__)    
 		size_t __n = _Find_right_size(__p);
 		if (__n > (size_t)__MAX_BYTES) 
 		{
@@ -884,10 +804,6 @@ public:
 			_M_deallocate(__p, __n); 
 
 		ret = __n;
-#else 
-		CryModuleFree(__p);
-		ret = 0; 
-#endif 
 
 		MEMREPLAY_SCOPE_FREE(__p);
 		
@@ -900,7 +816,6 @@ public:
 
 		size_t ret;
 
-#if !defined(__SPU__)
 		if (__n > (size_t)__MAX_BYTES) 
 		{
 #if !defined(LINUX64) && !defined(APPLE)
@@ -914,10 +829,6 @@ public:
 			_M_deallocate(__p, __n); 
 
 		ret = __n;
-#else 
-		CryModuleFree(__p);
-		ret = __n; 
-#endif
 	
 		MEMREPLAY_SCOPE_FREE(__p);
 
@@ -943,7 +854,6 @@ public:
 	// Helper method to retrieve the size of allocations only within the
 	// node allocator. If the memory block does not originate from
 	// within the node allocator, 0 is returned. 
-	// important for PS3(talk to Chris Raine for details)
 	static size_t getSizeEx(void *__p) {
 		size_t __n = _Find_right_size(__p);
 		return __n > (size_t)__MAX_BYTES ? 0 : __n;
@@ -999,42 +909,6 @@ public:
 	static void cleanup();
 };
 
-//#  if defined(_WIN64) || defined(WIN64)
-//#define ATOMIC_CAS(__dst, __val, __old_val) (_InterlockedCompareExchange((LONG volatile*)__dst, (LONG)__val, (LONG)__old_val) == (LONG)__old_val)
-//#  ifndef ATOMIC_INCREMENT
-//#    define ATOMIC_INCREMENT(__x)           _InterlockedIncrement((LONG*)__x)
-//#    define ATOMIC_DECREMENT(__x)           _InterlockedDecrement((LONG*)__x)
-//#    define ATOMIC_EXCHANGE(__x, __y)       _InterlockedExchange((LONG*)__x, (LONG)__y)
-//#    define ATOMIC_EXCHANGE_ADD(__x, __y)   CryInterlockedExchangeAdd((LONG*)__x, (LONG)__y)
-//#	 endif
-//#else /*_WIN32*/
-//#if defined(_WIN32) || defined(WIN32) || defined(XENON)
-//#define ATOMIC_CAS(__dst, __val, __old_val) (InterlockedCompareExchange((LONG volatile*)__dst, (LONG)__val, (LONG)__old_val) == (LONG)__old_val)
-//#  ifndef ATOMIC_INCREMENT
-//#    define ATOMIC_INCREMENT(__x)           InterlockedIncrement((LONG*)__x)
-//#    define ATOMIC_DECREMENT(__x)           InterlockedDecrement((LONG*)__x)
-//#    define ATOMIC_EXCHANGE(__x, __y)       InterlockedExchange((LONG*)__x, (LONG)__y)
-//#    define ATOMIC_EXCHANGE_ADD(__x, __y)   CryInterlockedExchangeAdd((LONG*)__x, (LONG)__y)
-//#	 endif
-//#define ATOMIC_CAS(__dst, __val, __old_val)  ((*__dst = __val) == __val)
-//#  ifndef ATOMIC_INCREMENT
-//#    define ATOMIC_INCREMENT(__x)           (++(*__x))
-//#    define ATOMIC_DECREMENT(__x)           (--(*__x))
-//#    define ATOMIC_EXCHANGE(__x, __y)       (*__x = *__y)
-//#    define ATOMIC_EXCHANGE_ADD(__x, __y)   (*__x += __y)
-//#	 endif
-//#else /*_WIN64*/
-//#define ATOMIC_CAS(__dst, __val, __old_val) (CryInterlockedCompareExchange((LONG volatile*)__dst, (LONG)__val, (LONG)__old_val) == (LONG)__old_val)/*(InterlockedCompareExchange64((LONG volatile*)__dst, (LONG)__val, (LONG)__old_val) == (LONG)__old_val)*/
-//#  ifndef ATOMIC_INCREMENT
-//#    define ATOMIC_INCREMENT(__x)           CryInterlockedIncrement((int volatile*)__x)
-//#    define ATOMIC_DECREMENT(__x)           CryInterlockedDecrement((int volatile*)__x)
-//#    define ATOMIC_EXCHANGE(__x, __y)       CryInterlockedExchangeAdd((LONG*)__x, (LONG)__y)
-//#    define ATOMIC_EXCHANGE_ADD(__x, __y)   CryInterlockedExchangeAdd((LONG*)__x, (LONG)__y)
-//#	 endif
-//#endif/*_WIN64*/
-//#endif/*_WIN32*/
-
-#if !defined(__SPU__)
 
 template <class _ListElem, bool __threads, int __size>
 inline void __cas_new_head (_ListElem * volatile *__free_list, _ListElem *__new_head) {
@@ -1286,11 +1160,7 @@ char* node_alloc<_alloc,__threads, _Size>::_S_chunk_alloc(size_t _p_size,
 #define _ALLOCATION_SIZE 512 * 1024
 	//We haven't found a free block or not enough place, we ask memory to the the system:
 	size_t __bytes_to_get =  _Size;//_ALLOCATION_SIZE;////
-#ifdef PS3_USE_SYSTEM_MEM_CONTAINER
-		__result = (char*)malloc_non_system(__bytes_to_get);
-#else
 	__result = (char*)allocator.pool_alloc(__bytes_to_get);//(char*)_malloc(__bytes_to_get);
-#endif
 
 #if CAPTURE_REPLAY_LOG && TRACK_NODE_ALLOC_WITH_MEMREPLAY
 	// Make sure that the memory allocated as an owner that memReplay can track
@@ -1307,15 +1177,7 @@ char* node_alloc<_alloc,__threads, _Size>::_S_chunk_alloc(size_t _p_size,
 	if (0 == __result) 
 	{
 		// BOOOOOOM!
-
-#if defined(XENON) && defined(_DEBUG)
-		__debugbreak();
-#endif
-#if defined(PS3)
-		abort();
-#else
 		__result= 0;
-#endif
 		return 0;
 	}
 
@@ -1776,8 +1638,7 @@ void node_alloc<_alloc, __threads, _Size>::cleanup()
 						{
 
 							size_t copied = &(tmp_free_list[i][tmp_free_list_size[i]]) - tmp_high[i];// + 1;
-							tmp_free_list_size[i] -=  tmp_count[i];
-							//on PS3, memcpy is performed backwards (dunno why), so we have potential overlapping areas here (tested)
+							tmp_free_list_size[i] -=  tmp_count[i];							
 							memmove(tmp_low[i], tmp_high[i]/* + 1*/, copied * sizeof(_Obj*));
 
 						}
@@ -1861,7 +1722,7 @@ void node_alloc<_alloc, __threads, _Size>::cleanup()
 #endif
 }
 
-#endif
+
 
 #undef S_FREELIST_INDEX
 

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <ITestSystem.h>
+#include <StringUtils.h>
 
 #if defined(CRY_UNIT_TESTING_USE_EXCEPTIONS)
 	#include <exception>
@@ -149,8 +150,8 @@ namespace CryUnitTest
 	public:
 		assert_exception(char const* description, char const* filename, int lineNumber)
 		{
-			strcpy_s(m_description,description);
-			strcpy_s(m_filename,filename);
+			cry_strcpy(m_description, description);
+			cry_strcpy(m_filename, filename);
 			m_lineNumber = lineNumber;
 		}
 		virtual char const* what() const throw() { return m_description; };

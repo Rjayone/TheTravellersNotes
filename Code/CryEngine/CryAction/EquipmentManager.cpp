@@ -517,4 +517,4 @@ void CEquipmentManager::GetMemoryUsage(ICrySizer *pSizer) const
 	pSizer->AddObject(m_equipmentPacks);	
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEquipmentManager)
+

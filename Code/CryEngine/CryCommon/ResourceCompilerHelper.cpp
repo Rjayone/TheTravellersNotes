@@ -298,14 +298,7 @@ CResourceCompilerHelper::ERcCallResult CResourceCompilerHelper::CallResourceComp
 				wcscpy(pathBuffer, L".");
 			}
 
-			if (smTools.Is64bitWindows() && (DirectoryExists(pathBuffer, L"/Bin64/rc") || !DirectoryExists(pathBuffer, L"/Bin32/rc")))
-			{
-				swprintf_s(szRcDirectory, L"%s/Bin64/rc", pathBuffer);
-			}
-			else
-			{
-				swprintf_s(szRcDirectory, L"%s/Bin32/rc", pathBuffer);
-			}
+			swprintf_s(szRcDirectory, L"%s/Bin64/rc", pathBuffer);
 		}
 
 		wchar_t szRegSettingsBuffer[1024];
@@ -491,10 +484,7 @@ ERcExitCode CResourceCompilerHelper::InvokeResourceCompiler(const char* szSrcFil
 	SettingsManagerHelpers::CFixedString<wchar_t, 512> wDir;
 	CSettingsManagerTools smTools = CSettingsManagerTools();
 
-	const char* const szRcParentDir =
-		(smTools.Is64bitWindows() && (DirectoryExists(L"Bin64/rc") || !DirectoryExists(L"Bin32/rc")))
-		? "Bin64" 
-		: "Bin32";
+	const char* const szRcParentDir = "Bin64";
 
 	wchar_t szRegSettingsBuffer[1024];
 	smTools.GetEngineSettingsManager()->GetValueByRef("RC_Parameters", SettingsManagerHelpers::CWCharBuffer(szRegSettingsBuffer, sizeof(szRegSettingsBuffer)));
@@ -658,7 +648,7 @@ void CResourceCompilerHelper::ReplaceExtension(const char* path, const char* new
 		p.append(new_ext);
 	}
 
-	strncpy_s(buffer, bufferSizeInBytes, p.c_str(), _TRUNCATE);
+	cry_strcpy(buffer, bufferSizeInBytes, p.c_str());
 }
 
 
@@ -669,15 +659,14 @@ void CResourceCompilerHelper::GetOutputFilename(const char* szFilePath, char* bu
 	if (ext)
 	{
 		if (stricmp(ext, "tif") == 0 ||
-		    stricmp(ext, "hdr") == 0 ||
-		    stricmp(ext, "srf") == 0)
+		    stricmp(ext, "hdr") == 0)
 		{
 			ReplaceExtension(szFilePath, "dds", buffer, bufferSizeInBytes);
 			return;
 		}
 	}
 
-	strncpy_s(buffer, bufferSizeInBytes, szFilePath, _TRUNCATE);
+	cry_strcpy(buffer, bufferSizeInBytes, szFilePath);
 }
 
 bool CResourceCompilerHelper::IsImageFormat(const char* szExtension)

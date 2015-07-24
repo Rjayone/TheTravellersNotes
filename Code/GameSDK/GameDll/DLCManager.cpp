@@ -28,6 +28,7 @@ History:
 
 #include "DLCManager.h"
 #include "PlaylistManager.h"
+#include "UnicodeFunctions.h"
 
 static AUTOENUM_BUILDNAMEARRAY(s_standardLevelNames, NOTDLCLevelList);
 static AUTOENUM_BUILDNAMEARRAY(s_standardGameModes, NOTDLCGameModeList);
@@ -466,7 +467,7 @@ void CDLCManager::PatchMenu(CMenuData& menu)
 
 void CDLCManager::PopulateDLCContents(const XmlNodeRef &rootNode, int dlcId, const char* name )
 {
-	mbstowcs( m_dlcContents[dlcId].name, name, MAX_DLC_NAME );
+	Unicode::Convert(m_dlcContents[dlcId].name, name);
 
 	XmlNodeRef levelsNode = rootNode->findChild("levels");
 	if (levelsNode)

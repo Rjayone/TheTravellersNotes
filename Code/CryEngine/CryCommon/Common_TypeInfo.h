@@ -122,10 +122,8 @@ STRUCT_INFO_END(RectF)
 
 #ifndef _LIB
 	// Manually instantiate templates as needed here.
-	#ifndef XENON_INTRINSICS
-		template struct Vec3_tpl<float>;
-		template struct Vec4_tpl<float>;
-	#endif
+	template struct Vec3_tpl<float>;
+	template struct Vec4_tpl<float>;
 	template struct Vec2_tpl<float>;
 	template struct Ang3_tpl<float>;
 	template struct Plane_tpl<float>;

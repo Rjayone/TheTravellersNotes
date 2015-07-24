@@ -20,7 +20,7 @@
 
 struct IAIRateOfDeathHandler
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAIRateOfDeathHandler() {}
 
 	// Calculate and return how long the target should stay alive from now
@@ -31,7 +31,7 @@ struct IAIRateOfDeathHandler
 
 	// Calculate and return the zone the target is currently in
 	virtual EAITargetZone GetTargetZone(const IAIObject *pAI, const IAIObject *pTarget) = 0;
-
+	// </interfuscator:shuffle>
 
 	void GetMemoryUsage(ICrySizer *pSizer) const{/*LATER*/}
 };

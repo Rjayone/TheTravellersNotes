@@ -203,9 +203,9 @@ bool CNetworkedPhysicsEntity::SetAspectProfile( EEntityAspects aspect, uint8 pro
 			psp.damping = 0.5f;
 			pPhysEnt->SetParams(&psp);
 
-			//Add a bit of angular velocity so it doesn't look bizzare.
+			//Add a bit of angular velocity so it doesn't look bizarre.
 			pe_action_set_velocity physicsAction;
-			physicsAction.w.Set((rnd()-0.5f)*15.0f, (rnd()-0.5f)*15.0f, (rnd()-0.5f)*15.0f);
+			physicsAction.w = cry_random_componentwise(Vec3(-7.5f), Vec3(7.5f));
 			pPhysEnt->Action(&physicsAction);
 	}
 

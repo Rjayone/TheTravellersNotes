@@ -208,14 +208,18 @@ protected:
 	}
 	
 	// returns the actor associated with the input entity. In single player, it returns the local player if that actor does not exists.
-	IActor* GetInputActor( const SActivationInfo* const pActInfo ) const
+	IActor* GetInputActor(const SActivationInfo* const pActInfo) const
 	{
-		IActor* pActor = gEnv->pGame->GetIGameFramework()->GetIActorSystem()->GetActor( pActInfo->pEntity->GetId() );
+		IActor* pActor = pActInfo->pEntity ? gEnv->pGame->GetIGameFramework()->GetIActorSystem()->GetActor(pActInfo->pEntity->GetId()) : NULL;
+
 		if (!pActor && !gEnv->bMultiplayer)
+		{
 			pActor = gEnv->pGame->GetIGameFramework()->GetClientActor();
+		}
+
 		return pActor;
 	}
-	
+
 
 private:
 	int m_refs;
@@ -250,7 +254,7 @@ class CFlowBaseNode<eNCT_Singleton> : public CFlowBaseNodeInternal
 public:
 	CFlowBaseNode<eNCT_Singleton>() : CFlowBaseNodeInternal()	{}
 
-	virtual IFlowNodePtr Clone( SActivationInfo *pActInfo ) FINAL { return this; }
+	virtual IFlowNodePtr Clone( SActivationInfo *pActInfo ) final { return this; }
 
 	static const int myCloneType = eNCT_Singleton;
 };

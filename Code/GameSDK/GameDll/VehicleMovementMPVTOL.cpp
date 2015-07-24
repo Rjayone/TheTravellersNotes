@@ -215,13 +215,13 @@ void CVehicleMovementMPVTOL::Update(const float deltaTime)
 				}
 				else
 				{
-					m_exhaustsTimer = Random(m_minTimeBetweenStutters, m_maxTimeBetweenStutters);
+					m_exhaustsTimer = cry_random(m_minTimeBetweenStutters, m_maxTimeBetweenStutters);
 
 					//Time between stutters decreases linearly as more damage is received
 					float progress = m_pVehicle->GetDamageRatio() - m_stutterStartDamageRatio;
 					m_exhaustsTimer *= 1.f - ((progress * m_invStutterDamageSpread) * m_timeBetweenStutterDecayMult);
 					
-					m_exhaustStuttersRemaining = m_baseStutters + Random(m_maxExtraStutters); //Number of stutters next time
+					m_exhaustStuttersRemaining = m_baseStutters + cry_random(0, m_maxExtraStutters); //Number of stutters next time
 				}
 			}
 			else
@@ -300,7 +300,7 @@ void CVehicleMovementMPVTOL::OnVehicleEvent( EVehicleEvent event, const SVehicle
 			if(params.fParam2 >= m_stutterStartDamageRatio && m_prevDamageRatio < m_stutterStartDamageRatio)
 			{
 				m_exhaustsTimer = 0.5f;
-				m_exhaustStuttersRemaining = m_baseStutters + Random(m_maxExtraStutters);
+				m_exhaustStuttersRemaining = m_baseStutters + cry_random(0, m_maxExtraStutters);
 			}
 
 			for(int i = 0; i < MAX_NOISE_OVERRIDES; ++i)

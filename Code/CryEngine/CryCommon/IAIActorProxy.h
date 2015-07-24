@@ -14,10 +14,10 @@ struct IAIActorProxyFactory
 };
 
 
-UNIQUE_IFACE struct IAIActorProxy :
+struct IAIActorProxy :
 public _reference_target_t
 {
-
+	// <interfuscator:shuffle>
 	// (MATT) These methods were merged from IUnknownProxy {2009/01/26}
 	//----------------------------------------------------------------
 	virtual int Update(SOBJECTSTATE &state, bool bFullUpdate) = 0;
@@ -27,8 +27,10 @@ public _reference_target_t
 	virtual int GetAlertnessState() const = 0;
 	virtual void SetAlertnessState(int alertness) = 0;
 	virtual bool IsCurrentBehaviorExclusive() const = 0;
+#ifdef USE_DEPRECATED_AI_CHARACTER_SYSTEM
 	virtual bool SetCharacter( const char* character, const char* behaviour=NULL ) = 0;
 	virtual const char* GetCharacter()  =0;
+#endif
 	virtual void QueryBodyInfo( SAIBodyInfo& bodyInfo ) = 0;
 	virtual bool QueryBodyInfo( const SAIBodyInfoQuery& query, SAIBodyInfo& bodyInfo ) = 0;
 	virtual	void QueryWeaponInfo( SAIWeaponInfo& weaponInfo ) = 0;
@@ -132,8 +134,8 @@ public _reference_target_t
 	//   target is standing on the same spot signals will not go out.
 	//   In some cases we explicitly want these signals to be sent out
 	//   and we can demand that by calling this method.
-	VIRTUAL void ResendTargetSignalsNextFrame() = 0;
-
+	virtual void ResendTargetSignalsNextFrame() = 0;
+	// </interfuscator:shuffle>
 };
 
 #endif

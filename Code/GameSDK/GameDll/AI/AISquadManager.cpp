@@ -61,7 +61,7 @@ namespace
 			runtimeData.isInScope = false;
 		}
 
-		virtual void OnTerminate(const UpdateContext& context) OVERRIDE
+		virtual void OnTerminate(const UpdateContext& context) override
 		{
 			BaseClass::OnTerminate(context);
 
@@ -95,7 +95,7 @@ namespace
 		{
 		};
 		
-		virtual LoadResult LoadFromXml(const XmlNodeRef& node, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& node, const LoadContext& context) override
 		{
 			m_event = node->getAttr("name");
 			return LoadSuccess;
@@ -124,7 +124,7 @@ namespace
 			RuntimeData() : gateIsOpen(false) {}
 		};
 		
-		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) OVERRIDE
+		virtual LoadResult LoadFromXml(const XmlNodeRef& xml, const LoadContext& context) override
 		{
 			IF_UNLIKELY(xml->getNumAttributes() != 1)
 			{
@@ -154,7 +154,7 @@ namespace
 		}
 
 	protected:
-		virtual void OnInitialize(const UpdateContext& context) OVERRIDE
+		virtual void OnInitialize(const UpdateContext& context) override
 		{
 			RuntimeData& runtimeData = GetRuntimeData<RuntimeData>(context);
 			
@@ -187,7 +187,7 @@ namespace
 			}
 		}
 
-		virtual Status Update(const UpdateContext& context) OVERRIDE
+		virtual Status Update(const UpdateContext& context) override
 		{
 			RuntimeData& runtimeData = GetRuntimeData<RuntimeData>(context);
 

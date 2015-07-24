@@ -12,7 +12,6 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(FrameProfiler.h)
 
 #ifndef __frameprofiler_h__
 #define __frameprofiler_h__
@@ -21,16 +20,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-//reduce count, saves us 400 bytes per instance (and we have a lot)
-#if defined(XENON) || defined(PS3)
-	#define PROFILE_HISTORY_COUNT 32
-#else
-	#define PROFILE_HISTORY_COUNT 64
-#endif
-
-#if defined(PS3) && defined(__SPU__)
-  #undef USE_FRAME_PROFILER
-#endif
+#define PROFILE_HISTORY_COUNT 64
 
 enum EProfiledSubsystem
 {
@@ -76,7 +66,7 @@ class CCustomProfilerSection;
 //////////////////////////////////////////////////////////////////////////
 /*! This callback will be called for Profiling Peaks.
  */
-UNIQUE_IFACE struct IFrameProfilePeakCallback
+struct IFrameProfilePeakCallback
 {
 	virtual ~IFrameProfilePeakCallback(){}
 	//! Called when peak is detected for this profiler.
@@ -98,7 +88,7 @@ struct SPeakRecord
 //////////////////////////////////////////////////////////////////////////
 //! IFrameProfileSystem interface.
 //! the system which does the gathering of stats
-UNIQUE_IFACE struct IFrameProfileSystem
+struct IFrameProfileSystem
 {
 	virtual ~IFrameProfileSystem(){}
 	enum EDisplayQuantity
@@ -110,7 +100,7 @@ UNIQUE_IFACE struct IFrameProfileSystem
 		PEAK_TIME,
 		SUBSYSTEM_INFO,
 		COUNT_INFO,
-		STANDART_DEVIATION,
+		STANDARD_DEVIATION,
 		ALLOCATED_MEMORY,
 		ALLOCATED_MEMORY_BYTES,
 		STALL_TIME,
@@ -121,6 +111,8 @@ UNIQUE_IFACE struct IFrameProfileSystem
 	virtual void Reset() = 0;
 	//! Add new frame profiler.
 	virtual void AddFrameProfiler( CFrameProfiler *pProfiler ) = 0;
+	//! Remove existing frame profiler.
+	virtual void RemoveFrameProfiler( CFrameProfiler *pProfiler ) = 0;
 	//! Must be called at the start of the frame.
 	virtual void StartFrame() = 0;
 	//! Must be called at the end of the frame.
@@ -241,7 +233,7 @@ public:
 	//! stdev = Sqrt( Sum((X-Xave)^2)/(n-1) )
 	T GetStdDeviation( int nCount = TCount )
 	{
-		if (m_nHistoryCount)
+		if (m_nHistoryCount > 1)	// standard deviation is undefined for only one element
 		{
 			T fAve = GetAverage(nCount);
 			T fVal = 0;
@@ -403,14 +395,28 @@ public:
 		,	m_bAlwaysCollect(bAlwaysCollect)
 	{
 		if (IFrameProfileSystem* const pFrameProfileSystem = m_pISystem->GetIProfileSystem())
-      pFrameProfileSystem->AddFrameProfiler( this );
+		{
+			pFrameProfileSystem->AddFrameProfiler( this );
+		}
+	}
+
+	~CFrameProfiler()
+	{
+		// This is needed for when modules get unloaded at runtime.
+		if (m_pISystem != NULL)
+		{
+			if (IFrameProfileSystem* const pFrameProfileSystem = m_pISystem->GetIProfileSystem())
+			{
+				pFrameProfileSystem->RemoveFrameProfiler( this );
+			}
+		}
 	}
 };
 
 //////////////////////////////////////////////////////////////////////////
 //! CFrameProfilerSection is an auto class placed where code block need to be profiled.
-//! Every time this object is constructed and destruted the time between constructor
-//! and destructur is merged into the referenced CFrameProfiler instance.
+//! Every time this object is constructed and destructed the time between constructor
+//! and destructor is merged into the referenced CFrameProfiler instance.
 //! For consoles, a faster non LHS triggering way is used
 //! (but potentially problematic with many threads when profiling is enabled at a very 
 //! 'bad' time)
@@ -443,7 +449,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 //! CCustomProfilerSection is an auto class placed where any custom data need to be profiled.
-//! Works similary to CFrameProfilerSection, but records any custom data, instead of elapsed time.
+//! Works similarly to CFrameProfilerSection, but records any custom data, instead of elapsed time.
 //!
 class CCustomProfilerSection
 {

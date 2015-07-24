@@ -123,9 +123,7 @@ void CAutoAimManager::UpdateTargetInfo(SAutoaimTarget& aaTarget, float fFrameTim
 			//Update hostility (changes during gameplay)
 			if (!gEnv->bMultiplayer)
 			{
-				uint8 targetFaction = (aaTarget.aiFaction != IFactionMap::InvalidFactionID) ? aaTarget.aiFaction : GetTargetFaction(*pTargetEntity);
-
-				if (gEnv->pAISystem->GetFactionMap().GetReaction(GetLocalPlayerFaction(), aaTarget.aiFaction) == IFactionMap::Hostile)
+				if (gEnv->pAISystem->GetFactionMap().GetReaction(GetLocalPlayerFaction(), GetTargetFaction(*pTargetEntity)) == IFactionMap::Hostile)
 				{
 					aaTarget.SetFlag(eAATF_AIHostile);
 				}
@@ -133,8 +131,6 @@ void CAutoAimManager::UpdateTargetInfo(SAutoaimTarget& aaTarget, float fFrameTim
 				{
 					aaTarget.RemoveFlag(eAATF_AIHostile);
 				}
-
-				aaTarget.aiFaction = targetFaction;
 			}
 		}
 		else if(aaTarget.hasSkeleton)
@@ -254,8 +250,6 @@ void CAutoAimManager::RegisterCharacterTargetInfo(const CActor& targetActor, con
 	if (!gEnv->bMultiplayer)
 	{
 		IEntity* pTargetEntity = targetActor.GetEntity();
-
-		aimTarget.aiFaction = IFactionMap::InvalidFactionID;
 
 		//Instance properties, other stuff could be added here easily (grab enemy, sliding hit, etc)
 		SmartScriptTable props;

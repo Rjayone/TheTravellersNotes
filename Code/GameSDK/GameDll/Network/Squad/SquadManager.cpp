@@ -73,12 +73,12 @@ CSquadManager::CSquadManager() : REGISTER_GAME_MECHANISM(CSquadManager)
 #if !defined(_RELEASE)
 	if (gEnv->pConsole)
 	{
-		REGISTER_CVAR(sm_enable, sm_enable, 0, CVARHELP("Enables and disables squad"));
-		REGISTER_CVAR(sm_debug, 0, 0, CVARHELP("Enable squad manager debug watches and logs"));
-		REGISTER_CVAR(sm_inviteJoinTimeout, sm_inviteJoinTimeout, VF_CHEAT, CVARHELP("Time to wait for squadmates to leave before following an invite"));
-		gEnv->pConsole->AddCommand("sm_create", CmdCreate, 0, CVARHELP("Create a squad session"));
-		gEnv->pConsole->AddCommand("sm_leave", CmdLeave, 0, CVARHELP("Leave a squad session"));
-		gEnv->pConsole->AddCommand("sm_kick", CmdKick, 0, CVARHELP("Kick a player from the squad"));
+		REGISTER_CVAR(sm_enable, sm_enable, 0, "Enables and disables squad");
+		REGISTER_CVAR(sm_debug, 0, 0, "Enable squad manager debug watches and logs");
+		REGISTER_CVAR(sm_inviteJoinTimeout, sm_inviteJoinTimeout, VF_CHEAT, "Time to wait for squadmates to leave before following an invite");
+		gEnv->pConsole->AddCommand("sm_create", CmdCreate, 0, "Create a squad session");
+		gEnv->pConsole->AddCommand("sm_leave", CmdLeave, 0, "Leave a squad session");
+		gEnv->pConsole->AddCommand("sm_kick", CmdKick, 0, "Kick a player from the squad");
 	}
 #endif
 	if(gEnv->IsDedicated())
@@ -466,7 +466,7 @@ ECryLobbyError CSquadManager::DoCreateSquad(ICryMatchMaking *pMatchMaking, CryLo
 	IPlayerProfileManager *pPlayerProfileManager = g_pGame->GetIGameFramework()->GetIPlayerProfileManager();
 	if (pPlayerProfileManager)
 	{
-		cry_strncpy(session.m_name, pPlayerProfileManager->GetCurrentUser(), sizeof(session.m_name));
+		cry_strcpy(session.m_name, pPlayerProfileManager->GetCurrentUser());
 		uint32 userIndex = g_pGame->GetExclusiveControllerDeviceIndex(); //pad number
 		result = pMatchMaking->SessionCreate(&userIndex, 1, CRYSESSION_CREATE_FLAG_INVITABLE | CRYSESSION_CREATE_FLAG_MIGRATABLE, &session, &taskId, CSquadManager::CreateCallback, this);
 	}
@@ -502,9 +502,7 @@ void CSquadManager::CreateCallback(CryLobbyTaskID taskID, ECryLobbyError error, 
 		{
 			CryLog("  game session has already started, starting a SessionStart task");
 			pSquadManager->m_taskQueue.AddTask(CLobbyTaskQueue::eST_SessionStart, false);
-		}
-	
-		g_pGame->RefreshRichPresence();
+		}		
 
 		// we no longer delete sessions if they are in the process of being created
 		// joined, so we need to clean up after them when the task has completed
@@ -557,9 +555,7 @@ void CSquadManager::JoinSessionFinished(CryLobbyTaskID taskID, ECryLobbyError er
 		EventListenerSquadEvent(ISquadEventListener::eSET_JoinedSquad);
 
 		m_inviteSessionId = CrySessionInvalidID;
-	
-		g_pGame->RefreshRichPresence();
-
+			
 		if(!sm_enable || m_sessionIsInvalid)
 		{
 			CryLog("   deleting joined session sm_enable %d sessionIsInvalid %d", sm_enable, m_sessionIsInvalid);
@@ -646,9 +642,7 @@ void CSquadManager::SquadSessionDeleted(CryLobbyTaskID taskID, ECryLobbyError er
 		m_leavingSession = false;
 
 		CleanUpSession();		// If we didn't timeout, cleanup (if something went wrong then we need to start from scratch)
-
-		g_pGame->RefreshRichPresence();
-
+		
 		if (sm_enable)
 		{
 		  	if(!m_pendingInvite)
@@ -1954,8 +1948,7 @@ void CSquadManager::SessionChangeSlotTypeFinished(CryLobbyTaskID taskID, ECryLob
 	{
 		CryLog("[squad] SessionChangeSlotTypeFinished succeeded in changing slot status to %s", (m_inProgressSlotType == eSST_Public) ? "public" : "private");
 		
-		m_slotType = m_inProgressSlotType;
-		g_pGame->RefreshRichPresence();
+		m_slotType = m_inProgressSlotType;		
 	}
 	else if (error != eCLE_TimeOut)
 	{

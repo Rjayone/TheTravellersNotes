@@ -1,5 +1,3 @@
-#include DEVIRTUALIZE_HEADER_FIX(IRenderMesh.h)
-
 #ifndef _RenderMesh_H_
 #define _RenderMesh_H_
 
@@ -12,16 +10,21 @@
 #include <IJobManager.h>
 
 class CMesh;
+struct CRenderChunk;
+class CRenderObject;
+struct SSkinningData;
+struct IMaterial;
+struct IShader;
 struct IIndexedMesh;
 struct SMRendTexVert;
 struct UCol;
 struct GeomInfo;
 
-struct ExtSkinVertex;
 struct TFace;
 struct SMeshSubset;
 struct SRenderingPassInfo;
 struct SRendItemSorter;
+struct SRenderObjectModifier;
 
 // Keep this in sync with BUFFER_USAGE hints DevBuffer.h
 enum ERenderMeshType
@@ -32,22 +35,13 @@ enum ERenderMeshType
   eRMT_Transient = 3, 
 };
 
-//! structure for tangent basises storing
-struct TangData
-{
-  Vec3 tangent;
-  Vec3 binormal;      
-  Vec3 tnormal;     
-};
 
-
-#define FSM_MORPH_TARGETS 1
+#define FSM_VERTEX_VELOCITY 1
 #define FSM_NO_TANGENTS   2
 #define FSM_CREATE_DEVICE_MESH 4
 #define FSM_SETMESH_ASYNC 8
 #define FSM_ENABLE_NORMALSTREAM 16
 #define FSM_IGNORE_TEXELDENSITY	32
-#define FSM_IGNORE_SKININFO 64
 
 // Invalidate video buffer flags
 #define FMINV_STREAM      1
@@ -75,7 +69,7 @@ struct TangData
 #define FSL_ASYNC_DEFER_COPY  (1u<<1)
 #define FSL_FREE_AFTER_ASYNC (2u<<1)
 
-UNIQUE_IFACE struct IRenderMesh
+struct IRenderMesh
 {
   enum EMemoryUsageArgument
   {
@@ -94,7 +88,7 @@ UNIQUE_IFACE struct IRenderMesh
 		void *pVertBuffer;
 		int nVertexCount;
 		SPipTangents *pTangents;
-    Vec3 *pNormals;
+		SPipNormal *pNormals;
 		vtx_idx* pIndices;
 		int nIndexCount;
 		PublicRenderPrimitiveType nPrimetiveType;
@@ -129,6 +123,7 @@ UNIQUE_IFACE struct IRenderMesh
 		IRenderMesh* m_pRM;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IRenderMesh(){}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -155,7 +150,7 @@ UNIQUE_IFACE struct IRenderMesh
   virtual size_t SetMesh( CMesh &mesh, int nSecColorsSetOffset, uint32 flags, const Vec3 *pPosOffset, bool requiresLock) = 0;
   virtual void CopyTo(IRenderMesh *pDst, int nAppendVtx=0, bool bDynamic=false, bool fullCopy = true) = 0;
   virtual void SetSkinningDataVegetation(struct SMeshBoneMapping_uint8 *pBoneMapping ) = 0;
-  virtual void SetSkinningDataCharacter(CMesh& mesh, struct SMeshBoneMapping_uint16 *pBoneMapping) = 0;
+  virtual void SetSkinningDataCharacter(CMesh& mesh, struct SMeshBoneMapping_uint16 *pBoneMapping, struct SMeshBoneMapping_uint16 *pExtraBoneMapping) = 0;
   // Creates an indexed mesh from this render mesh (accepts an optional pointer to an IIndexedMesh object that should be used)
   virtual IIndexedMesh* GetIndexedMesh(IIndexedMesh *pIdxMesh=0) = 0;
   virtual int GetRenderChunksCount(IMaterial *pMat, int& nRenderTrisCount) = 0;
@@ -196,7 +191,7 @@ UNIQUE_IFACE struct IRenderMesh
   virtual byte *GetUVPtr(int32& nStride, uint32 nFlags, int32 nOffset=0) = 0;
 
   virtual byte *GetTangentPtr(int32& nStride, uint32 nFlags, int32 nOffset=0) = 0;
-  virtual byte *GetBinormalPtr(int32& nStride, uint32 nFlags, int32 nOffset=0) = 0;
+  virtual byte *GetQTangentPtr(int32& nStride, uint32 nFlags, int32 nOffset=0) = 0;
 
   virtual byte *GetHWSkinPtr(int32& nStride, uint32 nFlags, int32 nOffset=0, bool remapped=false) = 0;
   virtual byte *GetVelocityPtr(int32& nStride, uint32 nFlags, int32 nOffset=0) = 0;
@@ -243,7 +238,7 @@ UNIQUE_IFACE struct IRenderMesh
   virtual void ReleaseRemappedBoneIndicesPair(const uint pairGuid) = 0;
 
 	virtual void OffsetPosition(const Vec3& delta) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SBufferStream

@@ -22,6 +22,8 @@
 #include "FlowBaseNode.h"
 #include "VehicleSystem/VehicleSeat.h"
 #include "VehicleSystem/VehicleCVars.h"
+#include "VehicleSystem/Vehicle.h"
+#include "VehicleSystem/VehicleSeatActionRotateTurret.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,22 +36,42 @@ class CryAction_AIActionSequenceFlowNodeBase		// prefixed with "CryAction" to pr
 	, public AIActionSequence::SequenceActionBase
 {
 protected:
+	CryAction_AIActionSequenceFlowNodeBase();
 	void FinishSequenceActionAndActivateOutputPort(int port);
 	void CancelSequenceAndActivateOutputPort(int port);
 
 	SActivationInfo m_actInfo;
+	bool m_stopFlowGraphNodeFromGettingUpdatedWhenSequenceActionFinishesOrCancels;	// just a convenient way for derived classes to stop updating the FG node when the AISequence-Action gets finished or canceled in many different places
+
+private:
+	void SequenceActionFinishedOrCanceled();
 };
+
+CryAction_AIActionSequenceFlowNodeBase::CryAction_AIActionSequenceFlowNodeBase()
+{
+	m_stopFlowGraphNodeFromGettingUpdatedWhenSequenceActionFinishesOrCancels = false;
+}
 
 void CryAction_AIActionSequenceFlowNodeBase::FinishSequenceActionAndActivateOutputPort(int port)
 {
 	gEnv->pAISystem->GetSequenceManager()->ActionCompleted(GetAssignedSequenceId());
+	SequenceActionFinishedOrCanceled();
 	ActivateOutput(&m_actInfo, port, true);
 }
 
 void CryAction_AIActionSequenceFlowNodeBase::CancelSequenceAndActivateOutputPort(int port)
 {
 	gEnv->pAISystem->GetSequenceManager()->CancelSequence(GetAssignedSequenceId());
+	SequenceActionFinishedOrCanceled();
 	ActivateOutput(&m_actInfo, port, true);
+}
+
+void CryAction_AIActionSequenceFlowNodeBase::SequenceActionFinishedOrCanceled()
+{
+	if (m_stopFlowGraphNodeFromGettingUpdatedWhenSequenceActionFinishesOrCancels && m_actInfo.pGraph)
+	{
+		m_actInfo.pGraph->SetRegularlyUpdated(m_actInfo.myID, false);
+	}
 }
 
 
@@ -168,6 +190,7 @@ void CFlowNode_AISequenceAction_ApproachAndEnterVehicle::ProcessEvent(IFlowNode:
 	case eFE_Activate:
 		{
 			m_actInfo = *pActInfo;
+			m_stopFlowGraphNodeFromGettingUpdatedWhenSequenceActionFinishesOrCancels = true;
 			m_movementRequestID = MovementRequestID::Invalid();
 
 			if (IsPortActive(pActInfo, InputPort_Start))
@@ -412,6 +435,221 @@ void CFlowNode_AISequenceAction_ApproachAndEnterVehicle::OnVehicleEvent(EVehicle
 	}
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//
+// CFlowNode_AISequenceAction_VehicleRotateTurret
+//
+//////////////////////////////////////////////////////////////////////////
+class CFlowNode_AISequenceAction_VehicleRotateTurret
+	: public CryAction_AIActionSequenceFlowNodeBase
+{
+public:
+	CFlowNode_AISequenceAction_VehicleRotateTurret(SActivationInfo* pActInfo);
+	~CFlowNode_AISequenceAction_VehicleRotateTurret();
+
+	// IFlowNode
+	virtual IFlowNodePtr Clone(SActivationInfo* pActInfo);
+	virtual void GetConfiguration(SFlowNodeConfig& config);
+	virtual void ProcessEvent(EFlowEvent event, SActivationInfo* pActInfo);
+	virtual void GetMemoryUsage(ICrySizer* sizer) const;
+	// ~IFlowNode
+
+	// AIActionSequence::SequenceActionBase
+	virtual void HandleSequenceEvent(AIActionSequence::SequenceEvent sequenceEvent);
+	// ~AIActionSequence::SequenceActionBase
+
+private:
+	enum
+	{
+		InputPort_Start,
+		InputPort_AimPos,
+		InputPort_ThresholdPitch,
+		InputPort_ThresholdYaw
+	};
+
+	enum
+	{
+		OutputPort_Done
+	};
+
+	CVehicleSeatActionRotateTurret* m_pActionRotateTurret;
+	float m_pitchThreshold;
+	float m_yawThreshold;
+};
+
+CFlowNode_AISequenceAction_VehicleRotateTurret::CFlowNode_AISequenceAction_VehicleRotateTurret(SActivationInfo* pActInfo)
+	: m_pActionRotateTurret(NULL)
+	, m_pitchThreshold(0.0f)
+	, m_yawThreshold(0.0f)
+{
+}
+
+CFlowNode_AISequenceAction_VehicleRotateTurret::~CFlowNode_AISequenceAction_VehicleRotateTurret()
+{
+}
+
+IFlowNodePtr CFlowNode_AISequenceAction_VehicleRotateTurret::Clone(SActivationInfo* pActInfo)
+{
+	return new CFlowNode_AISequenceAction_VehicleRotateTurret(pActInfo);
+}
+
+void CFlowNode_AISequenceAction_VehicleRotateTurret::GetConfiguration(SFlowNodeConfig& config)
+{
+	static const SInputPortConfig inputPortConfig[] =
+	{
+		InputPortConfig_Void("Start"),
+		InputPortConfig<Vec3>("AimPos", _HELP("Position to aim at with the turret")),
+		InputPortConfig<float>("ThresholdPitch", _HELP("Threshold of the pitch angle (in degrees) before triggering the output port. Must be used in conjunction with the ThresholdYaw input port.")),
+		InputPortConfig<float>("ThresholdYaw", _HELP("Threshold of the yaw angle (in degrees) before triggering the output port. Must be used in conjunction with the ThresholdPitch input port.")),
+		{ 0 }
+	};
+
+	static const SOutputPortConfig outputPortConfig[] =
+	{
+		OutputPortConfig_Void("Done"),
+		{ 0 }
+	};
+
+	config.pInputPorts = inputPortConfig;
+	config.pOutputPorts = outputPortConfig;
+	config.sDescription = _HELP("Allows an AI agent to align the vehicle's turret to an aiming position.");
+	config.nFlags |= EFLN_TARGET_ENTITY | EFLN_AISEQUENCE_ACTION;
+	config.SetCategory(EFLN_APPROVED);
+}
+
+void CFlowNode_AISequenceAction_VehicleRotateTurret::ProcessEvent(IFlowNode::EFlowEvent event, IFlowNode::SActivationInfo* pActInfo)
+{
+	if (!pActInfo->pEntity)
+		return;
+
+	switch(event)
+	{
+	case eFE_Activate:
+		{
+			m_actInfo = *pActInfo;
+			m_stopFlowGraphNodeFromGettingUpdatedWhenSequenceActionFinishesOrCancels = true;
+			m_pActionRotateTurret = NULL;
+
+			if (IsPortActive(pActInfo, InputPort_Start))
+			{
+				if (const AIActionSequence::SequenceId assignedSequenceId = GetAssignedSequenceId())
+				{
+					gEnv->pAISystem->GetSequenceManager()->RequestActionStart(assignedSequenceId, pActInfo->myID);
+					m_actInfo.pGraph->SetRegularlyUpdated(m_actInfo.myID, true);
+				}
+			}
+		}
+		break;
+
+	case eFE_Update:
+		{
+			if (m_pActionRotateTurret)
+			{
+				float pitch, yaw;
+				m_pActionRotateTurret->GetRemainingAnglesToAimGoalInDegrees(pitch, yaw);
+				if (fabsf(pitch) <= m_pitchThreshold && fabs(yaw) <= m_yawThreshold)
+				{
+					FinishSequenceActionAndActivateOutputPort(OutputPort_Done);
+				}
+			}
+		}
+		break;
+	}
+}
+
+void CFlowNode_AISequenceAction_VehicleRotateTurret::GetMemoryUsage(ICrySizer* sizer) const
+{
+	sizer->Add(*this);
+}
+
+void CFlowNode_AISequenceAction_VehicleRotateTurret::HandleSequenceEvent(AIActionSequence::SequenceEvent sequenceEvent)
+{
+	switch(sequenceEvent)
+	{
+	case AIActionSequence::StartAction:
+		{
+			if (!m_actInfo.pEntity)
+			{
+				// the entity has gone for some reason, at least make sure the action gets finished properly and the FG continues
+				CancelSequenceAndActivateOutputPort(OutputPort_Done);
+				return;
+			}
+
+			assert(gEnv && gEnv->pGame && gEnv->pGame->GetIGameFramework() && gEnv->pGame->GetIGameFramework()->GetIActorSystem());
+			IActor* pActor = gEnv->pGame->GetIGameFramework()->GetIActorSystem()->GetActor(m_actInfo.pEntity->GetId());
+
+			// ensure the FG entity is an IActor
+			if (!pActor)
+			{
+				CRY_ASSERT_MESSAGE(0, "no compatible entity was provided");
+				CryWarning(VALIDATOR_MODULE_AI, VALIDATOR_WARNING, "Actor %s failed to enter vehicle (no compatible entity was provided)", m_actInfo.pEntity->GetName());
+				CancelSequenceAndActivateOutputPort(OutputPort_Done);
+				return;
+			}
+
+			// get the vehicle the actor is linked to
+			IVehicle* pVehicle = pActor->GetLinkedVehicle();
+			if (!pVehicle)
+			{
+				CRY_ASSERT_MESSAGE(0, "agent is not linked to a vehicle");
+				CryWarning(VALIDATOR_MODULE_AI, VALIDATOR_WARNING, "Actor %s is not linked to a vehicle", m_actInfo.pEntity->GetName());
+				CancelSequenceAndActivateOutputPort(OutputPort_Done);
+				return;
+			}
+
+			// get the seat the actor is sitting on
+			CVehicleSeat* pSeat = static_cast<CVehicleSeat*>(pVehicle->GetSeatForPassenger(m_actInfo.pEntity->GetId()));
+			if (!pSeat)
+			{
+				CRY_ASSERT_MESSAGE(0, "agent is not sitting in the vehicle it is linked to");
+				CryWarning(VALIDATOR_MODULE_AI, VALIDATOR_WARNING, "Actor %s is not sitting in the vehicle it is linked to", m_actInfo.pEntity->GetName());
+				CancelSequenceAndActivateOutputPort(OutputPort_Done);
+				return;
+			}
+
+			// scan for the seat-action that allows rotating the turret
+			TVehicleSeatActionVector& seatActions = pSeat->GetSeatActions();
+			for (TVehicleSeatActionVector::iterator it = seatActions.begin(); it != seatActions.end(); ++it)
+			{
+				IVehicleSeatAction* pSeatAction = it->pSeatAction;
+				if ((m_pActionRotateTurret = CAST_VEHICLEOBJECT(CVehicleSeatActionRotateTurret, pSeatAction)))
+				{
+					break;
+				}
+			}
+
+			// ensure the vehicle-seat provided the correct action
+			if (!m_pActionRotateTurret)
+			{
+				CRY_ASSERT_MESSAGE(0, "a CVehicleSeatActionRotateTurret is not provided by the vehicle or someone else in the vehicle has reserved that action already.");
+				CryWarning(VALIDATOR_MODULE_AI, VALIDATOR_WARNING, "Actor %s could not find a CVehicleSeatActionRotateTurret or that action is already reserved by someone else", m_actInfo.pEntity->GetName());
+				CancelSequenceAndActivateOutputPort(OutputPort_Done);
+				return;
+			}
+
+			m_pitchThreshold = GetPortFloat(&m_actInfo, InputPort_ThresholdPitch);
+			m_yawThreshold = GetPortFloat(&m_actInfo, InputPort_ThresholdYaw);
+
+			Vec3 aimPos = GetPortVec3(&m_actInfo, InputPort_AimPos);
+			m_pActionRotateTurret->SetAimGoal(aimPos);
+		}
+		break;
+
+	case AIActionSequence::SequenceStopped:
+		{
+			if (m_pActionRotateTurret)
+			{
+				// cancel the rotation action
+				m_pActionRotateTurret->SetAimGoal(Vec3Constants<float>::fVec3_Zero);
+				m_pActionRotateTurret = NULL;
+			}
+		}
+		break;
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 REGISTER_FLOW_NODE("AISequence:ApproachAndEnterVehicle", CFlowNode_AISequenceAction_ApproachAndEnterVehicle)
+REGISTER_FLOW_NODE("AISequence:VehicleRotateTurret", CFlowNode_AISequenceAction_VehicleRotateTurret)

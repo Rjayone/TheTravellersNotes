@@ -108,7 +108,7 @@ public:
 
 	virtual EPriorityComparison ComparePriority(const IAction &actionCurrent) const
 	{
-		return Higher;
+		return (IAction::Installed == actionCurrent.GetStatus() && IAction::Installing & ~actionCurrent.GetFlags()) ? Higher : BaseClass::ComparePriority(actionCurrent);
 	}
 
 private:

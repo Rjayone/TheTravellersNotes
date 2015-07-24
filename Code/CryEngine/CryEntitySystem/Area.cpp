@@ -29,12 +29,12 @@ CArea::CArea( CAreaManager *pManager )
 	,	m_VSize(0.0f)
 	,	m_PrevFade(-1.0f)
 	,	m_fProximity(5.0f)
-	,	m_fFadeDistance(0.0f)
+	,	m_fFadeDistance(-1.0f)
 	, m_fEnvironmentFadeDistance(0.0f)
 	,	m_AreaGroupID(INVALID_AREA_GROUP_ID)
 	,	m_nPriority(0)
 	,	m_AreaID(-1)
-	,	m_EntityID(0)
+	,	m_EntityID(INVALID_ENTITYID)
 	,	m_BoxMin(ZERO)
 	,	m_BoxMax(ZERO)
 	,	m_SphereCenter(0)
@@ -2776,13 +2776,6 @@ void CArea::LeaveArea(IEntity const* const __restrict pSrcEntity)
 		event.nParam[2] = m_EntityID;
 
 		SendEvent(event);
-
-		// If the entity currently leaving is the last one in the area, set the area as inactive
-		if (m_pAreaManager->GetNumberOfPlayersInArea(this) <= 1)
-		{
-			m_PrevFade  = -1.0f;
-			m_bIsActive = false;
-		}
 	}
 }
 
@@ -2834,6 +2827,13 @@ void CArea::LeaveNearArea(IEntity const* const __restrict pSrcEntity)
 		event.nParam[2] = m_EntityID;
 
 		SendEvent(event);
+
+		// If the entity currently leaving is the last one in the area, set the area as inactive
+		if (m_pAreaManager->GetNumberOfPlayersNearOrInArea(this) <= 1)
+		{
+			m_PrevFade  = -1.0f;
+			m_bIsActive = false;
+		}
 	}
 }
 
@@ -3345,4 +3345,24 @@ const CArea::TAreaBoxes& CArea::GetBoxHolders()
   return s_areaBoxes;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IArea)
+#if defined(INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE)
+//////////////////////////////////////////////////////////////////////////
+char const* const CArea::GetAreaEntityName() const
+{
+	IEntitySystem const* const pIEntitySystem = gEnv->pEntitySystem;
+
+	if (pIEntitySystem != NULL)
+	{
+		IEntity const* const pIEntity = pIEntitySystem->GetEntity(m_EntityID);
+
+		if (pIEntity != NULL)
+		{
+			return pIEntity->GetName();
+		}
+	}
+
+	return NULL;
+}
+#endif // INCLUDE_ENTITYSYSTEM_PRODUCTION_CODE
+
+

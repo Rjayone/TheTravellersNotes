@@ -185,7 +185,7 @@ void CFireMode::UpdateMannequinTags(bool enable)
 	IActionController* pActionController = m_pWeapon->GetActionController();
 	if (pActionController)
 	{
-		const uint32 firemodeCrC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(m_fireParams->fireparams.tag.c_str());
+		const uint32 firemodeCrC = CCrc32::ComputeLowercase(m_fireParams->fireparams.tag.c_str());
 		if (firemodeCrC)
 		{
 			SAnimationContext& animationContext = pActionController->GetContext();

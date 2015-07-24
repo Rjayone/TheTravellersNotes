@@ -3,8 +3,6 @@
 
 #pragma once
 
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
-
 #include "VertexFormats.h"
 
 
@@ -55,7 +53,5 @@ public:
 	IVolumeTexture* m_pShadVol;
 	_smart_ptr<IRenderMesh> m_pHullMesh;
 };
-
-#endif // #if !defined(RENDERNODES_LEAN_AND_MEAN)
 
 #endif // #ifndef _CREVOLUMEOBJECT_

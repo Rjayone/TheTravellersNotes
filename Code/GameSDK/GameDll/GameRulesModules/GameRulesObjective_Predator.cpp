@@ -325,7 +325,6 @@ void CGameRulesObjective_Predator::OnStartGame()
 	m_pGameRules->GetSpawningModule()->SetAutoReviveTimeScaleForTeam(TEAM_PREDATOR, 0.7f);
 	
 	uint32 numCacheGroups = 0;
-	Crc32Gen *pCrc = gEnv->pSystem->GetCrc32Gen();
 
 	// Construct our ammo cache groups
 	const CTacticalManager::TInterestPoints& ammoPoints = g_pGame->GetTacticalManager()->GetTacticalPoints(CTacticalManager::eTacticalEntity_Ammo);
@@ -339,7 +338,7 @@ void CGameRulesObjective_Predator::OnStartGame()
 			const char *pGroupName;
 			if (EntityScripts::GetEntityProperty(pEntity, "GroupId", pGroupName))
 			{
-				uint32 groupId = pCrc->GetCRC32Lowercase(pGroupName);
+				uint32 groupId = CCrc32::ComputeLowercase(pGroupName);
 				bool bFound = false;
 				for (uint32 j = 0; j < numCacheGroups; ++ j)
 				{
@@ -1777,7 +1776,7 @@ bool CGameRulesObjective_Predator::EndGameIfOnlyOnePlayerRemains( int channelId 
 	return false;
 }
 
-// Play nice with ps3 compiling
+// Play nice with uber file compiling
 #undef SINGLE_ENTITY_RMI_PREPARE_CHANGE_TEAM_PREDATOR
 #undef SINGLE_ENTITY_RMI_CLIENT_READY_TO_RESPAWN
 #undef SINGLE_ENTITY_RMI_SET_PREDATOR_LOADOUT

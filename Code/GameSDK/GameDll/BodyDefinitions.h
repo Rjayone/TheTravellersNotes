@@ -265,8 +265,7 @@ public:
 
 	void SetDestructibleLastEventForHitReactions(const char* eventName)
 	{
-		const Crc32Gen* pCRC32 = gEnv->pSystem->GetCrc32Gen();
-		m_lastEventForHitReactionsCrc = (!eventName || eventName[0] == '\0') ? 0 : pCRC32->GetCRC32Lowercase(eventName);
+		m_lastEventForHitReactionsCrc = (!eventName || eventName[0] == '\0') ? 0 : CCrc32::ComputeLowercase(eventName);
 	}
 
 	ILINE unsigned int GetLastDestructionEventForHitReactions() const

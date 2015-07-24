@@ -14,19 +14,19 @@ public:
 	{
 	}
 
-	Serialization::TypeID type() const override
+	const char* registeredTypeName() const override
 	{
 		if( m_ptr )
-			return factoryOverride().getTypeID( m_ptr.get() );
+			return factoryOverride().getRegisteredTypeName( m_ptr.get() );
 		else
-			return Serialization::TypeID();
+			return "";
 	}
 
-	void create( Serialization::TypeID type ) const override
+	void create( const char* registeredTypeName ) const override
 	{
 		CRY_ASSERT( !m_ptr || m_ptr.use_count() == 1 );
-		if( type )
-			m_ptr.reset( factoryOverride().create( type ) );
+		if( registeredTypeName && registeredTypeName[0] != '\0' )
+			m_ptr.reset( factoryOverride().create( registeredTypeName ) );
 		else
 			m_ptr.reset();
 	}

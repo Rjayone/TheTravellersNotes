@@ -22,13 +22,13 @@ class CEffect : public IEffect
 {
 public:
 	// IEffect
-	VIRTUAL bool Activating(float delta);
-	VIRTUAL bool Update(float delta);
-	VIRTUAL bool Deactivating(float delta);
-	VIRTUAL bool OnActivate();
-	VIRTUAL bool OnDeactivate();
-	VIRTUAL void SetState(EEffectState state);
-	VIRTUAL EEffectState GetState();
+	virtual bool Activating(float delta);
+	virtual bool Update(float delta);
+	virtual bool Deactivating(float delta);
+	virtual bool OnActivate();
+	virtual bool OnDeactivate();
+	virtual void SetState(EEffectState state);
+	virtual EEffectState GetState();
 	// ~IEffect
 private:
 	EEffectState		m_state;

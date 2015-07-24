@@ -123,10 +123,8 @@ public:
 	};
 };
 
-class CAnimationBoneInfo_Node : public CFlowBaseNode<eNCT_Instanced>
+class CAnimationBoneInfo_Node : public CFlowBaseNode<eNCT_Singleton>
 {
-	IEntity *m_pEntity;
-
 	enum EInPorts
 	{
 		IN_BONENAME = 0,
@@ -134,18 +132,13 @@ class CAnimationBoneInfo_Node : public CFlowBaseNode<eNCT_Instanced>
 	};
 
 public:
-	CAnimationBoneInfo_Node( SActivationInfo * pActInfo ) : m_pEntity (0)
+	CAnimationBoneInfo_Node( SActivationInfo * pActInfo )
 	{
 	};
 
 	virtual void GetMemoryUsage(ICrySizer * s) const
 	{
 		s->Add(*this);
-	}
-
-	IFlowNodePtr Clone( SActivationInfo * pActInfo )
-	{
-		return new CAnimationBoneInfo_Node(pActInfo);
 	}
 
 	virtual void Serialize(SActivationInfo *pActInfo, TSerialize ser)
@@ -188,26 +181,54 @@ public:
 
 		UpdateChanger update(pActInfo, false);
 
-		m_pEntity = pActInfo->pEntity;
-		if (0 == m_pEntity)
-			return;
-
-		const string& boneName = GetPortString(pActInfo,IN_BONENAME);
-		if (boneName.empty())
-			return;
-
-		ICharacterInstance* pCharacter = m_pEntity->GetCharacter(0);
-		if (pCharacter == 0)
-			return;
-
-		IDefaultSkeleton& rIDefaultSkeleton = pCharacter->GetIDefaultSkeleton();
-		int16 boneID = rIDefaultSkeleton.GetJointIDByName(boneName.c_str());
-		if (boneID < 0)
+		if(IEntity* pEntity = pActInfo->pEntity)
 		{
-			CryLogAlways("[flow] Animations:BoneInfo: Cannot find bone '%s' in character 0 of entity '%s'", boneName.c_str(), m_pEntity->GetName());
+			const string& boneName = GetPortString(pActInfo,IN_BONENAME);
+			if (boneName.empty())
+				return;
+
+			if(ICharacterInstance* pCharacter = pEntity->GetCharacter(0))
+			{
+				IDefaultSkeleton& rIDefaultSkeleton = pCharacter->GetIDefaultSkeleton();
+				int16 boneID = rIDefaultSkeleton.GetJointIDByName(boneName.c_str());
+				if (boneID < 0)
+				{
+					CryLogAlways("[flow] Animations:BoneInfo: Cannot find bone '%s' in character 0 of entity '%s'", boneName.c_str(), pEntity->GetName());
+				}
+				bool enabled = GetPortBool( pActInfo, IN_ENABLED );
+				update.update = boneID >= 0 && enabled;
+			}
 		}
-		bool enabled = GetPortBool( pActInfo, IN_ENABLED );
-		update.update = boneID >= 0 && enabled;
+	}
+
+	void OnUpdate(SActivationInfo *pActInfo)
+	{
+		if(IEntity* pEntity = pActInfo->pEntity)
+		{
+			if(ICharacterInstance* pCharacter = pEntity->GetCharacter(0))
+			{
+				IDefaultSkeleton& rIDefaultSkeleton = pCharacter->GetIDefaultSkeleton();
+				int16 boneID = rIDefaultSkeleton.GetJointIDByName(GetPortString(pActInfo, 0).c_str());
+				if (boneID < 0)
+				{
+					CryLogAlways("[flow] Animations:BoneInfo Cannot find bone '%s' in character 0 of entity '%s'", GetPortString(pActInfo, 0).c_str(), pEntity->GetName());
+					return;
+				}
+				//	Matrix34 mat = pSkeleton->GetAbsJMatrixByID(boneID);
+				ISkeletonPose* pISkeletonPose = pCharacter->GetISkeletonPose();
+				Matrix34 mat = Matrix34(pISkeletonPose->GetAbsJointByID(boneID));
+				ActivateOutput(pActInfo, 0, mat.GetTranslation());
+				mat.OrthonormalizeFast();
+				Ang3 angles = Ang3::GetAnglesXYZ(Matrix33(Quat(mat)));
+				ActivateOutput(pActInfo, 1, Vec3(RAD2DEG(angles)));
+
+				Matrix34 matWorld = pEntity->GetSlotWorldTM(0) * mat;
+				ActivateOutput(pActInfo, 2, matWorld.GetTranslation());
+				matWorld.OrthonormalizeFast();
+				Ang3 anglesWorld = Ang3::GetAnglesXYZ(Matrix33(Quat(matWorld)));
+				ActivateOutput(pActInfo, 3, Vec3(RAD2DEG(anglesWorld)));
+			}
+		}
 	}
 
 	virtual void ProcessEvent( EFlowEvent event,SActivationInfo *pActInfo )
@@ -223,36 +244,7 @@ public:
 			break;
 
 		case eFE_Update:
-			{
-				if(!m_pEntity)
-				{
-					assert (m_pEntity != 0);
-					return;
-				}
-				ICharacterInstance* pCharacter = m_pEntity->GetCharacter(0);
-				if (pCharacter == 0)
-					break;
-				IDefaultSkeleton& rIDefaultSkeleton = pCharacter->GetIDefaultSkeleton();
-				int16 boneID = rIDefaultSkeleton.GetJointIDByName(GetPortString(pActInfo, 0).c_str());
-				if (boneID < 0)
-				{
-					CryLogAlways("[flow] Animations:BoneInfo Cannot find bone '%s' in character 0 of entity '%s'", GetPortString(pActInfo, 0).c_str(), m_pEntity->GetName());
-					break;
-				}
-			//	Matrix34 mat = pSkeleton->GetAbsJMatrixByID(boneID);
-				ISkeletonPose* pISkeletonPose = pCharacter->GetISkeletonPose();
-				Matrix34 mat = Matrix34(pISkeletonPose->GetAbsJointByID(boneID));
-				ActivateOutput(pActInfo, 0, mat.GetTranslation());
-				mat.OrthonormalizeFast();
-				Ang3 angles = Ang3::GetAnglesXYZ(Matrix33(Quat(mat)));
-				ActivateOutput(pActInfo, 1, Vec3(RAD2DEG(angles)));
-
-				Matrix34 matWorld = m_pEntity->GetSlotWorldTM(0) * mat;
-				ActivateOutput(pActInfo, 2, matWorld.GetTranslation());
-				matWorld.OrthonormalizeFast();
-				Ang3 anglesWorld = Ang3::GetAnglesXYZ(Matrix33(Quat(matWorld)));
-				ActivateOutput(pActInfo, 3, Vec3(RAD2DEG(anglesWorld)));
-			}
+			OnUpdate(pActInfo);
 			break;
 		}
 	}

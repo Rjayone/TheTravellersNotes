@@ -175,6 +175,8 @@ void CMouse::Update(bool bFocus)
 		}		
 	}
 
+	m_deltas *= g_pInputCVars->i_mouse_sensitivity;
+
 	//marcok: here the raw input already gets cooked a bit ... should be moved
 	float mouseaccel = g_pInputCVars->i_mouse_accel;
 
@@ -187,6 +189,9 @@ void CMouse::Update(bool bFocus)
 	}
 
 	SmoothDeltas(g_pInputCVars->i_mouse_smooth);
+
+	const bool hasDeltaChanged = !(fcmp(m_deltas.x,m_oldDeltas.x) && fcmp(m_deltas.y,m_oldDeltas.y)); 
+	m_oldDeltas = m_deltas; //this needs to happen always. We want to keep the attribute always valid
 
 	//mouse wheel - use custom code instead of PostOnlyWhenChanged because we want the mouseWheel value
 	if(m_mouseWheel > 0.0f)
@@ -223,7 +228,7 @@ void CMouse::Update(bool bFocus)
 	}
 	
 	// mouse movements
-	if (m_deltas.GetLength2()>0.0f || m_mouseWheel)
+	if (m_deltas.GetLength2()>0.0f || hasDeltaChanged || m_mouseWheel)
 	{
 		pSymbol = Symbol[eKI_MouseX-KI_MOUSE_BASE];
 		pSymbol->state = eIS_Changed;

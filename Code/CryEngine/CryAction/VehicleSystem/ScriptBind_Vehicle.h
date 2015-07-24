@@ -117,6 +117,10 @@ public:
 	//! <description>Processes passenger damages.</description>
 	int ProcessPassengerDamage(IFunctionHandler* pH, ScriptHandle passengerId, float actorHealth, float damage, int hitTypeId, bool explosion);
 
+	//! <code>Vehicle.Destroy()</code>
+	//! <description>Destroys the vehicle.</description>
+	int Destroy(IFunctionHandler *pH);
+
 	//! <code>Vehicle.IsDestroyed()</code>
 	//! <description>Checks if the vehicle is destroyed.</description>
 	int IsDestroyed(IFunctionHandler* pH);

@@ -426,9 +426,7 @@ void CLightningBolt::Strike()
 				pe_action_impulse impulse;
 				float impulseStrength = CalculateImpulse(target, position, boltParams);
 				impulse.impulse = (target.GetPosition() - position).GetNormalized() * impulseStrength;
-				impulse.angImpulse.x = (cry_frand()*0.5f+0.5f) * impulseStrength;
-				impulse.angImpulse.y = (cry_frand()*0.5f+0.5f) * impulseStrength;
-				impulse.angImpulse.z = (cry_frand()*0.5f+0.5f) * impulseStrength;
+				impulse.angImpulse = cry_random_componentwise(Vec3(0.5f), Vec3(1.0f)) * impulseStrength;
 				target.GetPhysics()->Action(&impulse);
 			}
 		}

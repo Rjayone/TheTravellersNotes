@@ -34,7 +34,7 @@ public:
 	
 	virtual void Release();
 
-	VIRTUAL ILevelInfo *GetLevelInfo();
+	virtual ILevelInfo *GetLevelInfo();
 
 private:
 	CLevelInfo m_levelInfo;

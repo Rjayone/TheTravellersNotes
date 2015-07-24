@@ -9,12 +9,7 @@
 
 #define STORE_TAG_STRINGS 1 //TODO: !_RELEASE
 
-// Enable this if the sh*t hits the fan ('only' saves about 15% per ADB currently but makes debugging very hard)
-//#if defined(_RELEASE) || defined(XENON) || defined(PS3)
-//#define STORE_ANIMNAME_STRINGS 0
-//#else
-//#define STORE_ANIMNAME_STRINGS 1
-//#endif
+// Set this to 0 to remove animation name strings. This saves about 15% of memory per ADB, but makes debugging very hard
 #define STORE_ANIMNAME_STRINGS 1
 
 #if defined(_RELEASE)
@@ -62,7 +57,7 @@ struct SCRCRefHash_CRC32Lowercase
 		assert(s);
 		assert(s[0]);
 
-		const TInt crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(s);
+		const TInt crc = CCrc32::ComputeLowercase(s);
 		if (crc == INVALID)
 		{
 			CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_ERROR, "Congratulations, you hit the jackpot! The string '%s' has a lowercase CRC32 equal to %u. Unfortunately this number is reserved for errors, so please rename and try again...", s, INVALID);
@@ -81,7 +76,7 @@ struct SCRCRefHash_CRC32
 		assert(s);
 		assert(s[0]);
 
-		const TInt crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32(s);
+		const TInt crc = CCrc32::Compute(s);
 		if (crc == INVALID)
 		{
 			CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_ERROR, "Congratulations, you hit the jackpot! The string '%s' has a CRC32 equal to %u. Unfortunately this number is reserved for errors, so please rename and try again...", s, INVALID);

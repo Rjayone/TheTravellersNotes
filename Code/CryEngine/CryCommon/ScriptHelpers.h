@@ -17,6 +17,8 @@
 #define __ScriptHelpers_h__
 #pragma once
 
+#include "StringUtils.h"  // cry_strcpy()
+
 // forward declarations
 class CScriptBind_GameStatistics;
 
@@ -153,7 +155,7 @@ public:
 	void SetGlobalName( const char *sGlobalName )
 	{
 		assert( strlen(sGlobalName) < sizeof(m_sGlobalName) );
-		strcpy_s( m_sGlobalName,sGlobalName );
+		cry_strcpy( m_sGlobalName,sGlobalName );
 		if (m_pMethodsTable)
 			m_pSS->SetGlobalValue( sGlobalName,m_pMethodsTable );
 	}
@@ -223,13 +225,10 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 };
 
-// This define SCRIPT_REG_CLASSNAME needed for Xenon compiler.
-#define SCRIPT_REG_CLASSNAME 
 
+#define SCRIPT_REG_CLASSNAME 
 #define SCRIPT_REG_FUNC(func) RegisterFunction( #func,functor_ret(*this,SCRIPT_REG_CLASSNAME func) );
 #define SCRIPT_REG_GLOBAL(var) RegisterGlobal( #var,var );
-
-// Because Xenon compiler cannot do it correctly.
 #define SCRIPT_REG_TEMPLFUNC(func,sFuncParams) RegisterTemplateFunction( #func,sFuncParams,*this,SCRIPT_REG_CLASSNAME func );
 
 #define SCRIPT_CHECK_PARAMETERS(_n) \

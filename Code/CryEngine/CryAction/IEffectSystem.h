@@ -11,7 +11,6 @@ History:
 - 17:01:2006:		Created by Marco Koegler
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IEffectSystem.h)
 
 #ifndef __IEFFECTSYSTEM_H__
 #define __IEFFECTSYSTEM_H__
@@ -41,7 +40,7 @@ enum EEffectState
 	eES_Deactivating,
 };
 
-UNIQUE_IFACE struct IEffect
+struct IEffect
 {
 	virtual ~IEffect(){}
 
@@ -61,7 +60,7 @@ UNIQUE_IFACE struct IEffect
 	virtual void GetMemoryUsage(ICrySizer * s) const= 0;	
 };
 
-UNIQUE_IFACE struct IGroundEffect
+struct IGroundEffect
 {
 	enum EGroundEffectFlags
 	{
@@ -106,7 +105,7 @@ UNIQUE_IFACE struct IGroundEffect
 	virtual void  Stop(bool stop) = 0;
 };
 
-UNIQUE_IFACE struct IEffectSystem
+struct IEffectSystem
 {
 	virtual ~IEffectSystem(){}
 

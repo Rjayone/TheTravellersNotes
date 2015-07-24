@@ -605,7 +605,7 @@ EntityId CSpammer::GetNextLockOnTarget() const
 
 	if (!m_potentialTargets.m_potentialTargets.empty())
 	{
-		float randomProbability = cry_frand() * m_potentialTargets.m_totalProbability;
+		float randomProbability = cry_random(0.0f, m_potentialTargets.m_totalProbability);
 		int selectedIdx;
 		for (selectedIdx = 0; randomProbability > 0.0f; ++selectedIdx)
 			randomProbability -= m_potentialTargets.m_potentialTargets[selectedIdx].m_probability;

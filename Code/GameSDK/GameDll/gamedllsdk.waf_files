@@ -4,6 +4,34 @@
 		"Root":
 		[
 			"StdAfx.cpp"
+		],
+		"Boids":
+		[
+			"Boids/BirdsFlock.cpp",
+			"Boids/BoidBird.cpp",
+			"Boids/BoidCollision.cpp",
+			"Boids/BoidFish.cpp",
+			"Boids/BoidObject.cpp",
+			"Boids/BoidsProxy.cpp",
+			"Boids/BugsFlock.cpp",
+			"Boids/ChickenBoids.cpp",
+			"Boids/FishFlock.cpp",
+			"Boids/Flock.cpp",
+			"Boids/FrogBoids.cpp",
+			"Boids/ScriptBind_Boids.cpp",
+			"Boids/BirdEnum.h",
+			"Boids/BirdsFlock.h",
+			"Boids/BoidBird.h",
+			"Boids/BoidCollision.h",
+			"Boids/BoidFish.h",
+			"Boids/BoidObject.h",
+			"Boids/BoidsProxy.h",
+			"Boids/BugsFlock.h",
+			"Boids/ChickenBoids.h",
+			"Boids/FishFlock.h",
+			"Boids/Flock.h",
+			"Boids/FrogBoids.h",
+			"Boids/ScriptBind_Boids.h"
 		]
 	},
    "CryGameSDKDLL_uber_0.cpp":
@@ -358,33 +386,6 @@
       ]
 		},
 		"CryGameSDKDLL_uber_6.cpp":{
-      "Boids":[
-         "Boids/BirdsFlock.cpp",
-         "Boids/BoidBird.cpp",
-         "Boids/BoidCollision.cpp",
-         "Boids/BoidFish.cpp",
-         "Boids/BoidObject.cpp",
-         "Boids/BoidsProxy.cpp",
-         "Boids/BugsFlock.cpp",
-         "Boids/ChickenBoids.cpp",
-         "Boids/FishFlock.cpp",
-         "Boids/Flock.cpp",
-         "Boids/FrogBoids.cpp",
-         "Boids/ScriptBind_Boids.cpp",
-         "Boids/BirdEnum.h",
-         "Boids/BirdsFlock.h",
-         "Boids/BoidBird.h",
-         "Boids/BoidCollision.h",
-         "Boids/BoidFish.h",
-         "Boids/BoidObject.h",
-         "Boids/BoidsProxy.h",
-         "Boids/BugsFlock.h",
-         "Boids/ChickenBoids.h",
-         "Boids/FishFlock.h",
-         "Boids/Flock.h",
-         "Boids/FrogBoids.h",
-         "Boids/ScriptBind_Boids.h"
-      ],
       "Checkpoints":[
          "CheckpointGame.cpp",
          "CheckpointGame.h"
@@ -1141,7 +1142,6 @@
          "Nodes/GameNodes.cpp",
          "Nodes/MPNodes.cpp",
          "Nodes/PressureWaveNode.cpp",
-         "Nodes/SimulatePlayerInputNode.cpp",
          "Nodes/TacticalScanNode.cpp",
          "Nodes/WeaponNodes.cpp",
          "Nodes/AIAssignmentNodes.cpp",
@@ -1158,10 +1158,11 @@
          "Nodes/FeatureTestNode.h",
          "Nodes/FlowConvoyNode.h",
          "Nodes/G2FlowBaseNode.h",
-         "Nodes/SimulatePlayerInputNode.h",
          "Nodes/AIAssignmentNodes.h",
          "FlowWeaponCustomizationNodes.h",
-         "Nodes/ModelToHudFlowNodes.h"
+         "Nodes/ModelToHudFlowNodes.h",
+         "Nodes/OculusFlowNodes.cpp",
+         "Nodes/FlowFadeNode.h"
       ]
 		},
 		"CryGameSDKDLL_uber_20.cpp":{
@@ -1201,16 +1202,12 @@
          "Network/Lobby/PlaylistActivityTracker.h",
          "AnimActionAIAiming.h",
          "ProceduralContextAim.h",
-         "GameStateRecorder.h",
-         "resource.h"
+         "GameStateRecorder.h"
       ],
       "Startup Files":[
-         "BasicEventListener.cpp",
          "GameDll.cpp",
          "GameStartup.cpp",
-         "BasicEventListener.h",
-         "GameStartup.h",
-         "IBasicEventListener.h"
+         "GameStartup.h"
       ],
       "Stereo3D":[
          "Stereo3D/StereoFramework.cpp",

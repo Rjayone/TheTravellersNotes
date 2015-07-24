@@ -1,11 +1,4 @@
-#include DEVIRTUALIZE_HEADER_FIX(ILocalizationManager.h)
-
-#ifndef _CRY_ILOCALIZATIONMANAGER_H_
-#define _CRY_ILOCALIZATIONMANAGER_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #include <CrySizer.h>
 //#include <platform.h> // Needed for LARGE_INTEGER (for consoles).
@@ -32,7 +25,7 @@ class XmlNodeRef;
 		}
 
 		const char* szCharacterName;
-		wstring swTranslatedText;
+		string sUtf8TranslatedText;
 
 		bool bUseSubtitle;
 	};
@@ -86,7 +79,7 @@ class XmlNodeRef;
 			: sKey(NULL)
 			, sOriginalCharacterName(NULL)
 			, sOriginalActorLine(NULL)
-			, swTranslatedActorLine(NULL)
+			, sUtf8TranslatedActorLine(NULL)
 			, nRow(0)
 		{
 
@@ -95,24 +88,15 @@ class XmlNodeRef;
 		const char* sKey;
 		const char* sOriginalCharacterName;
 		const char* sOriginalActorLine;
-		const wchar_t* swTranslatedActorLine;
+		const char* sUtf8TranslatedActorLine;
 		unsigned int nRow;
 	};
 
-UNIQUE_IFACE struct ITempLocStringStorage
-{
-
-	virtual ~ITempLocStringStorage(){}
-	virtual void Release() = 0;
-	virtual const wchar_t* GetCStr() const = 0;
-
-};
-
 // Summary: 
 //		Interface to the Localization Manager.
-UNIQUE_IFACE struct ILocalizationManager
+struct ILocalizationManager
 {
-	//Platform independent language IDs. These are used to map the platform specific language codes on the PS3 and 360 to localization pakfiles
+	//Platform independent language IDs. These are used to map the platform specific language codes to localization pakfiles
 	//Please ensure that each entry in this enum has a corresponding entry in the PLATFORM_INDEPENDENT_LANGUAGE_NAMES array which is defined in LocalizedStringManager.cpp currently.
 	enum EPlatformIndependentLanguageID
 	{
@@ -139,14 +123,13 @@ UNIQUE_IFACE struct ILocalizationManager
 		ePILID_MAX_OR_INVALID	//Not a language, denotes the maximum number of languages or an unknown language
 	};
 
-	typedef uint32 TLocalizatonBitfield;
+	typedef uint32 TLocalizationBitfield;
 
+	// <interfuscator:shuffle>
 	virtual ~ILocalizationManager(){}
 	virtual const char* LangNameFromPILID( const ILocalizationManager::EPlatformIndependentLanguageID id ) = 0;
-	virtual ILocalizationManager::TLocalizatonBitfield MaskSystemLanguagesFromSupportedLocalizations( const ILocalizationManager::TLocalizatonBitfield systemLanguages ) = 0;
-	virtual ILocalizationManager::TLocalizatonBitfield IsLanguageSupported( const ILocalizationManager::EPlatformIndependentLanguageID id ) = 0;
-	virtual void SetAvailableLocalizationsBitField( const ILocalizationManager::TLocalizatonBitfield availableLocalizations ) = 0;
-	virtual void SetAvailableLocalizationsCSVString( const char *sAvailableLocalizations ) = 0;
+	virtual ILocalizationManager::TLocalizationBitfield MaskSystemLanguagesFromSupportedLocalizations( const ILocalizationManager::TLocalizationBitfield systemLanguages ) = 0;
+	virtual ILocalizationManager::TLocalizationBitfield IsLanguageSupported( const ILocalizationManager::EPlatformIndependentLanguageID id ) = 0;
 	virtual bool SetLanguage( const char* sLanguage ) = 0;
 	virtual const char* GetLanguage() = 0;
 
@@ -175,12 +158,12 @@ UNIQUE_IFACE struct ILocalizationManager
 	//   bEnglish            - if true, translates the string into the always present English language.
 	// Returns:
 	//   true if localization was successful, false otherwise
-	virtual bool LocalizeString( const char* sString, wstring& outLocalizedString, bool bEnglish=false ) = 0;
+	virtual bool LocalizeString( const char* sString, string& outLocalizedString, bool bEnglish=false ) = 0;
 
 	// Summary:
-	//   Same as LocalizeString( const char* sString, wstring& outLocalizedString, bool bEnglish=false )
+	//   Same as LocalizeString( const char* sString, string& outLocalizedString, bool bEnglish=false )
 	//   but at the moment this is faster.
-	virtual bool LocalizeString( const string& sString, wstring& outLocalizedString, bool bEnglish=false ) = 0;
+	virtual bool LocalizeString( const string& sString, string& outLocalizedString, bool bEnglish=false ) = 0;
 
 	// Summary:
 	//   Return the localized version corresponding to a label.
@@ -192,7 +175,7 @@ UNIQUE_IFACE struct ILocalizationManager
 	//   bEnglish            - if true, returns the always present English version of the label.
 	// Returns:
 	//   True if localization was successful, false otherwise.
-	virtual bool LocalizeLabel( const char* sLabel, wstring& outLocalizedString, bool bEnglish=false, ITempLocStringStorage** ppTmpStorage = 0 ) = 0;
+	virtual bool LocalizeLabel( const char* sLabel, string& outLocalizedString, bool bEnglish=false ) = 0;
 
 	// Summary:
 	//   Get localization info structure corresponding to a key (key=label without the '@' sign).
@@ -256,7 +239,7 @@ UNIQUE_IFACE struct ILocalizationManager
 	//   bForceSubtitle - If true, get subtitle (sLocalized or sEnglish) even if not specified in Data file.
 	// Returns:
 	//   True if subtitle found (and outSubtitle filled in), false otherwise.
-	virtual bool GetSubtitle( const char* sKeyOrLabel, wstring& outSubtitle, bool bForceSubtitle = false) = 0;
+	virtual bool GetSubtitle( const char* sKeyOrLabel, string& outSubtitle, bool bForceSubtitle = false) = 0;
 
 	// Description:
 	//		These methods format outString depending on sString with ordered arguments
@@ -265,23 +248,17 @@ UNIQUE_IFACE struct ILocalizationManager
 	//		outString - This is first and this is second.
 	virtual void FormatStringMessage( string& outString, const string& sString, const char** sParams, int nParams ) = 0;
 	virtual void FormatStringMessage( string& outString, const string& sString, const char* param1, const char* param2=0, const char* param3=0, const char* param4=0 ) = 0;
-	virtual void FormatStringMessage( wstring& outString, const wstring& sString, const wchar_t** sParams, int nParams ) = 0;
-	virtual void FormatStringMessage( wstring& outString, const wstring& sString, const wchar_t* param1, const wchar_t* param2=0, const wchar_t* param3=0, const wchar_t* param4=0 ) = 0;
+	
+	virtual void LocalizeTime(time_t t, bool bMakeLocalTime, bool bShowSeconds, string& outTimeString) = 0;
+	virtual void LocalizeDate(time_t t, bool bMakeLocalTime, bool bShort, bool bIncludeWeekday, string& outDateString) = 0;
+	virtual void LocalizeDuration(int seconds, string& outDurationString) = 0;
+	virtual void LocalizeNumber(int number, string& outNumberString) = 0;
+	virtual void LocalizeNumber(float number, int decimals, string& outNumberString) = 0;
+	// </interfuscator:shuffle>
 
-	virtual wchar_t ToUpperCase(wchar_t c) = 0;
-	virtual wchar_t ToLowerCase(wchar_t c) = 0;
-	virtual void LocalizeTime(time_t t, bool bMakeLocalTime, bool bShowSeconds, wstring& outTimeString) = 0;
-	virtual void LocalizeDate(time_t t, bool bMakeLocalTime, bool bShort, bool bIncludeWeekday, wstring& outDateString) = 0;
-	virtual void LocalizeDuration(int seconds, wstring& outDurationString) = 0;
-	virtual void LocalizeNumber(int number, wstring& outNumberString) = 0;
-	virtual void LocalizeNumber(float number, int decimals, wstring& outNumberString) = 0;
-
-
-	static ILINE TLocalizatonBitfield LocalizationBitfieldFromPILID( EPlatformIndependentLanguageID pilid )
+	static ILINE TLocalizationBitfield LocalizationBitfieldFromPILID( EPlatformIndependentLanguageID pilid )
 	{
 		assert( pilid >= 0 && pilid < ePILID_MAX_OR_INVALID );
 		return ( 1 << pilid );
 	}
 };
-
-#endif //_CRY_ILOCALIZATIONMANAGER_H_

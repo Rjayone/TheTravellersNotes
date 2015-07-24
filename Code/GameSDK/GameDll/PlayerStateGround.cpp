@@ -22,6 +22,9 @@ History:
 #include "GameCodeCoverage/GameCodeCoverageTracker.h"
 #include "Utility/CryWatch.h"
 
+#include <IHMDDevice.h>
+#include <IHMDManager.h>
+
 #ifdef STATE_DEBUG
 static AUTOENUM_BUILDNAMEARRAY(s_ledgeTransitionNames, LedgeTransitionList);
 #endif
@@ -101,7 +104,7 @@ void CPlayerStateGround::OnPrePhysicsUpdate( CPlayer& player, const SActorFrameM
 
 		{
 			xmDesiredVel = xmMove;
-
+			
 			Vec3 groundNormal = player.GetActorPhysics().groundNormal;
 
 			if(!gEnv->bMultiplayer)

@@ -104,8 +104,8 @@ void CUIInput::InitEventSystem()
 	m_eventDispatcher.Init(m_pUIEvents, this, "UIInput");
 	{
 		SUIEventDesc eventDesc("ShowVirtualKeyboard", "Displays the virtual keyboard");
-		eventDesc.AddParam<SUIParameterDesc::eUIPT_WString>("Title", "Title for the virtual keyboard");
-		eventDesc.AddParam<SUIParameterDesc::eUIPT_WString>("Value", "Initial string of virtual keyboard");
+		eventDesc.AddParam<SUIParameterDesc::eUIPT_String>("Title", "Title for the virtual keyboard");
+		eventDesc.AddParam<SUIParameterDesc::eUIPT_String>("Value", "Initial string of virtual keyboard");
 		eventDesc.AddParam<SUIParameterDesc::eUIPT_Int>("MaxChars", "Maximum chars");
 		m_eventDispatcher.RegisterEvent( eventDesc, &CUIInput::OnDisplayVirtualKeyboard );
 	}
@@ -131,7 +131,7 @@ void CUIInput::KeyboardCancelled()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-void CUIInput::KeyboardFinished(const wchar_t *pInString)
+void CUIInput::KeyboardFinished(const char *pInString)
 {
 	m_eventSender.SendEvent<eUIE_OnVirtKeyboardDone>(pInString);
 }
@@ -139,7 +139,7 @@ void CUIInput::KeyboardFinished(const wchar_t *pInString)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// UI Functions ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-void CUIInput::OnDisplayVirtualKeyboard( const wchar_t* title, const wchar_t* initialStr, int maxchars )
+void CUIInput::OnDisplayVirtualKeyboard( const char* title, const char* initialStr, int maxchars )
 {
 	gEnv->pFlashUI->DisplayVirtualKeyboard(IPlatformOS::KbdFlag_Default, title, initialStr, maxchars, this );
 }

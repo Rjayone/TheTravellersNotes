@@ -11,14 +11,8 @@ History:
 - 26:8:2004   11:40 : Created by Mathieu Pinard
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IVehicleSystem.h)
 
-#ifndef __IVEHICLESYSTEM_H__
-#define __IVEHICLESYSTEM_H__
-
-#if _MSC_VER > 1000
-# pragma once
-#endif
+#pragma once
 
 #include <IEntity.h>
 #include <IEntitySystem.h>
@@ -357,7 +351,7 @@ private:
 * with various parameters. It's up to the movement if/how 
 * it makes use of it.
 */ 
-UNIQUE_IFACE struct SExhaustParams
+struct SExhaustParams
 {
   SExhaustParams()
   {
@@ -436,7 +430,7 @@ struct SDamageEffect
 * A vehicle can use several layers to control different effects
 * with distinct parameters.
 */
-UNIQUE_IFACE struct SEnvironmentLayer
+struct SEnvironmentLayer
 {
   SEnvironmentLayer()
   {    
@@ -491,7 +485,7 @@ UNIQUE_IFACE struct SEnvironmentLayer
 /** SEnvironmentParticles
 * Holds EnvironmentLayers
 */
-UNIQUE_IFACE struct SEnvironmentParticles
+struct SEnvironmentParticles
 {
 	virtual ~SEnvironmentParticles(){}
   virtual size_t GetLayerCount() const = 0;  
@@ -504,7 +498,7 @@ typedef std::map <string, SDamageEffect> TDamageEffectMap;
 
 /** SParticleParams is the container for all particle structures
 */
-UNIQUE_IFACE struct SParticleParams
+struct SParticleParams
 {
 	virtual ~SParticleParams(){}
   virtual SExhaustParams* GetExhaustParams() = 0; 
@@ -1016,7 +1010,7 @@ struct SVehicleMovementAction
 	}
 };
 
-UNIQUE_IFACE struct IVehicleMovementActionFilter
+struct IVehicleMovementActionFilter
 {
 	virtual ~IVehicleMovementActionFilter(){}
 	virtual void OnProcessActions(SVehicleMovementAction& movementAction) = 0;
@@ -1342,7 +1336,7 @@ struct IVehicleSeatAction;
 
 // Summary:
 //   Vehicle Seat interface
-UNIQUE_IFACE struct IVehicleSeat 
+struct IVehicleSeat 
 {
 	enum EVehicleTransition
 	{
@@ -1427,7 +1421,7 @@ UNIQUE_IFACE struct IVehicleSeat
 //   Vehicle Wheel interface
 // Description:
 //   Interface providing wheel-specific access 
-UNIQUE_IFACE struct IVehicleWheel 
+struct IVehicleWheel 
 {
 	virtual ~IVehicleWheel (){}
   virtual int GetSlot() const = 0;
@@ -1731,7 +1725,7 @@ enum EVehicleDamageBehaviorEvent
 //    region on the vehicle which have specific uses. A good example would be 
 //    to have components on the vehicles which react to hit damage in different 
 //    ways.
-UNIQUE_IFACE struct IVehicleComponent
+struct IVehicleComponent
 {
 	virtual ~IVehicleComponent(){}
 	// Summary
@@ -1772,7 +1766,7 @@ UNIQUE_IFACE struct IVehicleComponent
 
 // Summary
 //   Handles animations on the vehicle
-UNIQUE_IFACE struct IVehicleAnimationComponent
+struct IVehicleAnimationComponent
 {
 	enum EPriority
 	{
@@ -1917,7 +1911,7 @@ struct IVehicleSeatAction
 
 // Summary
 //   Handles animations on the vehicle model
-UNIQUE_IFACE struct IVehicleAnimation
+struct IVehicleAnimation
 {
 	virtual ~IVehicleAnimation(){}
 	virtual bool Init(IVehicle* pVehicle, const CVehicleParams& table) = 0;
@@ -1978,13 +1972,13 @@ UNIQUE_IFACE struct IVehicleAnimation
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const=0;
 };
 
-UNIQUE_IFACE struct IVehicleDamagesGroup
+struct IVehicleDamagesGroup
 {
 	virtual ~IVehicleDamagesGroup(){}
 	virtual bool ParseDamagesGroup(const CVehicleParams& table) = 0;
 };
 
-UNIQUE_IFACE struct IVehicleDamagesTemplateRegistry
+struct IVehicleDamagesTemplateRegistry
 {
 	virtual ~IVehicleDamagesTemplateRegistry(){}
 	virtual bool Init(const string& defaultDefFilename, const string& damagesTemplatesPath) = 0;
@@ -2008,7 +2002,7 @@ typedef _smart_ptr<IVehicleIterator> IVehicleIteratorPtr;
 //   Vehicle System interface
 // Description:
 //   Interface used to implement the vehicle system. 
-UNIQUE_IFACE struct IVehicleSystem
+struct IVehicleSystem
 {
 	DECLARE_GAMEOBJECT_FACTORY(IVehicleMovement);
 	DECLARE_GAMEOBJECT_FACTORY(IVehicleView);
@@ -2172,7 +2166,7 @@ enum EVehicleDebugDraw
 //   position on the vehicle (ie: seat position, firing position on vehicle
 //   weapons). The Matrices are updated to reflect any changes in the position 
 //   or orientation parent part. 
-UNIQUE_IFACE struct IVehicleHelper
+struct IVehicleHelper
 {
 	virtual	~IVehicleHelper(){}
 	// Summary
@@ -2251,7 +2245,7 @@ UNIQUE_IFACE struct IVehicleHelper
 // Remarks
 //   Should be implemented inside the Game DLL. The game should call the 
 //   function IVehicleSystem::RegisterVehicleClient during intialization.
-UNIQUE_IFACE struct IVehicleClient
+struct IVehicleClient
 {
 	virtual ~IVehicleClient(){}
 	// Summary
@@ -2295,5 +2289,3 @@ UNIQUE_IFACE struct IVehicleClient
 	//   same vehicle
 	virtual void OnExitVehicleSeat(IVehicleSeat* pSeat) = 0;
 };
-
-#endif //__IVEHICLESYSTEM_H__

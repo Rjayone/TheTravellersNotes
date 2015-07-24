@@ -1603,6 +1603,7 @@ bool CAnimatedCharacter::StartAnimationProcessing( const QuatT& entityLocation )
 		params.locationAnimation = entityLocation;
 		params.bOnRender = 0;
 		params.zoomAdjustedDistanceFromCamera = fDistance*fZoomFactor;
+		params.locationAnimation = QuatTS(entityLocation.q, entityLocation.t, m_pCharacter->GetUniformScale());
 
 		if (m_pShadowCharacter)
 			m_pShadowCharacter->StartAnimationProcessing(params);

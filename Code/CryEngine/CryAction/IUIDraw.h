@@ -11,7 +11,6 @@ History:
 - 07:11:2005: Created by Julien Darre
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IUIDraw.h)
 
 #ifndef __IUIDRAW_H__
 #define __IUIDRAW_H__
@@ -36,7 +35,7 @@ enum EUIDRAWVERTICAL
 
 //-----------------------------------------------------------------------------------------------------
 
-UNIQUE_IFACE struct IUIDraw
+struct IUIDraw
 {
 	virtual ~IUIDraw(){}
 	virtual void Release() = 0;
@@ -105,36 +104,12 @@ UNIQUE_IFACE struct IUIDraw
 															const char *strText, ColorF color,
 															EUIDRAWHORIZONTAL	eUIDrawHorizontal, EUIDRAWVERTICAL		eUIDrawVertical) = 0;
 
-
-	virtual void DrawText(IFFont *pFont,
-												float fX,
-												float fY,
-												float fSizeX,
-												float fSizeY,
-												const char *strText,
-												float fAlpha,
-												float fRed,
-												float fGreen,
-												float fBlue,
-												EUIDRAWHORIZONTAL	eUIDrawHorizontalDocking,
-												EUIDRAWVERTICAL		eUIDrawVerticalDocking,
-												EUIDRAWHORIZONTAL	eUIDrawHorizontal,
-												EUIDRAWVERTICAL		eUIDrawVertical) = 0;
-
-
-	virtual void GetTextDim(IFFont *pFont,
-													float *fWidth,
-													float *fHeight,
-													float fSizeX,
-													float fSizeY,
-													const char *strText) = 0;
-
-	virtual void DrawTextW(	IFFont *pFont,
+	virtual void DrawText(	IFFont *pFont,
 													float fX,
 													float fY,
 													float fSizeX,
 													float fSizeY,
-													const wchar_t *strText,
+													const char *strText,
 													float fAlpha,
 													float fRed,
 													float fGreen,
@@ -144,13 +119,13 @@ UNIQUE_IFACE struct IUIDraw
 													EUIDRAWHORIZONTAL	eUIDrawHorizontal,
 													EUIDRAWVERTICAL		eUIDrawVertical) = 0;
 
-	virtual void DrawWrappedTextW(	IFFont *pFont,
+	virtual void DrawWrappedText(	IFFont *pFont,
 		float fX,
 		float fY,
 		float fMaxWidth,
 		float fSizeX,
 		float fSizeY,
-		const wchar_t *strText,
+		const char *strText,
 		float fAlpha,
 		float fRed,
 		float fGreen,
@@ -160,20 +135,20 @@ UNIQUE_IFACE struct IUIDraw
 		EUIDRAWHORIZONTAL	eUIDrawHorizontal,
 		EUIDRAWVERTICAL		eUIDrawVertical) = 0;
 
-	virtual void GetTextDimW(	IFFont *pFont,
+	virtual void GetTextDim(	IFFont *pFont,
 														float *fWidth,
 														float *fHeight,
 														float fSizeX,
 														float fSizeY,
-														const wchar_t *strText) = 0;
+														const char *strText) = 0;
 
-	virtual void GetWrappedTextDimW(	IFFont *pFont,
+	virtual void GetWrappedTextDim(	IFFont *pFont,
 		float *fWidth,
 		float *fHeight,
 		float fMaxWidth,
 		float fSizeX,
 		float fSizeY,
-		const wchar_t *strText) = 0;
+		const char *strText) = 0;
 
 };
 

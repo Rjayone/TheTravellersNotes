@@ -18,9 +18,6 @@ def build(bld):
 		pch           = 'StdAfx.cpp',
 		includes      = [ '.',  Path('Code/CryEngine/CryAction'), Path('Code/GameSDK/ESraLibCore/include') ],
 
-		performance_includes    = [ Path('Code/SDKs/CrispRMF-C++-3.0.0/CryCrispWrapper') ],
-		release_includes				= [ Path('Code/SDKs/CrispRMF-C++-3.0.0/CryCrispWrapper') ],
-
 		win_lib       = [ 'shell32', 'Gdi32' ],
 
 	)

@@ -85,7 +85,7 @@ public:
 	// ~IGameChannel
 
 	// GameChannel
-	virtual bool IsServer() const OVERRIDE { return true; }
+	virtual bool IsServer() const override { return true; }
 	//~GameChannel
 
 	// INetMessageSink

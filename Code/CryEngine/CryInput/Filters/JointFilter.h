@@ -12,7 +12,6 @@
 #ifndef JOINT_FILTER_H
 #define JOINT_FILTER_H
 
-
 typedef struct _KIN_TRANSFORM_SMOOTH_PARAMETERS {
 
 	_KIN_TRANSFORM_SMOOTH_PARAMETERS(float fSmoothing = 0.0f, 

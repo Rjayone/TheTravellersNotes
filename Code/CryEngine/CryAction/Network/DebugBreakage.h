@@ -16,7 +16,7 @@
 #endif
 
 
-#if !defined(_RELEASE) && !defined(__SPU__) && DEBUG_NET_BREAKAGE
+#if !defined(_RELEASE) && DEBUG_NET_BREAKAGE
 
 #include "StringUtils.h"
 

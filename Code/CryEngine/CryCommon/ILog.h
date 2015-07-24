@@ -1,12 +1,8 @@
-#include DEVIRTUALIZE_HEADER_FIX(ILog.h)
 
 #ifndef _ILOG_H_
 #define _ILOG_H_
 
 #include <platform.h>
-#if defined(__SPU__)
-#include "ISPULog.h"
-#else
 #include <IMiniLog.h> // <> required for Interfuscator
 
 // enable this define to support log scopes to provide more context information for log lines
@@ -20,11 +16,11 @@ class ICrySizer;
 //	 Callback interface to the ILog.
 struct ILogCallback
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ILogCallback(){}
 	virtual void OnWriteToConsole( const char *sText,bool bNewLine ) = 0;
 	virtual void OnWriteToFile( const char *sText,bool bNewLine ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary:
@@ -39,9 +35,9 @@ struct ILogCallback
 //	 ILog gives you more control on logging operations.
 // See also:
 //	 IMiniLog, CryLog, CryLogAlways, CryError, CryWarning
-UNIQUE_IFACE struct ILog: public IMiniLog
+struct ILog: public IMiniLog
 {
-
+	// <interfuscator:shuffle>
 	virtual void Release() = 0;
 
 	// Summary:
@@ -123,7 +119,7 @@ UNIQUE_IFACE struct ILog: public IMiniLog
 	virtual void PushAssetScopeName( const char *sAssetType,const char *sName ) {};
 	virtual void PopAssetScopeName() {};
 	virtual const char* GetAssetScopeString() { return ""; };
-
+	// </interfuscator:shuffle>
 
 #if defined(SUPPORT_LOG_IDENTER)
 	virtual void Indent(class CLogIndenter * indenter) = 0;
@@ -133,8 +129,6 @@ UNIQUE_IFACE struct ILog: public IMiniLog
 #if !defined(RESOURCE_COMPILER)
 	virtual void FlushAndClose() = 0;
 #endif
-
-	DEVIRTUALIZATION_VTABLE_FIX
 };
 
 #if !defined(SUPPORT_LOG_IDENTER)
@@ -249,7 +243,7 @@ public:
 #define CRY_DEFINE_ASSET_SCOPE( sAssetType,sAssetName ) CLogAssetScopeName __asset_scope_name(gEnv->pLog,sAssetType,sAssetName);
 #endif
 
-#endif//__SPU__
+
 #endif //_ILOG_H_
 
 

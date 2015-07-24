@@ -33,7 +33,7 @@ SCreateChannelResult CGameClientNub::CreateChannel(INetChannel *pChannel, const 
 		GameWarning("CGameClientNub::CreateChannel: pRequest is non-null, it should not be");
 		CRY_ASSERT(false);
 		SCreateChannelResult res(eDC_GameError);
-		strcpy_s(res.errorMsg,sizeof(res.errorMsg),"CGameClientNub::CreateChannel: pRequest is non-null, it should not be");
+		cry_strcpy(res.errorMsg, "CGameClientNub::CreateChannel: pRequest is non-null, it should not be");
 		return res;
 	}
 
@@ -51,7 +51,7 @@ SCreateChannelResult CGameClientNub::CreateChannel(INetChannel *pChannel, const 
 			GameWarning("CGameClientNub::CreateChannel: m_pClientChannel is non-null, it should not be");
 			CRY_ASSERT(false);
 			SCreateChannelResult res(eDC_GameError);
-			strcpy_s(res.errorMsg,sizeof(res.errorMsg),"CGameClientNub::CreateChannel: m_pClientChannel is non-null, it should not be");
+			cry_strcpy(res.errorMsg, "CGameClientNub::CreateChannel: m_pClientChannel is non-null, it should not be");
 			return res;
 		}
 	}

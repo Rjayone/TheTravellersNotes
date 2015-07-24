@@ -22,9 +22,8 @@ CAnimationDatabaseManager *CAnimationDatabaseManager::s_Instance = NULL;
 
 static void NormalizeFilename(char outFilename[DEF_PATH_LENGTH], const char *inFilename)
 {
-	outFilename[0] = '\0';
-	strncpy(outFilename, inFilename, DEF_PATH_LENGTH);
-	for (size_t i = 0; i < DEF_PATH_LENGTH; ++i)
+	cry_strcpy(outFilename, DEF_PATH_LENGTH, inFilename);
+	for (size_t i = 0; i < DEF_PATH_LENGTH - 1; ++i)
 	{
 		if (outFilename[i] == '\\')
 			outFilename[i] = '/';
@@ -132,7 +131,7 @@ CAnimationDatabaseLibrary::THandle CAnimationDatabaseLibrary::TryOpenResource(co
 	char normalizedFilename[DEF_PATH_LENGTH];
 	NormalizeFilename(normalizedFilename, name);
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(normalizedFilename);
+	uint32 crc32 = CCrc32::ComputeLowercase(normalizedFilename);
 
 	TAnimDatabaseList::const_iterator iter = m_databases.find(crc32);
 
@@ -166,7 +165,7 @@ void CAnimationDatabaseLibrary::PublishResource(THandle& hdl)
 		__debugbreak();
 #endif
 
-	uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(hdl->GetFilename());
+	uint32 crc = CCrc32::ComputeLowercase(hdl->GetFilename());
 	Insert(crc, const_cast<CAnimationDatabase*>(static_cast<const CAnimationDatabase*>(hdl)));
 }
 
@@ -204,7 +203,7 @@ CAnimationTagDefLibrary::THandle CAnimationTagDefLibrary::TryOpenResource(const 
 	char normalizedFilename[DEF_PATH_LENGTH];
 	NormalizeFilename(normalizedFilename, name);
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(normalizedFilename);
+	uint32 crc32 = CCrc32::ComputeLowercase(normalizedFilename);
 
 	TTagDefList::const_iterator iter = m_tagDefs.find(crc32);
 	if (iter != m_tagDefs.end())
@@ -236,7 +235,7 @@ void CAnimationTagDefLibrary::PublishResource(THandle& hdlOut)
 		__debugbreak();
 #endif
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(hdlOut->GetFilename());
+	uint32 crc32 = CCrc32::ComputeLowercase(hdlOut->GetFilename());
 	Insert(crc32, const_cast<CTagDefinition*>(hdlOut));
 }
 
@@ -274,7 +273,7 @@ CAnimationControllerDefLibrary::THandle CAnimationControllerDefLibrary::TryOpenR
 	char normalizedFilename[DEF_PATH_LENGTH];
 	NormalizeFilename(normalizedFilename, name);
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(normalizedFilename);
+	uint32 crc32 = CCrc32::ComputeLowercase(normalizedFilename);
 
 	TControllerDefList::const_iterator iter = m_controllerDefs.find(crc32);
 
@@ -289,7 +288,7 @@ void CAnimationControllerDefLibrary::CreateResource(THandle& hdlOut, const char*
 	char normalizedFilename[DEF_PATH_LENGTH];
 	NormalizeFilename(normalizedFilename, name);
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(normalizedFilename);
+	uint32 crc32 = CCrc32::ComputeLowercase(normalizedFilename);
 
 	SControllerDef* pDef = NULL;
 	XmlNodeRef xml = gEnv->pSystem->GetXmlUtils()->LoadXmlFromFile(normalizedFilename);
@@ -356,7 +355,7 @@ IAnimationDatabase *CAnimationDatabaseManager::Create(const char *filename, cons
 	
 	MEMSTAT_CONTEXT_FMT(EMemStatContextTypes::MSC_Mannequin, 0, "Create ADB: %s", normalizedFilename); 
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(normalizedFilename);
+	uint32 crc32 = CCrc32::ComputeLowercase(normalizedFilename);
 
 	TAnimDatabaseList::const_iterator iter = m_databases.find(crc32);
 
@@ -408,7 +407,7 @@ CTagDefinition *CAnimationDatabaseManager::CreateTagDefinition(const char *filen
 
 	MEMSTAT_CONTEXT_FMT(EMemStatContextTypes::MSC_Mannequin, 0, "Create TagDefinition: %s", normalizedFilename); 
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(normalizedFilename);
+	uint32 crc32 = CCrc32::ComputeLowercase(normalizedFilename);
 
 	CTagDefinition *tagDef = new CTagDefinition(normalizedFilename);
 
@@ -437,7 +436,7 @@ const SControllerDef *CAnimationDatabaseManager::FindControllerDef(const char *f
 	char normalizedFilename[DEF_PATH_LENGTH];
 	NormalizeFilename(normalizedFilename, filename);
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(normalizedFilename);
+	uint32 crc32 = CCrc32::ComputeLowercase(normalizedFilename);
 
 	return FindControllerDef(crc32);
 }
@@ -463,7 +462,7 @@ const CTagDefinition *CAnimationDatabaseManager::FindTagDef(const char *filename
 	char normalizedFilename[DEF_PATH_LENGTH];
 	NormalizeFilename(normalizedFilename, filename);
 
-	uint32 crc32 = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(normalizedFilename);
+	uint32 crc32 = CCrc32::ComputeLowercase(normalizedFilename);
 
 	return FindTagDef(crc32);
 }
@@ -769,10 +768,12 @@ void CAnimationDatabaseManager::GetAffectedFragmentsString(const CTagDefinition*
 		matchingFragments = "\nno fragments";
 	}
 
-	memset(buffer, 0, bufferSize);
-	strncpy(buffer, matchingFragments.c_str(), bufferSize);
-	// Just in case the string is truncated
-	memcpy(buffer+bufferSize-4, "...", 3);
+	cry_strcpy(buffer, bufferSize, matchingFragments.c_str());
+	if (matchingFragments.length() + 1 > bufferSize)
+	{
+		// In case the string is truncated
+		memcpy(buffer + bufferSize - 4, "...", 4);
+	}
 }
 
 void CAnimationDatabaseManager::ApplyTagDefChanges(const CTagDefinition* pOriginal, CTagDefinition* pModified)
@@ -855,7 +856,7 @@ void CAnimationDatabaseManager::RenameTag(const CTagDefinition* pOriginal, int32
 			for (uint32 index = 0, size = tagDefImportsInfo.size(); index < size; ++index)
 			{
 				const STagDefinitionImportsInfo* pImportsInfo = tagDefImportsInfo[index];
-				CTagDefinition* pTagDef = stl::find_in_map(m_tagDefs, gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pImportsInfo->GetFilename()), NULL);
+				CTagDefinition* pTagDef = stl::find_in_map(m_tagDefs, CCrc32::ComputeLowercase(pImportsInfo->GetFilename()), NULL);
 				id = TAG_ID_INVALID;
 				if (pTagDef != NULL)
 				{
@@ -904,7 +905,7 @@ void CAnimationDatabaseManager::RenameTagGroup(const CTagDefinition* pOriginal, 
 			for (uint32 index = 0, size = tagDefImportsInfo.size(); index < size; ++index)
 			{
 				const STagDefinitionImportsInfo* pImportsInfo = tagDefImportsInfo[index];
-				CTagDefinition* pTagDef = stl::find_in_map(m_tagDefs, gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pImportsInfo->GetFilename()), NULL);
+				CTagDefinition* pTagDef = stl::find_in_map(m_tagDefs, CCrc32::ComputeLowercase(pImportsInfo->GetFilename()), NULL);
 				id = GROUP_ID_NONE;
 				if (pTagDef != NULL)
 				{
@@ -937,7 +938,7 @@ void CAnimationDatabaseManager::GetIncludedTagDefs(const CTagDefinition* pQuerie
 	{
 		const STagDefinitionImportsInfo* pImportsInfo = flatImportsInfoList[importIndex];
 		assert(pImportsInfo);
-		CTagDefinition* pFoundTagDef = stl::find_in_map(m_tagDefs, gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pImportsInfo->GetFilename()), NULL);
+		CTagDefinition* pFoundTagDef = stl::find_in_map(m_tagDefs, CCrc32::ComputeLowercase(pImportsInfo->GetFilename()), NULL);
 
 		if (pFoundTagDef && (pFoundTagDef != pQueriedTagDef))
 		{
@@ -2290,7 +2291,7 @@ EModifyFragmentIdResult CAnimationDatabaseManager::CreateFragmentID(const CTagDe
 	}
 
 	const char *fragmentDefFilename = inFragmentIds.GetFilename();
-	const uint32 fragmentDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(fragmentDefFilename);
+	const uint32 fragmentDefFilenameCrc = CCrc32::ComputeLowercase(fragmentDefFilename);
 
 	CTagDefinition *fragmentDefs = stl::find_in_map(m_tagDefs, fragmentDefFilenameCrc, NULL);
 	assert(fragmentDefs);
@@ -2313,7 +2314,7 @@ EModifyFragmentIdResult CAnimationDatabaseManager::CreateFragmentID(const CTagDe
 	{
 		SControllerDef *controllerDef = cit->second;
 		const char *controllerFragmentDefFilename = controllerDef->m_fragmentIDs.GetFilename();
-		const uint32 controllerFragmentDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(controllerFragmentDefFilename);
+		const uint32 controllerFragmentDefFilenameCrc = CCrc32::ComputeLowercase(controllerFragmentDefFilename);
 		const bool usingSameFragmentDef = (controllerFragmentDefFilenameCrc == fragmentDefFilenameCrc);
 		if (usingSameFragmentDef)
 		{
@@ -2325,7 +2326,7 @@ EModifyFragmentIdResult CAnimationDatabaseManager::CreateFragmentID(const CTagDe
 	{
 		CAnimationDatabase *otherAnimDB = cit->second;
 		const char *otherDBFragmentDefFilename = otherAnimDB->GetFragmentDefs().GetFilename();
-		const uint32 otherDBFragmentDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(otherDBFragmentDefFilename);
+		const uint32 otherDBFragmentDefFilenameCrc = CCrc32::ComputeLowercase(otherDBFragmentDefFilename);
 		const bool usingSameFragmentDef = (otherDBFragmentDefFilenameCrc == fragmentDefFilenameCrc);
 		if (usingSameFragmentDef)
 		{
@@ -2367,7 +2368,7 @@ EModifyFragmentIdResult CAnimationDatabaseManager::RenameFragmentID(const CTagDe
 	}
 
 	const char *fragmentDefFilename = fragmentIds.GetFilename();
-	const uint32 fragmentDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(fragmentDefFilename);
+	const uint32 fragmentDefFilenameCrc = CCrc32::ComputeLowercase(fragmentDefFilename);
 
 	CTagDefinition *fragmentDefs = stl::find_in_map(m_tagDefs, fragmentDefFilenameCrc, NULL);
 	assert(fragmentDefs);
@@ -2394,7 +2395,7 @@ EModifyFragmentIdResult CAnimationDatabaseManager::DeleteFragmentID(const CTagDe
 		return eMFIR_InvalidFragmentId;
 
 	const char *fragmentDefFilename = fragmentIds.GetFilename();
-	const uint32 fragmentDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(fragmentDefFilename);
+	const uint32 fragmentDefFilenameCrc = CCrc32::ComputeLowercase(fragmentDefFilename);
 
 	CTagDefinition *fragmentDefs = stl::find_in_map(m_tagDefs, fragmentDefFilenameCrc, NULL);
 	assert(fragmentDefs);
@@ -2408,7 +2409,7 @@ EModifyFragmentIdResult CAnimationDatabaseManager::DeleteFragmentID(const CTagDe
 	{
 		SControllerDef *controllerDef = cit->second;
 		const char *controllerFragmentDefFilename = controllerDef->m_fragmentIDs.GetFilename();
-		const uint32 controllerFragmentDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(controllerFragmentDefFilename);
+		const uint32 controllerFragmentDefFilenameCrc = CCrc32::ComputeLowercase(controllerFragmentDefFilename);
 		const bool usingSameFragmentDef = (controllerFragmentDefFilenameCrc == fragmentDefFilenameCrc);
 		if (usingSameFragmentDef)
 		{
@@ -2420,7 +2421,7 @@ EModifyFragmentIdResult CAnimationDatabaseManager::DeleteFragmentID(const CTagDe
 	{
 		CAnimationDatabase *database = it->second;
 		const char *databaseFragmentDefFilename = database->GetFragmentDefs().GetFilename();
-		const uint32 databaseFragmentDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(databaseFragmentDefFilename);
+		const uint32 databaseFragmentDefFilenameCrc = CCrc32::ComputeLowercase(databaseFragmentDefFilename);
 		const bool usingSameFragmentDef = (databaseFragmentDefFilenameCrc == fragmentDefFilenameCrc);
 		if (usingSameFragmentDef)
 		{
@@ -2438,7 +2439,7 @@ bool CAnimationDatabaseManager::SetFragmentTagDef(const CTagDefinition &fragment
 		return false;
 
 	const char *fragmentDefFilename = fragmentIds.GetFilename();
-	const uint32 fragmentDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(fragmentDefFilename);
+	const uint32 fragmentDefFilenameCrc = CCrc32::ComputeLowercase(fragmentDefFilename);
 
 	CTagDefinition *fragmentDefs = stl::find_in_map(m_tagDefs, fragmentDefFilenameCrc, NULL);
 	assert(fragmentDefs);
@@ -2460,7 +2461,7 @@ void CAnimationDatabaseManager::SetFragmentDef(const SControllerDef &inControlle
 	}
 
 	const char *controllerDefFilename = inControllerDef.m_filename.c_str();
-	const uint32 controllerDefFilenameCrc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(controllerDefFilename);
+	const uint32 controllerDefFilenameCrc = CCrc32::ComputeLowercase(controllerDefFilename);
 
 	SControllerDef *controllerDef = stl::find_in_map(m_controllerDefs, controllerDefFilenameCrc, NULL);
 	assert(controllerDef);
@@ -3100,6 +3101,7 @@ void CAnimationDatabaseManager::SetSubADBTagFilter(IAnimationDatabase *pDatabase
 		if (pSubAdb)
 		{
 			pSubAdb->tags = tagState;
+			pSubAdb->comparisonMask = pSubAdb->pTagDef->GenerateMask(tagState);
 		}
 	}
 

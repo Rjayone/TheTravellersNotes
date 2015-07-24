@@ -9,7 +9,6 @@
 //	-:Created by Anton Knyazev
 //
 //////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(physinterface.h)
 
 #ifndef physinterface_h
 #define physinterface_h
@@ -138,22 +137,18 @@ struct ILog;
 IPhysicalEntity *const WORLD_ENTITY = (IPhysicalEntity*)-10;
 
 #if defined(_CPU_ARM)
-//FIXME: There's a threading issue in CryPhysics with ARM's weak memory ordering.  Fix should be in PS3/XENON code.
-#define MAX_PHYS_THREADS 1
-#elif !defined(PS3) && !defined(XENON)
-#if defined(DEDICATED_SERVER)
-#define MAX_PHYS_THREADS 1
+//FIXME: There's a threading issue in CryPhysics with ARM's weak memory ordering.
+#	define MAX_PHYS_THREADS 1
 #else
-#define MAX_PHYS_THREADS 4
-#endif
-#elif defined(XENON)
-#define MAX_PHYS_THREADS 3
-#else
-#define MAX_PHYS_THREADS 1
+#	if defined(DEDICATED_SERVER)
+#		define MAX_PHYS_THREADS 1
+#	else
+#		define MAX_PHYS_THREADS 4
+#	endif
 #endif
 
 #ifndef USE_IMPROVED_RIGID_ENTITY_SYNCHRONISATION
-#define USE_IMPROVED_RIGID_ENTITY_SYNCHRONISATION 1
+#	define USE_IMPROVED_RIGID_ENTITY_SYNCHRONISATION 1
 #endif
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -161,8 +156,8 @@ IPhysicalEntity *const WORLD_ENTITY = (IPhysicalEntity*)-10;
 /////////////////////////////////////////////////////////////////////////////////////
 
 // this is a callback interface for on-demand physicalization, physics gets a pointer to an implementation
-UNIQUE_IFACE struct IPhysicsStreamer {
-
+struct IPhysicsStreamer {
+	// <interfuscator:shuffle>
 	virtual ~IPhysicsStreamer(){}
 	// called whenever a placeholder (created through CreatePhysicalPlaceholder) requests a full entity
 	virtual int CreatePhysicalEntity(void *pForeignData,int iForeignData,int iForeignFlags) = 0;
@@ -174,7 +169,7 @@ UNIQUE_IFACE struct IPhysicsStreamer {
 	// called when on-demand physicalized box expires. 
 	// the streamer is expected to delete those that have a 0 refcounter, and keep the rest
 	virtual int DestroyPhysicalEntitiesInBox(const Vec3 &boxMin, const Vec3 &boxMax) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -182,8 +177,8 @@ UNIQUE_IFACE struct IPhysicsStreamer {
 /////////////////////////////////////////////////////////////////////////////////////
 
 // this is a callback interface for debug rendering, physics gets a pointer to an implementation
-UNIQUE_IFACE struct IPhysRenderer {
-
+struct IPhysRenderer {
+	// <interfuscator:shuffle>
 	virtual ~IPhysRenderer(){}
 	// draws helpers for the specified geometry (idxColor is in 0..7 range)
 	virtual void DrawGeometry(IGeometry *pGeom, struct geom_world_data *pgwd, int idxColor=0, int bSlowFadein=0, const Vec3 &sweepDir=Vec3(0)) = 0;
@@ -195,7 +190,14 @@ UNIQUE_IFACE struct IPhysRenderer {
 	virtual void DrawText(const Vec3 &pt, const char *txt, int idxColor, float saturation=0) = 0;
 	// sets an offset that is to be added to all subsequent draw requests
 	virtual Vec3 SetOffset(const Vec3 &offs=Vec3(ZERO)) = 0;
-
+	// draw a frame or a partial frame using a scale for the axes.
+	// pnt is the world space position
+	// axes are the 3 axes normalized
+	// scale is a scale applied on the axes
+	// limits are the x, y, z radians for the Y, Z, X plane. If the pointer is not null, limits will be drawn in form of arcs.
+	// bitfield for what axes are locked
+	virtual void DrawFrame(const Vec3& pnt, const Vec3* axes, const float scale, const Vec3* limits, const int axes_locked) = 0;
+	// </interfuscator:shuffle>
 };
 
 class CMemStream
@@ -203,9 +205,7 @@ class CMemStream
 public:
 
 	ILINE CMemStream(bool swap) {
-#if !defined(__CRYCG__)
 		Prealloc(); 
-#endif
 		m_iPos=0; bDeleteBuf=true; bSwapEndian=swap; bMeasureOnly=0;
 	}
 
@@ -216,7 +216,6 @@ public:
 		m_pBuf=(char*)m_dummyBuf; m_iPos=0; m_nSize=0; bDeleteBuf=false; bSwapEndian=false; bMeasureOnly=-1;
 	}
 
-#if !defined(__CRYCG__)
 	virtual ~CMemStream() {
 		if (bDeleteBuf)
 			free(m_pBuf);
@@ -224,7 +223,6 @@ public:
 	virtual void Prealloc() { 
     m_pBuf = (char*)malloc(m_nSize=0x1000);
   }
-#endif
 
 	ILINE void *GetBuf() { return m_pBuf; }
 	ILINE int GetUsedSize() { return m_iPos; }
@@ -235,34 +233,27 @@ public:
 #if defined(MEMSTREAM_DEBUG)
 		if (bMeasureOnly <= 0 && m_nSize && m_iPos+sz > m_nSize) { 
 			printf("overflow: %d + %d >= %d\n", m_iPos, sz, m_nSize);
-#if defined(__SPU__)
-			snPause(); 
-#endif
 		}
 #endif 
 		if (!bMeasureOnly) {
-#if !defined(__CRYCG__)
 			if (m_iPos+sz>m_nSize)
 				GrowBuf(sz);
-#endif
 			memcpy(m_pBuf+m_iPos,pbuf,(unsigned int)sz);
 		}
 		m_iPos += sz;
 	}
 
-#if !defined(__CRYCG__)
 	virtual void GrowBuf(int sz) {
 		int prevsz = m_nSize; char *prevbuf = m_pBuf;
 		m_pBuf = (char*)malloc(m_nSize = (m_iPos+sz-1 & ~0xFFF)+0x1000);
 		memcpy(m_pBuf, prevbuf, (unsigned int)prevsz);
 		free(prevbuf);
 	}
-#endif
 
 	template<class ftype> ILINE void Read(ftype &op)
 	{ 
 		ReadRaw(&op, sizeof(op));
-#if defined (NEED_ENDIAN_SWAP) && !defined (__SPU__)
+#if defined (NEED_ENDIAN_SWAP)
 			if (bSwapEndian)
 				SwapEndian(op);
 #endif
@@ -277,7 +268,7 @@ public:
 	template<class ftype> ILINE void ReadType(ftype* op, int count = 1)
 	{
 		ReadRaw(op, sizeof(*op)*count);
-#if defined (NEED_ENDIAN_SWAP) && !defined (__SPU__)
+#if defined (NEED_ENDIAN_SWAP)
 			if (bSwapEndian) while (count-- > 0)
 				SwapEndian(*op++);
 #endif
@@ -287,21 +278,13 @@ public:
 #if defined(MEMSTREAM_DEBUG)
 		if (bMeasureOnly <= 0 && m_nSize && m_iPos+sz > m_nSize) { 
 			printf("overflow: %d + %d >= %d\n", m_iPos, sz, m_nSize);
-#if defined(__SPU__)
-			snPause(); 
-#endif
 		}
 #endif 
 		memcpy(pbuf,(m_pBuf+m_iPos),(unsigned int)sz);
 		m_iPos += sz;
 	}
 
-#if defined(__SPU__)
-	// Dummy member to make data layout compatible between SPU and PPU.
-	void *_dummy;
-#endif
-
-	SPU_DOMAIN_LOCAL char* m_pBuf,m_dummyBuf[4];
+	char* m_pBuf,m_dummyBuf[4];
 	int m_iPos,m_nSize;
 	bool bDeleteBuf;
 	bool bSwapEndian;
@@ -353,11 +336,8 @@ inline unused_marker& unused_marker::operator,(unsigned int &x) { x=1u<<31; retu
 
 #undef CRY_GCC48_AVOID_OPTIMIZE
 
-#if !defined(__SPU__)
- inline bool is_unused(const float &x) { unused_marker::f2i u; u.f=x; return (u.i & 0xFFA00000) == 0xFFA00000; }
-#else
- inline bool is_unused(const float &x) { int v; memcpy(&v, &x, sizeof(float)); return (v & 0xFFA00000) == 0xFFA00000; }
-#endif
+inline bool is_unused(const float &x) { unused_marker::f2i u; u.f=x; return (u.i & 0xFFA00000) == 0xFFA00000; }
+
 inline bool is_unused(int x) { return x==1<<31; }
 inline bool is_unused(unsigned int x) { return x==1u<<31; }
 template<class ref> bool is_unused(ref *x) { return x==(ref*)-1; }
@@ -1081,10 +1061,22 @@ struct pe_params_softbody : pe_params {
 
 /////////// area params
 
+struct params_wavesim {
+	params_wavesim() { MARK_UNUSED timeStep,waveSpeed,dampingCenter,dampingRim,minhSpread,minVel,simDepth,heightLimit,resistance;	}
+	float timeStep;	// fixed timestep used for the simulation
+	float waveSpeed; // wave propagation speed
+	float simDepth; // assumed height of moving water layer	(relative to cell size)
+	float heightLimit; // hard limit on height changes (relative to cell size)
+	float resistance; // rate of velocity transfer from floating objects
+	float dampingCenter; // damping in the central tile
+	float dampingRim;	// damping in the outer tiles
+	float minhSpread;	// minimum height perturbation that activates a neighbouring tile
+	float minVel;	// sleep speed threshold
+};
+
 struct pe_params_area : pe_params {
 	enum entype { type_id=ePE_params_area };
-	pe_params_area() { type=type_id; MARK_UNUSED gravity,bUniform,damping,falloff0,bUseCallback,pGeom,volume,borderPad,bConvexBorder,objectVolumeThreshold,cellSize,growthReserve,
-		volumeAccuracy,waveSpeed,waveDamping,waveTimestep; }
+	pe_params_area() { type=type_id; MARK_UNUSED gravity,bUniform,damping,falloff0,bUseCallback,pGeom,volume,borderPad,bConvexBorder,objectVolumeThreshold,cellSize,growthReserve,volumeAccuracy; }
 	// water/air area params are set through pe_params_buoyancy
 
 	Vec3 gravity;	// see also bUniform
@@ -1099,32 +1091,24 @@ struct pe_params_area : pe_params {
 	int   bConvexBorder; // forces convex border after water level adjustments
 	float objectVolumeThreshold; // only consider entities larger than this for level adjustment (set in fractions of area volume)
 	float cellSize; // cell size for wave simulation
-	float waveSpeed; // wave propagation speed
-	float waveDamping; // for wave sim
-	float waveTimestep; // fixed timestep for wave sim
+	params_wavesim waveSim;
 	float growthReserve; // assume this area increase during level adjustment (only used for wave simulation)
 };
 
 
 ////////// water manager params
 
-struct pe_params_waterman : pe_params {
+struct pe_params_waterman : pe_params, params_wavesim {
 	enum entype { type_id=ePE_params_waterman };
 	pe_params_waterman() {
 		type=type_id; MARK_UNUSED posViewer,nExtraTiles,nCells,tileSize,timeStep,waveSpeed,
-			dampingCenter,dampingRim,minhSpread,minVel;
+			dampingCenter,dampingRim,minhSpread,minVel,simDepth,heightLimit,resistance;
 	}
 
 	Vec3 posViewer;	// water will only be simulated around this point
 	int nExtraTiles; // number of additional tiles in each direction around the one below posViewer (so total = (nExtarTiles*2+1)^2)
 	int nCells;	// number of cells in each tile
 	float tileSize;
-	float timeStep;	// fixed timestep used for the simulation
-	float waveSpeed; // wave propagation speed
-	float dampingCenter; // damping in the central tile
-	float dampingRim;	// damping in the outer tiles
-	float minhSpread;	// minimum height perturbation that activates a neighbouring tile
-	float minVel;	// sleep speed threshold
 };
 
 
@@ -1679,7 +1663,7 @@ struct pe_status_joint : pe_status {
 
 struct pe_status_rope : pe_status {
 	enum entype { type_id=ePE_status_rope };
-	pe_status_rope() : pContactEnts(0) { type=type_id; pPoints=pVelocities=pVtx=pContactNorms=0; nCollStat=nCollDyn=bTargetPoseActive=0; 
+	pe_status_rope() : pContactEnts(0) { type=type_id; pPoints=pVelocities=pVtx=pContactNorms=0; nCollStat=nCollDyn=bTargetPoseActive=bStrained=0; 
 		stiffnessAnim=timeLastActive=0; nVtx=0; lock=0; }
 
 	int nSegments;
@@ -1688,6 +1672,7 @@ struct pe_status_rope : pe_status {
 	int nCollStat,nCollDyn;	// number of rope contacts with static and dynamic objects
 	int bTargetPoseActive; // current traget pose mode (0, 1, or 2)
 	float stiffnessAnim; // current target pose stiffness
+	int bStrained; // whether the rope is strained, either along a line or wrapped around objects
 	strided_pointer<IPhysicalEntity*> pContactEnts; // returns a pointer to internal data, the caller doesn't need to provide it
 	int nVtx;	// current number of vertices, used for ropes with dynamic subdivision
 	Vec3 *pVtx;	// expects the caller to provide the array
@@ -1726,7 +1711,7 @@ struct pe_status_softvtx : pe_status {
 struct SWaterTileBase {
 	int bActive;
 	float *ph; // heights
-	float *pvel; // vertical velocities
+	Vec3 *pvel; // velocities
 };
 
 struct pe_status_waterman : pe_status {
@@ -2081,10 +2066,10 @@ enum meshflags {
 enum meshAuxData { mesh_data_materials=1, mesh_data_foreign_idx=2, mesh_data_vtxmap=4 }; // used in DestroyAuxiliaryMeshData
 
 struct IOwnedObject {
-
+	// <interfuscator:shuffle>
 	virtual ~IOwnedObject(){}
 	virtual int Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct SOcclusionCubeMap;
@@ -2100,7 +2085,7 @@ struct IGeometry {
 		float maxLayerReusage; // stop growing a box if it goes through already used cells (> than this percentage)
 		float maxVoxIslandConnections; // ignore isolated voxel islands that have more than this amount of connections to the used ones
 	};
-
+	// <interfuscator:shuffle>
 	virtual ~IGeometry(){}
 	virtual int GetType() = 0; // see enum geomtypes
 	virtual int AddRef() = 0;
@@ -2167,14 +2152,13 @@ struct IGeometry {
 	virtual void RemapForeignIdx(int *pCurForeignIdx, int *pNewForeignIdx, int nTris) = 0; // used in rendermesh-physics sync after boolean ops
 	virtual void AppendVertices(Vec3 *pVtx,int *pVtxMap, int nVtx) = 0;	// used in rendermesh-physics sync after boolean ops
 	virtual float GetExtent(EGeomForm eForm) const = 0;
-	virtual void GetRandomPos(PosNorm& ran, EGeomForm eForm) const = 0;
-	virtual void SpuUnfriendly(char* reason, size_t& len) = 0; // returns the reason the geometry will be excluded in spu computations
+	virtual void GetRandomPos(PosNorm& ran, EGeomForm eForm) const = 0;	
 	virtual void CompactMemory() = 0; // used only by non-breakable meshes to compact non-shared vertices into same contingous block of memory
 	// Boxify: attempts to build a set of boxes covering the geometry's volume (only supported by trimeshes)
 	virtual int Boxify(primitives::box *pboxes,int nMaxBoxes, const SBoxificationParams &params) = 0;
 	// Sanity check the geometry. i.e. its tree doesn't have an excessive depth. returns 0 if fails
 	virtual int SanityCheck() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -2196,8 +2180,8 @@ struct SVoxGridParams : SMeshBVParams { // voxel grid is a regular 3d grid colli
 	Vec3i size;
 };
 
-UNIQUE_IFACE struct ITetrLattice {
-
+struct ITetrLattice {
+	// <interfuscator:shuffle>
 	virtual ~ITetrLattice(){}
 	virtual int SetParams(pe_params *) = 0; // only accepts pe_tetrlattice_params
 	virtual int GetParams(pe_params *) = 0;
@@ -2205,11 +2189,11 @@ UNIQUE_IFACE struct ITetrLattice {
 	virtual IGeometry *CreateSkinMesh(int nMaxTrisPerBVNode=8) = 0;	// builds triangle mesh for exterior faces
 	virtual int CheckPoint(const Vec3 &pt, int *idx, float *w) = 0;	// check if a point is inside any tetrahedron, fills barycentric weights[4]
 	virtual void Release() = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IBreakableGrid2d {
-
+struct IBreakableGrid2d {
+	// <interfuscator:shuffle>
 	virtual ~IBreakableGrid2d(){}
 	// BreakIntoChunks: emulates fracure in the grid around pt with dimensions r x ry
 	// ptout receives a pointer to a vertex array
@@ -2224,12 +2208,12 @@ UNIQUE_IFACE struct IBreakableGrid2d {
 	virtual void Release() = 0;
 	virtual float GetFracture() = 0; // destroyed percentage so far
 	virtual void GetMemoryStatistics(ICrySizer *pSizer) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
-UNIQUE_IFACE struct IGeomManager {
-
+struct IGeomManager {
+	// <interfuscator:shuffle>
 	virtual ~IGeomManager(){}
 	virtual void InitGeoman() = 0;
 	virtual void ShutDownGeoman() = 0;
@@ -2276,7 +2260,7 @@ UNIQUE_IFACE struct IGeomManager {
 	virtual IBreakableGrid2d *GenerateBreakableGrid(vector2df *ptsrc,int npt, const vector2di &nCells, int bStatic=1, int seed=-1) = 0;
 
 	virtual void ReleaseGeomsImmediately(bool bReleaseImmediately) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -2287,7 +2271,7 @@ UNIQUE_IFACE struct IGeomManager {
 typedef void* (*qhullmalloc)(size_t);
 
 struct IPhysUtils {
-
+	// <interfuscator:shuffle>
 	virtual ~IPhysUtils(){}
 	// CoverPolygonWithCircles - attempts to fits circles to roughly cover a polygon (can used to generate round spalshes over an area)
 	// bConsecutive is false, uses convex hull of the points
@@ -2297,7 +2281,7 @@ struct IPhysUtils {
 	virtual int qhull(strided_pointer<Vec3> pts, int npts, index_t*& pTris, qhullmalloc qmalloc = 0) = 0;
 	virtual void DeletePointer(void *pdata) = 0; // should be used to free data allocated in physics
 	virtual int TriangulatePoly(vector2df *pVtx, int nVtx, int *pTris,int szTriBuf) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -2307,7 +2291,7 @@ struct IPhysUtils {
 enum snapshot_flags { ssf_compensate_time_diff=1, ssf_checksum_only=2, ssf_no_update=4 };
 
 struct IPhysicalEntity {
-
+	// <interfuscator:shuffle>
 	virtual ~IPhysicalEntity(){}
 	virtual pe_type GetType() const = 0; // returns pe_type
 
@@ -2350,7 +2334,7 @@ struct IPhysicalEntity {
 	virtual IPhysicalWorld *GetWorld() const = 0;	// returns physical world this entity belongs to
 
 	virtual void GetMemoryStatistics(ICrySizer *pSizer) const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -2359,14 +2343,14 @@ struct IPhysicalEntity {
 /////////////////////////////////////////////////////////////////////////////////////
 
 struct IPhysicsEventClient { // obsolete, replaced with event system (EventPhys...)
-
+	// <interfuscator:shuffle>
 	virtual ~IPhysicsEventClient(){}
 	virtual void OnBBoxOverlap(IPhysicalEntity *pEntity, void *pForeignData,int iForeignData, IPhysicalEntity *pCollider, void *pColliderForeignData,int iColliderForeignData) = 0;
 	virtual void OnStateChange(IPhysicalEntity *pEntity, void *pForeignData,int iForeignData, int iOldSimClass,int iNewSimClass) = 0;
 	virtual void OnCollision(IPhysicalEntity *pEntity, void *pForeignData,int iForeignData, coll_history_item *pCollision) = 0;
 	virtual int OnImpulse(IPhysicalEntity *pEntity, void *pForeignData,int iForeignData, pe_action_impulse *impulse) = 0;
 	virtual void OnPostStep(IPhysicalEntity *pEntity, void *pForeignData,int iForeignData, float dt) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -2384,8 +2368,7 @@ enum rwi_flags { // see RayWorldIntersection
 	rwi_colltype_bit=16, // used to manually specify collision geometry types (default is geom_colltype_ray)
 	rwi_colltype_any=0x400, // if several colltype flag are specified, switches between requiring all or any of them in a geometry
 	rwi_queue=0x800, // queues the RWI request, when done it'll generate EventPhysRWIResult
-	rwi_force_pierceable_noncoll=0x1000, // non-colliding geometries will be treated as pierceable regardless of the actual material
-	rwi_debug_trace=0x2000, // marks the rwi to be a debug rwi (used for spu debugging, only valid in non-release builds)
+	rwi_force_pierceable_noncoll=0x1000, // non-colliding geometries will be treated as pierceable regardless of the actual material	
 	rwi_update_last_hit=0x4000, // update phitLast with the current hit results (should be set if the last hit should be reused for a "warm" start)
 	rwi_any_hit=0x8000 // returns the first found hit for meshes, not necessarily the closets
 };
@@ -2530,10 +2513,8 @@ struct PhysicsVars : SolverSettings {
 	float timeScalePlayers;
 	float threadLag;
 	int numThreads;
-	int poolSize;
-	int physCPU; // xenon cpu id
-	int physWorkerCPU; // xenon cpu id (worker thread)
-	int numJobs; 
+	int physCPU;
+	int physWorkerCPU; 
 	Vec3 helperOffset;
 	int64 ticksPerSecond;
 	// net-synchronization related
@@ -2551,10 +2532,7 @@ struct PhysicsVars : SolverSettings {
 #endif
 
 	int bEntGridUseOBB;
-	int nStartupOverloadChecks;
-  int bAsyncRWIUseSpu;
-  int bSyncRWIUseSpu;
-	int maxSpuRWICells;
+	int nStartupOverloadChecks;	
 	float breakageMinAxisInertia;	// For procedural breaking, each axis must have a minium inertia compared to the axis with the largest inertia (0.01-1.00)
 
 	int bForceSyncPhysics;
@@ -2816,7 +2794,7 @@ const int EVENT_TYPES_NUM = 16;
 //	this iterator works a lot like a stl iterator.
 struct IPhysicalEntityIt
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IPhysicalEntityIt(){}
 	virtual void AddRef() = 0;
 	virtual void Release() = 0;	// Deletes this iterator and frees any memory it might have allocated.
@@ -2825,12 +2803,12 @@ struct IPhysicalEntityIt
 	virtual IPhysicalEntity* Next() = 0; // returns the entity that the iterator points to before it goes to the next
 	virtual IPhysicalEntity* This() = 0; // returns the entity that the iterator points to
 	virtual void MoveFirst() = 0;	// positions the iterator at the begining of the entity list
-
+	// </interfuscator:shuffle>
 };
 
 
 //-------------------------------------------------------------------------
-UNIQUE_IFACE struct IPhysicalWorld {
+struct IPhysicalWorld {
 	// RayWorldIntersection - steps through the entity grid and ryatraces entities
 	// traces a finite ray from org along dir, obtypes has uses enum entity_query_flags
 	// flags - see enum rwi_flags
@@ -2859,7 +2837,7 @@ UNIQUE_IFACE struct IPhysicalWorld {
 		Vec3 dir;
 		int objtypes;
 		unsigned int flags;
-		SPU_DOMAIN_LOCAL ray_hit *hits;
+		ray_hit *hits;
 		int nMaxHits;
 		ray_hit_cached *phitLast;
 		int nSkipEnts;
@@ -2880,6 +2858,7 @@ UNIQUE_IFACE struct IPhysicalWorld {
 	// returns distance to the first hit for sweep checks and the number of hits for intersection checks (as float)
 	// special note: if specified, **ppcontact has the collider entity id in iPrim[0], partid in iPrim[1], matid in id[1]
 	// special note #2: if nSkipEnts<0, pSkipEnts is used as a fixed list of entities to only test collisions against (the world is ignored)
+	// special note #3: if applicable, contacts stored in ppcontact will have their iNode[0] filled with the index to the feature's primitive.
 	// collclass is the collision filter for ignoring entities
 	struct SPWIParams {
 		SPWIParams() {
@@ -2918,6 +2897,7 @@ UNIQUE_IFACE struct IPhysicalWorld {
 		WriteLockCond lockContacts;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IPhysicalWorld(){}
 	virtual void Init() = 0;
 	virtual void Shutdown(int bDeleteGeometries = 1) = 0;
@@ -3017,6 +2997,10 @@ UNIQUE_IFACE struct IPhysicalWorld {
 
 	virtual void SimulateExplosion(pe_explosion *pexpl, IPhysicalEntity **pSkipEnts=0,int nSkipEnts=0, int iTypes=ent_rigid|ent_sleeping_rigid|ent_living|ent_independent, int iCaller=MAX_PHYS_THREADS) = 0;
 
+	// RasterizeEntities - builds a depth map from physical gometries in a box specified by grid; only updates area affected by offsBBox +/- sizeBBox
+	// depth is z values, scaled and clamped so that the grid box's -size.z..+size.z is mapped to 0..255
+	virtual void RasterizeEntities(const primitives::grid3d& grid, uchar *rbuf, int objtypes, float massThreshold, const Vec3& offsBBox, const Vec3& sizeBBox, int flags) = 0;
+
 	// DeformPhysicalEntity - applies boolean breaking for entity parts that have >=0 breakability index
 	// r is used to scale the corresponding explosion (boolean) shape
 	virtual int DeformPhysicalEntity(IPhysicalEntity *pent, const Vec3 &ptHit,const Vec3 &dirHit,float r, int flags=0) = 0;
@@ -3047,7 +3031,7 @@ UNIQUE_IFACE struct IPhysicalWorld {
 	virtual int CollideEntityWithPrimitive(IPhysicalEntity *_pent, int itype, primitives::primitive *pprim, Vec3 dir, ray_hit *phit, intersection_params* pip=0) = 0;
 	virtual int RayTraceEntity(IPhysicalEntity *pient, Vec3 origin,Vec3 dir, ray_hit *pHit, pe_params_pos *pp=0, unsigned int geomFlagsAny = geom_colltype0|geom_colltype_player) = 0;	// like RWI, but for one entity
 
-	virtual float PrimitiveWorldIntersection(const SPWIParams &pp, WriteLockCond &lockContacts=*(WriteLockCond*)0, const char *pNameTag=PWI_NAME_TAG) = 0;
+	virtual float PrimitiveWorldIntersection(const SPWIParams &pp, WriteLockCond *pLockContacts=0, const char *pNameTag=PWI_NAME_TAG) = 0;
 	virtual void GetMemoryStatistics(ICrySizer *pSizer) = 0;
 
 	virtual void SetPhysicsStreamer(IPhysicsStreamer *pStreamer) = 0;	// sets the callbacks for on-demand creation
@@ -3100,12 +3084,9 @@ UNIQUE_IFACE struct IPhysicalWorld {
 	virtual void SavePhysicalEntityPtr(TSerialize ser, IPhysicalEntity* pent) = 0;
   virtual IPhysicalEntity* LoadPhysicalEntityPtr(TSerialize ser) = 0;
   virtual void GetEntityMassAndCom(IPhysicalEntity* pIEnt, float& mass, Vec3& com) = 0;
-
-	virtual void SetDynPoolSize(int size) = 0;
-	virtual int FlushDynPool() = 0;
-
+	
 	virtual EventPhys *AddDeferredEvent( int type, EventPhys *event ) = 0;
-
+	// </interfuscator:shuffle>
 
 	inline int RayWorldIntersection(const Vec3& org,const Vec3& dir, int objtypes, unsigned int flags, ray_hit *hits,int nMaxHits,
 		IPhysicalEntity **pSkipEnts=0,int nSkipEnts=0, void *pForeignData=0,int iForeignData=0, 
@@ -3135,13 +3116,13 @@ UNIQUE_IFACE struct IPhysicalWorld {
 	}
 	float PrimitiveWorldIntersection(int itype, const primitives::primitive *pprim, const Vec3 &sweepDir=Vec3(ZERO), int entTypes=ent_all, 
 		geom_contact **ppcontact=0, int geomFlagsAll=0,int geomFlagsAny=geom_colltype0|geom_colltype_player, intersection_params *pip=0,
-		void *pForeignData=0, int iForeignData=0, IPhysicalEntity **pSkipEnts=0,int nSkipEnts=0, WriteLockCond &lockContacts=*(WriteLockCond*)0, const char *pNameTag=PWI_NAME_TAG)
+		void *pForeignData=0, int iForeignData=0, IPhysicalEntity **pSkipEnts=0,int nSkipEnts=0, WriteLockCond *pLockContacts=0, const char *pNameTag=PWI_NAME_TAG)
 	{
 		SPWIParams pp;
 		pp.itype=itype; pp.pprim=pprim; pp.sweepDir=sweepDir; pp.entTypes=entTypes;
 		pp.ppcontact=ppcontact; pp.geomFlagsAll=geomFlagsAll; pp.geomFlagsAny=geomFlagsAny; pp.pip=pip;
 		pp.pForeignData=pForeignData; pp.iForeignData=iForeignData; pp.pSkipEnts=pSkipEnts; pp.nSkipEnts=nSkipEnts;
-		return PrimitiveWorldIntersection(pp,lockContacts, pNameTag);
+		return PrimitiveWorldIntersection(pp,pLockContacts, pNameTag);
 	}
 
 };

@@ -228,7 +228,7 @@ public:
 	{
 	}
 
-	virtual void GetConfiguration(SFlowNodeConfig &config) OVERRIDE
+	virtual void GetConfiguration(SFlowNodeConfig &config) override
 	{
 		static const SInputPortConfig inputs[] =
 		{
@@ -251,7 +251,7 @@ public:
 		config.SetCategory(EFLN_APPROVED);
 	}
 
-	virtual void GetMemoryUsage(ICrySizer *s) const OVERRIDE
+	virtual void GetMemoryUsage(ICrySizer *s) const override
 	{
 		s->Add(*this);
 	}
@@ -3456,7 +3456,7 @@ public:
 	{
 	}
 
-	virtual void GetConfiguration(SFlowNodeConfig &config) OVERRIDE
+	virtual void GetConfiguration(SFlowNodeConfig &config) override
 	{
 		static const SInputPortConfig inputs[] =
 		{
@@ -3478,7 +3478,7 @@ public:
 		config.SetCategory(EFLN_APPROVED);
 	}
 
-	virtual void ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo ) OVERRIDE
+	virtual void ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo ) override
 	{
 		switch(event)
 		{
@@ -3496,7 +3496,71 @@ public:
 		}
 	}
 
-	virtual void GetMemoryUsage(ICrySizer *s) const OVERRIDE
+	virtual void GetMemoryUsage(ICrySizer *s) const override
+	{
+		s->Add(*this);
+	}
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+// Simply passes through the faction from the input port to the output port.
+// Can be used to prevent typos when dealing with factions in the Flow Graph.
+//////////////////////////////////////////////////////////////////////////
+class CFlowNode_AIFaction : public CFlowBaseNode<eNCT_Singleton>
+{
+public:
+	enum
+	{
+		InTrigger,
+		InFaction,
+	};
+
+	enum
+	{
+		OutFaction,
+	};
+
+	CFlowNode_AIFaction(SActivationInfo* pActInfo) {}
+
+	virtual void GetConfiguration(SFlowNodeConfig& config)
+	{
+		static const SInputPortConfig inConfig[] =
+		{
+			InputPortConfig_Void("Trigger", _HELP("Triggers the 'Faction' output port.")),
+			InputPortConfig<string>("Faction", "", _HELP("Faction to pass to the output port."), 0, "enum_global:Faction"),
+			{0}
+		};
+
+		static const SOutputPortConfig outConfig[] =
+		{
+			OutputPortConfig<string>("Faction", _HELP("The faction that was picked via the input port.")),
+			{0}
+		};
+
+		config.sDescription = _HELP("Simply passes the selected faction to the output port. This is more of a helper node to circumvent manual typing.");
+		config.pInputPorts = inConfig;
+		config.pOutputPorts = outConfig;
+		config.SetCategory(EFLN_APPROVED);
+	}
+
+	virtual void ProcessEvent(EFlowEvent event, SActivationInfo* pActInfo)
+	{
+		switch (event)
+		{
+		case eFE_Activate:
+			{
+				if (IsPortActive(pActInfo, InTrigger))
+				{
+					const string& faction = GetPortString(pActInfo, InFaction);
+					ActivateOutput(pActInfo, OutFaction, faction);
+				}
+				break;
+			}
+		};
+	};
+
+	virtual void GetMemoryUsage(ICrySizer * s) const
 	{
 		s->Add(*this);
 	}
@@ -3541,3 +3605,4 @@ REGISTER_FLOW_NODE( "AI:AIGlobalPerceptionScaling", CFlowNode_AIGlobalPerception
 REGISTER_FLOW_NODE( "AI:SetCommunicationVariable", CFlowNode_AISetCommunicationVariable)
 REGISTER_FLOW_NODE( "AI:RequestReinforcementReadability", CFlowNode_AIRequestReinforcementReadability )
 REGISTER_FLOW_NODE( "AI:RegenerateMNM", CFlowNode_AIRegenerateMNM )
+REGISTER_FLOW_NODE( "AI:Faction", CFlowNode_AIFaction )

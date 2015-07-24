@@ -13,19 +13,19 @@ public:
 	: m_ptr(ptr)
 	{}
 
-	Serialization::TypeID type() const
+	const char* registeredTypeName() const override
 	{
 		if (m_ptr)
-			return Serialization::ClassFactory<T>::the().getTypeID(m_ptr.get());
+			return Serialization::ClassFactory<T>::the().getRegisteredTypeName(m_ptr.get());
 		else
-			return Serialization::TypeID();
+			return "";
 	}
 
-	void create(Serialization::TypeID type) const
+	void create(const char* registeredTypeName) const override
 	{
 		CRY_ASSERT(!m_ptr || m_ptr->NumRefs() == 1);
-		if (type)
-			m_ptr.reset(Serialization::ClassFactory<T>::the().create(type));
+		if (registeredTypeName && registeredTypeName[0] != '\0')
+			m_ptr.reset(Serialization::ClassFactory<T>::the().create(registeredTypeName));
 		else
 			m_ptr.reset((T*)0);
 	}

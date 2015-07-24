@@ -339,9 +339,7 @@ void CAreaProxy::SerializeXML( XmlNodeRef &entityNode,bool bLoading )
 				box.min-=Vec3(m_fRadius, m_fRadius, m_fRadius);
 				box.max+=Vec3(m_fRadius, m_fRadius, m_fRadius);
 
-				Matrix34 tm = m_pEntity->GetWorldTM_Fast();
-
-				box.SetTransformedAABB( m_pEntity->GetWorldTM_Fast().GetInverted(),box );
+				box.SetTransformedAABB( m_pEntity->GetWorldTM().GetInverted(),box );
 
 				pRenderProxy->SetLocalBounds(box, true);
 			}
@@ -666,4 +664,4 @@ EntityId CAreaProxy::GetEntityInAreaByIdx(size_t index) const
 	return m_pArea->GetEntityByIdx(index);
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityAreaProxy)
+

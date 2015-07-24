@@ -66,14 +66,14 @@ SCreateChannelResult CGameServerNub::CreateChannel(INetChannel *pChannel, const 
 	{
 		GameWarning( "Not allowed to connect to server: %s", info.errmsg.c_str() );
 		SCreateChannelResult res(info.cause);
-		strcpy_s(res.errorMsg,sizeof(res.errorMsg),info.errmsg.c_str());
+		cry_strcpy(res.errorMsg, info.errmsg.c_str());
 		return res;
 	}
 
 	if (int(m_channels.size()) >= m_maxPlayers)
 	{
 		SCreateChannelResult res(eDC_ServerFull);
-		strcpy_s(res.errorMsg,sizeof(res.errorMsg),string().Format("Disallowing more than %d players",m_maxPlayers).c_str());
+		cry_strcpy(res.errorMsg, string().Format("Disallowing more than %d players",m_maxPlayers).c_str());
 		return res;
 	}
 

@@ -324,6 +324,15 @@ struct IAnimatedCharacter : public IGameObjectExtension
 	virtual const SPredictedCharacterStates& GetOverriddenMotionParameters() const = 0;
 	virtual void SetOverriddenMotionParameters(const SPredictedCharacterStates& motionParameters) = 0;
 
+	enum EBlendWeightParamTargets
+	{
+		eBWPT_None = 0,
+		eBWPT_FirstPersonSkeleton = BIT(0),
+		eBWPT_ShadowSkeleton = BIT(1),
+		eBWPT_All = 3
+	};
+	virtual void SetBlendWeightParam(const EMotionParamID motionParamID, const float value, const uint8 targetFlags = eBWPT_All) = 0;
+
 	//! Override for the entity's desired movement -> replace it with animation movement components
 	virtual void UseAnimationMovementForEntity(bool xyMove, bool zMove, bool rotation) = 0;
 

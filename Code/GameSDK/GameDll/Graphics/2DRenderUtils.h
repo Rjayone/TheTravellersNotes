@@ -144,45 +144,26 @@ public:
 		const float fSizeY,
 		const char *strText);
 
-	void DrawTextW(
-		const float fX,
-		const float fY,
-		const float fSizeX,
-		const float fSizeY,
-		const wchar_t *strText,
-		const ColorF& cfColor,
-		const EUIDRAWHORIZONTAL	eUIDrawHorizontal        = UIDRAWHORIZONTAL_LEFT, // checked
-		const EUIDRAWVERTICAL		eUIDrawVertical          = UIDRAWVERTICAL_TOP,
-		const EUIDRAWHORIZONTAL	eUIDrawHorizontalDocking = UIDRAWHORIZONTAL_LEFT,
-		const EUIDRAWVERTICAL		eUIDrawVerticalDocking   = UIDRAWVERTICAL_TOP );
-
-	void DrawWrappedTextW(
+	void DrawWrappedText(
 		const float fX,
 		const float fY,
 		const float fMaxWidth,
 		const float fSizeX,
 		const float fSizeY,
-		const wchar_t *strText,
+		const char *strText,
 		const ColorF& cfColor,
 		const EUIDRAWHORIZONTAL	eUIDrawHorizontal        = UIDRAWHORIZONTAL_LEFT, // Checked
 		const EUIDRAWVERTICAL		eUIDrawVertical          = UIDRAWVERTICAL_TOP,
 		const EUIDRAWHORIZONTAL	eUIDrawHorizontalDocking = UIDRAWHORIZONTAL_LEFT,
 		const EUIDRAWVERTICAL		eUIDrawVerticalDocking   = UIDRAWVERTICAL_TOP);
 
-	void GetTextDimW(	IFFont *pFont,
-		float *fWidth,
-		float *fHeight,
-		const float fSizeX,
-		const float fSizeY,
-		const wchar_t *strText);
-
-	void GetWrappedTextDimW(	IFFont *pFont,
+	void GetWrappedTextDim(	IFFont *pFont,
 		float *fWidth,
 		float *fHeight,
 		const float fMaxWidth,
 		const float fSizeX,
 		const float fSizeY,
-		const wchar_t *strText);
+		const char *strText);
 
 protected:
 	// Internal funcs draw without scaling/aligning to SafeArea
@@ -248,18 +229,8 @@ protected:
 	void InternalGetTextDim( IFFont *pFont,
 		float *fWidth,
 		float *fHeight,
+		float fMaxWidth,
 		const char *strText );
-
-	void InternalDrawTextW(
-		const float fX, const float fY,
-		const float fMaxWidth,
-		const wchar_t *strText );
-
-	void InternalGetTextDimW(	IFFont *pFont,
-		float *fWidth,
-		float *fHeight,
-		const float fMaxWidth,
-		const wchar_t *strText);
 
 	//------------------------------------------------------
 	// Utility

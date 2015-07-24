@@ -10,31 +10,26 @@ History:
 - Created by Lin Luo, November 06, 2006
 - Refactored by Lin Luo, November 20, 2006
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IRemoteControl.h)
-
-#ifndef __IREMOTECONTROL_H__
-#define __IREMOTECONTROL_H__
 
 #pragma once
-
 
 struct IRemoteControlServer;
 struct IRemoteControlClient;
 
-UNIQUE_IFACE struct IRemoteControlSystem
+struct IRemoteControlSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IRemoteControlSystem(){}
 	virtual IRemoteControlServer* GetServerSingleton() = 0;
 	virtual IRemoteControlClient* GetClientSingleton() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // the event handler on an RCON_server
 struct IRemoteControlServerListener
 {
 	enum EResultDesc {eRD_Okay, eRD_Failed, eRD_AlreadyStarted};
-
+	// <interfuscator:shuffle>
 	virtual ~IRemoteControlServerListener(){}
 	//
 	virtual void OnStartResult(bool started, EResultDesc desc) = 0;
@@ -52,13 +47,13 @@ struct IRemoteControlServerListener
 	virtual void AddRef() const {}
 	virtual void Release() const {}
 	virtual bool IsDead() const { return false; }
-
+	// </interfuscator:shuffle>
 };
 
 // the RCON_server interface
-UNIQUE_IFACE struct IRemoteControlServer
+struct IRemoteControlServer
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IRemoteControlServer(){}
 	// starts up an RCON_server
 	virtual void Start(uint16 serverPort, const string& password, IRemoteControlServerListener* pListener) = 0;
@@ -68,15 +63,15 @@ UNIQUE_IFACE struct IRemoteControlServer
 
 	// sends command result back to the command client
 	virtual void SendResult(uint32 commandId, const string& result) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // the event handler on an RCON_client
-UNIQUE_IFACE struct IRemoteControlClientListener
+struct IRemoteControlClientListener
 {
 	enum EResultDesc {eRD_Okay, eRD_Failed, eRD_CouldNotResolveServerAddr, eRD_UnsupportedAddressType, eRD_ConnectAgain};
 	enum EStatusDesc {eSD_Authorized, eSD_ConnectFailed, eSD_ServerSessioned, eSD_AuthFailed, eSD_AuthTimeout, eSD_ServerClosed, eSD_BogusMessage};
-
+	// <interfuscator:shuffle>
 	virtual ~IRemoteControlClientListener(){}
 	//
 	virtual void OnConnectResult(bool okay, EResultDesc desc) = 0;
@@ -91,13 +86,13 @@ UNIQUE_IFACE struct IRemoteControlClientListener
 	virtual void AddRef() const {}
 	virtual void Release() const {}
 	virtual bool IsDead() const { return false; }
-
+	// </interfuscator:shuffle>
 };
 
 // the RCON_client interface
-UNIQUE_IFACE struct IRemoteControlClient
+struct IRemoteControlClient
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IRemoteControlClient(){}
 	// connects to an RCON_server
 	virtual void Connect(const string& serverAddr, uint16 serverPort, const string& password, IRemoteControlClientListener* pListener) = 0;
@@ -107,8 +102,5 @@ UNIQUE_IFACE struct IRemoteControlClient
 
 	// sends RCON commands to the connected RCON_server; returns a unique command ID
 	virtual uint32 SendCommand(const string& command) = 0;
-
+	// </interfuscator:shuffle>
 };
-
-#endif
-

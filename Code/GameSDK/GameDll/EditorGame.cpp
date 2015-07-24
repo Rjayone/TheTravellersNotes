@@ -38,8 +38,6 @@
 
 #include "Environment/LedgeManager.h"
 
-#include "Events.h"
-
 #define EDITOR_SERVER_PORT 0xed17
 
 ICVar * CEditorGame::s_pEditorGameMode;
@@ -89,6 +87,14 @@ void CEditorGame::ResetClient(IConsoleCmdArgs*)
 	}
 	s_pEditorGame->EnablePlayer(value);
 	s_pEditorGame->HidePlayer(true);
+
+	CActor *pActor = static_cast<CActor*>(g_pGame->GetIGameFramework()->GetClientActor());
+	if (pActor)
+	{
+		SEntityEvent event;
+		event.event = ENTITY_EVENT_RELOAD_SCRIPT;
+		pActor->GetEntity()->SendEvent(event);
+	}
 }
 
 //------------------------------------------------------------------------
@@ -225,13 +231,6 @@ void CEditorGame::EnablePlayer(bool bPlayer)
 //------------------------------------------------------------------------
 bool CEditorGame::SetGameMode(bool bGameMode)
 {
-	//TTN
-	//Используется для создания евента
-	if (bGameMode == true)
-		g_pGame->GetEventDispatcher()->OnPlayerEnterInEditoriGameMode();
-	else
-		g_pGame->GetEventDispatcher()->OnPlayerExitFromEditorGameMode();
-	//~
 	m_bGameMode = bGameMode;
 	bool on = bGameMode;
 	if (s_pEditorGameMode->GetIVal() == 0)
@@ -783,7 +782,7 @@ void CEditorGame::FillSystemInitParams(SSystemInitParams &startupParams, ISystem
     startupParams.bExecuteCommandLine=false;		// in editor we do it later - after other things are initialized
     if (m_binariesDir && m_binariesDir[0])
     {
-        strcpy_s(startupParams.szBinariesDir, m_binariesDir);
+        cry_strcpy(startupParams.szBinariesDir, m_binariesDir);
     }
 }
 

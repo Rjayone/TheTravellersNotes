@@ -44,6 +44,7 @@ public:
 
 	CFlowNode_PrefabEventSource( SActivationInfo * pActInfo )
 	: m_eventId( CUSTOMEVENTID_INVALID )
+	, m_customEventListenerRegistered(false)
 	{
 	}
 
@@ -66,6 +67,7 @@ public:
 private:
 	SActivationInfo m_actInfo;
 	TCustomEventId m_eventId;
+	bool m_customEventListenerRegistered;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -117,6 +119,7 @@ public:
 private:
 	CryFixedArray<TCustomEventId, CUSTOMEVENTS_PREFABS_MAXNPERINSTANCE> m_eventIds;
 	SActivationInfo m_actInfo;
+	bool m_customEventListenerRegistered;
 };
 
 #endif // __FlowPrefabNodes_H__

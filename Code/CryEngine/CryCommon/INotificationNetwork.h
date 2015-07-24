@@ -15,27 +15,27 @@ struct INotificationNetworkClient;
 
 struct INotificationNetworkListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INotificationNetworkListener(){}
 	// Called upon receiving data from the Channel the Listener is binded to.
 	virtual void OnNotificationNetworkReceive(const void *pBuffer, size_t length) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 struct INotificationNetworkConnectionCallback
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INotificationNetworkConnectionCallback(){}
 	virtual void OnConnect(INotificationNetworkClient* pClient,bool bSucceeded)=0;
 	virtual void OnDisconnected(INotificationNetworkClient* pClient)=0;
-
+	// </interfuscator:shuffle>
 };
 
 // Interfaces
 
-UNIQUE_IFACE struct INotificationNetworkClient
+struct INotificationNetworkClient
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INotificationNetworkClient(){}
 	virtual void Release() = 0;
 
@@ -94,12 +94,12 @@ UNIQUE_IFACE struct INotificationNetworkClient
 	//  - It will return false when no object matching the one requested is found
 	//  int the object.
 	virtual bool UnregisterCallbackListener(INotificationNetworkConnectionCallback* pConnectionCallback)=0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct INotificationNetwork
+struct INotificationNetwork
 {
-
+	// <interfuscator:shuffle>
 	virtual ~INotificationNetwork(){}
 
 	virtual void Release() = 0;
@@ -130,7 +130,7 @@ UNIQUE_IFACE struct INotificationNetwork
 
 	// Sends arbitrary data to all the Connections listening to the given Channel.
 	virtual uint32 Send(const char *channel, const void *pBuffer, size_t length) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif // __INotificationNetwork_h__

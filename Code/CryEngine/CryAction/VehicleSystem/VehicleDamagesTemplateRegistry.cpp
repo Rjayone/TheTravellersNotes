@@ -107,4 +107,4 @@ bool CVehicleDamagesTemplateRegistry::UseTemplate(const string& templateName, IV
 	return false;
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IVehicleDamagesTemplateRegistry)
+

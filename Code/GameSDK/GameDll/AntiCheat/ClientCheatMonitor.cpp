@@ -25,7 +25,6 @@ History:
 CClientCheatMonitor::CClientCheatMonitor()
 	:m_pFramework(NULL)
 {
-	m_MonitorAccessOffset = cry_rand();
 }
 
 CClientCheatMonitor::~CClientCheatMonitor()

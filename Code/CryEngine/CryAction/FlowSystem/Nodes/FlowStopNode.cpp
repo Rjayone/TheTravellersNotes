@@ -29,7 +29,7 @@ public:
 	~CFlowNode_Stop() {}
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL IFlowNodePtr Clone(SActivationInfo* pActInfo)
+	virtual IFlowNodePtr Clone(SActivationInfo* pActInfo)
 	{
 		return new CFlowNode_Stop(pActInfo);
 	}
@@ -47,7 +47,7 @@ public:
 	};
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void GetConfiguration(SFlowNodeConfig& config)
+	virtual void GetConfiguration(SFlowNodeConfig& config)
 	{
 		static const SInputPortConfig inputs[] = 
 		{
@@ -69,7 +69,7 @@ public:
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void Serialize(SActivationInfo* pActInfo, TSerialize ser)
+	virtual void Serialize(SActivationInfo* pActInfo, TSerialize ser)
 	{
 		bool bActive = m_bActive;
 		ser.Value("active", bActive);
@@ -82,7 +82,7 @@ public:
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void ProcessEvent(EFlowEvent event, SActivationInfo* pActInfo )
+	virtual void ProcessEvent(EFlowEvent event, SActivationInfo* pActInfo )
 	{
 		SFlowAddress addr(pActInfo->myID, eOut_Output, true);
 
@@ -120,7 +120,7 @@ public:
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void GetMemoryUsage(ICrySizer * s) const
+	virtual void GetMemoryUsage(ICrySizer * s) const
 	{
 		s->Add(*this);
 	}

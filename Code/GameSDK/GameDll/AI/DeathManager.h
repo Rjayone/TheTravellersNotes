@@ -97,8 +97,8 @@ namespace GameAI
 		void InjectDeadGroupMemberDataIntoScriptTable(IScriptTable* scriptTable, const EntityId victimID, const EntityId killerID, const Vec3& victimPosition);
 
 		// IAISystemListener
-		virtual void OnAgentDeath(EntityId deadEntityID, EntityId killerID) OVERRIDE;
-		virtual void OnAgentUpdate(EntityId entityID) OVERRIDE;
+		virtual void OnAgentDeath(EntityId deadEntityID, EntityId killerID) override;
+		virtual void OnAgentUpdate(EntityId entityID) override;
 		// ~IAISystemListener
 
 	private:

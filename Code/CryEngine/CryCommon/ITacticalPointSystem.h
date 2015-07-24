@@ -12,10 +12,7 @@
 //  History:
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(ITacticalPointSystem.h)
 
-#ifndef __ITacticalPointSystem_h__
-#define __ITacticalPointSystem_h__
 #pragma once
 
 #include <IAISystem.h> // <> required for Interfuscator
@@ -139,7 +136,7 @@ enum ETacticalPointQueryCost
 };
 
 // Defines a tactical point with optional info
-UNIQUE_IFACE struct ITacticalPoint
+struct ITacticalPoint
 {
 	enum ETacticalPointType
 	{
@@ -151,6 +148,7 @@ UNIQUE_IFACE struct ITacticalPoint
 		eTPT_CoverID,
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ITacticalPoint() {}
 	virtual Vec3 GetPos() const = 0;
 	virtual void SetPos(Vec3 pos) = 0;
@@ -158,7 +156,7 @@ UNIQUE_IFACE struct ITacticalPoint
 	virtual const SHideSpot* GetHidespot() const = 0;
 	virtual tAIObjectID GetAIObjectId() const = 0;
 	virtual bool IsValid() const = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -217,19 +215,19 @@ struct STacticalPointResult
 
 
 // Defines a point definer for generation query usage
-UNIQUE_IFACE struct ITacticalPointGenerateResult
+struct ITacticalPointGenerateResult
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITacticalPointGenerateResult() {}
 	virtual bool AddHideSpot(const SHideSpot &hidespot) = 0;
 	virtual bool AddPoint(const Vec3& point) = 0;
 	virtual bool AddEntity(IEntity *pEntity) = 0;
 	virtual bool AddEntityPoint(IEntity *pEntity, const Vec3& point) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Defines a language extender for game projects
-UNIQUE_IFACE struct ITacticalPointLanguageExtender
+struct ITacticalPointLanguageExtender
 {
 	typedef const char*			        TQueryType;
 	typedef const QueryContext&	    TOwnerType;
@@ -250,10 +248,10 @@ UNIQUE_IFACE struct ITacticalPointLanguageExtender
 	struct SRangeExtenderParameters
 	{
 		TQueryType		query;
-		T&				min;
-		T&				max;
+		T&				minParam;
+		T&				maxParam;
 
-		SRangeExtenderParameters(TQueryType _query, T& _min, T& _max) : query(_query), min(_min), max(_max) { }
+		SRangeExtenderParameters(TQueryType _query, T& _min, T& _max) : query(_query), minParam(_min), maxParam(_max) { }
 	};
 
 	typedef SExtenderParameters<ITacticalPointGenerateResult*>	TGenerateParameters;
@@ -269,6 +267,7 @@ UNIQUE_IFACE struct ITacticalPointLanguageExtender
 		float			fDensity;
 		float			fHeight;
 		string		tagPointPostfix;
+		string		extenderStringParameter;
 
 		SGenerateDetails(float _fSearchDist, float _fDensity, float _fHeight, string _tagPointPostfix)
 			: fSearchDist(_fSearchDist)
@@ -278,6 +277,7 @@ UNIQUE_IFACE struct ITacticalPointLanguageExtender
 		{}
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ITacticalPointLanguageExtender() {}
 
 	// Generate points
@@ -293,14 +293,14 @@ UNIQUE_IFACE struct ITacticalPointLanguageExtender
 	virtual bool RealMeasure(TRealParameters &parameters,  TObjectType pObject, const Vec3& vObjectPos, TPointType point) const { return false; }
 
 	virtual bool RealRange(TRangeParameters &parameters) const { return false; }
-
+	// </interfuscator:shuffle>
 };
 
 // Simplified interface for querying from outside the AI system
 // Style encourages "precompiling" queries for repeated use
-UNIQUE_IFACE struct ITacticalPointSystem
+struct ITacticalPointSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITacticalPointSystem(){}
 	// Extend the language by adding new keywords
 	// For Generators and Primary Objects, the cost is not relevant (use eTPQC_IGNORE)
@@ -344,17 +344,17 @@ UNIQUE_IFACE struct ITacticalPointSystem
 
 	// Cancel an asynchronous query.
 	virtual bool CancelAsyncQuery( TPSQueryTicket ticket ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
 struct ITacticalPointResultsReceiver
 {
-
+	// <interfuscator:shuffle>
 	// Ticket is set even if bError is true to identify the query request, but no results will be returned
 	virtual void AcceptResults( bool bError, TPSQueryTicket nQueryTicket, STacticalPointResult * vResults, int nResults, int nOptionUsed ) = 0;
 	virtual ~ITacticalPointResultsReceiver(){}
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -563,7 +563,3 @@ private:
 		//std::vector<Vec3> *m_pResultsVector;
 	} m_Results;
 };
-
-
-
-#endif // __ITacticalPointSystem_h__

@@ -250,8 +250,7 @@ public:
 protected:
 	/* virtual */ float GetDelayTime(SActivationInfo * pActInfo) const
 	{
-		// CryMath random
-		return Random(GetPortFloat(pActInfo, 1), GetPortFloat(pActInfo, 2));
+		return cry_random(GetPortFloat(pActInfo, 1), GetPortFloat(pActInfo, 2));
 	}
 
 	bool GetShouldReset( SActivationInfo* pActInfo )

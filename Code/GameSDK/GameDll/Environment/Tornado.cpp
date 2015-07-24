@@ -164,10 +164,7 @@ void CTornado::Update(SEntityUpdateContext &ctx, int updateSlot)
 	Vec3 wanderPos(dir * 1.414214f);
 	float wanderStrength(1.0f);
 	float wanderRate(0.6f);
-	Vec3 wanderOffset;
-	wanderOffset.SetRandomDirection();
-	wanderOffset.z = 0.0f;
-	wanderOffset.NormalizeSafe(Vec3(1,0,0));
+	Vec3 wanderOffset(cry_random_unit_vector<Vec2>());
 	m_wanderDir += wanderOffset * wanderRate + (m_wanderDir - wanderPos) * wanderStrength;
 	m_wanderDir = (m_wanderDir - wanderPos).GetNormalized() + wanderPos;
 

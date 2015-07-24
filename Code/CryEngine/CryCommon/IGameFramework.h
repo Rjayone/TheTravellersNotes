@@ -14,14 +14,8 @@
 	- 3:8:2004		11:29 : Taken-over by Márcio Martins
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IGameFramework.h)
 
-#ifndef __IGAMEFRAMEWORK_H__
-#define __IGAMEFRAMEWORK_H__
-
-#if _MSC_VER > 1000
-#	pragma once
-#endif
+#pragma once
 
 #include <IComponent.h>
 #include <IGameStartup.h> // <> required for Interfuscator
@@ -83,11 +77,11 @@ DECLARE_COMPONENT_POINTERS( IGameObjectExtension );
 
 struct IGameObjectExtensionCreatorBase
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameObjectExtensionCreatorBase(){}
 	virtual IGameObjectExtensionPtr  Create() = 0;
 	virtual void GetGameObjectExtensionRMIData( void ** ppRMI, size_t * nCount ) = 0;
-
+	// </interfuscator:shuffle>
 
 	void GetMemoryUsage(ICrySizer *pSizer) const { /*LATER*/ }
 };
@@ -155,11 +149,11 @@ struct ISubtitleManager;
 struct IDialogSystem;
 struct IGameStatistics;
 struct IFaceGen;
-struct ITweakMenuController;
 struct ICheckpointSystem;
 struct IGameToEditorInterface;
 struct IMannequin;
 struct IScriptTable;
+struct ITimeDemoRecorder;
 
 class ISharedParamsManager;
 
@@ -304,11 +298,11 @@ private:
 typedef uint32 THUDWarningId;
 struct IGameWarningsListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameWarningsListener(){}
 	virtual bool OnWarningReturn(THUDWarningId id, const char* returnValue) { return true; }
 	virtual void OnWarningRemoved(THUDWarningId id) {}
-
+	// </interfuscator:shuffle>
 };
 
 /////////////////////////////////
@@ -349,27 +343,27 @@ struct SRenderNodeCloneLookup
 };
 
 // Provides an interface to game so game will be able to display numeric stats in user-friendly way.
-UNIQUE_IFACE struct IGameStatsConfig
+struct IGameStatsConfig
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IGameStatsConfig(){}
 	virtual int GetStatsVersion() = 0;
 	virtual int GetCategoryMod(const char* cat) = 0;
 	virtual const char* GetValueNameByCode(const char* cat, int id) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IBreakReplicator
+struct IBreakReplicator
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IBreakReplicator(){}
 	virtual const EventPhysRemoveEntityParts * GetRemovePartEvents(int & iNumEvents) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IPersistantDebug
+struct IPersistantDebug
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IPersistantDebug(){}
 	virtual void Begin( const char * name, bool clear ) = 0;
 	virtual void AddSphere( const Vec3& pos, float radius, ColorF clr, float timeout ) = 0;
@@ -389,7 +383,7 @@ UNIQUE_IFACE struct IPersistantDebug
 	virtual void ClearTagContext(const char *tagContext) = 0; 
 	virtual void ClearTagContext(const char *tagContext, EntityId entityId) = 0; 
 	virtual void Reset() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
@@ -514,7 +508,7 @@ struct IBreakEventListener
 
 // Summary
 //   Interface which exposes the CryAction subsystems
-UNIQUE_IFACE struct IGameFramework
+struct IGameFramework
 {
 	DECLARE_GAMEOBJECT_FACTORY(ISaveGame);
 	DECLARE_GAMEOBJECT_FACTORY(ILoadGame);
@@ -526,6 +520,7 @@ UNIQUE_IFACE struct IGameFramework
 	typedef uint32 TimerID;
 	typedef Functor2<void*, TimerID> TimerCallback;
 
+	// <interfuscator:shuffle>
 	virtual ~IGameFramework(){}
 
 	// Summary
@@ -713,10 +708,6 @@ UNIQUE_IFACE struct IGameFramework
 	virtual ISubtitleManager *GetISubtitleManager() = 0;
 
 	// Description
-	//	Returns a pointer to the new ITweakMenuController interface
-	virtual ITweakMenuController* CreateITweakMenuController() = 0;
-
-	// Description
 	// returns a pointer to the IRealtimeUpdate Interface
 	virtual IRealtimeRemoteUpdate * GetIRealTimeRemoteUpdate() = 0;
 
@@ -895,6 +886,10 @@ UNIQUE_IFACE struct IGameFramework
 	virtual IGameObjectExtension * QueryGameObjectExtension( EntityId id, const char * name) = 0;
 
 	// Description:
+	//    Retrieve pointer to the ITimeDemoRecorder (or NULL)
+	virtual ITimeDemoRecorder* GetITimeDemoRecorder() const = 0;
+
+	// Description:
 	//    Save the current game to disk
 	virtual bool SaveGame( const char * path, bool quick = false, bool bForceImmediate = true, ESaveGameReason reason = eSGR_QuickSave, bool ignoreDelay = false, const char* checkPoint = NULL) = 0;
 	// Description:
@@ -986,9 +981,9 @@ UNIQUE_IFACE struct IGameFramework
   //		Executes console command on next frame's beginning
   virtual void ExecuteCommandNextFrame(const char*) = 0;
 
-	VIRTUAL const char* GetNextFrameCommand() const = 0;
+	virtual const char* GetNextFrameCommand() const = 0;
 
-	VIRTUAL void ClearNextFrameCommand() = 0;
+	virtual void ClearNextFrameCommand() = 0;
 
   // Description:
   //		Opens a page in default browser
@@ -1041,7 +1036,7 @@ UNIQUE_IFACE struct IGameFramework
 	// Description:
 	//		Get the time left when we are allowed to load a new game
 	//		When this returns 0, we are allowed to load a new game
-	VIRTUAL float GetLoadSaveDelay()const = 0;
+	virtual float GetLoadSaveDelay()const = 0;
 
 	// Description:
 	//    Allows the network code to keep ticking in the event of a stall on the main thread.
@@ -1084,7 +1079,8 @@ protected:
 	//Arguments:
 	//		interfaceID - Interface id
 	virtual ICryUnknownPtr QueryExtensionInterfaceById( const CryInterfaceID& interfaceID ) const = 0;
-
+	
+	// </interfuscator:shuffle>
 };
 
 ILINE bool IsDemoPlayback()
@@ -1095,6 +1091,3 @@ ILINE bool IsDemoPlayback()
 	INetContext* pNetContext = pFramework->GetNetContext();
 	return pNetContext ? pNetContext->IsDemoPlayback() : false;
 }
-
-#endif //__IGAMEFRAMEWORK_H__
-

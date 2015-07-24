@@ -18,10 +18,6 @@
 #if defined(ENABLE_PROFILING_CODE) && !((defined(SANDBOX_EXPORTS) || defined(PLUGIN_EXPORTS)))
 	#if defined(WIN32) || defined(WIN64) || defined(LINUX) || defined(APPLE)
 		#include <CryProfileMarker_impl.pc.h>
-	#elif defined(XENON)
-		#include <CryProfileMarker_impl.xenon.h>
-	#elif defined(PS3)
-		#include <CryProfileMarker_impl.ps3.h>
 	#elif defined(DURANGO)
 		#include <CryProfileMarker_impl.durango.h>
 	#elif defined(ORBIS)

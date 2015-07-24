@@ -24,15 +24,7 @@
 
 
 
-#if defined(XENON)
-#define	PrefetchLine(ptr, off) __dcbt(off, ptr)
-#define	ResetLine128(ptr, off) __dcbz128(off, ptr)
-#define FlushLine128(ptr, off) __dcbf(off, ptr)
-#elif defined(PS3)
-#define	ResetLine128(ptr, off) __dcbz((uint8*)ptr + off)
-#define	PrefetchLine(ptr, off) CryPrefetch((void*)((size_t)ptr + off))
-#define FlushLine128(ptr, off) __dcbf((uint8*)ptr + off)
-#elif defined(LINUX64) || defined(APPLE) || defined(ORBIS)
+#if defined(LINUX64) || defined(APPLE) || defined(ORBIS)
 #define PrefetchLine(ptr, off) cryPrefetchT0SSE((void*)((UINT_PTR)ptr + off))
 #define ResetLine128(ptr, off) (void)(0)
 #define FlushLine128(ptr, off) (void)(0)
@@ -77,102 +69,11 @@ extern int g_CpuFlags;
 #define _MM_PREFETCH_LOOP( nCount,MemPtr,Hint )
 #endif //_CPU_SSE
 
-#if defined(PS3)
-	//use 16 byte aligned memcpy
-	#if defined(__SPU__)
-		#define cryMemcpy memcpy
-		#define mymemcpy16 memcpy
-    ILINE void cryMemcpy(void* Dst, const void* Src, int n, int nFlags)
-    {
-      memcpy(Dst, Src, n);
-    }
-	#else
-		extern "C" void *mymemcpy16(void *const __restrict, const void *const __restrict, size_t);
-		namespace std
-		{
-			ILINE void *crymemcpy16(void *const __restrict cpDst, const void *const __restrict cpSrc, size_t size)
-			{
-				assert(
-					!((unsigned int)cpDst < (unsigned int)cpSrc && (unsigned int)cpDst + size > (unsigned int)cpSrc) &&
-					!((unsigned int)cpDst > (unsigned int)cpSrc && (unsigned int)cpSrc + size > (unsigned int)cpDst));
-				if((((unsigned int)cpDst | (unsigned int)cpSrc | size) & 0xF) == 0)
-					return ::mymemcpy16(cpDst, cpSrc, size);
-				else
-					return memcpy(cpDst, cpSrc, size);
-			}
-		}
-		using std::crymemcpy16;
-		#define memcpy crymemcpy16
-		#define cryMemcpy crymemcpy16
-    ILINE void cryMemcpy(void* Dst, const void* Src, int n, int nFlags)
-    {
-      crymemcpy16(Dst, Src, n);
-    }
-	#endif
-#else
-	void cryMemcpy( void* Dst, const void* Src, int Count );
-    #if defined(LINUX) || defined(APPLE)
-        // Define this for Mac and Linux since it is used with the pthread sources
-        #define mymemcpy16 memcpy
-    #endif
+void cryMemcpy( void* Dst, const void* Src, int Count );
+#if defined(LINUX) || defined(APPLE)
+	// Define this for Mac and Linux since it is used with the pthread sources
+  #define mymemcpy16 memcpy
 #endif
-
-#if defined(XENON) || (defined(PS3) && !defined(__SPU__) && defined(PS3OPT))
-
-	ILINE void cryVecMemcpyLoop4(void * __restrict dest, const void * __restrict src, int size)
-	{
-		//assumes src and dest are 16 byte aligned, size is multiple of 64 and src and dest do not overlap
-		assert(	!((unsigned int)dest < (unsigned int)src && (unsigned int)dest + size > (unsigned int)src) &&
-						!((unsigned int)dest > (unsigned int)src && (unsigned int)src + size > (unsigned int)dest) &&
-						( ((unsigned int)dest | (unsigned int)src) & 15) == 0 && (size & 63) == 0);
-
-		for(int i=0; i<size; i+=64)
-		{
-			__stvx(__lvlx(src, i), dest, i);
-			__stvx(__lvlx(src, i+16), dest, i+16);
-			__stvx(__lvlx(src, i+32), dest, i+32);
-			__stvx(__lvlx(src, i+48), dest, i+48);
-		}
-	}
-
-	template<int TSIZE>
-	void cryVecMemcpy(void * __restrict dest, const void * __restrict src)
-	{
-		COMPILE_TIME_ASSERT((TSIZE&0xf)==0);
-		COMPILE_TIME_ASSERT(TSIZE>0);
-		
-		assert(	!((unsigned int)dest < (unsigned int)src && (unsigned int)dest + TSIZE > (unsigned int)src) &&
-						!((unsigned int)dest > (unsigned int)src && (unsigned int)src + TSIZE > (unsigned int)dest) );
-
-		if(TSIZE>128)
-		{
-			//copy in blocks of 64 bytes
-			cryVecMemcpyLoop4(dest,src,TSIZE & ~0x3f);
-
-			//calc remaining copies and start index
-			int rem = TSIZE & 0x3f;
-			int index = TSIZE & ~0x3f;
-
-			if ( rem >= 16 ) __stvx(__lvlx(src, index), dest, index);
-			if ( rem >= 32 ) __stvx(__lvlx(src, index+16), dest, index+16);
-			if ( rem >= 48 ) __stvx(__lvlx(src, index+32), dest, index+32);		
-		}
-		else
-		{
-			__stvx(__lvlx(src, 0), dest, 0);
-
-			if(TSIZE>16) __stvx(__lvlx(src, 16), dest, 16);
-			if(TSIZE>32) __stvx(__lvlx(src, 32), dest, 32);
-			if(TSIZE>48) __stvx(__lvlx(src, 48), dest, 48);
-			if(TSIZE>64) __stvx(__lvlx(src, 64), dest, 64);
-			if(TSIZE>80) __stvx(__lvlx(src, 80), dest, 80);
-			if(TSIZE>96) __stvx(__lvlx(src, 96), dest, 96);
-			if(TSIZE>112) __stvx(__lvlx(src, 112), dest, 112);
-		}
-	}
-
-#endif
-
 
 
 //==========================================================================================
@@ -530,8 +431,6 @@ inline void cryMemcpy (void* inDst, const void* inSrc, int nCount, int nFlags)
 
 const int PREFNTA_BLOCK = 0x4000;
 
-#ifndef PS3
-#ifndef XENON
 ILINE void cryMemcpy(void* Dst, const void* Src, int n) {
 	char* dst=(char*)Dst;
 	char* src=(char*)Src;
@@ -564,190 +463,25 @@ ILINE void cryMemcpy( void* Dst, const void* Src, int n, int nFlags )
 	_MM_PREFETCH_LOOP( n,src,_MM_HINT_NTA );
 	memcpy(dst, src, n);
 }
-#elif defined (XENON)
-ILINE void cryMemcpy(void* Dst, const void* Src, int n)
-{
-  if ((INT_PTR)Src & 0xf)
-    memcpy(Dst, Src, n);
-  else
-    XMemCpy(Dst, Src, n);
-}
-ILINE void cryMemcpy(void* Dst, const void* Src, int n, int nFlags)
-{
-  if (nFlags & MC_CPU_TO_GPU)
-    XMemCpyStreaming_WriteCombined(Dst, Src, n);
-  else
-  if (nFlags & MC_GPU_TO_CPU)
-    XMemCpy(Dst, Src, n);
-  else
-  if (nFlags & MC_CPU_TO_CPU)
-    XMemCpyStreaming_Cached(Dst, Src, n);
-  else
-  {
-    assert(0);
-  }
-}
-#endif//XENON
-#endif//PS3
+
+
 #endif
 
 
 #pragma warning(pop)
 
-#if defined(PS3)
-	#if defined(__SPU__)
-		#include <spu_intrinsics.h>	
-		#include <vmx2spu.h>
-	#else
-		#include <ppu_intrinsics.h>	
-//		#include <si2vmx.h>
-	#endif
-	__attribute__((always_inline))
-	ILINE void CryPrefetch(const void* const cpSrc)
-	{
-		#if !defined(__SPU__)
-			__dcbt((const void*)((unsigned int)cpSrc));
-		#endif//!__SPU__
-	}
-	__attribute__((always_inline))
-	ILINE void CryPrefetchInl(const void* const cpSrc)
-	{
-#if !defined(__SPU__)
-		__dcbt((const void*)((unsigned int)cpSrc));
-#endif//__SPU__
-	}
-
-	#undef _MM_PREFETCH
-	#undef _MM_PREFETCH_LOOP
-	#define _MM_PREFETCH( MemPtr,Hint ) CryPrefetch(MemPtr)
-	#define _MM_PREFETCH_LOOP( nCount,MemPtr,Hint ) CryPrefetch(MemPtr)
-
-	#define _MM_HINT_T0     (1)
-	#define _MM_HINT_T1     (2)
-	#define _MM_HINT_T2     (3)
-	#define _MM_HINT_NTA    (0)
-
-	#define _mm_prefetch( MemPtr,Hint ) CryPrefetch(MemPtr)
-	#define cryPrecacheSSE(src, nbytes) CryPrefetch(src)
-	#define cryPrecacheMMX(src, nbytes) CryPrefetch(src)
-	#define cryPrefetchNTSSE(src) CryPrefetch(src)
-	#define cryPrefetchT0SSE(src) CryPrefetch(src)
-	#define cryPrefetch(src, count) CryPrefetch(src)
-
-	// Indicates src may be an unmapped address (unsupported on the SPU).
-	// Should be safe for use when prefetching beyond the end of a sequence from within a loop.
-#ifdef __SPU__
-	// Disable for SPU
-	#define CryPrefetchUnsafe(src) (void)(0)
-#else
-	// Enable for PPU
-	#define CryPrefetchUnsafe(src) CryPrefetch(src)	
-#endif
-
-	#if defined(PS3OPT)
-		union float_conv_union
-		{
-			vec_float4 q;
-			float f[4];
-		};
-
-		//map sse intrinsics to ppu(altivec)/spu intrinsics
-		#define _CPU_SSE
-		#define __m128 qword
-
-		ILINE __m128 _mm_load_ps(float * p){CHECK_SIMD_ALIGNMENT_P(p); return (__m128)*(vec_float4*)p;}
-		ILINE void _mm_store_ps(float *p, __m128 a){CHECK_SIMD_ALIGNMENT_P(p); *(vec_float4*)p = (vec_float4)a;}
-		ILINE __m128 _mm_set_ps(float z, float y, float x, float w){return (__m128)(vec_float4){w, x, y, z};}
-		ILINE __m128 _mm_div_ps(__m128 a, __m128 b){return (__m128)divf4((vec_float4)a, (vec_float4)b);}
-		ILINE __m128 _mm_add_ps(__m128 a, __m128 b){return (__m128)vec_add((vec_float4)a, (vec_float4)b);}
-		ILINE __m128 _mm_sub_ps(__m128 a, __m128 b){return (__m128)vec_sub((vec_float4)a, (vec_float4)b);}
-		ILINE __m128 _mm_mul_ps(__m128 a, __m128 b){return (__m128)vec_madd((vec_float4)a, (vec_float4)b, (vec_float4){0.0f});}
-		ILINE __m128 _mm_cmpgt_ps(__m128 a, __m128 b){return (__m128)vec_cmpgt((vec_float4)a, (vec_float4)b);}
-		ILINE __m128 _mm_cmplt_ps(__m128 a, __m128 b){return (__m128)vec_cmplt((vec_float4)a, (vec_float4)b);}
-		ILINE __m128 _mm_cmpneq_ps(__m128 a, __m128 b)
-		{
-			vec_uint4 eqRes = (vec_uint4)vec_cmpeq((vec_float4)a, (vec_float4)b);
-			return (__m128)vec_nor(eqRes, eqRes);
-		}
-		ILINE void _mm_empty(){}
-		ILINE __m128 _mm_loadu_ps(const float * const p)
-		{
-			float_conv_union x;
-			x.f[0] = p[0];
-			x.f[1] = p[1];
-			x.f[2] = p[2];
-			x.f[3] = p[3];
-			return (__m128)x.q;
-		}
-		ILINE void _mm_storeu_ps(float *const p, __m128 a)
-		{
-			float_conv_union x;
-			x.q = (vec_float4)a;
-			p[0] = x.f[0];
-			p[1] = x.f[1];
-			p[2] = x.f[2];
-			p[3] = x.f[3];
-		}
-
-		#if defined(__SPU__)
-			ILINE int _mm_movemask_ps(__m128 a){return (int)spu_extract(spu_gather((vec_uint4)a), 0);}
-			ILINE __m128 _mm_load1_ps(const float * const p){return (__m128)spu_splats(*p);}		
-			//additional function shuffling w component
-			ILINE __m128 _mm_shuffle_ps_w(__m128 a)
-			{
-				return (__m128)spu_splats(spu_extract((vec_float4)a, 3));
-			}
-		#else
-			ILINE int _mm_movemask_ps(__m128 a){return __si_to_int(__si_gb(a));}
-			ILINE __m128 _mm_load1_ps(const float * const p)
-			{
-				const float cP = *p;
-				return (__m128)(vec_float4){cP, cP, cP, cP};
-			}
-			//additional function shuffling w component
-			ILINE __m128 _mm_shuffle_ps_w(__m128 a)
-			{
-				return (__m128)vec_splat((vec_float4)a, 3);
-			}
-		#endif//__SPU__
-	#endif//PS3OPT
-
-#else//PS3
-#if defined(XENON)
-
-	#define CryPrefetch(cpSrc) __dcbt(0, cpSrc)
-
-	// Indicates src may be an unmapped address (unsupported on the SPU).
-	// Should be safe for use when prefetching beyond the end of a sequence from within a loop.
-	// Suppresses C6201: buffer overrun for <variable>, which is possibly stack allocated
-	#define CryPrefetchUnsafe(cpSrc) \
-		__pragma(warning(suppress:6201)); \
-		__dcbt(0, cpSrc);
-#elif defined(DURANGO)
+#if defined(DURANGO)
 	// empty implementations for durango, as prefetching is not good for performance there	
 	ILINE void CryPrefetch(const void* const cpSrc){}	
-	#define CryPrefetchUnsafe CryPrefetch
 #else
 	//implement something usual to bring one memory location into L1 data cache
 	ILINE void CryPrefetch(const void* const cpSrc)
 	{
 		cryPrefetchT0SSE(cpSrc);
 	}
-
-	// Indicates src may be an unmapped address (unsupported on the SPU).
-	// Should be safe for use when prefetching beyond the end of a sequence from within a loop.
-	#define CryPrefetchUnsafe CryPrefetch
-
-#endif
-	#define CryPrefetchInl CryPrefetch
 #endif
 
-
-
-
-
-
-
+#define CryPrefetchInl CryPrefetch
 
 
 #endif //math

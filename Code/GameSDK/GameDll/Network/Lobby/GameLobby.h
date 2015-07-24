@@ -7,6 +7,7 @@
 #include "GameUserPackets.h"
 #include "AutoLockData.h"
 #include "SessionNames.h"
+#include "UnicodeIterator.h"
 #include <CryFixedArray.h>
 
 #include "Network/LobbyTaskQueue.h"
@@ -486,7 +487,13 @@ public:
 			{
 				if (strlen(inMessage) > MAX_CHATMESSAGE_LENGTH-1)
 				{
-					message.assign(inMessage, MAX_CHATMESSAGE_LENGTH-1);
+					// Find the first full code-point that won't fit, then go one before that.
+					// Just cutting off the buffer could happen in the middle of a multi-byte sequence.
+					Unicode::CIterator<const char *, false> it(inMessage + MAX_CHATMESSAGE_LENGTH - 1);
+					--it;
+					size_t length = it.GetPosition() - inMessage;
+					assert(length < MAX_CHATMESSAGE_LENGTH);
+					message.assign(inMessage, length);
 				}
 				else
 				{

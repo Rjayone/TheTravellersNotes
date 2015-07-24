@@ -84,7 +84,7 @@ protected:
 	float m_zRotationRate;
 
 	// Exact Positioning
-	std::auto_ptr<CExactPositioning> m_pExactPositioning; // memory is only allocated when used (and reset whenever Reset() is called)
+	std::unique_ptr<CExactPositioning> m_pExactPositioning; // memory is only allocated when used (and reset whenever Reset() is called)
 };
 
 #endif

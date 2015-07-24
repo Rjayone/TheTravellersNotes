@@ -685,7 +685,7 @@ public:
 
 			const char* pParamName = params.paramName.empty() ? "TargetPos" : params.paramName.c_str();
 
-			uint32 paramNameCRC = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(pParamName);
+			uint32 paramNameCRC = CCrc32::ComputeLowercase(pParamName);
 
 			if (GetParam(paramNameCRC, targetLocation))
 			{

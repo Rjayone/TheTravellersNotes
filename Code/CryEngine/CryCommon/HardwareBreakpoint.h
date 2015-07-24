@@ -20,10 +20,6 @@
 // needs platform.h included first!
 #include <assert.h>
 
-#if defined(XENON)
-#	include <xbdm.h>
-#endif
-
 
 struct HardwareBreakpointBase
 {
@@ -209,94 +205,7 @@ private:
 
 typedef HardwareBreakpoint<HardwareBreakpoint_Windows> CHardwareBreakpoint;
 
-#elif defined(XENON) // #if defined(WIN32) || defined(WIN64)
-
-class HardwareBreakpoint_Xenon : public HardwareBreakpointBase
-{
-public:
-	HardwareBreakpoint_Xenon()
-	: m_address(0)
-	, m_size(0)
-	{
-	}
-
-	~HardwareBreakpoint_Xenon()
-	{
-		Clear();
-	}
-
-	bool Set(void* /*thread*/, void* address, Size size, Type type)
-	{
-		if (m_address)
-		{
-			assert(0);
-			return false;
-		}
-
-		DWORD realSize = RealSize(size);
-		HRESULT hr = DmSetDataBreakpoint(address, RealType(type), realSize);
-
-		bool ret = hr == XBDM_NOERR;
-		if (ret)
-		{
-			m_address = address;
-			m_size = realSize;
-		}
-
-		return ret;
-	}
-
-	bool Clear()
-	{
-		bool ret = true;
-
-		if (m_address)
-		{
-			HRESULT hr = DmSetDataBreakpoint(m_address, DMBREAK_NONE, m_size);
-			ret = hr == XBDM_NOERR;
-
-			m_address = 0;
-			m_size = 0;
-		}
-
-		return ret;
-	}
-
-private:
-	static DWORD RealType(Type type)
-	{
-		switch (type)
-		{
-		case TYPE_CODE: return DMBREAK_EXECUTE;
-		case TYPE_WRITE: return DMBREAK_WRITE;
-		case TYPE_READWRITE: return DMBREAK_READWRITE;
-		default:
-			assert(0);
-			return DMBREAK_WRITE;
-		};
-	}
-
-	static DWORD RealSize(Size size)
-	{
-		switch (size)
-		{
-		case SIZE_1: return 1;
-		case SIZE_2: return 2;
-		case SIZE_4: return 4;
-		default:
-			assert(0);
-			return 4;
-		};
-	}
-
-private:
-	void* m_address;
-	DWORD m_size;
-};
-
-typedef HardwareBreakpoint<HardwareBreakpoint_Xenon> CHardwareBreakpoint;
-
-#else // #elif defined(XENON)
+#else // #if defined(WIN32) || defined(WIN64)
 
 class HardwareBreakpoint_Null : public HardwareBreakpointBase
 {

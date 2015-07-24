@@ -68,8 +68,8 @@ namespace
 		{
 			if(g_pGameCVars->i_debug_recoil)
 			{
-				CryWatch("RECOIL:\nCurrent Percentage Of Max Recoil: %.4f\n", recoilPercentage*100.f);
-				CryWatch("Current Recoil Offset: %.4f %.4f\n", recoilOffset.x, recoilOffset.y);
+				CryWatch("RECOIL:\n Current Percentage Of Max Recoil: %.4f", recoilPercentage*100.f);
+				CryWatch("\n Current Recoil Offset: %.4f %.4f", recoilOffset.x, recoilOffset.y);
 			}
 		}
 		
@@ -77,7 +77,7 @@ namespace
 		{
 			if(g_pGameCVars->i_debug_spread)
 			{
-				CryWatch("SPREAD:\nCurrent Spread: %.4f\n", spread);
+				CryWatch("\n \nSPREAD: \n Current Spread: %.4f", spread);
 			}
 		}
 
@@ -149,28 +149,26 @@ namespace
 		if(g_pGameCVars->i_debug_zoom_mods!=0)
 		{
 			float white[4] = {1,1,1,1};
-			gEnv->pRenderer->Draw2dLabel(50.0f,50.0f,1.4f,white,false,"Recoil.angular_impulse : %f", recoilParams.angular_impulse);
-			gEnv->pRenderer->Draw2dLabel(50.0f,60.0f,1.4f,white,false,"Recoil.attack : %f", recoilParams.attack);
-			gEnv->pRenderer->Draw2dLabel(50.0f,70.0f,1.4f,white,false,"Recoil.back_impulse : %f", recoilParams.back_impulse);
-			gEnv->pRenderer->Draw2dLabel(50.0f,80.0f,1.4f,white,false,"Recoil.decay : %f", recoilParams.decay);
-			gEnv->pRenderer->Draw2dLabel(50.0f,90.0f,1.4f,white,false,"Recoil.impulse : %f", recoilParams.impulse);
-			gEnv->pRenderer->Draw2dLabel(50.0f,100.0f,1.4f,white,false,"Recoil.max x,y : %f, %f", recoilParams.max.x, recoilParams.max.y);
-			gEnv->pRenderer->Draw2dLabel(50.0f,110.0f,1.4f,white,false,"Recoil.max_recoil : %f", recoilParams.max_recoil);
-			gEnv->pRenderer->Draw2dLabel(50.0f,120.0f,1.4f,white,false,"Recoil.recoil_crouch_m : %f", recoilParams.recoil_crouch_m);
-			gEnv->pRenderer->Draw2dLabel(50.0f,130.0f,1.4f,white,false,"Recoil.recoil_jump_m : %f", recoilParams.recoil_jump_m);
-			gEnv->pRenderer->Draw2dLabel(50.0f,150.0f,1.4f,white,false,"Recoil.recoil_strMode_m : %f", recoilParams.recoil_holdBreathActive_m);
+			gEnv->pRenderer->Draw2dLabel(50.0f, 30.0f, 1.4f, white, false, "Recoil.attack : %f", recoilParams.attack);
+			gEnv->pRenderer->Draw2dLabel(50.0f, 45.0f, 1.4f, white, false, "Recoil.decay : %f", recoilParams.decay);
+			gEnv->pRenderer->Draw2dLabel(50.0f, 60.0f, 1.4f, white, false, "Recoil.impulse : %f", recoilParams.impulse);
+			gEnv->pRenderer->Draw2dLabel(50.0f, 75.0f, 1.4f, white, false, "Recoil.max x,y : %f, %f", recoilParams.max.x, recoilParams.max.y);
+			gEnv->pRenderer->Draw2dLabel(50.0f, 90.0f, 1.4f, white, false, "Recoil.max_recoil : %f", recoilParams.max_recoil);
+			gEnv->pRenderer->Draw2dLabel(50.0f, 105.0f, 1.4f, white, false, "Recoil.recoil_crouch_m : %f", recoilParams.recoil_crouch_m);
+			gEnv->pRenderer->Draw2dLabel(50.0f, 120.0f, 1.4f, white, false, "Recoil.recoil_jump_m : %f", recoilParams.recoil_jump_m);
+			gEnv->pRenderer->Draw2dLabel(50.0f, 135.0f, 1.4f, white, false, "Recoil.recoil_strMode_m : %f", recoilParams.recoil_holdBreathActive_m);
 
-			gEnv->pRenderer->Draw2dLabel(300.0f, 50.0f, 1.4f, white, false, "Spread.attack : %f", spreadParams.attack);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 60.0f, 1.4f, white, false, "Spread.decay : %f", spreadParams.decay);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 70.0f, 1.4f, white, false, "Spread.max : %f", spreadParams.max);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 80.0f, 1.4f, white, false, "Spread.min : %f", spreadParams.min);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 30.0f, 1.4f, white, false, "Spread.attack : %f", spreadParams.attack);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 45.0f, 1.4f, white, false, "Spread.decay : %f", spreadParams.decay);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 60.0f, 1.4f, white, false, "Spread.max : %f", spreadParams.max);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 75.0f, 1.4f, white, false, "Spread.min : %f", spreadParams.min);
 			gEnv->pRenderer->Draw2dLabel(300.0f, 90.0f, 1.4f, white, false, "Spread.rotation_m : %f", spreadParams.rotation_m);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 100.0f, 1.4f, white, false, "Spread.speed_m : %f", spreadParams.speed_m);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 110.0f, 1.4f, white, false, "Spread.speed_holdBreathActive_m : %f", spreadParams.speed_holdBreathActive_m);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 120.0f, 1.4f, white, false, "Spread.spread_crouch_m : %f", spreadParams.spread_crouch_m);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 130.0f, 1.4f, white, false, "Spread.spread_jump_m : %f", spreadParams.spread_jump_m);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 140.0f, 1.4f, white, false, "Spread.spread_slide_m : %f", spreadParams.spread_slide_m);
-			gEnv->pRenderer->Draw2dLabel(300.0f, 150.0f, 1.4f, white, false, "Spread.spread_holdBreathActive_m : %f", spreadParams.spread_holdBreathActive_m);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 105.0f, 1.4f, white, false, "Spread.speed_m : %f", spreadParams.speed_m);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 120.0f, 1.4f, white, false, "Spread.speed_holdBreathActive_m : %f", spreadParams.speed_holdBreathActive_m);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 135.0f, 1.4f, white, false, "Spread.spread_crouch_m : %f", spreadParams.spread_crouch_m);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 150.0f, 1.4f, white, false, "Spread.spread_jump_m : %f", spreadParams.spread_jump_m);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 165.0f, 1.4f, white, false, "Spread.spread_slide_m : %f", spreadParams.spread_slide_m);
+			gEnv->pRenderer->Draw2dLabel(300.0f, 180.0f, 1.4f, white, false, "Spread.spread_holdBreathActive_m : %f", spreadParams.spread_holdBreathActive_m);
 		}
 	}
 
@@ -259,12 +257,8 @@ void SRecoilModParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*=
 		max_mod.x = 1.0f;
 		max_mod.y = 1.0f;
 		impulse_mod = 1.0f;
-		angular_impulse_mod = 1.0f;
-		back_impulse_mod = 1.0f;
-
 		recoil_crouch_m_mod = 1.0f;
 		recoil_jump_m_mod = 1.0f;
-
 		recoil_holdBreathActive_m_mod = 1.0f;
 	}
 
@@ -280,12 +274,8 @@ void SRecoilModParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*=
 		reader.ReadParamValue<float>("maxx_mod", max_mod.x);
 		reader.ReadParamValue<float>("maxy_mod", max_mod.y);
 		reader.ReadParamValue<float>("impulse_mod", impulse_mod);
-		reader.ReadParamValue<float>("angular_impulse_mod", angular_impulse_mod);
-		reader.ReadParamValue<float>("back_impulse_mod", back_impulse_mod);
-
 		reader.ReadParamValue<float>("recoil_crouch_m_mod", recoil_crouch_m_mod);
 		reader.ReadParamValue<float>("recoil_jump_m_mod", recoil_jump_m_mod);
-
 		reader.ReadParamValue<float>("recoil_holdBreathActive_m_mod", recoil_holdBreathActive_m_mod);
 	}
 }
@@ -313,15 +303,9 @@ void SRecoilParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*= tr
 		tilt = 0.0f;
 		randomness = 1.0f;
 		impulse = 0.0f;
-		angular_impulse = 0.0f;
-		back_impulse = 0.0f;
-		hint_loop_start = 7;
-
 		recoil_crouch_m = 0.85f;
 		recoil_jump_m = 1.5f;
-
 		recoil_holdBreathActive_m = 0.5f;
-
 	}
 
 	if (paramsNode)
@@ -339,13 +323,8 @@ void SRecoilParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*= tr
 		reader.ReadParamValue<float>("tilt", tilt);
 		reader.ReadParamValue<float>("randomness", randomness);
 		reader.ReadParamValue<float>("impulse", impulse);
-		reader.ReadParamValue<float>("angular_impulse", angular_impulse);
-		reader.ReadParamValue<float>("back_impulse", back_impulse);
-		reader.ReadParamValue<int>("hint_loop_start", hint_loop_start);
-
 		reader.ReadParamValue<float>("recoil_crouch_m", recoil_crouch_m);
 		reader.ReadParamValue<float>("recoil_jump_m", recoil_jump_m);
-
 		reader.ReadParamValue<float>("recoil_holdBreathActive_m", recoil_holdBreathActive_m);
 	}
 }
@@ -460,7 +439,6 @@ void SSpreadParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*=tru
 		spread_crouch_m = 0.85f;
 		spread_jump_m = 1.5f;
 		spread_slide_m = 1.0f;
-		spread_finalBreath_m = 5.0f;
 		spread_holdBreathActive_m = 1.0f;
 
 	}
@@ -481,7 +459,6 @@ void SSpreadParams::Reset( const XmlNodeRef& paramsNode, bool defaultInit /*=tru
 		reader.ReadParamValue<float>("spread_crouch_m", spread_crouch_m);
 		reader.ReadParamValue<float>("spread_jump_m", spread_jump_m);
 		reader.ReadParamValue<float>("spread_slide_m", spread_slide_m);
-		reader.ReadParamValue<float>("spread_finalBreath_m", spread_finalBreath_m);
 		reader.ReadParamValue<float>("spread_holdBreathActive_m", spread_holdBreathActive_m);
 
 	}
@@ -582,9 +559,9 @@ void CRecoil::RecoilShoot(bool firstShot, float maxRecoil)
 	}
 
 	const Vec3 randomDirectionAdd = Vec3(
-		Random(m_recoilParams.randomness),
-		BiRandom(m_recoilParams.randomness),
-		Random(m_recoilParams.tilt));
+		cry_random(0.0f, m_recoilParams.randomness),
+		cry_random(-1.0f, 1.0f) * m_recoilParams.randomness,
+		cry_random(0.0f, m_recoilParams.tilt));
 
 	m_recoil_dir = direction.GetNormalized() + randomDirectionAdd;
 
@@ -714,6 +691,7 @@ float CRecoil::GetSpread() const
 	float stanceScale = 1.0f;
 	float speedSpread = 0.0f;
 	float rotationSpread = 0.0f;
+	float suitScale = 1.0f;
 	float spreadScale = m_useSpreadMultiplier ? m_spreadMultiplier : 1.f;
 
 	const SActorStats* pOwnerStats = ownerActor.GetActorStats();
@@ -741,7 +719,10 @@ float CRecoil::GetSpread() const
 
 	rotationSpread = clamp_tpl(actorPhysics.angVelocity.len() * m_spreadParams.rotation_m, 0.0f, 3.0f);
 
-	return (speedSpread + rotationSpread + m_spread) * stanceScale * spreadScale;
+	suitScale *= isHoldingBreath ? m_spreadParams.spread_holdBreathActive_m : 1.0f;
+
+	return (speedSpread + rotationSpread + m_spread) * stanceScale * suitScale * spreadScale;
+
 }
 
 
@@ -820,10 +801,8 @@ void CRecoil::ResetSpreadMod(const SSpreadParams& originalSpreadParams)
 
 void CRecoil::PatchRecoilMod(const SRecoilModParams& recoilMod, const SRecoilParams& originalRecoilParams, float modMultiplier)
 {
-	m_recoilParams.angular_impulse						= CalculateParamModValue(originalRecoilParams.angular_impulse, recoilMod.angular_impulse_mod, modMultiplier);
 	m_recoilParams.attack											= CalculateParamModValue(originalRecoilParams.attack, recoilMod.attack_mod, modMultiplier);
 	m_recoilParams.first_attack								= CalculateParamModValue(originalRecoilParams.first_attack, recoilMod.first_attack_mod, modMultiplier);
-	m_recoilParams.back_impulse								= CalculateParamModValue(originalRecoilParams.back_impulse, recoilMod.back_impulse_mod, modMultiplier);
 	m_recoilParams.decay											= CalculateParamModValue(originalRecoilParams.decay, recoilMod.decay_mod, modMultiplier);
 	m_recoilParams.end_decay									= CalculateParamModValue(originalRecoilParams.end_decay, recoilMod.end_decay_mod, modMultiplier);
 	m_recoilParams.impulse										= CalculateParamModValue(originalRecoilParams.impulse, recoilMod.impulse_mod, modMultiplier);

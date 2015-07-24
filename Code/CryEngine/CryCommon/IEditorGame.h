@@ -11,14 +11,8 @@
   - 30:8:2004   11:11 : Created by Márcio Martins
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(IEditorGame.h)
 
-#ifndef __IEDITORGAME_H__
-#define __IEDITORGAME_H__
-
-#if _MSC_VER > 1000
-# pragma once
-#endif
+#pragma once
 
 struct IFlowSystem;
 struct IGameTokenSystem;
@@ -27,13 +21,13 @@ namespace Telemetry { struct ITelemetryRepository; }
 // For game to access Editor functionality.
 struct IGameToEditorInterface
 {
-
+	// <interfuscator:shuffle>
 	virtual	~IGameToEditorInterface(){}
 	virtual void SetUIEnums( const char *sEnumName,const char **sStringsArray,int nStringCount ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
-UNIQUE_IFACE struct IEquipmentSystemInterface
+struct IEquipmentSystemInterface
 {
 	struct IEquipmentItemIterator
 	{
@@ -42,15 +36,16 @@ UNIQUE_IFACE struct IEquipmentSystemInterface
 			const char* name;
 			const char* type;
 		};
-
+		// <interfuscator:shuffle>
 		virtual	~IEquipmentItemIterator(){}
 		virtual void AddRef() = 0;
 		virtual void Release() = 0;
 		virtual bool Next(SEquipmentItem& outItem) = 0;
-
+		// </interfuscator:shuffle>
 	};
 	typedef _smart_ptr<IEquipmentItemIterator> IEquipmentItemIteratorPtr;
-
+	
+	// <interfuscator:shuffle>
 	virtual	~IEquipmentSystemInterface(){}
 
 	// return iterator with available equipment items of a certain type
@@ -75,12 +70,12 @@ UNIQUE_IFACE struct IEquipmentSystemInterface
 
 	// set the players equipment pack. maybe we enable this, but normally via FG only
 	// virtual void SetPlayerEquipmentPackName(const char *packName) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Summary
 //		Interface used by the Editor to interact with the GameDLL
-UNIQUE_IFACE struct IEditorGame
+struct IEditorGame
 {
 	typedef IEditorGame *(*TEntryFunction)();
 
@@ -93,6 +88,7 @@ UNIQUE_IFACE struct IEditorGame
 		};
 	};
 
+	// <interfuscator:shuffle>
 	virtual	~IEditorGame(){}
 	virtual bool Init( ISystem *pSystem,IGameToEditorInterface *pEditorInterface ) = 0;
 	virtual int Update(bool haveFocus, unsigned int updateFlags) = 0;
@@ -125,8 +121,5 @@ UNIQUE_IFACE struct IEditorGame
 	virtual void UpdateHelpers(const HelpersDrawMode::EType drawMode) { }
 
 	virtual void OnDisplayRenderUpdated( bool displayHelpers ) = 0;
-
+	// </interfuscator:shuffle>
 };
-
-
-#endif //__IEDITORGAME_H__

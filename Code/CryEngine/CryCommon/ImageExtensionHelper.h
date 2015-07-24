@@ -36,10 +36,15 @@
 #define DDS_A           0x00000001  // DDPF_ALPHAPIXELS
 #define DDS_A_ONLY      0x00000002  // DDPF_ALPHA
 
-#define DDS_FOURCC_R32F           0x00000072  // FOURCC R32F 
+#define DDS_FOURCC_A16B16G16R16   0x00000024  // FOURCC A16B16G16R16 
 #define DDS_FOURCC_V16U16         0x00000040  // FOURCC V16U16 
+#define DDS_FOURCC_Q16W16V16U16   0x0000006E  // FOURCC Q16W16V16U16 
+#define DDS_FOURCC_R16F           0x0000006F  // FOURCC R16F 
 #define DDS_FOURCC_G16R16F        0x00000070  // FOURCC G16R16F 
 #define DDS_FOURCC_A16B16G16R16F  0x00000071  // FOURCC A16B16G16R16F 
+#define DDS_FOURCC_R32F           0x00000072  // FOURCC R32F 
+#define DDS_FOURCC_G32R32F        0x00000073  // FOURCC G32R32F 
+#define DDS_FOURCC_A32B32G32R32F  0x00000074  // FOURCC A32B32G32R32F 
 
 #define DDSD_CAPS         0x00000001l	// default
 #define DDSD_PIXELFORMAT  0x00001000l
@@ -197,12 +202,13 @@ namespace CImageExtensionHelper
 	const static uint32 EIF_OrbisNative         =    0x40000;  // info for the engine: native Orbis texture format
 	const static uint32 EIF_Tiled               =    0x80000;  // info for the engine: texture has been tiled for the platform
 	const static uint32 EIF_DurangoNative       =   0x100000;  // info for the engine: native Durango texture format
-	const static uint32 EIF_Splitted						=		0x200000;	 // info for the engine: this texture is splitted
-	const static uint32 EIF_Colormodel          =  0x3000000;  // info for the engine: bitmask: colormodel used in the texture
+	const static uint32 EIF_Splitted            =   0x200000;  // info for the engine: this texture is splitted
+	const static uint32 EIF_Colormodel          =  0x7000000;  // info for the engine: bitmask: colormodel used in the texture
 	const static uint32 EIF_Colormodel_RGB      =  0x0000000;  // info for the engine: colormodel is RGB (default)
 	const static uint32 EIF_Colormodel_CIE      =  0x1000000;  // info for the engine: colormodel is CIE (used for terrain)
-	const static uint32 EIF_Colormodel_YCC      =  0x2000000;  // info for the engine: colormodel is Y'CbCr (used for specular)
-	const static uint32 EIF_Colormodel_YFF      =  0x3000000;  // info for the engine: colormodel is Y'FbFr (used for specular)
+	const static uint32 EIF_Colormodel_YCC      =  0x2000000;  // info for the engine: colormodel is Y'CbCr (used for reflectance)
+	const static uint32 EIF_Colormodel_YFF      =  0x3000000;  // info for the engine: colormodel is Y'FbFr (used for reflectance)
+	const static uint32 EIF_Colormodel_IRB      =  0x4000000;  // info for the engine: colormodel is IRB (used for reflectance)
 
 	enum ETileMode
 	{
@@ -223,45 +229,46 @@ namespace CImageExtensionHelper
 		// streaming would need to find this spot in the file)
 		// if this is causing problems we need to change it 
 		if(pDDSHeader->dwSize>=sizeof(DDS_HEADER))
-		if(pDDSHeader->dwTextureStage == 'CRYF')
-			return pDDSHeader->dwReserved1;
+		{
+			if(pDDSHeader->dwTextureStage == 'CRYF')
+			{
+				return pDDSHeader->dwReserved1;
+			}
+		}
+
 		return 0;
 	}
 
-  // Arguments:
-  //   pDDSHeader - must not be 0
-  // Returns:
-  //   Chunk flags (combined from EIF_Cubemap,EIF_Volumetexture,EIF_Decal,...)
-  inline bool SetImageFlags( DDS_HEADER *pDDSHeader, uint32 flags )
-  {
-    assert(pDDSHeader);
+	// Arguments:
+	//   pDDSHeader - must not be 0
+	// Returns:
+	//   Chunk flags (combined from EIF_Cubemap,EIF_Volumetexture,EIF_Decal,...)
+	inline bool SetImageFlags( DDS_HEADER *pDDSHeader, uint32 flags )
+	{
+		assert(pDDSHeader);
 
-    // non standardized way to expose some features in the header (same information is in attached chunk but then
-    // streaming would need to find this spot in the file)
-    // if this is causing problems we need to change it 
-    if(pDDSHeader->dwSize>=sizeof(DDS_HEADER))
-    {
-      if(pDDSHeader->dwTextureStage == 'CRYF')
-      {
-        pDDSHeader->dwReserved1 = flags;
-        return true;
-      }
-    }
-    return false;
-  }
+		// non standardized way to expose some features in the header (same information is in attached chunk but then
+		// streaming would need to find this spot in the file)
+		// if this is causing problems we need to change it 
+		if(pDDSHeader->dwSize>=sizeof(DDS_HEADER))
+		{
+			if(pDDSHeader->dwTextureStage == 'CRYF')
+			{
+				pDDSHeader->dwReserved1 = flags;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	// Arguments:
 	//   Chunk flags (combined from EIF_Cubemap,EIF_Volumetexture,EIF_Decal,...)
 	// Returns:
 	//   true, if this texture is ready for this platform
 	inline const bool IsImageNative( const uint32 nFlags )
 	{
-#ifdef XENON
-		return (nFlags & EIF_XBox360Native) != 0;
-#elif defined(PS3)
-		return (nFlags & EIF_PS3Native) != 0;
-#else
 		return (nFlags & (EIF_XBox360Native|EIF_PS3Native)) == 0;
-#endif
 	}
 
 	// Arguments:
@@ -358,146 +365,120 @@ namespace CImageExtensionHelper
 	{
 		switch (eTF)
 		{
-		case eTF_A8:
-		case eTF_L8:
-		case eTF_R8:
-			return 8;
-		case eTF_A8L8:
-		case eTF_G8R8:
-		case eTF_V8U8:
-			return 16;
-		case eTF_R8G8B8:
-		case eTF_L8V8U8:
-			return 24;
-		case eTF_A8R8G8B8:
-		case eTF_X8R8G8B8:
-		case eTF_X8L8V8U8:
-		case eTF_A8B8G8R8S:
-		case eTF_A2R10G10B10:
-			return 32;
+		case eTF_R8G8B8A8S    : return 32;
+		case eTF_R8G8B8A8     : return 32;
 
-		case eTF_A4R4G4B4:
-			return 16;
-		case eTF_R5G6B5:
-		case eTF_R5G5B5:
-			return 16;
+		case eTF_R1           : return 1;
+		case eTF_A8           : return 8;
+		case eTF_R8           : return 8;
+		case eTF_R8S          : return 8;
+		case eTF_R16          : return 16;
+		case eTF_R16F         : return 16;
+		case eTF_R32F         : return 32;
+		case eTF_R8G8         : return 16;
+		case eTF_R8G8S        : return 16;
+		case eTF_R16G16       : return 32;
+		case eTF_R16G16S      : return 32;
+		case eTF_R16G16F      : return 32;
+		case eTF_R11G11B10F   : return 32;
+		case eTF_R10G10B10A2  : return 32;
+		case eTF_R16G16B16A16 : return 64;
+		case eTF_R16G16B16A16S: return 64;
+		case eTF_R16G16B16A16F: return 64;
+		case eTF_R32G32B32A32F: return 128;
 
-		case eTF_R16F:
-			return 16;
-		case eTF_G16R16:
-		case eTF_G16R16F:
-		case eTF_V16U16:
-			return 32;
-		case eTF_A16B16G16R16:
-		case eTF_A16B16G16R16F:
-			return 64;
+		case eTF_CTX1         : return 4;
+		case eTF_BC1          : return 4;
+		case eTF_BC2          : return 8;
+		case eTF_BC3          : return 8;
+		case eTF_BC4U         : return 4;
+		case eTF_BC4S         : return 4;
+		case eTF_BC5U         : return 8;
+		case eTF_BC5S         : return 8;
+		case eTF_BC6UH        : return 8;
+		case eTF_BC6SH        : return 8;
+		case eTF_BC7          : return 8;
+		case eTF_R9G9B9E5     : return 32;
 
-		case eTF_R32F:
-			return 32;
-		case eTF_A32B32G32R32F:
-			return 128;
+		case eTF_D16          : return 16;
+		case eTF_D24S8        : return 32;
+		case eTF_D32F         : return 32;
+		case eTF_D32FS8       : return 32;
 
-		case eTF_CTX1:
-		case eTF_BC1:
-		case eTF_BC4U:
-		case eTF_BC4S:
-			return 4;
-		case eTF_BC2:
-		case eTF_BC3:
-		case eTF_BC5U:
-		case eTF_BC5S:
-			return 8;
-		case eTF_BC6UH:
-		case eTF_BC6SH:
-		case eTF_BC7:
-			return 8;
-		case eTF_E5B9G9R9:
-		case eTF_R11G11B10F:
-			return 32;
-		case 	eTF_DEPTH16:
-			return 16;
-		case 	eTF_DEPTH24:
-			return 32;
+		case eTF_B5G6R5       : return 16;
+		case eTF_B5G5R5       : return 16;
+		case eTF_B4G4R4A4     : return 16;
 
-		case 	eTF_DF16:
-			return 16;
-		case 	eTF_DF24:
-			return 24;
-		case 	eTF_D16:
-			return 16;
-		case 	eTF_D24S8:
-			return 32;
-		case 	eTF_D32F:
-			return 32;
+		case eTF_EAC_R11      : return 4;
+		case eTF_EAC_RG11     : return 8;
+		case eTF_ETC2         : return 4;
+		case eTF_ETC2A        : return 8;
 
- 		case eTF_ETC2: 
-		case eTF_EAC_R11:
-			return 4;
-		
-		case eTF_ETC2A:
-		case eTF_EAC_RG11:
-			return 8;
+		case eTF_A8L8         : return 16;
+		case eTF_L8           : return 8;
+		case eTF_L8V8U8       : return 24;
+		case eTF_B8G8R8       : return 24;
+		case eTF_L8V8U8X8     : return 32;
+		case eTF_B8G8R8X8     : return 32;
+		case eTF_B8G8R8A8     : return 32;
 
-		case 	eTF_NULL:
-			return 8;
-
-		default:
-			assert(0);
+		default               : assert(0); // pass through for better behaviour in non debug
 		}
+
 		return 0;
 	}
 
 	inline bool IsBlockCompressed(ETEX_Format eTF)
 	{
-		return (eTF == eTF_BC1 ||
-			eTF == eTF_BC2 ||
-			eTF == eTF_BC3 ||
-			eTF == eTF_BC4U ||
-			eTF == eTF_BC4S ||
-			eTF == eTF_BC5S ||
-			eTF == eTF_BC5U ||
-			eTF == eTF_BC6UH ||
-			eTF == eTF_BC6SH ||
-			eTF == eTF_BC7 || 
-			eTF == eTF_CTX1 ||
- 			eTF == eTF_ETC2 || 
-			eTF == eTF_EAC_R11 ||	
-			eTF == eTF_ETC2A ||
+		return (eTF == eTF_BC1           ||
+			eTF == eTF_BC2           ||
+			eTF == eTF_BC3           ||
+			eTF == eTF_BC4U          ||
+			eTF == eTF_BC4S          ||
+			eTF == eTF_BC5S          ||
+			eTF == eTF_BC5U          ||
+			eTF == eTF_BC6UH         ||
+			eTF == eTF_BC6SH         ||
+			eTF == eTF_BC7           ||
+			eTF == eTF_CTX1          ||
+ 			eTF == eTF_ETC2          ||
+			eTF == eTF_EAC_R11       ||
+			eTF == eTF_ETC2A         ||
 			eTF == eTF_EAC_RG11);
 	}
 
 	static bool IsRangeless(ETEX_Format eTF)
 	{
-		return (eTF == eTF_BC6UH ||
-			eTF == eTF_BC6SH ||
-			eTF == eTF_E5B9G9R9 ||
-			eTF == eTF_A16B16G16R16F ||
-			eTF == eTF_A32B32G32R32F ||
-			eTF == eTF_R16F ||
-			eTF == eTF_R32F ||
-			eTF == eTF_G16R16F ||
+		return (eTF == eTF_BC6UH         ||
+			eTF == eTF_BC6SH         ||
+			eTF == eTF_R9G9B9E5      ||
+			eTF == eTF_R16G16B16A16F ||
+			eTF == eTF_R32G32B32A32F ||
+			eTF == eTF_R16F          ||
+			eTF == eTF_R32F          ||
+			eTF == eTF_R16G16F       ||
 			eTF == eTF_R11G11B10F);
 	}
 
 	static bool IsQuantized(ETEX_Format eTF)
 	{
-		return (eTF == eTF_A4R4G4B4 ||
-			eTF == eTF_R5G6B5 ||
-			eTF == eTF_R5G5B5 ||
-			eTF == eTF_BC1 ||
-			eTF == eTF_BC2 ||
-			eTF == eTF_BC3 ||
-			eTF == eTF_BC4U ||
-			eTF == eTF_BC4S ||
-			eTF == eTF_BC5U ||
-			eTF == eTF_BC5S ||
-			eTF == eTF_BC6UH ||
-			eTF == eTF_BC6SH ||
-			eTF == eTF_BC7 ||
-			eTF == eTF_E5B9G9R9 ||
- 			eTF == eTF_ETC2 || 
-			eTF == eTF_EAC_R11 ||	
-			eTF == eTF_ETC2A ||
+		return (eTF == eTF_B4G4R4A4      ||
+			eTF == eTF_B5G6R5        ||
+			eTF == eTF_B5G5R5        ||
+			eTF == eTF_BC1           ||
+			eTF == eTF_BC2           ||
+			eTF == eTF_BC3           ||
+			eTF == eTF_BC4U          ||
+			eTF == eTF_BC4S          ||
+			eTF == eTF_BC5U          ||
+			eTF == eTF_BC5S          ||
+			eTF == eTF_BC6UH         ||
+			eTF == eTF_BC6SH         ||
+			eTF == eTF_BC7           ||
+			eTF == eTF_R9G9B9E5      ||
+ 			eTF == eTF_ETC2          ||
+			eTF == eTF_EAC_R11       ||
+			eTF == eTF_ETC2A         ||
 			eTF == eTF_EAC_RG11);
 	}
 
@@ -505,224 +486,147 @@ namespace CImageExtensionHelper
 	// Warning: duplicate code.
 	inline const char *NameForTextureFormat(ETEX_Format ETF)
 	{
-		const char *sETF;
 		switch (ETF)
 		{
-		case eTF_Unknown:
-			sETF = "Unknown";
-			break;
-		case eTF_R8G8B8:
-			sETF = "R8G8B8";
-			break;
-		case eTF_A8R8G8B8:
-			sETF = "A8R8G8B8";
-			break;
-		case eTF_X8R8G8B8:
-			sETF = "X8R8G8B8";
-			break;
-		case eTF_A8:
-			sETF = "A8";
-			break;
-#if defined(XENON)
-		case eTF_A8_LIN:
-			sETF = "A8_LIN";
-			break;
-#endif
-		case eTF_A8L8:
-			sETF = "A8L8";
-			break;
-		case eTF_L8:
-			sETF = "L8";
-			break;
-		case eTF_A4R4G4B4:
-			sETF = "A4R4G4B4";
-			break;
-		case eTF_BC1:
-			sETF = "BC1";
-			break;
-		case eTF_BC2:
-			sETF = "BC2";
-			break;
-		case eTF_BC3:
-			sETF = "BC3";
-			break;
-		case eTF_BC4U:
-			sETF = "BC4";
-			break;
-		case eTF_BC4S:
-			sETF = "BC4S";
-			break;
-		case eTF_BC5U:
-			sETF = "BC5";
-			break;
-		case eTF_BC5S:
-			sETF = "BC5S";
-			break;
-		case eTF_BC6UH:
-			sETF = "BC6UH";
-			break;
-		case eTF_BC6SH:
-			sETF = "BC6SH";
-			break;
-		case eTF_BC7:
-			sETF = "BC7";
-			break;
-		case eTF_E5B9G9R9:
-			sETF = "E5B9G9R9";
-			break;
-		case eTF_CTX1:
-			sETF = "CTX1";
-			break;
-		case eTF_V16U16:
-			sETF = "V16U16";
-			break;
-		case eTF_X8L8V8U8:
-			sETF = "X8L8V8U8";
-			break;
-		case eTF_V8U8:
-			sETF = "V8U8";
-			break;
-		case eTF_A8B8G8R8S:
-			sETF = "A8B8G8R8S";
-			break;
-		case eTF_A16B16G16R16F:
-			sETF = "A16B16G16R16F";
-			break;
-		case eTF_A16B16G16R16:
-			sETF = "A16B16G16R16";
-			break;
-		case eTF_A32B32G32R32F:
-			sETF = "A32B32G32R32F";
-			break;
-		case eTF_R16F:
-			sETF = "R16F";
-			break;
-		case eTF_R32F:
-			sETF = "R32F";
-			break;
-		case eTF_G16R16:
-			sETF = "G16R16";
-			break;
-		case eTF_G16R16F:
-			sETF = "G16R16F";
-			break;
-		case eTF_DF16:
-			sETF = "DF16";
-			break;
-		case eTF_DEPTH24:
-			sETF = "Depth24";
-			break;
-		case eTF_DF24:
-			sETF = "DF24";
-			break;
-		case eTF_D16:
-			sETF = "D16";
-			break;
-		case eTF_D24S8:
-			sETF = "D24S8";
-			break;
-		case eTF_D32F:
-			sETF = "D32F";
-			break;
-		case eTF_A2R10G10B10:
-			sETF = "A2R10G10B10";
-			break;
-		case eTF_R5G6B5:
-			sETF = "R5G6B5";
-			break;
-		case eTF_R5G5B5:
-			sETF = "R5G5B5";
-			break;
-		case eTF_NULL:
-			sETF = "NULL";
-			break;
-		case eTF_R11G11B10F:
-			sETF = "R11G11B10F";
-			break;
-		case eTF_EAC_R11:
-			sETF = "EAC_R11";
-			break;
-		case eTF_EAC_RG11:
-			sETF = "EAC_RG11";
-			break;
-		case eTF_ETC2:
-			sETF = "ETC2";
-			break;
-		case eTF_ETC2A:
-			sETF = "ETC2A";
-			break;
-		default:
-			assert(0);
-			sETF = "Unknown";		// for better behaviour in non debug
-			break;
+		case eTF_Unknown      : return "Unknown";
+
+		case eTF_R8G8B8A8S    : return "R8G8B8A8S";
+		case eTF_R8G8B8A8     : return "R8G8B8A8";
+
+		case eTF_R1           : return "R1";
+		case eTF_A8           : return "A8";
+		case eTF_R8           : return "R8";
+		case eTF_R8S          : return "R8S";
+		case eTF_R16          : return "R16";
+		case eTF_R16F         : return "R16F";
+		case eTF_R32F         : return "R32F";
+		case eTF_R8G8         : return "R8G8";
+		case eTF_R8G8S        : return "R8G8S";
+		case eTF_R16G16       : return "R16G16";
+		case eTF_R16G16S      : return "R16G16S";
+		case eTF_R16G16F      : return "R16G16F";
+		case eTF_R11G11B10F   : return "R11G11B10F";
+		case eTF_R10G10B10A2  : return "R10G10B10A2";
+		case eTF_R16G16B16A16 : return "R16G16B16A16";
+		case eTF_R16G16B16A16S: return "R16G16B16A16S";
+		case eTF_R16G16B16A16F: return "R16G16B16A16F";
+		case eTF_R32G32B32A32F: return "R32G32B32A32F";
+
+		case eTF_CTX1         : return "CTX1";
+		case eTF_BC1          : return "BC1";
+		case eTF_BC2          : return "BC2";
+		case eTF_BC3          : return "BC3";
+		case eTF_BC4U         : return "BC4";
+		case eTF_BC4S         : return "BC4S";
+		case eTF_BC5U         : return "BC5";
+		case eTF_BC5S         : return "BC5S";
+		case eTF_BC6UH        : return "BC6UH";
+		case eTF_BC6SH        : return "BC6SH";
+		case eTF_BC7          : return "BC7";
+		case eTF_R9G9B9E5     : return "R9G9B9E5";
+
+		case eTF_D16          : return "D16";
+		case eTF_D24S8        : return "D24S8";
+		case eTF_D32F         : return "D32F";
+		case eTF_D32FS8       : return "D32FS8";
+
+		case eTF_B5G6R5       : return "R5G5B5";
+		case eTF_B5G5R5       : return "R5G6B5";
+		case eTF_B4G4R4A4     : return "B4G4R4A4";
+
+		case eTF_EAC_R11      : return "EAC_R11";
+		case eTF_EAC_RG11     : return "EAC_RG11";
+		case eTF_ETC2         : return "ETC2";
+		case eTF_ETC2A        : return "ETC2A";
+
+		case eTF_A8L8         : return "A8L8";
+		case eTF_L8           : return "L8";
+		case eTF_L8V8U8       : return "L8V8U8";
+		case eTF_B8G8R8       : return "B8G8R8";
+		case eTF_L8V8U8X8     : return "L8V8U8X8";
+		case eTF_B8G8R8X8     : return "B8G8R8X8";
+		case eTF_B8G8R8A8     : return "B8G8R8A8";
+
+		default               : assert(0); // pass through for better behaviour in non debug
 		}
-		return sETF;
+
+		return "Unknown";
 	}
 
 	// Added this code from Image, as it has less dependencies here.
 	// Warning: duplicate code.
 	inline ETEX_Format TextureFormatForName(const char *sETF)
 	{
-		if (!stricmp(sETF, "R8G8B8"))
-			return eTF_R8G8B8;
-		if (!stricmp(sETF, "A8R8G8B8"))
-			return eTF_A8R8G8B8;
-		if (!stricmp(sETF, "A8"))
-			return eTF_A8;
-#if defined(XENON)
-		if (!stricmp(sETF, "A8_LIN"))
-			return eTF_A8_LIN;
-#endif
-		if (!stricmp(sETF, "A8L8"))
-			return eTF_A8L8;
-		if (!stricmp(sETF, "BC1") || !stricmp(sETF, "DXT1"))
-			return eTF_BC1;
-		if (!stricmp(sETF, "BC2") || !stricmp(sETF, "DXT3"))
-			return eTF_BC2;
-		if (!stricmp(sETF, "BC3") || !stricmp(sETF, "DXT5"))
-			return eTF_BC3;
-		if (!stricmp(sETF, "BC4") || !stricmp(sETF, "3DCp") || !stricmp(sETF, "ATI1"))
-			return eTF_BC4U;
-		if (!stricmp(sETF, "BC4S"))
-			return eTF_BC4S;
-		if (!stricmp(sETF, "BC5") || !stricmp(sETF, "3DC") || !stricmp(sETF, "ATI2"))
-			return eTF_BC5U;
-		if (!stricmp(sETF, "BC5S"))
-			return eTF_BC5S;
-		if (!stricmp(sETF, "BC6UH"))
-			return eTF_BC6UH;
-		if (!stricmp(sETF, "BC6SH"))
-			return eTF_BC6SH;
-		if (!stricmp(sETF, "BC7"))
-			return eTF_BC7;
-		if (!stricmp(sETF, "E5B9G9R9") || !stricmp(sETF, "RGBE"))
-			return eTF_E5B9G9R9;
-		if (!stricmp(sETF, "CTX1"))
-			return eTF_CTX1;
-		if (!stricmp(sETF, "V16U16"))
-			return eTF_V16U16;
-		if (!stricmp(sETF, "X8L8V8U8"))
-			return eTF_X8L8V8U8;
-		if (!stricmp(sETF, "V8U8"))
-			return eTF_V8U8;
-		if (!stricmp(sETF, "DF16"))
-			return eTF_DF16;
-		if (!stricmp(sETF, "DF24"))
-			return eTF_DF24;
-		if (!stricmp(sETF, "D16"))
-			return eTF_D16;
-		if (!stricmp(sETF, "D24S8"))
-			return eTF_D24S8; 
-		if (!stricmp(sETF, "D32F"))
-			return eTF_D32F;
-		if (!stricmp(sETF, "EAC_R11"))
-			return eTF_EAC_R11;
-		if (!stricmp(sETF, "EAC_RG11"))
-			return eTF_EAC_RG11;
-		if (!stricmp(sETF, "ETC2"))
-			return eTF_ETC2;
-		if (!stricmp(sETF, "ETC2A"))
-			return eTF_ETC2A;
+		if (!stricmp(sETF, "Unknown"))         return eTF_Unknown;
+		
+		if (!stricmp(sETF, "R8G8B8A8S"))       return eTF_R8G8B8A8S;
+		if (!stricmp(sETF, "R8G8B8A8"))        return eTF_R8G8B8A8;
+		
+		if (!stricmp(sETF, "R1"))              return eTF_R1;
+		if (!stricmp(sETF, "A8"))              return eTF_A8;
+		if (!stricmp(sETF, "R8"))              return eTF_R8;
+		if (!stricmp(sETF, "R8S"))             return eTF_R8S;
+		if (!stricmp(sETF, "R16"))             return eTF_R16;
+		if (!stricmp(sETF, "R16F"))            return eTF_R16F;
+		if (!stricmp(sETF, "R32F"))            return eTF_R32F;
+		if (!stricmp(sETF, "R8G8"))            return eTF_R8G8;
+		if (!stricmp(sETF, "R8G8S"))           return eTF_R8G8S;
+		if (!stricmp(sETF, "R16G16"))          return eTF_R16G16;
+		if (!stricmp(sETF, "R16G16S"))         return eTF_R16G16S;
+		if (!stricmp(sETF, "R16G16F"))         return eTF_R16G16F;
+		if (!stricmp(sETF, "R11G11B10F"))      return eTF_R11G11B10F;
+		if (!stricmp(sETF, "R10G10B10A2"))     return eTF_R10G10B10A2;
+		if (!stricmp(sETF, "R16G16B16A16"))    return eTF_R16G16B16A16 ;
+		if (!stricmp(sETF, "R16G16B16A16S"))   return eTF_R16G16B16A16S;
+		if (!stricmp(sETF, "R16G16B16A16F"))   return eTF_R16G16B16A16F;
+		if (!stricmp(sETF, "R32G32B32A32F"))   return eTF_R32G32B32A32F;
+		
+		if (!stricmp(sETF, "CTX1"))            return eTF_CTX1;
+		if (!stricmp(sETF, "BC1"))             return eTF_BC1;
+		if (!stricmp(sETF, "BC2"))             return eTF_BC2;
+		if (!stricmp(sETF, "BC3"))             return eTF_BC3;
+		if (!stricmp(sETF, "BC4"))             return eTF_BC4U;
+		if (!stricmp(sETF, "BC4S"))            return eTF_BC4S;
+		if (!stricmp(sETF, "BC5"))             return eTF_BC5U;
+		if (!stricmp(sETF, "BC5S"))            return eTF_BC5S;
+		if (!stricmp(sETF, "BC6UH"))           return eTF_BC6UH;
+		if (!stricmp(sETF, "BC6SH"))           return eTF_BC6SH;
+		if (!stricmp(sETF, "BC7"))             return eTF_BC7;
+		if (!stricmp(sETF, "R9G9B9E5"))        return eTF_R9G9B9E5;
+		
+		if (!stricmp(sETF, "D16"))             return eTF_D16;
+		if (!stricmp(sETF, "D24S8"))           return eTF_D24S8;
+		if (!stricmp(sETF, "D32F"))            return eTF_D32F;
+		if (!stricmp(sETF, "D32FS8"))          return eTF_D32FS8;
+		
+		if (!stricmp(sETF, "R5G5B5"))          return eTF_B5G6R5;
+		if (!stricmp(sETF, "R5G6B5"))          return eTF_B5G5R5;
+		if (!stricmp(sETF, "B4G4R4A4"))        return eTF_B4G4R4A4;
+		
+		if (!stricmp(sETF, "EAC_R11"))         return eTF_EAC_R11;
+		if (!stricmp(sETF, "EAC_RG11"))        return eTF_EAC_RG11;
+		if (!stricmp(sETF, "ETC2"))            return eTF_ETC2;
+		if (!stricmp(sETF, "ETC2A"))           return eTF_ETC2A;
+		
+		if (!stricmp(sETF, "A8L8"))            return eTF_A8L8;
+		if (!stricmp(sETF, "L8"))              return eTF_L8;
+		if (!stricmp(sETF, "L8V8U8"))          return eTF_L8V8U8;
+		if (!stricmp(sETF, "B8G8R8"))          return eTF_B8G8R8;
+		if (!stricmp(sETF, "L8V8U8X8"))        return eTF_L8V8U8X8;
+		if (!stricmp(sETF, "B8G8R8X8"))        return eTF_B8G8R8X8;
+		if (!stricmp(sETF, "B8G8R8A8"))        return eTF_B8G8R8A8;
+
+		if (!stricmp(sETF, "V8U8"))            return eTF_R8G8S;
+		if (!stricmp(sETF, "V16U16"))          return eTF_R16G16S;
+
+		if (!stricmp(sETF, "DXT1"))            return eTF_BC1;
+		if (!stricmp(sETF, "DXT3"))            return eTF_BC2;
+		if (!stricmp(sETF, "DXT5"))            return eTF_BC3;
+		if (!stricmp(sETF, "ATI1"))            return eTF_BC4U;
+		if (!stricmp(sETF, "ATI2"))            return eTF_BC5U;
+		if (!stricmp(sETF, "3DCp"))            return eTF_BC4U;
+		if (!stricmp(sETF, "3DC"))             return eTF_BC5U;
+		if (!stricmp(sETF, "RGBE"))            return eTF_R9G9B9E5;
 
 		assert (0);
 		return eTF_Unknown;
@@ -797,52 +701,55 @@ namespace CImageExtensionHelper
 
 	inline bool HasAlphaForName(const char *sETF)
 	{
-		if (!stricmp(sETF, "A8R8G8B8"))
-			return true;
-		if (!stricmp(sETF, "A8"))
-			return true;
-#if defined(XENON)
-			if (!stricmp(sETF, "A8_LIN"))
-				return true;
-#endif
-		if (!stricmp(sETF, "A8L8"))
-			return true;
-		if (!stricmp(sETF, "BC1") || !stricmp(sETF, "DXT1"))
-			return true;
-		if (!stricmp(sETF, "BC2") || !stricmp(sETF, "DXT3"))
-			return true;
-		if (!stricmp(sETF, "BC3") || !stricmp(sETF, "DXT5"))
-			return true;
-		if (!stricmp(sETF, "BC7"))
-			return true;
-		if (!stricmp(sETF, "ETC2A"))
-			return true;
+		if (!stricmp(sETF, "R8G8B8A8S"))     return true;
+		if (!stricmp(sETF, "R8G8B8A8"))      return true;
+
+		if (!stricmp(sETF, "A8"))            return true;
+		if (!stricmp(sETF, "R10G10B10A2"))   return true;
+		if (!stricmp(sETF, "R16G16B16A16"))  return true;
+		if (!stricmp(sETF, "R16G16B16A16S")) return true;
+		if (!stricmp(sETF, "R16G16B16A16F")) return true;
+		if (!stricmp(sETF, "R32G32B32A32F")) return true;
+
+		if (!stricmp(sETF, "BC2"))           return true;
+		if (!stricmp(sETF, "BC3"))           return true;
+		if (!stricmp(sETF, "BC7"))           return true;
+
+		if (!stricmp(sETF, "B4G4R4A4"))      return true;
+
+		if (!stricmp(sETF, "ETC2A"))         return true;
+
+		if (!stricmp(sETF, "A8L8"))          return true;
+		if (!stricmp(sETF, "B8G8R8A8"))      return true;
+
+		if (!stricmp(sETF, "DXT3"))          return true;
+		if (!stricmp(sETF, "DXT5"))          return true;
 
 		return false;
 	}
 
 	inline bool HasAlphaForTextureFormat(ETEX_Format ETF)
 	{
-		if (ETF == eTF_A8R8G8B8)
-			return true;
-		if (ETF == eTF_A8)
-			return true;
-#if defined(XENON)
-		if (ETF == eTF_A8_LIN)
-			return true;
-#endif
-		if (ETF == eTF_A8L8)
-			return true;
-		if (ETF == eTF_BC1)
-			return true;
-		if (ETF == eTF_BC2)
-			return true;
-		if (ETF == eTF_BC3)
-			return true;
-		if (ETF == eTF_BC7)
-			return true;
-		if (ETF == eTF_ETC2A)
-			return true;
+		if (ETF == eTF_R8G8B8A8S)            return true;
+		if (ETF == eTF_R8G8B8A8)             return true;
+
+		if (ETF == eTF_A8)                   return true;
+		if (ETF == eTF_R10G10B10A2)          return true;
+		if (ETF == eTF_R16G16B16A16)         return true;
+		if (ETF == eTF_R16G16B16A16S)        return true;
+		if (ETF == eTF_R16G16B16A16F)        return true;
+		if (ETF == eTF_R32G32B32A32F)        return true;
+
+		if (ETF == eTF_BC2)                  return true;
+		if (ETF == eTF_BC3)                  return true;
+		if (ETF == eTF_BC7)                  return true;
+
+		if (ETF == eTF_B4G4R4A4)             return true;
+
+		if (ETF == eTF_ETC2A)                return true;
+
+		if (ETF == eTF_A8L8)                 return true;
+		if (ETF == eTF_B8G8R8A8)             return true;
 
 		return false;
 	}
@@ -894,14 +801,41 @@ namespace DDSFormats
 	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_R32F =
 	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_FOURCC, DDS_FOURCC_R32F, 32, 0, 0, 0, 0 };
 
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_G32R32F =
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_FOURCC, DDS_FOURCC_G32R32F, 64, 0, 0, 0, 0 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_A32B32G32R32F =
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_FOURCC, DDS_FOURCC_A32B32G32R32F, 128, 0, 0, 0, 0 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_R16F =
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_FOURCC, DDS_FOURCC_R16F, 16, 0, 0, 0, 0 };
+
 	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_G16R16F =
 	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_FOURCC, DDS_FOURCC_G16R16F, 32, 0, 0, 0, 0 };
 
-	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_V16U16 =
-	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_SIGNED, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
-
 	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_A16B16G16R16F =
 	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_FOURCC, DDS_FOURCC_A16B16G16R16F, 64, 0, 0, 0, 0 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_U16 = // unofficial 
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_SIGNED, 0, 16, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_V16U16 = // unofficial 
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_SIGNED, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_Q16W16V16U16 = 
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_FOURCC, DDS_FOURCC_Q16W16V16U16, 64, 0, 0, 0, 0 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_R16 = // unofficial 
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_RGB, 0, 16, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_G16R16 = // unofficial 
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_RGB, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_A16B16G16R16 = 
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_FOURCC, DDS_FOURCC_A16B16G16R16, 64, 0, 0, 0, 0 };
+
+	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_A8B8G8R8 =
+	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_RGBA, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 };
 
 	const CImageExtensionHelper::DDS_PIXELFORMAT DDSPF_A8R8G8B8 =
 	{ sizeof(CImageExtensionHelper::DDS_PIXELFORMAT), DDS_RGBA, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 };
@@ -946,12 +880,28 @@ namespace DDSFormats
 			return eTF_CTX1;
 		else if( ddspf.dwFourCC == DDSPF_R32F.dwFourCC)
 			return eTF_R32F;
+	//	else if( ddspf.dwFourCC == DDSPF_G32R32F.dwFourCC)
+	//		return eTF_R32G32F; // TODO: add to engine
+		else if( ddspf.dwFourCC == DDSPF_A32B32G32R32F.dwFourCC)
+			return eTF_R32G32B32A32F;
+		else if( ddspf.dwFourCC == DDSPF_R16F.dwFourCC)
+			return eTF_R16F;  
 		else if( ddspf.dwFourCC == DDSPF_G16R16F.dwFourCC)
-			return eTF_G16R16F;  
-		else if( ddspf == DDSPF_V16U16)
-			return eTF_V16U16;  
+			return eTF_R16G16F;  
 		else if( ddspf.dwFourCC == DDSPF_A16B16G16R16F.dwFourCC)
-			return eTF_A16B16G16R16F;
+			return eTF_R16G16B16A16F;
+	//	else if( ddspf == DDSPF_U16)
+	//		return eTF_R16S; // TODO: add to engine
+		else if( ddspf == DDSPF_V16U16)
+			return eTF_R16G16S;  
+		else if( ddspf.dwFourCC == DDSPF_Q16W16V16U16.dwFourCC)
+			return eTF_R16G16B16A16S;
+		else if( ddspf == DDSPF_R16)
+			return eTF_R16;
+		else if( ddspf == DDSPF_G16R16)
+			return eTF_R16G16;  
+		else if( ddspf.dwFourCC == DDSPF_A16B16G16R16.dwFourCC)
+			return eTF_R16G16B16A16;
 		else if (ddspf.dwFourCC == DDSPF_EAC_R11.dwFourCC)
 			return eTF_EAC_R11;
 		else if (ddspf.dwFourCC == DDSPF_EAC_RG11.dwFourCC)
@@ -960,14 +910,16 @@ namespace DDSFormats
 			return eTF_ETC2;
 		else if (ddspf.dwFourCC == DDSPF_ETC2A.dwFourCC)
 			return eTF_ETC2A;
-		else if (ddspf.dwFlags == DDS_RGBA && ddspf.dwRGBBitCount == 32 && ddspf.dwABitMask == 0xff000000)
-			return eTF_A8R8G8B8;
+		else if (ddspf.dwFlags == DDS_RGBA && ddspf.dwRGBBitCount == 32 && ddspf.dwRBitMask == 0x000000ff && ddspf.dwABitMask == 0xff000000)
+			return eTF_R8G8B8A8;
+		else if (ddspf.dwFlags == DDS_RGBA && ddspf.dwRGBBitCount == 32 && ddspf.dwRBitMask == 0x00ff0000 && ddspf.dwABitMask == 0xff000000)
+			return eTF_B8G8R8A8;
+		else if (ddspf.dwFlags == DDS_RGB  && ddspf.dwRGBBitCount == 32 && ddspf.dwRBitMask == 0x00ff0000)
+			return eTF_B8G8R8X8;
 		else if (ddspf.dwFlags == DDS_RGBA && ddspf.dwRGBBitCount == 16)
-			return eTF_A4R4G4B4;
+			return eTF_B4G4R4A4;
 		else if (ddspf.dwFlags == DDS_RGB  && ddspf.dwRGBBitCount == 24)
-			return eTF_R8G8B8;
-		else if (ddspf.dwFlags == DDS_RGB  && ddspf.dwRGBBitCount == 32)
-			return eTF_X8R8G8B8;
+			return eTF_B8G8R8;
 		else if (ddspf.dwFlags == DDS_LUMINANCEA  && ddspf.dwRGBBitCount == 8)
 			return eTF_A8L8;
 		else if (ddspf.dwFlags == DDS_LUMINANCE  && ddspf.dwRGBBitCount == 8)
@@ -987,52 +939,76 @@ namespace DDSFormats
 #if	defined(CRY_DDS_DX10_SUPPORT)
 			switch (dxgif)
 			{
-			case DXGI_FORMAT_BC1_UNORM:
-			case DXGI_FORMAT_BC1_UNORM_SRGB:
-				return eTF_BC1;
-			case DXGI_FORMAT_BC2_UNORM:
-			case DXGI_FORMAT_BC2_UNORM_SRGB:
-				return eTF_BC2;
-			case DXGI_FORMAT_BC3_UNORM:
-			case DXGI_FORMAT_BC3_UNORM_SRGB:
-				return eTF_BC3;
-			case DXGI_FORMAT_BC4_UNORM:
-				return eTF_BC4U;
-			case DXGI_FORMAT_BC4_SNORM:
-				return eTF_BC4S;
-			case DXGI_FORMAT_BC5_UNORM:
-				return eTF_BC5U;
-			case DXGI_FORMAT_BC5_SNORM:
-				return eTF_BC5S;
-			case DXGI_FORMAT_BC6H_UF16:
-				return eTF_BC6UH;
-			case DXGI_FORMAT_BC6H_SF16:
-				return eTF_BC6SH;
-			case DXGI_FORMAT_BC7_UNORM:
-			case DXGI_FORMAT_BC7_UNORM_SRGB:
-				return eTF_BC7;
-			case DXGI_FORMAT_R9G9B9E5_SHAREDEXP:
-				return eTF_E5B9G9R9;
-			case DXGI_FORMAT_R32_FLOAT:
-				return eTF_R32F;
-			case DXGI_FORMAT_R16G16_FLOAT:
-				return eTF_G16R16F;
-			case DXGI_FORMAT_R16G16_UNORM:
-				return eTF_G16R16;
-			case DXGI_FORMAT_R16G16_SNORM:
-				return eTF_V16U16;
-			case DXGI_FORMAT_R16G16B16A16_FLOAT:
-				return eTF_A16B16G16R16F;
-			case DXGI_FORMAT_B8G8R8A8_UNORM:
-				return eTF_A8R8G8B8;
-			case DXGI_FORMAT_B8G8R8X8_UNORM:
-				return eTF_X8R8G8B8;
-			case DXGI_FORMAT_A8_UNORM:
-				return eTF_A8;
-//			case DXGI_FORMAT_R8G8B8A8_UNORM:
-//				return eTF_A8B8G8R8;
-			case DXGI_FORMAT_R8G8B8A8_SNORM:
-				return eTF_A8B8G8R8S;
+			case DXGI_FORMAT_R8G8B8A8_TYPELESS:     return eTF_R8G8B8A8;
+			case DXGI_FORMAT_R8G8B8A8_UNORM:        return eTF_R8G8B8A8;
+			case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:   return eTF_R8G8B8A8;
+			case DXGI_FORMAT_R8G8B8A8_SNORM:        return eTF_R8G8B8A8S;
+
+			case DXGI_FORMAT_R1_UNORM:              return eTF_R1;
+			case DXGI_FORMAT_A8_UNORM:              return eTF_A8;
+			case DXGI_FORMAT_R8_UNORM:              return eTF_R8;
+			case DXGI_FORMAT_R8_SNORM:              return eTF_R8S;
+			case DXGI_FORMAT_R16_UNORM:             return eTF_R16;
+		//	case DXGI_FORMAT_R16_SNORM:             return eTF_R16S;
+			case DXGI_FORMAT_R16_FLOAT:             return eTF_R16F;
+			case DXGI_FORMAT_R16_TYPELESS:          return eTF_R16F; // arbitrary choice for F
+			case DXGI_FORMAT_R32_FLOAT:             return eTF_R32F;
+			case DXGI_FORMAT_R32_TYPELESS:          return eTF_R32F;
+			case DXGI_FORMAT_R8G8_UNORM:            return eTF_R8G8;
+			case DXGI_FORMAT_R8G8_SNORM:            return eTF_R8G8S;
+			case DXGI_FORMAT_R16G16_UNORM:          return eTF_R16G16;
+			case DXGI_FORMAT_R16G16_SNORM:          return eTF_R16G16S;
+			case DXGI_FORMAT_R16G16_FLOAT:          return eTF_R16G16F;
+		//	case DXGI_FORMAT_R32G32_FLOAT:          return eTF_R32G32F;
+			case DXGI_FORMAT_R11G11B10_FLOAT:       return eTF_R11G11B10F;
+			case DXGI_FORMAT_R10G10B10A2_UNORM:     return eTF_R10G10B10A2;
+			case DXGI_FORMAT_R16G16B16A16_UNORM:    return eTF_R16G16B16A16;
+			case DXGI_FORMAT_R16G16B16A16_SNORM:    return eTF_R16G16B16A16S;
+			case DXGI_FORMAT_R16G16B16A16_FLOAT:    return eTF_R16G16B16A16F;
+			case DXGI_FORMAT_R32G32B32A32_FLOAT:    return eTF_R32G32B32A32F;
+
+			case DXGI_FORMAT_BC1_TYPELESS:          return eTF_BC1;
+			case DXGI_FORMAT_BC1_UNORM:             return eTF_BC1;
+			case DXGI_FORMAT_BC1_UNORM_SRGB:        return eTF_BC1;
+			case DXGI_FORMAT_BC2_TYPELESS:          return eTF_BC2;
+			case DXGI_FORMAT_BC2_UNORM:             return eTF_BC2;
+			case DXGI_FORMAT_BC2_UNORM_SRGB:        return eTF_BC2;
+			case DXGI_FORMAT_BC3_TYPELESS:          return eTF_BC3;
+			case DXGI_FORMAT_BC3_UNORM:             return eTF_BC3;
+			case DXGI_FORMAT_BC3_UNORM_SRGB:        return eTF_BC3;
+			case DXGI_FORMAT_BC4_TYPELESS:          return eTF_BC4U;
+			case DXGI_FORMAT_BC4_UNORM:             return eTF_BC4U;
+			case DXGI_FORMAT_BC4_SNORM:             return eTF_BC4S;
+			case DXGI_FORMAT_BC5_TYPELESS:          return eTF_BC5U;
+			case DXGI_FORMAT_BC5_UNORM:             return eTF_BC5U;
+			case DXGI_FORMAT_BC5_SNORM:             return eTF_BC5S;
+			case DXGI_FORMAT_BC6H_UF16:             return eTF_BC6UH;
+			case DXGI_FORMAT_BC6H_SF16:             return eTF_BC6SH;
+			case DXGI_FORMAT_BC7_TYPELESS:          return eTF_BC7;
+			case DXGI_FORMAT_BC7_UNORM:             return eTF_BC7;
+			case DXGI_FORMAT_BC7_UNORM_SRGB:        return eTF_BC7;
+			case DXGI_FORMAT_R9G9B9E5_SHAREDEXP:    return eTF_R9G9B9E5;
+
+			// only available as hardware format under DX11.1 with DXGI 1.2
+			case DXGI_FORMAT_B5G6R5_UNORM:          return eTF_B5G6R5;
+			case DXGI_FORMAT_B5G5R5A1_UNORM:        return eTF_B5G5R5;
+//			case DXGI_FORMAT_B4G4R4A4_UNORM:        return eTF_B4G4R4A4;
+
+#if defined(CRY_USE_OPENGL)
+			// only available as hardware format under OpenGL
+			case DXGI_FORMAT_EAC_R11_UNORM:         return eTF_EAC_R11;
+			case DXGI_FORMAT_EAC_RG11_UNORM:        return eTF_EAC_RG11;
+			case DXGI_FORMAT_ETC2_UNORM:            return eTF_ETC2;
+			case DXGI_FORMAT_ETC2A_UNORM:           return eTF_ETC2A;
+#endif //defined(CRY_USE_OPENGL)
+
+			// only available as hardware format under DX9
+			case DXGI_FORMAT_B8G8R8A8_TYPELESS:     return eTF_B8G8R8A8;
+			case DXGI_FORMAT_B8G8R8A8_UNORM:        return eTF_B8G8R8A8;
+			case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:   return eTF_B8G8R8A8;
+			case DXGI_FORMAT_B8G8R8X8_TYPELESS:     return eTF_B8G8R8X8;
+			case DXGI_FORMAT_B8G8R8X8_UNORM:        return eTF_B8G8R8X8;
+			case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:   return eTF_B8G8R8X8;
 			}
 #endif
 			return eTF_Unknown;
@@ -1050,7 +1026,7 @@ namespace DDSFormats
 
 	inline const bool IsSigned(const ETEX_Format eTF)
 	{
-		if (eTF == eTF_BC4S || eTF == eTF_BC5S || eTF == eTF_BC6SH || eTF == eTF_V16U16 || eTF == eTF_V8U8)
+		if (eTF == eTF_BC4S || eTF == eTF_BC5S || eTF == eTF_BC6SH || eTF == eTF_R8S || eTF == eTF_R8G8S || eTF == eTF_R16G16S || eTF == eTF_R8G8B8A8S || eTF == eTF_R16G16B16A16S)
 			return true;
 		return false;
 	}
@@ -1075,20 +1051,39 @@ namespace DDSFormats
 			return DDSPF_CTX1;
 		case eTF_R32F:
 			return DDSPF_R32F;
-		case eTF_G16R16F:
+	//	case eTF_R32G32F:
+	//		return DDSPF_G32R32F;
+		case eTF_R32G32B32A32F:
+			return DDSPF_A32B32G32R32F;
+		case eTF_R16F:
+			return DDSPF_R16F;
+		case eTF_R16G16F:
 			return DDSPF_G16R16F;
-		case eTF_V16U16:
-			return DDSPF_V16U16;
-		case eTF_A16B16G16R16F:
+		case eTF_R16G16B16A16F:
 			return DDSPF_A16B16G16R16F;
-		case eTF_R8G8B8:
+		case eTF_R16:
+			return DDSPF_R16;
+		case eTF_R16G16:
+			return DDSPF_G16R16;
+		case eTF_R16G16B16A16:
+			return DDSPF_A16B16G16R16;
+	//	case eTF_R16S:
+	//		return DDSPF_U16;
+		case eTF_R16G16S:
+			return DDSPF_V16U16;
+		case eTF_R16G16B16A16S:
+			return DDSPF_Q16W16V16U16;
+		case eTF_B8G8R8:
 		case eTF_L8V8U8:
 			return DDSPF_R8G8B8;
-		case eTF_A8R8G8B8:
-			return DDSPF_A8R8G8B8;
-		case eTF_X8R8G8B8:
+		case eTF_R8G8B8A8:
+			return DDSPF_A8B8G8R8;
+		case eTF_B8G8R8X8:
+		case eTF_L8V8U8X8:
 			return DDSPF_X8R8G8B8;
-		case eTF_R5G6B5:
+		case eTF_B8G8R8A8:
+			return DDSPF_A8R8G8B8;
+		case eTF_B5G6R5:
 			return DDSPF_R5G6B5;
 		case eTF_A8:
 			return DDSPF_A8;
@@ -1106,7 +1101,7 @@ namespace DDSFormats
 			return DDSPF_ETC2A;
 		default:
 			assert(0);
-			return DDSPF_A8R8G8B8;
+			return DDSPF_A8B8G8R8;
 		}
 	}
 
@@ -1116,51 +1111,50 @@ namespace DDSFormats
 
 		switch (eTF)
 		{
-		case eTF_BC1:
-			return DDSPF_DXT1;
-		case eTF_BC2:
-			return DDSPF_DXT3;
-		case eTF_BC3:
-			return DDSPF_DXT5;
-		case eTF_BC4U:
-			return DDSPF_3DCP;
-		case eTF_BC5U:
-			return DDSPF_3DC;
-		case eTF_CTX1:
-			return DDSPF_CTX1;
-		case eTF_R32F:
-			return DDSPF_R32F;
-		case eTF_G16R16F:
-			return DDSPF_G16R16F;
-		case eTF_V16U16:
-			return DDSPF_V16U16;
-		case eTF_A16B16G16R16F:
-			return DDSPF_A16B16G16R16F;
-		case eTF_R8G8B8:
-		case eTF_L8V8U8:
-			return DDSPF_R8G8B8;
-		case eTF_A8R8G8B8:
-			return DDSPF_A8R8G8B8;
-		case eTF_X8R8G8B8:
-			return DDSPF_X8R8G8B8;
-		case eTF_R5G6B5:
-			return DDSPF_R5G6B5;
-		case eTF_A8:
-			return DDSPF_A8;
-		case eTF_L8:
-			return DDSPF_L8;
-		case eTF_A8L8:
-			return DDSPF_A8L8;
-		case eTF_EAC_R11:
-			return DDSPF_EAC_R11;
-		case eTF_EAC_RG11:
-			return DDSPF_EAC_RG11;
-		case eTF_ETC2:
-			return DDSPF_ETC2;
-		case eTF_ETC2A:
-			return DDSPF_ETC2A;
-
 #if	defined(CRY_DDS_DX10_SUPPORT)
+		case eTF_R1:
+			dxgifOut = DXGI_FORMAT_R1_UNORM;
+			return DDSPF_DX10;
+		case eTF_R8:
+			dxgifOut = DXGI_FORMAT_R8_UNORM;
+			return DDSPF_DX10;
+		case eTF_R8S:
+			dxgifOut = DXGI_FORMAT_R8_SNORM;
+			return DDSPF_DX10;
+		case eTF_R16:
+			dxgifOut = DXGI_FORMAT_R16_UNORM;
+			return DDSPF_DX10;
+		case eTF_R16F:
+			dxgifOut = DXGI_FORMAT_R16_FLOAT;
+			return DDSPF_DX10;
+		case eTF_R8G8:
+			dxgifOut = DXGI_FORMAT_R8G8_UNORM;
+			return DDSPF_DX10;
+		case eTF_R8G8S:
+			dxgifOut = DXGI_FORMAT_R8G8_SNORM;
+			return DDSPF_DX10;
+		case eTF_R16G16:
+			dxgifOut = DXGI_FORMAT_R16G16_UNORM;
+			return DDSPF_DX10;
+		case eTF_R11G11B10F:
+			dxgifOut = DXGI_FORMAT_R11G11B10_FLOAT;
+			return DDSPF_DX10;
+		case eTF_R10G10B10A2:
+			dxgifOut = DXGI_FORMAT_R10G10B10A2_UNORM;
+			return DDSPF_DX10;
+		case eTF_R16G16B16A16:
+			dxgifOut = DXGI_FORMAT_R16G16B16A16_UNORM;
+			return DDSPF_DX10;
+		case eTF_R16G16B16A16S:
+			dxgifOut = DXGI_FORMAT_R16G16B16A16_SNORM;
+			return DDSPF_DX10;
+		case eTF_R32G32B32A32F:
+			dxgifOut = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			return DDSPF_DX10;
+		case eTF_R8G8B8A8S:
+			dxgifOut = DXGI_FORMAT_R8G8B8A8_SNORM;
+			return DDSPF_DX10;
+
 		case eTF_BC4S:
 			dxgifOut = DXGI_FORMAT_BC4_SNORM;
 			return DDSPF_DX10;
@@ -1176,20 +1170,13 @@ namespace DDSFormats
 		case eTF_BC7:
 			dxgifOut = DXGI_FORMAT_BC7_UNORM;
 			return DDSPF_DX10;
-		case eTF_E5B9G9R9:
+		case eTF_R9G9B9E5:
 			dxgifOut = DXGI_FORMAT_R9G9B9E5_SHAREDEXP;
-			return DDSPF_DX10;
-		case eTF_R8:
-			dxgifOut = DXGI_FORMAT_R8_UNORM;
-			return DDSPF_DX10;
-		case eTF_A8B8G8R8S:
-			dxgifOut = DXGI_FORMAT_R8G8B8A8_SNORM;
 			return DDSPF_DX10;
 #endif
 
 		default:
-			assert(0);
-			return DDSPF_A8R8G8B8;
+			return GetDescByFormat(eTF);
 		}
 	}
 };

@@ -8,6 +8,10 @@ namespace MNM
 	namespace Constants
 	{
 		enum Edges { InvalidEdgeIndex = ~0u };
+
+		enum TileIdConstants { InvalidTileID = 0, };
+		enum TriangleIDConstants { InvalidTriangleID = 0, };
+
 		enum EStaticIsland
 		{ 
 			eStaticIsland_InvalidIslandID = 0,

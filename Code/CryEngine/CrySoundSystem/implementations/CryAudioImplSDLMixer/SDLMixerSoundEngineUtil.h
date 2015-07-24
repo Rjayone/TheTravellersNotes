@@ -2,7 +2,7 @@
 // Copyright (C), Crytek, 1999-2014.
 
 #include "SDLMixerSoundEngine.h"
-#include <crc32.h>
+#include <CryCrc32.h>
 #include <CryFile.h>
 #include <CryPath.h>
 
@@ -13,10 +13,9 @@ namespace SDLMixer
 {
 	inline const TSDLMixerID GetIDFromString(const string& sName)
 	{
-		static Crc32Gen g_crcGenerator;
 		string sLowerName = sName;
-		sLowerName.MakeLowerLocale();
-		return g_crcGenerator.GetCRC32(sLowerName.c_str());
+		sLowerName.MakeLower();
+		return CCrc32::Compute(sLowerName.c_str());
 	}
 
 	inline const TSDLMixerID GetIDFromFilePath(const string& sFilePath)

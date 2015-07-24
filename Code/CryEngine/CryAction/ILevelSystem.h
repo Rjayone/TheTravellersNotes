@@ -11,7 +11,6 @@
   - 18:8:2004   11:22 : Created by Márcio Martins
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(ILevelSystem.h)
 
 #ifndef __ILEVELSYSTEM_H__
 #define __ILEVELSYSTEM_H__
@@ -26,7 +25,7 @@
 struct ILevelRotationFile;
 struct IConsoleCmdArgs;
 
-UNIQUE_IFACE struct ILevelRotation
+struct ILevelRotation
 {
 	virtual ~ILevelRotation(){}
 	typedef uint32  TExtInfoId;
@@ -89,7 +88,7 @@ UNIQUE_IFACE struct ILevelRotation
 };
 
 
-UNIQUE_IFACE struct ILevelInfo
+struct ILevelInfo
 {
 	virtual ~ILevelInfo(){}
 	typedef std::vector<string>	TStringVec;
@@ -159,7 +158,7 @@ UNIQUE_IFACE struct ILevelInfo
 };
 
 
-UNIQUE_IFACE struct ILevel
+struct ILevel
 {
 	virtual ~ILevel(){}
 	virtual void Release() = 0;
@@ -180,7 +179,7 @@ struct ILevelSystemListener
 	void GetMemoryUsage(ICrySizer *pSizer ) const {/*nothing*/}
 };
 
-UNIQUE_IFACE struct ILevelSystem :
+struct ILevelSystem :
 	public ILevelSystemListener
 {
 	enum { 

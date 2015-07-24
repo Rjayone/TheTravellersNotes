@@ -14,9 +14,9 @@ typedef int32 TCheatType;
 typedef int32 TCheatAssetGroup;
 typedef int32 TAntiCheatVarIdx;
 
-UNIQUE_IFACE struct IAntiCheatManager
+struct IAntiCheatManager
 {
-
+	// <interfuscator:shuffle>
   virtual ~IAntiCheatManager(){}
   virtual int RetrieveHashMethod() = 0;
   virtual int GetAssetGroupCount() = 0;
@@ -35,7 +35,7 @@ UNIQUE_IFACE struct IAntiCheatManager
   virtual TCheatAssetGroup FindAssetTypeByWeight() = 0;
 	virtual void InitSession() = 0;
   virtual void OnSessionEnd() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

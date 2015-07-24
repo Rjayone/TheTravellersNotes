@@ -48,7 +48,7 @@ CFlowGraphModuleManager::CFlowGraphModuleManager()
 		"0=Disabled"\
 		"1=Modules only"\
 		"2=Modules + Module Instances");
-	fg_debugmodules_filter = REGISTER_STRING("fg_debugmodules_filter", "",  VF_NULL, CVARHELP("Only debug modules with this name"));
+	fg_debugmodules_filter = REGISTER_STRING("fg_debugmodules_filter", "",  VF_NULL, "Only debug modules with this name");
 
 #if !defined (_RELEASE)
 	CRY_ASSERT_MESSAGE( gEnv->pGame->GetIGameFramework(), "Unable to register as Framework listener!" );

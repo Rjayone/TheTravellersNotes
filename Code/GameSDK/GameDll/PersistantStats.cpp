@@ -303,9 +303,9 @@ CPersistantStats::CPersistantStats()
 #ifndef _RELEASE
 	if (gEnv->pConsole)
 	{
-		REGISTER_COMMAND("ps_DumpTelemetryDescription", CmdDumpTelemetryDescription, VF_CHEAT, CVARHELP("Dumps an xml description of stats in telemetry"));
-		REGISTER_COMMAND("ps_set", CmdSetStat, VF_CHEAT, CVARHELP("Sets persistant stats"));
-		REGISTER_COMMAND("ps_testSetandSend", CmdTestStats, VF_CHEAT, CVARHELP("Set stats to test values and send so we can check they come back correctly"));
+		REGISTER_COMMAND("ps_DumpTelemetryDescription", CmdDumpTelemetryDescription, VF_CHEAT, "Dumps an xml description of stats in telemetry");
+		REGISTER_COMMAND("ps_set", CmdSetStat, VF_CHEAT, "Sets persistant stats");
+		REGISTER_COMMAND("ps_testSetandSend", CmdTestStats, VF_CHEAT, "Set stats to test values and send so we can check they come back correctly");
 		gEnv->pConsole->RegisterAutoComplete("ps_set", &s_persistantStatsAutoComplete);
 		
 	}
@@ -1289,14 +1289,12 @@ void CPersistantStats::SaveTelemetry(bool description, bool toDisk)
 	SSessionStats *pClientStats = GetClientPersistantStats();
 	pClientStats->UpdateClientGUID();
 
-	Crc32Gen* pCRCGen = gEnv->pSystem->GetCrc32Gen();
-
 	string clientStatsFilenameNoExt = "playerstats/local/";
 
 	const char* clientFolderName = pClientStats->m_guid.c_str();
 
 #if defined( _RELEASE )
-	const uint32 clientHash = pCRCGen->GetCRC32( clientFolderName );
+	const uint32 clientHash = CCrc32::Compute( clientFolderName );
 	stack_string clientHashStr;
 	clientHashStr.Format( "%lu",clientHash );
 	clientFolderName = clientHashStr.c_str();
@@ -1316,7 +1314,7 @@ void CPersistantStats::SaveTelemetry(bool description, bool toDisk)
 
 		const char* remoteFolderName = it->second.m_guid.c_str();
 #if defined ( _RELEASE )
-		const uint32 remoteHash = pCRCGen->GetCRC32( remoteFolderName );
+		const uint32 remoteHash = CCrc32::Compute( remoteFolderName );
 		remoteHashStr.Format( "%lu", remoteHash );
 		remoteFolderName = remoteHashStr.c_str();
 #endif
@@ -1382,31 +1380,31 @@ int CPersistantStats::GetBinaryVersionHash(uint32 flags)
 
 	for(int i = 0; i < EIPS_Max; i++)
 	{
-		hash = HashStringSeed(s_intPersistantNames[i], hash);
+		hash = CryStringUtils::HashStringSeed(s_intPersistantNames[i], hash);
 	}
 	for(int i = 0; i < EFPS_Max; i++)
 	{
-		hash = HashStringSeed(s_floatPersistantNames[i], hash);
+		hash = CryStringUtils::HashStringSeed(s_floatPersistantNames[i], hash);
 	}
 	for(int i = 0; i < ESIPS_Max; i++)
 	{
-		hash = HashStringSeed(s_streakIntPersistantNames[i], hash);
+		hash = CryStringUtils::HashStringSeed(s_streakIntPersistantNames[i], hash);
 	}
 	for(int i = 0; i < ESFPS_Max; i++)
 	{
-		hash = HashStringSeed(s_streakFloatPersistantNames[i], hash);
+		hash = CryStringUtils::HashStringSeed(s_streakFloatPersistantNames[i], hash);
 	}
 	for(int i = 0; i < EMPS_Max; i++)
 	{
-		hash = HashStringSeed(s_mapPersistantNames[i], hash);
+		hash = CryStringUtils::HashStringSeed(s_mapPersistantNames[i], hash);
 	}
 	for(int i = 0; i < EDIPS_Max; i++)
 	{
-		hash = HashStringSeed(s_intDerivedPersistantNames[i], hash);
+		hash = CryStringUtils::HashStringSeed(s_intDerivedPersistantNames[i], hash);
 	}
 	for(int i = 0; i < EAMA_Max; i++)
 	{
-		hash = HashStringSeed(m_afterMatchAwards.GetNameForAward((EAfterMatchAwards)i), hash);
+		hash = CryStringUtils::HashStringSeed(m_afterMatchAwards.GetNameForAward((EAfterMatchAwards)i), hash);
 	}
 
 	hash += s_levelNamesVersion;
@@ -1415,7 +1413,7 @@ int CPersistantStats::GetBinaryVersionHash(uint32 flags)
 	for(int i = 0; i < weaponNamesCount; i++)
 	{
 		const char* name = sz_weaponNames[i];
-		hash = HashStringSeed(name, hash);
+		hash = CryStringUtils::HashStringSeed(name, hash);
 	}
 
 	IGameRulesModulesManager *pGameRulesModulesManager = CGameRulesModulesManager::GetInstance();
@@ -1423,7 +1421,7 @@ int CPersistantStats::GetBinaryVersionHash(uint32 flags)
 	for(int i = 0; i < rulesCount; i++)
 	{
 		const char* name = pGameRulesModulesManager->GetRules(i);
-		hash = HashStringSeed(name, hash);
+		hash = CryStringUtils::HashStringSeed(name, hash);
 	}
 
 	CGameRules* pGameRules = g_pGame->GetGameRules();
@@ -1433,7 +1431,7 @@ int CPersistantStats::GetBinaryVersionHash(uint32 flags)
 		const char* name = pGameRules->GetHitType(i);
 		if(name)
 		{
-			hash = HashStringSeed(name, hash);
+			hash = CryStringUtils::HashStringSeed(name, hash);
 		}
 	}
 

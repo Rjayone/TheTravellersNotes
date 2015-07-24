@@ -1,10 +1,4 @@
-#include DEVIRTUALIZE_HEADER_FIX(IFlashPlayer.h)
-
-#ifndef _I_FLASH_PLAYER_H_
-#define _I_FLASH_PLAYER_H_
-
 #pragma once
-
 
 #include <Cry_Color.h>
 #include <Cry_Math.h>
@@ -83,6 +77,7 @@ struct IFlashPlayer
 		eAT_BottomRight
 	};
 
+	// <interfuscator:shuffle>
 	// Lifetime
 	//##@{
 	virtual void AddRef() = 0;
@@ -105,9 +100,7 @@ struct IFlashPlayer
 	virtual void SetScissorRect(int x0, int y0, int width, int height) = 0;
 	virtual void GetScissorRect(int& x0, int& y0, int& width, int& height) const = 0;
 	virtual void Advance(float deltaTime) = 0;
-	virtual void Render(bool stereo = false) = 0;
-	virtual size_t RenderRecordLockless() = 0;
-	virtual void RenderPlaybackLockless(bool stereo = false, bool finalPlayback = true) = 0;
+	virtual void Render(bool stereo = false) = 0;	
 	virtual void SetCompositingDepth(float depth) = 0;
 	virtual void StereoEnforceFixedProjectionDepth(bool enforce) = 0;
 	virtual void StereoSetCustomMaxParallax(float maxParallax = -1.0f) = 0;
@@ -136,6 +129,7 @@ struct IFlashPlayer
 
 	virtual void SetVisible(bool visible) = 0;
 	virtual bool GetVisible() const = 0;
+	virtual void SetImeFocus() = 0;
 
 	// Action Script
 	virtual bool SetVariable(const char* pPathToVar, const SFlashVarValue& value) = 0;
@@ -177,7 +171,7 @@ struct IFlashPlayer
 	virtual void ClientToScreen(int& x, int& y) const = 0;
 
 	// more to come...
-
+	// </interfuscator:shuffle>
 
 	bool Invoke0(const char* pMethodName, SFlashVarValue* pResult = 0)
 	{
@@ -207,10 +201,11 @@ struct IFlashPlayer_RenderProxy
 		EFT_StereoRight
 	};
 
+	// <interfuscator:shuffle>
 	virtual void RenderCallback(EFrameType ft, bool releaseOnExit = true) = 0;
 	virtual void RenderPlaybackLocklessCallback(int cbIdx, EFrameType ft, bool finalPlayback = true, bool releaseOnExit = true) = 0;
 	virtual void DummyRenderCallback(EFrameType ft, bool releaseOnExit = true) = 0;
-
+	// </interfuscator:shuffle>
 
 protected:
 	IFlashPlayer_RenderProxy() {}
@@ -228,7 +223,7 @@ struct IFlashVariableObject
 	protected:
 		virtual ~ObjectVisitor() {}
 	};
-
+	// <interfuscator:shuffle>
 	// Lifetime
 	virtual void Release() = 0;
 	virtual IFlashVariableObject* Clone() const = 0;
@@ -288,7 +283,7 @@ struct IFlashVariableObject
 	virtual bool GotoAndStop(const char* pFrame) = 0;
 	virtual bool GotoAndPlay(unsigned int frame) = 0;
 	virtual bool GotoAndStop(unsigned int frame) = 0;
-
+	// </interfuscator:shuffle>
 	bool Invoke0(const char* pMethodName, SFlashVarValue* pResult = 0)
 	{
 		return Invoke(pMethodName, 0, 0, pResult);
@@ -315,7 +310,7 @@ protected:
 //	 Bootstrapper to efficiently instantiate Flash assets on demand with minimal file IO
 struct IFlashPlayerBootStrapper
 {
-
+	// <interfuscator:shuffle>
 	// Lifetime
 	virtual void Release() = 0;
 
@@ -332,7 +327,7 @@ struct IFlashPlayerBootStrapper
 	virtual size_t GetMetadata(char* pBuff, unsigned int buffSize) const = 0;
 	virtual bool HasMetadata(const char* pTag) const = 0;
 	//##@}
-
+	// </interfuscator:shuffle>
 
 protected:
 	virtual ~IFlashPlayerBootStrapper() {}
@@ -407,6 +402,7 @@ struct IFlashLoadMovieImage
 		eFmt_ARGB_8888,
 	};
 
+	// <interfuscator:shuffle>
 	virtual void Release() = 0;
 
 	virtual int GetWidth() const = 0;
@@ -414,7 +410,7 @@ struct IFlashLoadMovieImage
 	virtual int GetPitch() const = 0;
 	virtual void* GetPtr() const = 0;
 	virtual EFmt GetFormat() const = 0;
-
+	// </interfuscator:shuffle>
 
 	bool IsValid() const
 	{
@@ -972,5 +968,3 @@ public:
 	// The index of the physical keyboard controller.
 	uint8 m_keyboardIndex;
 };
-
-#endif //#ifndef _I_FLASH_PLAYER_H_

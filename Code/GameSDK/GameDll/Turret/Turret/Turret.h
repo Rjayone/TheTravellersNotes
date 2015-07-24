@@ -304,8 +304,8 @@ private:
 	float m_primaryWeaponRangeCheckOffset;
 
 	Vec3 m_laserBeamOffset;
-	std::auto_ptr< CLaserBeam > m_pLaserBeam;
-	std::auto_ptr< SLaserParams > m_pLaserParams;
+	std::unique_ptr<CLaserBeam> m_pLaserBeam;
+	std::unique_ptr<SLaserParams> m_pLaserParams;
 	int m_laserSourceEffectSlot;
 	int16 m_laserJointId;
 
@@ -355,13 +355,13 @@ private:
 
 	ETurretBehaviorState m_stateId;
 
-	std::auto_ptr< struct STurretSerializationInfo > m_pSerializationInfo;
+	std::unique_ptr<struct STurretSerializationInfo> m_pSerializationInfo;
 
-	std::auto_ptr< CRateOfDeath_Turret > m_pRateOfDeathHelper;
+	std::unique_ptr<CRateOfDeath_Turret> m_pRateOfDeathHelper;
 
 	CBodyDestrutibilityInstance m_bodyDestructionInstance;
 
-	std::auto_ptr< class CTurretSoundManager > m_pSoundManager;
+	std::unique_ptr<class CTurretSoundManager> m_pSoundManager;
 
 	SAutoaimTargetRegisterParams m_autoAimParams;
 	bool m_registeredInAutoAimSystem;

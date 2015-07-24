@@ -68,7 +68,6 @@ public:
 					ILevelInfo* pLevelInfo = pLevel ? pLevel->GetLevelInfo() : NULL;
 					if(pLevelInfo)
 					{
-						// level name case differs (lowercase on ps3, initial caps on xbox) so force lower here
 						stack_string levelName = pLevelInfo->GetName();
 						levelName.MakeLower();
 						if(AccountLevelForStats( levelName.c_str() ))

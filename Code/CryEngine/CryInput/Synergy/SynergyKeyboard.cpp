@@ -63,16 +63,16 @@ void CSynergyKeyboard::ProcessKey(uint32 key, bool bPressed, bool bRepeat, uint3
 
 	if (bPressed || bRepeat)
 	{
+		uint32 inputChar = 0;
 		if (event.modifiers&eMM_LShift)
-			event.inputChar = pSymbol->user&0xFF;
+			inputChar = pSymbol->user&0xFF;
 		else
-			event.inputChar = (pSymbol->user>>8)&0xFF;
+			inputChar = (pSymbol->user>>8)&0xFF;
 
-		if (event.inputChar)
+		if (inputChar)
 		{
-			event.state = eIS_UI;
-			event.value = 1.0f;
-			GetIInput().PostInputEvent(event);
+			SUnicodeEvent unicodeEvent(inputChar);
+			GetIInput().PostUnicodeEvent(unicodeEvent);
 		}
 	}
 

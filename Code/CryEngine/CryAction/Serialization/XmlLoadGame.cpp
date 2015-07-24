@@ -8,9 +8,6 @@
 
 #include <IPlatformOS.h>
 
-//#define XML_LOADGAME_USE_COMPRESSION   // must be in sync with XmlSaveGame.cpp
-//#undef  XML_LOADGAME_USE_COMPRESSION   // undef because does NOT work with aliases yet
-
 struct CXmlLoadGame::Impl
 {
 	XmlNodeRef root;
@@ -30,26 +27,6 @@ CXmlLoadGame::~CXmlLoadGame()
 
 bool CXmlLoadGame::Init( const char * name )
 {
-#ifdef XML_LOADGAME_USE_COMPRESSION
-	#if defined(XENON) || defined(PS3)
-		CryWarning(VALIDATOR_MODULE_GAME,VALIDATOR_ERROR, "CXmlLoadGame::Init  not supported yet, strings cannot grow beyond 32767 chars\n");
-		return false;
-	#endif
-
-	const unsigned int nFileSizeBits = GetISystem()->GetCompressedFileSize(name);
-	const unsigned int nFileSizeBytes = nFileSizeBits / 8 + ((nFileSizeBits & 7) + 7) / 8;
-	if (nFileSizeBytes <= 0)
-	{
-		return false;
-	}
-
-	char* const pXmlData = new char[nFileSizeBytes+16];
-	GetISystem()->ReadCompressedFile(name, pXmlData,nFileSizeBits);
-
-	m_pImpl->root = GetISystem()->LoadXmlFromBuffer(pXmlData, nFileSizeBytes);
-
-	delete []pXmlData;
-#else
 	if (GetISystem()->GetPlatformOS()->UsePlatformSavingAPI() )
 	{
 		IPlatformOS::ISaveReaderPtr pSaveReader = GetISystem()->GetPlatformOS()->SaveGetReader(name);
@@ -79,7 +56,6 @@ bool CXmlLoadGame::Init( const char * name )
 	{
 		m_pImpl->root = GetISystem()->LoadXmlFromFile(name);
 	}
-#endif
 
 	if (!m_pImpl->root)
 		return false;
@@ -123,15 +99,15 @@ bool CXmlLoadGame::HaveMetadata( const char * tag )
 	return m_pImpl->metadata->haveAttr(tag);
 }
 
-std::auto_ptr<TSerialize> CXmlLoadGame::GetSection( const char * section )
+std::unique_ptr<TSerialize> CXmlLoadGame::GetSection( const char * section )
 {
 	XmlNodeRef node = m_pImpl->root->findChild(section);
 	if (!node)
-		return std::auto_ptr<TSerialize>();
+		return std::unique_ptr<TSerialize>();
 
 	_smart_ptr<CXmlSerializeHelper> pSerializer = new CXmlSerializeHelper;
 	m_pImpl->sections.push_back( pSerializer );
-	return std::auto_ptr<TSerialize>( new TSerialize(pSerializer->GetReader(node)) );
+	return std::unique_ptr<TSerialize>( new TSerialize(pSerializer->GetReader(node)) );
 }
 
 bool CXmlLoadGame::HaveSection( const char * section )

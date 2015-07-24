@@ -44,14 +44,14 @@ public:
 
 	// IVirtualKeyboardEvents
 	virtual void KeyboardCancelled();
-	virtual void KeyboardFinished(const wchar_t *pInString);
+	virtual void KeyboardFinished(const char *pInString);
 	// ~IVirtualKeyboardEvents
 
 	void ExclusiveControllerDisconnected();
 
 private:
 	// ui events
-	void OnDisplayVirtualKeyboard( const wchar_t* title, const wchar_t* initialStr, int maxchars );
+	void OnDisplayVirtualKeyboard( const char* title, const char* initialStr, int maxchars );
 
 	// actions
 	bool OnActionTogglePause(EntityId entityId, const ActionId& actionId, int activationMode, float value);

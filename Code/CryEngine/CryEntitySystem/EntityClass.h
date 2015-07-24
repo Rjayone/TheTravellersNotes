@@ -34,33 +34,33 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	virtual void Release() { delete this; };
 
-	VIRTUAL uint32 GetFlags() const { return m_nFlags; };
-	VIRTUAL void SetFlags( uint32 nFlags ) { m_nFlags = nFlags; };
+	virtual uint32 GetFlags() const { return m_nFlags; };
+	virtual void SetFlags( uint32 nFlags ) { m_nFlags = nFlags; };
 	
-	VIRTUAL const char* GetName() const { return m_sName.c_str(); }
-	VIRTUAL const char* GetScriptFile() const { return m_sScriptFile.c_str(); }
+	virtual const char* GetName() const { return m_sName.c_str(); }
+	virtual const char* GetScriptFile() const { return m_sScriptFile.c_str(); }
 
-	VIRTUAL IEntityScript* GetIEntityScript() const { return m_pEntityScript; }
-	VIRTUAL IScriptTable* GetScriptTable() const;
-	VIRTUAL bool LoadScript( bool bForceReload );
-	VIRTUAL UserProxyCreateFunc GetUserProxyCreateFunc() const { return m_pfnUserProxyCreate; };
-	VIRTUAL void* GetUserProxyData() const { return m_pUserProxyUserData; };
+	virtual IEntityScript* GetIEntityScript() const { return m_pEntityScript; }
+	virtual IScriptTable* GetScriptTable() const;
+	virtual bool LoadScript( bool bForceReload );
+	virtual UserProxyCreateFunc GetUserProxyCreateFunc() const { return m_pfnUserProxyCreate; };
+	virtual void* GetUserProxyData() const { return m_pUserProxyUserData; };
 
-	VIRTUAL IEntityPropertyHandler* GetPropertyHandler() const;
-	VIRTUAL IEntityEventHandler* GetEventHandler() const;
-	VIRTUAL IEntityScriptFileHandler* GetScriptFileHandler() const;
+	virtual IEntityPropertyHandler* GetPropertyHandler() const;
+	virtual IEntityEventHandler* GetEventHandler() const;
+	virtual IEntityScriptFileHandler* GetScriptFileHandler() const;
 
-	VIRTUAL const SEditorClassInfo& GetEditorClassInfo() const;
-	VIRTUAL void SetEditorClassInfo(const SEditorClassInfo& editorClassInfo);
+	virtual const SEditorClassInfo& GetEditorClassInfo() const;
+	virtual void SetEditorClassInfo(const SEditorClassInfo& editorClassInfo);
 
-	VIRTUAL int GetEventCount();
-	VIRTUAL IEntityClass::SEventInfo GetEventInfo( int nIndex );
-	VIRTUAL bool FindEventInfo( const char *sEvent,SEventInfo &event );
+	virtual int GetEventCount();
+	virtual IEntityClass::SEventInfo GetEventInfo( int nIndex );
+	virtual bool FindEventInfo( const char *sEvent,SEventInfo &event );
 
-	VIRTUAL TEntityAttributeArray& GetClassAttributes() OVERRIDE;
-	VIRTUAL const TEntityAttributeArray& GetClassAttributes() const OVERRIDE;
-	VIRTUAL TEntityAttributeArray& GetEntityAttributes() OVERRIDE;
-	VIRTUAL const TEntityAttributeArray& GetEntityAttributes() const OVERRIDE;
+	virtual TEntityAttributeArray& GetClassAttributes() override;
+	virtual const TEntityAttributeArray& GetClassAttributes() const override;
+	virtual TEntityAttributeArray& GetEntityAttributes() override;
+	virtual const TEntityAttributeArray& GetEntityAttributes() const override;
 
 	//////////////////////////////////////////////////////////////////////////
 

@@ -81,13 +81,8 @@ private:
 private:
 	enum
 	{
-#if defined(XENON) || defined(PS3)
-		DLAddressSpace = 128 * 1024 * 1024,
-		BucketAddressSpace = 64 * 1024 * 1024,
-#else
 		DLAddressSpace = 512 * 1024 * 1024,
 		BucketAddressSpace = 384 * 1024 * 1024,
-#endif
 	};
 
 	typedef BucketAllocator<BucketAllocatorDetail::DefaultTraits<BucketAddressSpace, BucketAllocatorDetail::SyncPolicyLocked, false> > LevelBuckets;

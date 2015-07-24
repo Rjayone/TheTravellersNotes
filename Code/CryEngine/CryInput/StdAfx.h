@@ -23,7 +23,7 @@
 #include <vector>
 #include <list>
 
-#if defined(_DEBUG) && !defined(LINUX) && !defined(APPLE) && !defined(ORBIS) && !defined(CAFE)
+#if defined(_DEBUG) && !defined(LINUX) && !defined(APPLE) && !defined(ORBIS)
 #include <crtdbg.h>
 #endif
 

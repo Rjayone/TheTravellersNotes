@@ -314,7 +314,7 @@ private:
 	bool CanInstall(const IAction &action, TagID subContext, const ActionScopes &scopeMask, float timeStep, float &timeTillInstall) const;
 	void Install(IAction &action, float timePassed);
 	void PushOntoQueue(IAction &action);
-	bool IsDifferent(const FragmentID fragID, const TagState &fragmentTags, const ActionScopes &scopeMask) const OVERRIDE;
+	bool IsDifferent(const FragmentID fragID, const TagState &fragmentTags, const ActionScopes &scopeMask) const override;
 	void RequestInstall(const IAction &action, const ActionScopes &scopeMask);
 
 	ActionScopes QueryScopeMask(FragmentID fragID, const TagState &fragTags, const TagID tagContext) const;

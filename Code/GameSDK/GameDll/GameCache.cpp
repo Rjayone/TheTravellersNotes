@@ -579,7 +579,7 @@ void CGameCache::CacheTexture( const char* textureFileName, const int textureFla
 
 	if (validName)
 	{
-		const STextureKey textureKey(HashString(textureFileName), textureFlags);
+		const STextureKey textureKey(CryStringUtils::HashString(textureFileName), textureFlags);
 
 		if (m_textureCache.find(textureKey) == m_textureCache.end())
 		{
@@ -606,7 +606,7 @@ void CGameCache::CacheGeometry(const char* geometryFileName)
 		}
 		else
 		{
-			const CryHash hashName = HashString(geometryFileName);
+			const CryHash hashName = CryStringUtils::HashString(geometryFileName);
 
 			if (m_statiObjectCache.find(hashName) == m_statiObjectCache.end())
 			{
@@ -626,7 +626,7 @@ void CGameCache::CacheMaterial( const char* materialFileName )
 
 	if (validName)
 	{
-		const CryHash hashName = HashString(materialFileName);
+		const CryHash hashName = CryStringUtils::HashString(materialFileName);
 
 		if (m_materialCache.find(hashName) == m_materialCache.end())
 		{
@@ -768,7 +768,7 @@ ILINE bool CGameCache::IsCharacterFileModelCached( const char* szFileName, uint3
 
 	if (szFileName && szFileName[0])
 	{
-		outputFileNameHash = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase(szFileName);
+		outputFileNameHash = CCrc32::ComputeLowercase(szFileName);
 		if (gEnv->IsEditor())
 		{
 			for (uint32 i = eCFMCache_Default; i < eCFMCache_COUNT; ++i)
@@ -903,7 +903,7 @@ void CGameCharacterDBAs::PreCacheForLevel()
 //////////////////////////////////////////////////////////////////////////
 int CGameCharacterDBAs::GetGroupIndexByName( const char* groupName ) const
 {
-	CryHashStringId groupId(HashString(groupName));
+	CryHashStringId groupId(CryStringUtils::HashString(groupName));
 
 	const int groupCount = m_dbaGroups.size();
 	int groupIndex = 0;

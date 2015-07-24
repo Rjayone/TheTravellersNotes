@@ -381,98 +381,6 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-class CFlowNode_ActorWeaponMagazineAmmo : public CFlowBaseNode<eNCT_Singleton>
-{
-	enum InputPorts
-	{
-		eIP_Set,
-		eIP_Get,
-		eIP_AmmoCount
-	};
-
-	enum OutputPorts
-	{
-		eOP_AmmoCount
-	};
-
-public:
-	CFlowNode_ActorWeaponMagazineAmmo( SActivationInfo * pActInfo ) { }
-
-	void GetConfiguration( SFlowNodeConfig& config )
-	{
-		static const SInputPortConfig in_ports[] = 
-		{
-			InputPortConfig_Void( "Set", _HELP("Set AmmoCount in the magazine for the current player's weapon")),
-			InputPortConfig_Void( "Get", _HELP("Get ammo in the magainze for the current player's weapon")),
-			InputPortConfig<int>( "AmmoCount", _HELP("Ammo count to set")),
-			{0}
-		};
-		static const SOutputPortConfig out_ports[] = 
-		{
-			OutputPortConfig<int>( "AmmoCount", _HELP("Ammo count in the magine, trigger with Get input")),
-			{0}
-		};
-		config.nFlags |= EFLN_TARGET_ENTITY;
-		config.pInputPorts = in_ports;
-		config.pOutputPorts = out_ports;
-		config.sDescription = _HELP("Get/Set ammo in the magazine of the current player's weapon");
-		config.SetCategory(EFLN_APPROVED);
-	}
-
-	void ProcessEvent( EFlowEvent event, SActivationInfo *pActInfo )
-	{
-		if(eFE_Activate == event)
-		{
-			if (IsPortActive(pActInfo, eIP_Set))
-			{
-				CWeapon* pCurrentWeapon = GetActorCurrentWeapon(pActInfo);
-				if (pCurrentWeapon)
-				{
-					IFireMode* pFireMode = pCurrentWeapon->GetFireMode(pCurrentWeapon->GetCurrentFireMode());
-					if (pFireMode)
-					{
-						pCurrentWeapon->SetAmmoCount(pFireMode->GetAmmoType(), GetPortInt(pActInfo, eIP_AmmoCount));
-					}
-				}
-			}
-			if (IsPortActive(pActInfo, eIP_Get))
-			{
-				CWeapon* pCurrentWeapon = GetActorCurrentWeapon(pActInfo);
-				if (pCurrentWeapon)
-				{
-					IFireMode* pFireMode = pCurrentWeapon->GetFireMode(pCurrentWeapon->GetCurrentFireMode());
-					if (pFireMode)
-					{
-						ActivateOutput(pActInfo, eOP_AmmoCount, pCurrentWeapon->GetAmmoCount(pFireMode->GetAmmoType()));
-					}
-				}
-			}
-		}
-	}
-
-	virtual void GetMemoryUsage(ICrySizer * s) const
-	{
-		s->Add(*this);
-	}
-
-private:
-
-	CWeapon* GetActorCurrentWeapon(SActivationInfo *pActInfo) const
-	{
-		CActor* pActor = static_cast<CActor*>(GetActor(pActInfo));
-		if (pActor)
-		{
-			return pActor->GetWeapon(pActor->GetCurrentItemId());
-		}
-
-		return NULL;
-	}
-};
-
-
-
-//////////////////////////////////////////////////////////////////////////
-
 class CFlowNode_Explosion : public CFlowBaseNode<eNCT_Singleton>
 {
 public:
@@ -575,5 +483,4 @@ public:
 REGISTER_FLOW_NODE("Weapon:CheckAccessory",		CFlowNode_WeaponCheckAccessory);
 REGISTER_FLOW_NODE("Weapon:CheckZoom",		CFlowNode_WeaponCheckZoom);
 REGISTER_FLOW_NODE("Weapon:Accessory",		CFlowNode_WeaponAccessory);
-REGISTER_FLOW_NODE("Weapon:ActorWeaponMagazineAmmo",		CFlowNode_ActorWeaponMagazineAmmo);
 REGISTER_FLOW_NODE("Weapon:Explosion",CFlowNode_Explosion);

@@ -23,24 +23,24 @@ public:
 	virtual ~CGameSessionHandler();
 
 	// IGameSessionHandler
-	VIRTUAL bool ShouldCallMapCommand(const char *pLevelName, const char *pGameRules);
-	VIRTUAL void JoinSessionFromConsole(CrySessionID sessionID);
-	VIRTUAL int EndSession();
+	virtual bool ShouldCallMapCommand(const char *pLevelName, const char *pGameRules);
+	virtual void JoinSessionFromConsole(CrySessionID sessionID);
+	virtual int EndSession();
 	
-	VIRTUAL int StartSession();
-	VIRTUAL void LeaveSession();
+	virtual int StartSession();
+	virtual void LeaveSession();
 
-	VIRTUAL void OnUserQuit();
-	VIRTUAL void OnGameShutdown();
+	virtual void OnUserQuit();
+	virtual void OnGameShutdown();
 
-	VIRTUAL CrySessionHandle GetGameSessionHandle() const;
-	VIRTUAL bool ShouldMigrateNub() const;
+	virtual CrySessionHandle GetGameSessionHandle() const;
+	virtual bool ShouldMigrateNub() const;
 
-	VIRTUAL bool IsMultiplayer() const;
-	VIRTUAL int GetNumberOfExpectedClients();
+	virtual bool IsMultiplayer() const;
+	virtual int GetNumberOfExpectedClients();
 
-	VIRTUAL bool IsGameSessionMigrating() const;
-	VIRTUAL bool IsMidGameLeaving() const;
+	virtual bool IsGameSessionMigrating() const;
+	virtual bool IsMidGameLeaving() const;
 	// ~IGameSessionHandler
 };
 

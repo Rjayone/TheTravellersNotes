@@ -2,9 +2,7 @@
 #define ISTREAMENGINEDEFS_H
 
 #if defined(ENABLE_PROFILING_CODE)
-#if !defined(__SPU__)
 #define STREAMENGINE_ENABLE_LISTENER
-#endif
 #define STREAMENGINE_ENABLE_STATS
 #endif
 

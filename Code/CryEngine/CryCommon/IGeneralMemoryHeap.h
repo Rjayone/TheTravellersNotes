@@ -4,7 +4,7 @@
 class IGeneralMemoryHeap
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual bool Cleanup() = 0;
 
 	virtual int AddRef() = 0;
@@ -23,7 +23,7 @@ public:
 
 	// Get the size of the allocation. Returns 0 if the ptr doesn't belong to the heap.
 	virtual size_t UsableSize(void* ptr) const = 0;
-
+	// </interfuscator:shuffle>
 protected:
 	virtual ~IGeneralMemoryHeap() {}
 };

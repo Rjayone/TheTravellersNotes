@@ -67,13 +67,7 @@ public:
 	// Get relative time difference in seconds - call on the endTime object:  endTime.GetDifferenceInSeconds( startTime );
 	ILINE float GetDifferenceInSeconds( const CTimeValue& startTime ) const
 	{
-#if defined(PS3) || defined(XENON)
-		double first=(double)m_lValue;
-		double second=(double)startTime.m_lValue;
-		return (float)((first-second) * (double)(1.f/TIMEVALUE_PRECISION));
-#else
 		return (m_lValue - startTime.m_lValue) * (1.f/TIMEVALUE_PRECISION);
-#endif
 	}
 
 	//

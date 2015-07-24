@@ -53,7 +53,7 @@ CDamageEffectController::~CDamageEffectController()
 
 uint32 CDamageEffectController::CreateHash(const char* string)
 {
-	return GetISystem()->GetCrc32Gen()->GetCRC32Lowercase(string);
+	return CCrc32::ComputeLowercase(string);
 }
 
 void CDamageEffectController::Init(CActor* actor)

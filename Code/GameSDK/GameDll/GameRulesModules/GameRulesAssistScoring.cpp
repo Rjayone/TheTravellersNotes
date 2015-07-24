@@ -337,15 +337,10 @@ void CGameRulesAssistScoring::OnEntityKilled(const HitInfo &hitInfo)
 	DbgLog("CGameRulesAssistScoring::OnEntityKilled()");
 	if (gEnv->bServer)
 	{
-		const int MaxLength = 128;
-		char weaponClassName[MaxLength+1];
-		if (g_pGame->GetIGameFramework()->GetNetworkSafeClassName(weaponClassName, MaxLength, hitInfo.weaponClassId))
+		char weaponClassName[128];
+		if (!g_pGame->GetIGameFramework()->GetNetworkSafeClassName(weaponClassName, sizeof(weaponClassName), hitInfo.weaponClassId))
 		{
-			weaponClassName[MaxLength] = 0;
-		}
-		else
-		{
-			strncpy(weaponClassName, "unknown weapon", MaxLength);
+			cry_strcpy(weaponClassName, "unknown weapon");
 		}
 
 		EntityId victimId = hitInfo.targetId;

@@ -601,7 +601,7 @@ bool CPhysicalProxy::GetSignature( TSerialize signature )
 //////////////////////////////////////////////////////////////////////////
 void CPhysicalProxy::Serialize( TSerialize ser )
 {
-	if (ser.BeginOptionalGroup("PhysicsProxy",(NeedSerialize()||ser.GetSerializationTarget()==eST_Network) ))
+	if (ser.BeginOptionalGroup("PhysicsProxy",( ser.GetSerializationTarget()==eST_Network? ((m_nFlags & FLAG_DISABLE_ENT_SERIALIZATION) == 0) : NeedSerialize() ) ))
 	{
 		if (m_pPhysicalEntity)
 		{
@@ -1237,12 +1237,7 @@ void CPhysicalProxy::UpdateSlotGeometry( int nSlot, IStatObj *pStatObjNew, float
 		return;
 	if (pStatObjNew && pStatObjNew->GetFlags() & STATIC_OBJECT_COMPOUND)
 	{
-		Matrix34 mtx;	
-		float scale = m_pEntity->GetScale().x;
-		mtx = m_pEntity->GetSlotLocalTM(nSlot, false);
-		mtx.SetTranslation(mtx.GetTranslation()*scale);
-		scale *= mtx.GetColumn(0).len();
-		mtx.SetScale(Vec3(scale,scale,scale));
+		Matrix34 mtx = Matrix34::CreateScale(m_pEntity->GetScale()) * m_pEntity->GetSlotLocalTM(ENTITY_SLOT_ACTUAL|nSlot, false);
 		pe_action_remove_all_parts tmp;
 		m_pPhysicalEntity->Action(&tmp);
 		pStatObjNew->PhysicalizeSubobjects(m_pPhysicalEntity, &mtx, mass,-1);
@@ -2086,11 +2081,6 @@ void CPhysicalProxy::OnPhysicsPostStep(EventPhysPostStep *pEvent)
 
 		m_timeLastSync = gEnv->pTimer->GetCurrTime();
 
-		// NOTE: Living entity orientations are not controlled by physics, and should thus be ignored here.
-		// We simply set the current entitiy orientation, which will be automatically culled/ignored inside SetPosRotScale.
-		if (m_pPhysicalEntity->GetType() == PE_LIVING)
-			ppos.q = m_pEntity->GetRotation();
-
 		m_pEntity->SetPosRotScale(ppos.pos,ppos.q,m_pEntity->GetScale(),ENTITY_XFORM_PHYSICS_STEP |
 			((m_nFlags & FLAG_DISABLE_ENT_SERIALIZATION) ? ENTITY_XFORM_NO_PROPOGATE : 0) |
 			ENTITY_XFORM_NO_EVENT & gEnv->pPhysicalWorld->GetPhysVars()->bLogStructureChanges-1);
@@ -2343,4 +2333,4 @@ void CPhysicalProxy::EnableNetworkSerialization(bool enable)
 	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityPhysicalProxy)
+

@@ -1,14 +1,14 @@
 #include "ParticleParams.h"
 
+#if 0
+	// Search/replace pattern to convert struct member declarations to VAR_INFO declarations
+	{:b*}{.*}:b+{[a-z0-9_]+};:b*// {.*}
+	\1VAR_INFO_ATTRS(\3, "\4")
 
-
-
-
-
-
-
-
-
+	// Version for comment-only lines
+	// {.*}
+	ATTRS_INFO("\1")
+#endif
 
 STRUCT_INFO_BEGIN(RandomColor)
 	BASE_INFO(UnitFloat8)
@@ -205,6 +205,8 @@ STRUCT_INFO_BEGIN(ParticleParams)
 	VAR_INFO_ATTRS(nSortQuality, "Sort new particles as accurately as possible into list, by main camera distance")
 	VAR_INFO_ATTRS(bHalfRes, "Use half resolution rendering")
 	VAR_INFO_ATTRS(bStreamable, "Texture/geometry allowed to be streamed")
+	VAR_INFO_ATTRS(bVolumeFog, "Use as a participating media of volumetric fog")
+	VAR_INFO_ATTRS(fVolumeThickness, "Thickness of participating media, scale for particle size")
 
 	ATTRS_INFO("<Group=Configuration>")
 	VAR_INFO_ATTRS(eConfigMin, "Minimum config spec this effect runs in")
@@ -237,9 +239,9 @@ STRUCT_INFO_BEGIN(ParticleParams::SAlphaClip)
 STRUCT_INFO_END(ParticleParams::SAlphaClip)
 
 STRUCT_INFO_BEGIN(ParticleParams::SLightSource)
+	VAR_INFO_ATTRS(bAffectsThisAreaOnly, "Light source affects current clip volume only")
 	VAR_INFO_ATTRS(fRadius, "<SoftMax=10> Radius of light")
 	VAR_INFO_ATTRS(fIntensity, "<SoftMax=10> Intensity of light (color from Appearance/Color)")
-	VAR_INFO_ATTRS(fHDRDynamic, "<SoftMin=-2> $<SoftMax=2>")
 STRUCT_INFO_END(ParticleParams::SLightSource)
 
 STRUCT_INFO_BEGIN(ParticleParams::SConnection)

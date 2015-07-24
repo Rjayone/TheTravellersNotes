@@ -63,44 +63,49 @@ public:
 
 			float fCurrTime = gEnv->pTimer->GetAsyncCurTime();
 
-			EAudioLoggingOptions audioLoggingOptions = (EAudioLoggingOptions)gEnv->pConsole->GetCVar("s_AudioLoggingOptions")->GetIVal();
+			ICVar* const pCVar = gEnv->pConsole->GetCVar("s_AudioLoggingOptions");
 
-			switch (eType)
+			if (pCVar != NPTR)
 			{
-			case eALT_WARNING:
-				{
-					if( audioLoggingOptions & eALO_WARNINGS )
-						gEnv->pSystem->Warning(VALIDATOR_MODULE_AUDIO, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, NPTR, "<Audio> <%.3f>: %s", fCurrTime, sBuffer);
+				EAudioLoggingOptions const audioLoggingOptions = (EAudioLoggingOptions)pCVar->GetIVal();
 
-					break;
-				}
-			case eALT_ERROR:
+				switch (eType)
 				{
-					if( audioLoggingOptions & eALO_ERRORS )
-						gEnv->pSystem->Warning(VALIDATOR_MODULE_AUDIO, VALIDATOR_ERROR, VALIDATOR_FLAG_AUDIO, NPTR, "<Audio> <%.3f>: %s", fCurrTime, sBuffer);
+				case eALT_WARNING:
+					{
+						if ((audioLoggingOptions & eALO_WARNINGS) != 0)
+							gEnv->pSystem->Warning(VALIDATOR_MODULE_AUDIO, VALIDATOR_WARNING, VALIDATOR_FLAG_AUDIO, NPTR, "<Audio> <%.3f>: %s", fCurrTime, sBuffer);
 
-					break;
-				}
-			case eALT_COMMENT: 
-				{
-					if ((gEnv->pLog != NPTR) && (gEnv->pLog->GetVerbosityLevel() >= 4) && (audioLoggingOptions & eALO_COMMENTS))
+						break;
+					}
+				case eALT_ERROR:
+					{
+						if ((audioLoggingOptions & eALO_ERRORS) != 0)
+							gEnv->pSystem->Warning(VALIDATOR_MODULE_AUDIO, VALIDATOR_ERROR, VALIDATOR_FLAG_AUDIO, NPTR, "<Audio> <%.3f>: %s", fCurrTime, sBuffer);
+
+						break;
+					}
+				case eALT_COMMENT: 
+					{
+						if ((gEnv->pLog != NPTR) && (gEnv->pLog->GetVerbosityLevel() >= 4) && ((audioLoggingOptions & eALO_COMMENTS) != 0))
+						{
+							CryLogAlways("<Audio> <%.3f>: %s", fCurrTime, sBuffer);
+						}
+
+						break;
+					}
+				case eALT_ALWAYS:
 					{
 						CryLogAlways("<Audio> <%.3f>: %s", fCurrTime, sBuffer);
+
+						break;
 					}
+				default:
+					{
+						assert(0);
 
-					break;
-				}
-			case eALT_ALWAYS:
-				{
-					CryLogAlways("<Audio> <%.3f>: %s", fCurrTime, sBuffer);
-
-					break;
-				}
-			default:
-				{
-					assert(0);
-
-					break;
+						break;
+					}
 				}
 			}
 		}

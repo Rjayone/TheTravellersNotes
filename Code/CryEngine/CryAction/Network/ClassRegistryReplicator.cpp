@@ -4,7 +4,7 @@
 
 #include "StdAfx.h"
 #include "ClassRegistryReplicator.h"
-#include "crc32.h"
+#include "CryCrc32.h"
 
 #if !defined(_RELEASE)
 #define CLASS_DUMP_ENABLED 1
@@ -113,17 +113,16 @@ void CClassRegistryReplicator::GetMemoryStatistics(ICrySizer * s) const
 
 uint32 CClassRegistryReplicator::GetHash()
 {
-	uint32 crc=0;
-	Crc32Gen crcGen;
+	CCrc32 crc;
 	for (size_t i=0; i<NumClassIds(); i++)
 	{
 		string name;
 		if (ClassNameFromId(name, i))
 		{
-			crc = crcGen.GetCRC32Lowercase(name.c_str(), name.size(), crc);
+			crc.AddLowercase(name.c_str(), name.size());
 		}
 	}
-	return crc;
+	return crc.Get();
 }
 
 void CClassRegistryReplicator::DumpClasses()

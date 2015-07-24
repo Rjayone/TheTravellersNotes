@@ -16,15 +16,6 @@
 #define _CRY_COMMON_CRY_SIZER_INTERFACE_HDR_
 
 //////////////////////////////////////////////////////////////////////////
-// Note: Because spu code cannot include the stl headers in platform.h, 
-// we need to include at least <list> here.
-//////////////////////////////////////////////////////////////////////////
-#if defined(__SPU__)
-  #include <list>
-	#include <deque>
-	#include <map>	
-#endif
-//////////////////////////////////////////////////////////////////////////
 
 // common containers for overloads
 #include <StlUtils.h>
@@ -201,7 +192,7 @@ public:
 	template<typename T>
 	void AddObject( const boost::shared_ptr<T> &rObj ) { this->AddObject( rObj.get() ); }
 	template<typename T>
-	void AddObject( const std::auto_ptr<T> &rObj ) { this->AddObject( rObj.get() ); }
+	void AddObject( const std::unique_ptr<T> &rObj ) { this->AddObject( rObj.get() ); }
 	template<typename T, typename U>
 	void AddObject( const std::pair<T,U> &rPair )
 	{
@@ -397,13 +388,8 @@ public:
 	bool AddString (const StringCls& strText)
 	{
 		if (!strText.empty())
-    {
-      // Workaround: X360 compiler crash (XDK: 5426)			
-// #ifndef XENON
-// 			return AddObject (strText.c_str(), strText.GetAllocatedMemory());
-// #else			
+    {	
       return AddObject (strText.c_str(), strText.size());
-//#endif
     }
 		else
 			return false;
@@ -483,7 +469,6 @@ public:
 		return false;
 	}
 
-#ifndef CAFE
 	// Specialization of the AddContainer for the std::tr1::unordered_map
 	template <typename KEY, typename TYPE, class HASH, class EQUAL, class ALLOCATOR>
 	bool AddContainer(const std__unordered_map<KEY, TYPE, HASH, EQUAL, ALLOCATOR> &rContainer)
@@ -497,20 +482,6 @@ public:
 			return false;
 		}
 	}
-#else
-	template <typename KEY, typename TYPE, class HASH, class EQUAL, class ALLOCATOR>
-	bool AddContainer(const std::hash_map<KEY, TYPE, HASH> &rContainer)
-	{
-		if(!rContainer.empty())
-		{
-			return AddObject(&(*rContainer.begin()), rContainer.size() * sizeof(typename std::hash_map<KEY, TYPE, HASH>::value_type));
-		}
-		else
-		{
-			return false;
-		}
-	}
-#endif
 
 	void Test()
 	{

@@ -440,10 +440,10 @@ bool CPlayerProfile::LoadAttributes(const XmlNodeRef& root, int requiredVersion)
 			bool platformValid = true;
 			if(platform != NULL && platform[0])
 			{
-#if defined(XENON)
+#if defined(DURANGO)
 				platformValid = (strstr(platform, "xbox")!=0);
-#elif defined(PS3)
-				platformValid = (strstr(platform, "ps3")!=0);
+#elif defined(ORBIS)
+				platformValid = (strstr(platform, "ps4")!=0);
 #else
 				platformValid = (strstr(platform, "pc")!=0);
 #endif
@@ -472,4 +472,4 @@ void CPlayerProfile::GetMemoryStatistics(ICrySizer * pSizer)
 	pSizer->AddObject(m_attributeMap);	
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IPlayerProfile)
+

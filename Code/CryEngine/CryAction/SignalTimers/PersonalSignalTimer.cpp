@@ -139,7 +139,7 @@ void CPersonalSignalTimer::Reset( bool bAlsoEnable )
 
   if( m_fRateMin < m_fRateMax )
   {
-    m_fTimer = Random( m_fRateMin, m_fRateMax );
+    m_fTimer = cry_random( m_fRateMin, m_fRateMax );
   }
   else
   {

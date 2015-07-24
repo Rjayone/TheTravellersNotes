@@ -18,11 +18,9 @@ namespace GameLobbyData
 
 	const uint32 ConvertGameRulesToHash(const char* gameRules)
 	{
-		if (gameRules && (strlen(gameRules) < 32))
+		if (gameRules)
 		{
-			char lowerRulesName[32];
-			NameCRCHelper::MakeLowercase(lowerRulesName, gameRules);
-			return HashString(lowerRulesName);
+			return CryStringUtils::HashStringLower(gameRules);
 		}
 		else
 		{
@@ -48,11 +46,9 @@ namespace GameLobbyData
 
 	const uint32 ConvertMapToHash(const char* mapName)
 	{
-		if (mapName && (strlen(mapName) < 128))
+		if (mapName)
 		{
-			char lowerMapName[128];
-			NameCRCHelper::MakeLowercase(lowerMapName, mapName);
-			return HashString(lowerMapName);
+			return CryStringUtils::HashStringLower(mapName);
 		}
 		else
 		{

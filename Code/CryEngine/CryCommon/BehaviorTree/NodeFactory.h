@@ -3,8 +3,9 @@
 #include "Node.h"
 #include "VectorMap.h"
 #include "IBehaviorTree.h"
-#include "BucketAllocator.h"
-#include "BucketAllocatorImpl.h"
+#ifdef USE_GLOBAL_BUCKET_ALLOCATOR
+#	include "BucketAllocatorImpl.h"
+#endif
 
 namespace BehaviorTree
 {
@@ -13,7 +14,9 @@ namespace BehaviorTree
 	public:
 		NodeFactory() : m_nextNodeID(0)
 		{
+#ifdef USE_GLOBAL_BUCKET_ALLOCATOR
 			s_bucketAllocator.EnableExpandCleanups(false);
+#endif
 		}
 
 		void CleanUpBucketAllocator()
@@ -86,7 +89,7 @@ namespace BehaviorTree
 			}
 		}
 
-		virtual size_t GetSizeOfImmutableDataForAllAllocatedNodes() const OVERRIDE
+		virtual size_t GetSizeOfImmutableDataForAllAllocatedNodes() const override
 		{
 			size_t total = 0;
 
@@ -102,7 +105,7 @@ namespace BehaviorTree
 			return total;
 		}
 
-		virtual size_t GetSizeOfRuntimeDataForAllAllocatedNodes() const OVERRIDE
+		virtual size_t GetSizeOfRuntimeDataForAllAllocatedNodes() const override
 		{
 			size_t total = 0;
 
@@ -118,12 +121,12 @@ namespace BehaviorTree
 			return total;
 		}
 
-		virtual void* AllocateRuntimeDataMemory(const size_t size) OVERRIDE
+		virtual void* AllocateRuntimeDataMemory(const size_t size) override
 		{
 			return s_bucketAllocator.allocate(size);
 		}
 
-		virtual void FreeRuntimeDataMemory(void* pointer) OVERRIDE
+		virtual void FreeRuntimeDataMemory(void* pointer) override
 		{
 			assert(s_bucketAllocator.IsInAddressRange(pointer));
 
@@ -150,7 +153,11 @@ namespace BehaviorTree
 
 	private:
 		typedef VectorMap<stack_string, INodeCreator*> NodeCreators;
+ #ifdef USE_GLOBAL_BUCKET_ALLOCATOR
 		typedef BucketAllocator<BucketAllocatorDetail::DefaultTraits<(2*1024*1024), BucketAllocatorDetail::SyncPolicyUnlocked, false> > BehaviorTreeBucketAllocator;
+ #else
+		typedef node_alloc<eCryDefaultMalloc, true, 2*1024*1024> BehaviorTreeBucketAllocator;
+ #endif
 
 		NodeCreators m_nodeCreators;
 		NodeID m_nextNodeID;

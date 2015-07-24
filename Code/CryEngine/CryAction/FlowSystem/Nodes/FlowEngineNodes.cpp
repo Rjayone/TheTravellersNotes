@@ -197,14 +197,6 @@ namespace SkyBoxLoading
 
 	void CSkyBoxLoadingCallback::StreamAsyncOnComplete (IReadStream* pStream, unsigned nError)
 	{
-#if !defined(XENON) && !defined(PS3)
-		// don't support async texture creation on DX9.
-		if(gEnv->pRenderer->GetRenderType() < eRT_DX11)
-		{
-			return;
-		}
-#endif
-
 		CRY_ASSERT(nError == 0);
 		SSkyboxLoadingInfo* pSkyboxLoadingInfo = (SSkyboxLoadingInfo*)pStream->GetParams().dwUserData;
 		if(!pSkyboxLoadingInfo || pSkyboxLoadingInfo->nSelfSize != sizeof(SSkyboxLoadingInfo))
@@ -246,13 +238,12 @@ namespace SkyBoxLoading
 
 	void CSkyBoxLoadingCallback::StreamOnComplete (IReadStream* pStream, unsigned nError)
 	{
-#if !defined(XENON) && !defined(PS3)
 		// don't support async texture creation on DX9.
 		if(gEnv->pRenderer->GetRenderType() < eRT_DX11)
 		{
 			StreamAsyncOnComplete(pStream,nError);
 		}
-#endif
+
 		CRY_ASSERT(nError == 0);
 		SSkyboxLoadingInfo* pSkyboxLoadingInfo = (SSkyboxLoadingInfo*)pStream->GetParams().dwUserData;
 		if(!pSkyboxLoadingInfo || pSkyboxLoadingInfo->nSelfSize != sizeof(SSkyboxLoadingInfo) || !pSkyboxLoadingInfo->pTextures[0])

@@ -27,7 +27,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-template<typename F> struct __passinreg Matrix44_tpl
+template<typename F> struct Matrix44_tpl
 {
 
   F m00,m01,m02,m03;
@@ -170,54 +170,6 @@ template<typename F> struct __passinreg Matrix44_tpl
 		m20=F(m.m20);	m21=F(m.m21);	m22=F(m.m22);	m23=F(m.m23);
 		m30=F(m.m30);	m31=F(m.m31);	m32=F(m.m32);	m33=F(m.m33);
 	}
-
-
-	//CONSTRUCTOR for different types. It converts a Matrix34A into a Matrix44. 
-	//Needs to be 'explicit' because we loose the 16byte alignment in the conversion process 
-	//Matrix44(m34A);
-	ILINE Matrix44_tpl<F>(const Matrix34A_tpl<F>& m ) 
-	{
-		assert(m.IsValid());
-		m00=m.m00;	m01=m.m01;	m02=m.m02;	m03=m.m03;	
-		m10=m.m10;	m11=m.m11;	m12=m.m12;	m13=m.m13;
-		m20=m.m20;	m21=m.m21;	m22=m.m22;	m23=m.m23;
-		m30=0;			m31=0;			m32=0;			m33=1;
-	}
-	//CONSTRUCTOR for different types. It converts a Matrix34A into a Matrix44 and converts between double/float. 
-	//Needs to be 'explicit' because we loose the 16byte alignment in the conversion process 
-	//Matrix44(m34A);
-	template<class F1> ILINE Matrix44_tpl<F>(const Matrix34A_tpl<F1>& m ) 
-	{
-		assert(m.IsValid());
-		m00=F(m.m00);	m01=F(m.m01);	m02=F(m.m02);	m03=F(m.m03);	
-		m10=F(m.m10);	m11=F(m.m11);	m12=F(m.m12);	m13=F(m.m13);
-		m20=F(m.m20);	m21=F(m.m21);	m22=F(m.m22);	m23=F(m.m23);
-		m30=0;				m31=0;				m32=0;				m33=1;
-	}
-
-	//CONSTRUCTOR for different types. It converts a Matrix44A into a Matrix44. 
-	//Needs to be 'explicit' because we loose the 16byte alignment in the conversion process 
-	//Matrix44(m44A);
-	ILINE Matrix44_tpl(const Matrix44A_tpl<F>& m ) 
-	{
-		assert(m.IsValid());
-		m00=m.m00;	m01=m.m01;	m02=m.m02;	m03=m.m03;	
-		m10=m.m10;	m11=m.m11;	m12=m.m12;	m13=m.m13;
-		m20=m.m20;	m21=m.m21;	m22=m.m22;	m23=m.m23;
-		m30=m.m30;	m31=m.m31;	m32=m.m32;	m33=m.m33;
-	}
-	//CONSTRUCTOR for different types. It converts a Matrix44A into a Matrix44. 
-	//Needs to be 'explicit' because we loose the 16byte alignment in the conversion process 
-	//Matrix44(m44A);
-	template<class F1> ILINE Matrix44_tpl(const Matrix44A_tpl<F1>& m ) 
-	{
-		assert(m.IsValid());
-		m00=F(m.m00);		m01=F(m.m01);		m02=F(m.m02);	m03=F(m.m03);	
-		m10=F(m.m10);		m11=F(m.m11);		m12=F(m.m12);	m13=F(m.m13);
-		m20=F(m.m20);		m21=F(m.m21);		m22=F(m.m22);	m23=F(m.m23);
-		m30=F(m.m30);   m31=F(m.m31);	  m32=F(m.m32);	m33=F(m.m33);
-	}
-
 
 	//---------------------------------------------------------------------
 

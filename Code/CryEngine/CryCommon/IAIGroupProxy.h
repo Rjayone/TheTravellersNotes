@@ -9,17 +9,17 @@
 
 struct IAIGroupProxyFactory
 {
-
+	// <interfuscator:shuffle>
 	virtual IAIGroupProxy* CreateGroupProxy(int groupID) = 0;
 	virtual ~IAIGroupProxyFactory(){}
-
+	// </interfuscator:shuffle>
 };
 
 
-UNIQUE_IFACE struct IAIGroupProxy :
+struct IAIGroupProxy :
 public _reference_target_t
 {
-
+	// <interfuscator:shuffle>
 	virtual void Reset(EObjectResetType type) = 0;
 	virtual void Serialize(TSerialize ser) = 0;
 
@@ -34,7 +34,7 @@ public _reference_target_t
 	virtual void MemberRemoved(tAIObjectID memberID) = 0;
 
 	virtual IScriptTable* GetScriptTable() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 #endif

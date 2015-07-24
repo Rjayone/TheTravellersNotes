@@ -99,9 +99,7 @@ const bool CEquipmentLoadout::SEquipmentPackage::GetDisplayString(string& outDis
 			SLocalizedInfoGame outInfo;
 			if (pLocMgr->GetLocalizedInfoByKey((tempStringPtr + 1), outInfo)) // check if the string exists (minus @)
 			{
-				wstring wcharstr = outInfo.swTranslatedText;
-				CryStringUtils::WStrToUTF8(wcharstr, outDisplayStr);
-
+				outDisplayStr = outInfo.sUtf8TranslatedText;
 				return true;
 			}
 		}
@@ -3168,7 +3166,7 @@ bool CEquipmentLoadout::IsItemInCurrentLoadout( const int index ) const
 
 void CEquipmentLoadout::RandomChoiceModel()
 {
-	m_bShowCellModel = (cry_rand() % 2) == 0;
+	m_bShowCellModel = cry_random(0, 1) == 0;
 }
 
 void CEquipmentLoadout::UpdateClassicModeModel( uint16 channelId, int teamId )
@@ -3319,7 +3317,7 @@ void CEquipmentLoadout::InitUnlockedAttachmentFlags()
 				}
 			}
 
-			uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( weapItem.m_name.c_str() );
+			uint32 crc = CCrc32::ComputeLowercase( weapItem.m_name.c_str() );
 			
 			m_unlockedAttachments.insert( TWeaponAttachmentFlagMap::value_type( crc, unlockedAttachFlags ) );
 		}
@@ -3334,7 +3332,7 @@ uint32 CEquipmentLoadout::GetWeaponAttachmentFlags( const char* pWeaponName )
 
 		const char* className = pWeaponClass->GetName();
 
-		uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( className );
+		uint32 crc = CCrc32::ComputeLowercase( className );
 
 		TWeaponAttachmentFlagMap::iterator it = m_currentAvailableAttachments.find( crc );
 
@@ -3353,7 +3351,7 @@ void CEquipmentLoadout::UpdateWeaponAttachments( IEntityClass* pWeaponClass, IEn
 
 	const char* className = pWeaponClass->GetName();
 
-	uint32 crc = gEnv->pSystem->GetCrc32Gen()->GetCRC32Lowercase( className );
+	uint32 crc = CCrc32::ComputeLowercase( className );
 
 	CryLog( "CEquipmentLoadout::UpdateWeaponAttachments weap %s attach %s", className, pAccessory->GetName() );
 

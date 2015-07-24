@@ -40,12 +40,6 @@ DECL_ACTION(attack1_xi)
 DECL_ACTION(attack2_xi)
 DECL_ACTION(attack1_cine)
 DECL_ACTION(attack2_cine)
-DECL_ACTION(attack2)
-DECL_ACTION(attack3)
-//TTN
-DECL_ACTION(deselect)
-//~
-
 DECL_ACTION(reload)
 DECL_ACTION(modify)
 DECL_ACTION(nextitem)
@@ -185,15 +179,6 @@ DECL_ACTION(v_debug_2)
 DECL_ACTION(loadLastSave)
 DECL_ACTION(debug_ag_step)
 
-// tweak menu
-DECL_ACTION(tweakenter)
-DECL_ACTION(tweakup)
-DECL_ACTION(tweakdown)
-DECL_ACTION(tweakleft)
-DECL_ACTION(tweakright)
-DECL_ACTION(tweakincrement)
-DECL_ACTION(tweakdecrement)
-
 // Menu
 DECL_ACTION(menu_scoreboard_open)
 DECL_ACTION(menu_scoreboard_close)
@@ -277,56 +262,3 @@ DECL_ACTION(mannequin_debugai)
 DECL_ACTION(mannequin_debugplayer)
 
 DECL_ACTION(ai_debugCenterViewAgent)
-
-
-////////////////////////////////////////
-// Menus
-DECL_ACTION(inventory)
-DECL_ACTION(craft)
-DECL_ACTION(tringle)
-DECL_ACTION(start_dialog)
-DECL_ACTION(init_fire)
-DECL_ACTION(cancel_init_fire)
-
-//temp
-DECL_ACTION(MoveTo)//Это для тактической системы резерв
-DECL_ACTION(GetNPC)//кнопка для взятия ид нпс
-DECL_ACTION(CameraRollIn)
-DECL_ACTION(CameraRollOut)
-
-//Ylly commands----------------------------------
-
-// MyAnim
-DECL_ACTION(MyAnim)
-
-
-//Dialog
-DECL_ACTION(skip_dialog)
-
-//build
-DECL_ACTION(MyBuild)
-
-//DECL_ACTION(MyZoomUp)
-//DECL_ACTION(MyZoomDown)
-
-DECL_ACTION(SelectBuildHelper)
-DECL_ACTION(BuildMode)
-
-//Move Cam
-DECL_ACTION(ChangeViewNext)
-DECL_ACTION(ChangeViewPrev)
-
-DECL_ACTION(Loot)
-DECL_ACTION(DropInv)
-
-//end Ylly commands-----------------------------
-DECL_ACTION(UseProps)
-
-
-//Stance change action
-DECL_ACTION(stance_verical)
-DECL_ACTION(stance_horizontal)
-DECL_ACTION(hold_target)
-
-//combat
-DECL_ACTION(defensive_stance)

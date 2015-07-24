@@ -54,7 +54,7 @@ struct SLoadEnvironment
 {
 	CCryAction * m_pCryAction;
 	CLoadGameHolder m_pLoadGame;
-	std::auto_ptr<TSerialize> m_pSer;
+	std::unique_ptr<TSerialize> m_pSer;
 	Checkpoint & m_checkpoint;
 	TBasicEntityDatas m_basicEntityData;
 
@@ -65,7 +65,7 @@ struct SLoadEnvironment
 	SLoadEnvironment(CCryAction *pCryAction, Checkpoint &checkpoint, const char* method, const std::map<string, LoadGameFactory> &loadGameFactories) :
 		m_pCryAction(pCryAction),
 		m_pLoadGame(stl::find_in_map(loadGameFactories, method, CLoadGameHolder::ReturnNull)()),
-		m_pSer(NULL),
+		m_pSer(nullptr),
 		m_checkpoint(checkpoint),
 		m_basicEntityData(NAlloc::GeneralHeapAlloc(m_pLoadGame->GetHeap())),
 		m_bLoadingErrors(false),
@@ -126,7 +126,7 @@ private:
 	//load process steps
 	CHEAT_PROTECTION_EXPORT void LoadEngineSystems( SLoadEnvironment &loadEnv );
 	bool LoadLevel( SLoadEnvironment &loadEnv, SGameStartParams& startParams, STempAutoResourcesLock &autoResourcesLock, bool bIsQuickLoading, bool requireQuickLoad );
-	bool LoadEntities( SLoadEnvironment &loadEnv, std::auto_ptr<TSerialize> pGameStateSer );
+	bool LoadEntities( SLoadEnvironment &loadEnv, std::unique_ptr<TSerialize> pGameStateSer );
 	void LoadBasicEntityData( SLoadEnvironment &loadEnv );
 	void LoadGameData( SLoadEnvironment &loadEnv );
 

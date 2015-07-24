@@ -1,11 +1,4 @@
-#include DEVIRTUALIZE_HEADER_FIX(IScriptSystem.h)
-
-#ifndef _ISCRIPTSYSTEM_H_
-#define _ISCRIPTSYSTEM_H_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #include <functor.h>
 
@@ -218,9 +211,9 @@ struct ScriptAnyValue
 //	 This interface is mapped 1:1 on a script state.
 //	 All scripts loaded from the same interface instance are visible with 
 //   each others.
-UNIQUE_IFACE struct IScriptSystem
+struct IScriptSystem
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IScriptSystem(){}
 	// Summary
 	//   Updates the system, per frame.
@@ -436,7 +429,7 @@ UNIQUE_IFACE struct IScriptSystem
 	virtual void ShowDebugger(const char *pszSourceFile, int iLine, const char *pszReason) = 0;
 
 	virtual HBREAKPOINT AddBreakPoint(const char *sFile,int nLineNumber)=0;
-	virtual IScriptTable *GetLocalVariables(int nLevel = 0) = 0;
+	virtual IScriptTable *GetLocalVariables(int nLevel, bool bRecursive) = 0;
 	// Return Value:
 	//	 A table containing 1 entry per stack level(aka per call)
 	//	 an entry will look like this table.
@@ -501,7 +494,7 @@ UNIQUE_IFACE struct IScriptSystem
 	//		Allocate or deallocate through the script system's allocator
 	virtual void* Allocate(size_t sz) = 0;
 	virtual size_t Deallocate(void* ptr) = 0;
-
+	// </interfuscator:shuffle>
 
 	template <class T>
 	bool EndCall( T &value )
@@ -557,11 +550,11 @@ private:
 
 struct IScriptTableDumpSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IScriptTableDumpSink(){}
 	virtual void OnElementFound(const char *sName,ScriptVarType type) = 0;
 	virtual void OnElementFound(int nIdx,ScriptVarType type) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 // Description:
@@ -575,7 +568,7 @@ struct IScriptTableDumpSink
 //////////////////////////////////////////////////////////////////////////
 struct IScriptTableIterator
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IScriptTableIterator(){}
 	virtual void AddRef();
 	// Summary:
@@ -585,11 +578,11 @@ struct IScriptTableIterator
 	// Description:
 	//    Gets next value in the table.
 	virtual bool Next( ScriptAnyValue &var );
-
+	// </interfuscator:shuffle>
 };
 
 ////////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IScriptTable
+struct IScriptTable
 {
 	typedef Functor1wRet<IFunctionHandler*,int> FunctionFunctor;
 	typedef int (*UserDataFunction)( IFunctionHandler* pH,void *pBuffer,int nSize );
@@ -629,6 +622,7 @@ UNIQUE_IFACE struct IScriptTable
 		SUserFunctionDesc() : sFunctionName(""),sFunctionParams(""),sGlobalName(""),nParamIdOffset(0),pUserDataFunc(0),pDataBuffer(0),nDataSize(0) {}
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~IScriptTable(){}
 
 	// Summary:
@@ -720,7 +714,7 @@ UNIQUE_IFACE struct IScriptTable
 	// See also:
 	//	  IFunctionHandler
 	virtual bool AddFunction( const SUserFunctionDesc &fd ) = 0;
-
+	// </interfuscator:shuffle>
 
 	// Summary:
 	//	 Sets value of a table member.
@@ -819,9 +813,9 @@ private:
 //   This interface is used by the C++ function mapped to the script
 //   to retrieve the function parameters passed by the script and
 //   to return an optiona result value to the script.
-UNIQUE_IFACE struct IFunctionHandler
+struct IFunctionHandler
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IFunctionHandler(){}
 	// Summary:
 	//	 Returns pointer to the script system.
@@ -865,7 +859,7 @@ UNIQUE_IFACE struct IFunctionHandler
 	virtual int EndFunctionAny( const ScriptAnyValue &any1,const ScriptAnyValue &any2 ) = 0;
 	virtual int EndFunctionAny( const ScriptAnyValue &any1,const ScriptAnyValue &any2, const ScriptAnyValue &any3) = 0;
 	virtual int EndFunction() = 0;
-
+	// </interfuscator:shuffle>
 
 	// Description:
 	//    Retrieves the value of the self passed when calling the table.
@@ -1005,11 +999,11 @@ struct ScriptDebugInfo
 // under development
 struct IScriptDebugSink
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IScriptDebugSink(){}
 	virtual void OnLoadSource(const char *sSourceName,unsigned char *sSource,long nSourceSize)=0;
 	virtual void OnExecuteLine(ScriptDebugInfo &sdiDebugInfo)=0;
-
+	// </interfuscator:shuffle>
 };
 //DOC-IGNORE-END
 
@@ -1200,5 +1194,3 @@ extern "C"
 	CRYSCRIPTSYSTEM_API IScriptSystem *CreateScriptSystem( ISystem *pSystem,bool bStdLibs );
 }
 typedef IScriptSystem *(*CREATESCRIPTSYSTEM_FNCPTR)( ISystem *pSystem,bool bStdLibs );
-
-#endif //_ISCRIPTSYSTEM_H_

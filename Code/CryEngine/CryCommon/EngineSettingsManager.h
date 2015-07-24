@@ -16,7 +16,7 @@
 #define __ENGINESETTINGSMANAGER_H__
 #pragma once
 
-#if !defined(PS3) && !defined(LINUX)
+#if !defined(LINUX)
 
 #if defined(CRY_ENABLE_RC_HELPER)
 
@@ -102,6 +102,6 @@ private:
 };
 
 #endif // CRY_ENABLE_RC_HELPER
-#endif//PS3
+#endif // !defined(LINUX)
 
 #endif // __RESOURCECOMPILERHELPER_H__

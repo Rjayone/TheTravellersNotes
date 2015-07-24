@@ -773,11 +773,6 @@ bool CCommonSaveGameHelper::GetSaveGames(CPlayerProfileManager::SUserEntry* pEnt
 			bool ok = false;
 
 			// filename construction
-#if defined(PS3) || defined(XENON) //don't use meta files on PS3 or 360
-			sgInfo.metaData.saveTime = static_cast<time_t>(fd.time_write); // the time gets used to find the most recent save
-			sgInfo.metaData.loadTime = sgInfo.metaData.saveTime;
-			ok = true;
-#else
 			string metaFilename = path;
 			metaFilename.append("/");
 			metaFilename.append(fd.name);
@@ -796,7 +791,6 @@ bool CCommonSaveGameHelper::GetSaveGames(CPlayerProfileManager::SUserEntry* pEnt
 			}
 			// Use the file modified time for the load time as we touch the saves when they are used to keep most recent checkpoint
 			sgInfo.metaData.loadTime = static_cast<time_t>(fd.time_write);
-#endif
 
 			if (ok)
 			{
@@ -868,11 +862,8 @@ public:
 		const string fname (filename);
 		if (meta)
 		{
-#if defined(PS3) || defined(XENON) //don't use meta files on PS3 or 360
-#else
 			const string metaPath = PathUtil::ReplaceExtension(fname, ".meta");
 			bOK = ::SaveXMLFile(metaPath, meta);
-#endif
 		}
 		if (m_thumbnail.data.size() > 0)
 		{
@@ -958,15 +949,15 @@ class CXMLCPBinSaveGameFSDir : public CXMLSaveGameFSDir
 	public:
 		CSerializeCtx( XMLCPB::CNodeLiveWriterRef node, XMLCPB::CWriterInterface& binWriter )
 		{
-			m_pWriterXMLCPBin = std::auto_ptr<CSerializeWriterXMLCPBin>( new CSerializeWriterXMLCPBin( node, binWriter  ) );
-			m_pWriter = std::auto_ptr<ISerialize>(new CSimpleSerializeWithDefaults<CSerializeWriterXMLCPBin>( *m_pWriterXMLCPBin ));
+			m_pWriterXMLCPBin = std::unique_ptr<CSerializeWriterXMLCPBin>( new CSerializeWriterXMLCPBin( node, binWriter  ) );
+			m_pWriter = std::unique_ptr<ISerialize>(new CSimpleSerializeWithDefaults<CSerializeWriterXMLCPBin>( *m_pWriterXMLCPBin ));
 		}
 
 		TSerialize GetTSerialize() { return TSerialize(m_pWriter.get()); }
 
 	private:
-		std::auto_ptr<ISerialize> m_pWriter;
-		std::auto_ptr<CSerializeWriterXMLCPBin> m_pWriterXMLCPBin;
+		std::unique_ptr<ISerialize> m_pWriter;
+		std::unique_ptr<CSerializeWriterXMLCPBin> m_pWriterXMLCPBin;
 	};
 
 
@@ -1114,15 +1105,15 @@ class CXMLCPBinLoadGameFSDir : public CXMLLoadGameFSDir
 	public:
 		CSerializeCtx( XMLCPB::CNodeLiveReaderRef node, XMLCPB::CReaderInterface& binReader )
 		{
-			m_pReaderXMLCPBin = std::auto_ptr<CSerializeReaderXMLCPBin>( new CSerializeReaderXMLCPBin( node, binReader ) );
-			m_pReader = std::auto_ptr<ISerialize>(new CSimpleSerializeWithDefaults<CSerializeReaderXMLCPBin>( *m_pReaderXMLCPBin ));
+			m_pReaderXMLCPBin = std::unique_ptr<CSerializeReaderXMLCPBin>( new CSerializeReaderXMLCPBin( node, binReader ) );
+			m_pReader = std::unique_ptr<ISerialize>(new CSimpleSerializeWithDefaults<CSerializeReaderXMLCPBin>( *m_pReaderXMLCPBin ));
 		}
 
 		TSerialize GetTSerialize() { return TSerialize(m_pReader.get()); }
 
 	private:
-		std::auto_ptr<ISerialize> m_pReader;
-		std::auto_ptr<CSerializeReaderXMLCPBin> m_pReaderXMLCPBin;
+		std::unique_ptr<ISerialize> m_pReader;
+		std::unique_ptr<CSerializeReaderXMLCPBin> m_pReaderXMLCPBin;
 	};
 
 
@@ -1177,14 +1168,14 @@ public:
 		return m_metadataNode->HaveAttr( pTag );
 	}
 
-	std::auto_ptr<TSerialize> GetSection( const char* pSection )
+	std::unique_ptr<TSerialize> GetSection( const char* pSection )
 	{
 		XMLCPB::CNodeLiveReaderRef node = m_binXmlReader.GetRoot()->GetChildNode( pSection );
 		if (!node.IsValid())
-			return std::auto_ptr<TSerialize>();
+			return std::unique_ptr<TSerialize>();
 		_smart_ptr<CSerializeCtx> pCtx = new CSerializeCtx(node, m_binXmlReader);
 		m_sections.push_back( pCtx );
-		return std::auto_ptr<TSerialize>( new TSerialize(pCtx->GetTSerialize()) );
+		return std::unique_ptr<TSerialize>( new TSerialize(pCtx->GetTSerialize()) );
 	}
 
 	bool HaveSection( const char* pSection )
@@ -1289,12 +1280,12 @@ public:
   ~CLevelRotationFile()
   {}
   
-  VIRTUAL bool Save(XmlNodeRef r)
+  virtual bool Save(XmlNodeRef r)
   {
     return r->saveToFile(m_filename,256*1024);
   }
 
-  VIRTUAL XmlNodeRef Load()
+  virtual XmlNodeRef Load()
   {
     if(FILE* f = gEnv->pCryPak->FOpen(m_filename,"rb"))
     {
@@ -1305,7 +1296,7 @@ public:
         return gEnv->pSystem->LoadXmlFromFile("Libs/Config/Profiles/Default/levelrotation/levelrotation.xml");
   }
 
-  VIRTUAL void Complete()
+  virtual void Complete()
   {
     delete this;
   }
@@ -1414,22 +1405,18 @@ XmlNodeRef CSerializerXML::GetSectionByIndex(int index)
 bool SaveXMLFile(const string& filename, const XmlNodeRef& rootNode)
 {
 	LOADING_TIME_PROFILE_SECTION(gEnv->pSystem);
-	if (rootNode == 0)
-		return true;
-
-	const size_t chunkSizeBytes = (15 * 1024);
-#if PLAYER_PROFILE_SAVE_AS_TEXT_IN_DEVMODE
+	
 	bool ok = false;
-	if(gEnv->pSystem->IsDevMode())
-		ok = rootNode->saveToFile(filename.c_str()); //save as text for profile files in user dir
-	else
-		ok = rootNode->saveToFile(filename.c_str(), chunkSizeBytes); //save as binary when not in devmode - the default 
-#else
-	bool ok = rootNode->saveToFile(filename.c_str(), chunkSizeBytes);
-#endif
+	
+	if (rootNode != 0)
+	{
+		ok = rootNode->saveToFile(filename.c_str());
+	}
 
 	if (!ok)
+	{
 		GameWarning("[PlayerProfiles] PlayerProfileImplFS: Cannot save XML file '%s'", filename.c_str());
+	}
 	return ok;
 }
 
@@ -1445,15 +1432,11 @@ XmlNodeRef LoadXMLFile(const string& filename)
 
 bool IsValidFilename(const char* filename)
 {
-#ifdef PS3
-	return true; // we strip the username from the file path on PS3, so assuming engine side filenames are ok this will be
-#else
 	const char* invalidChars = "\\/:*?\"<>~|";
 	return strpbrk(filename, invalidChars) == 0;
-#endif
 }
 
 } // namespace PlayerProfileImpl
 
 
-#include UNIQUE_VIRTUAL_WRAPPER(ILevelRotationFile)
+

@@ -122,7 +122,7 @@ bool CSessionSearchSimulator::OutputSessionListBlock( CryLobbyTaskID& taskID, Cr
 			if( currentNode->getAttr( "sessionId", &pSessionStr ) )
 			{
 				SCryFakeSessionID* pSessionID = new SCryFakeSessionID();
-				cry_strncpy( pSessionID->m_idStr, pSessionStr, sizeof(pSessionID->m_idStr) );
+				cry_strcpy( pSessionID->m_idStr, pSessionStr );
 			
 				sessionData.m_id = pSessionID;
 			}
@@ -130,7 +130,7 @@ bool CSessionSearchSimulator::OutputSessionListBlock( CryLobbyTaskID& taskID, Cr
 			const char* pSessionName;
 			if( currentNode->getAttr( "servername", &pSessionName ) )
 			{
-				cry_strncpy( sessionData.m_data.m_name, pSessionName, sizeof(sessionData.m_data.m_name) );
+				cry_strcpy( sessionData.m_data.m_name, pSessionName );
 			}
 
 			//generic data elements

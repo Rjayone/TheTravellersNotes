@@ -8,14 +8,8 @@
 //  Description: CryAnimation interface
 //
 ////////////////////////////////////////////////////////////////////////////
-#include DEVIRTUALIZE_HEADER_FIX(ICryAnimation.h)
 
-#ifndef ICRY_ANIMATION
-#define ICRY_ANIMATION
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #ifndef CRYANIMATION_API
 	#ifdef CRYANIMATION_EXPORTS
@@ -91,6 +85,13 @@ enum EReloadCAFResult
 	CR_RELOAD_GAH_NOT_IN_ARRAY
 };
 
+enum CharacterToolFlags
+{
+	CA_CharacterTool       = 0x01,
+	CA_DrawSocketLocation  = 0x02,
+	CA_BindPose            = 0x04,
+	CA_AllowRedirection    = 0x08, //allow redirection in bindpose
+};
 
 #define CHR (0x11223344)
 #define CGA (0x55aa55aa)
@@ -126,7 +127,6 @@ struct IAttachmentManager;
 struct IAttachment;
 struct IAttachmentObject; // Entity, static object or character
 struct IAnimEvents;
-struct ExtSkinVertex;
 struct TFace;
 struct IFacialInstance;
 struct IFacialAnimation;
@@ -163,7 +163,7 @@ DECLARE_BOOST_POINTERS(IAnimationSerializable);
 //     required for a program which uses CryEngine.
 // See Also:
 //     CreateCharManager
-UNIQUE_IFACE struct ICharacterManager
+struct ICharacterManager
 {
 	// Description:
 	//     Priority when requested to load a DBA
@@ -190,6 +190,7 @@ UNIQUE_IFACE struct ICharacterManager
 		unsigned numAnimObjectModels;
 	};
 
+	// <interfuscator:shuffle>
 	virtual ~ICharacterManager() {}
 
 	// Description:
@@ -275,8 +276,6 @@ UNIQUE_IFACE struct ICharacterManager
 	//     Release the Animation System
 	virtual void Release() = 0;
 
-	virtual uint32 SaveCharacterDefinition(ICharacterInstance* ptr, const char* pathname) = 0;
-
 	// Description:
 	//     Retrieve all loaded models.
 	virtual void GetLoadedModels(IDefaultSkeleton** pIDefaultSkeletons, uint32& nCount) const = 0;
@@ -360,7 +359,7 @@ UNIQUE_IFACE struct ICharacterManager
 
 	virtual void UpdateRendererFrame() = 0;
 	virtual void PostInit() = 0;
-
+	// </interfuscator:shuffle>
 
 #if BLENDSPACE_VISUALIZATION
 	virtual void CreateDebugInstances(const char* szFilename) = 0;
@@ -385,9 +384,9 @@ UNIQUE_IFACE struct ICharacterManager
 //    This struct defines the interface for a class that listens to
 //    AnimLoaded, AnimUnloaded and AnimReloaded events
 
-UNIQUE_IFACE struct IAnimationStreamingListener
+struct IAnimationStreamingListener
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAnimationStreamingListener() {}
 
 	// Called when an animation finished loading
@@ -398,27 +397,7 @@ UNIQUE_IFACE struct IAnimationStreamingListener
 
 	// Called when an animation is reloaded from file
 	virtual void NotifyAnimReloaded(const int32 globalID) = 0;
-
-};
-
-
-struct ClosestTri
-{
-	struct AttSkinVertex
-	{
-		Vec3 m_attTriPos;
-		JointIdType m_attJointIDs[4];
-		f32 m_attWeights[4];
-		uint32 m_vertexIdx;
-		AttSkinVertex()
-		{
-			m_attTriPos = Vec3(ZERO);
-			m_attJointIDs[0] = 0, m_attJointIDs[1] = 0, m_attJointIDs[2] = 0, m_attJointIDs[3] = 0;
-			m_attWeights[0] = 0, m_attWeights[1] = 0, m_attWeights[2] = 0, m_attWeights[3] = 0;
-			m_vertexIdx = -1;
-		}
-	};
-	AttSkinVertex v[3];
+	// </interfuscator:shuffle>
 };
 
 
@@ -440,9 +419,11 @@ struct SJointProperty
 
 
 //////////////////////////////////////////////////////////////////////////
+typedef unsigned int LimbIKDefinitionHandle;
+
 struct IDefaultSkeleton
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IDefaultSkeleton() {}
 	virtual uint32 GetJointCount() const = 0;
 
@@ -463,23 +444,20 @@ struct IDefaultSkeleton
 	// NOTE: Will become deprecated.
 	//All render-meshes will be removed from the CDefaultSkeleton-class
 	virtual const phys_geometry* GetJointPhysGeom(uint32 jointIndex) const = 0;  //just for statistics of physics proxies
-	virtual int32 GetLimbDefinitionIdx(uint64 handle) const = 0;
+	virtual int32 GetLimbDefinitionIdx(LimbIKDefinitionHandle handle) const = 0;
 	virtual void PrecacheMesh(bool bFullUpdate, int nRoundId, int nLod) = 0;
 	virtual IRenderMesh* GetIRenderMesh() const = 0;
 	virtual Vec3 GetRenderMeshOffset() const = 0;
 	virtual uint32 GetTextureMemoryUsage2(ICrySizer* pSizer = 0) const = 0;
 	virtual uint32 GetMeshMemoryUsage(ICrySizer* pSizer = 0) const = 0;
 	// END: Will become deprecated.
-
+	// </interfuscator:shuffle>
 };
 
-
-
-
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct ISkin
+struct ISkin
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISkin() {}
 
 	// Precache (streaming support)
@@ -489,7 +467,7 @@ UNIQUE_IFACE struct ISkin
 	virtual IRenderMesh* GetIRenderMesh(uint32 nLOD) const = 0;
 	virtual const char* GetModelFilePath() const = 0;
 	virtual IMaterial* GetIMaterial(uint32 nLOD) const = 0;
-
+	// </interfuscator:shuffle>
 
 	virtual uint32 GetNumLODs() const = 0;
 
@@ -538,9 +516,9 @@ struct SAnimationProcessParams
 //     retrieve BBox/etc, control physics, particles and skinning, transform.
 // Summary:
 //     Interface to character animation
-UNIQUE_IFACE struct ICharacterInstance
+struct ICharacterInstance
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ICharacterInstance() {}
 
 	// Increase reference count of the interface
@@ -646,7 +624,7 @@ UNIQUE_IFACE struct ICharacterInstance
 	//     RendParams - Rendering parameters
 	// Summary:
 	//     Draw the character
-	virtual void Render(const SRendParams& RendParams, const QuatTS& Offset,  const SRenderingPassInfo& passInfo, bool* updated = 0) = 0;
+	virtual void Render(const SRendParams& RendParams, const QuatTS& Offset,  const SRenderingPassInfo& passInfo) = 0;
 
 	// Description:
 	//     Set rendering flags defined in ECharRenderFlags for this character instance
@@ -759,13 +737,14 @@ UNIQUE_IFACE struct ICharacterInstance
 	//! Pushes the underlying tree of objects into the given Sizer object for statistics gathering
 	virtual void GetMemoryUsage(class ICrySizer* pSizer) const = 0;
 	virtual void Serialize(TSerialize ser) = 0;
-
+	// </interfuscator:shuffle>
 
 #ifdef EDITOR_PCDEBUGCODE
-	virtual uint32 GetResetMode() const = 0;
-	virtual void SetResetMode(uint32 rm) = 0;
+	virtual uint32 GetResetMode() const = 0;  //obsolere when we remove CharEdit
+	virtual void SetResetMode(uint32 rm) = 0; //obsolere when we remove CharEdit
 	virtual f32 GetAverageFrameTime() const = 0;
 	virtual void SetCharEditMode(uint32 m) = 0;
+	virtual uint32 GetCharEditMode() const = 0;
 	virtual void DrawWireframeStatic(const Matrix34& m34, int nLOD, uint32 color) = 0;
 
 	// Reload the animation set at any time
@@ -783,9 +762,9 @@ UNIQUE_IFACE struct ICharacterInstance
 
 #include <IAnimationPoseModifier.h> // <> required for Interfuscator
 
-UNIQUE_IFACE struct ISkeletonAnim
+struct ISkeletonAnim
 {
-
+	// <interfuscator:shuffle>
 	enum
 	{
 		LayerCount = 16
@@ -883,7 +862,7 @@ UNIQUE_IFACE struct ISkeletonAnim
 	virtual bool ExportHTRAndICAF(const char* szAnimationName, const char* saveDirectory) const = 0;
 	virtual bool ExportVGrid(const char* szAnimationName) const = 0;
 #endif
-
+	// </interfuscator:shuffle>
 };
 
 struct IAnimationPoseBlenderDir;
@@ -891,7 +870,7 @@ struct IAnimationPoseBlenderDir;
 
 struct ISkeletonPhysics
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISkeletonPhysics() { }
 
 	virtual void BuildPhysicalEntity(IPhysicalEntity* pent, f32 mass, int surface_idx, f32 stiffness_scale = 1.0f, int nLod = 0, int partid0 = 0, const Matrix34& mtxloc = Matrix34(IDENTITY)) = 0;
@@ -923,13 +902,13 @@ struct ISkeletonPhysics
 	virtual int GetPhysIdOnJoint(int32 nId) const = 0;
 	virtual DynArray<SJointProperty> GetJointPhysProperties_ROPE(uint32 jointIndex, int nLod) const = 0;
 	virtual bool SetJointPhysProperties_ROPE(uint32 jointIndex, int nLod, const DynArray<SJointProperty>& props) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
 struct ISkeletonPose : public ISkeletonPhysics
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ISkeletonPose() { }
 
 	virtual const QuatT& GetAbsJointByID(int32 nJointID) const = 0; //runtime skeleton pose
@@ -956,6 +935,7 @@ struct ISkeletonPose : public ISkeletonPhysics
 	virtual void ApplyRecoilAnimation(f32 fDuration, f32 fKinematicImpact, f32 fKickIn, uint32 arms = 3) = 0;
 	virtual uint32 SetHumanLimbIK(const Vec3& wgoal, const char* limb) = 0;
 
+	// </interfuscator:shuffle>
 };
 
 // Description:
@@ -964,7 +944,7 @@ struct ISkeletonPose : public ISkeletonPhysics
 //     Hold description of a set of animations
 struct IAnimationSet
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAnimationSet() {}
 
 	// Summary:
@@ -1072,6 +1052,7 @@ struct IAnimationSet
 	virtual bool IsCombinedBlendSpace(int nAnimationId) const = 0;
 #endif
 
+	// </interfuscator:shuffle>
 };
 
 struct IAnimationSetListener
@@ -1105,9 +1086,9 @@ struct SAnimationStatistics
 };
 
 
-UNIQUE_IFACE struct IAnimEventList
+struct IAnimEventList
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAnimEventList() {}
 
 	virtual uint32 GetCount() const = 0;
@@ -1116,13 +1097,13 @@ UNIQUE_IFACE struct IAnimEventList
 	virtual void Append(const CAnimEventData& animEvent) = 0;
 	virtual void Remove(uint32 animEventIndex) = 0;
 	virtual void Clear() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 
-UNIQUE_IFACE struct IAnimEvents
+struct IAnimEvents
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IAnimEvents() {}
 
 	virtual IAnimEventList* GetAnimEventList(const char* animationFilePath) = 0;
@@ -1134,7 +1115,7 @@ UNIQUE_IFACE struct IAnimEvents
 	virtual void InitializeSegmentationDataFromAnimEvents(const char* animationFilePath) = 0;
 
 	virtual size_t GetGlobalAnimCount() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1169,12 +1150,12 @@ extern "C" {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#if defined(ENABLE_LW_PROFILERS) && !defined(__SPU__)
+#if defined(ENABLE_LW_PROFILERS)
 class CAnimationLightProfileSection
 {
 public:
 	CAnimationLightProfileSection()
-		: m_nTicks(JobManager::Fiber::GetNonFiberTicks())
+		: m_nTicks(CryGetTicks())
 	{
 	}
 
@@ -1183,7 +1164,7 @@ public:
 		ICharacterManager* pCharacterManager = gEnv->pCharacterManager;
 		IF(pCharacterManager != NULL, 1)
 		{
-			pCharacterManager->AddFrameTicks(JobManager::Fiber::GetNonFiberTicks() - m_nTicks);
+			pCharacterManager->AddFrameTicks(CryGetTicks() - m_nTicks);
 		}
 	}
 private:
@@ -1194,14 +1175,14 @@ class CAnimationLightSyncProfileSection
 {
 public:
 	CAnimationLightSyncProfileSection()
-		: m_nTicks(JobManager::Fiber::GetNonFiberTicks())
+		: m_nTicks(CryGetTicks())
 	{}
 	~CAnimationLightSyncProfileSection()
 	{
 		ICharacterManager* pCharacterManager = gEnv->pCharacterManager;
 		IF(pCharacterManager != NULL, 1)
 		{
-			pCharacterManager->AddFrameSyncTicks(JobManager::Fiber::GetNonFiberTicks() - m_nTicks);
+			pCharacterManager->AddFrameSyncTicks(CryGetTicks() - m_nTicks);
 		}
 	}
 private:
@@ -1309,7 +1290,3 @@ private:
 
 	uint32 m_filePathCRC;
 };
-
-
-#endif // ICRY_ANIMATION
-

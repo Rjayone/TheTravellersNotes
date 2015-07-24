@@ -79,6 +79,11 @@
 		[
 			"ClipVolumeProxy.cpp",
 			"ClipVolumeProxy.h"
+		],
+		"Proxy/DynamicResponse":
+		[
+			"DynamicResponseProxy.cpp",
+			"DynamicResponseProxy.h"
 		]
 	},
 	"CryEntitySystem_uber_0.cpp":

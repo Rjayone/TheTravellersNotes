@@ -117,7 +117,7 @@ public:
 	virtual ~CNetMessageDistpatcher();
 
 	// INetMessageSink
-	virtual void DefineProtocol(IProtocolBuilder *pBuilder) OVERRIDE;
+	virtual void DefineProtocol(IProtocolBuilder *pBuilder) override;
 	// ~INetMessageSink
 
 	void Update();

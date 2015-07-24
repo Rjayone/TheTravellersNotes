@@ -35,39 +35,32 @@ TODO:
 #include "XInputDevice.h"
 #include "OrbisPadWin.h"
 #include "ICmdLine.h"
-
-// Adding in here for now, as DX Input is Windows specific, as this device.
-// This is not a direct input device, though.
-#include "HeadmountedDevice/HeadMountedDevice.h"
+#include "UnicodeFunctions.h"
 
 CDXInput* CDXInput::This = 0;
 
 CDXInput::CDXInput(ISystem *pSystem, HWND hwnd) : CBaseInput()
 { 
-	m_hwnd	=	hwnd;
-	m_prevWndProc = 0;
-	This		= this;
+	assert(!This && "CDXInput has been instantiated more than once");
+
+	m_hwnd = hwnd;
+	This = this;
+
+	pSystem->RegisterWindowMessageHandler(this);
 };
 
 CDXInput::~CDXInput()
 {
+	gEnv->pSystem->UnregisterWindowMessageHandler(this);
+
+	m_hwnd = NULL;
 	This = NULL;
-	/*if (!gEnv->IsEditor())
-	{
-		::SetWindowLongPtr(m_hwnd, GWLP_WNDPROC, (LONG_PTR)m_prevWndProc);
-	}*/
 }
 
 bool CDXInput::Init()
 {
 //	gEnv->pLog->Log("DXInput::Init()\n");
 	CBaseInput::Init();
-
-	/*if (!gEnv->IsEditor())
-	{
-		m_prevWndProc = (WNDPROC)::GetWindowLongPtr(m_hwnd, GWLP_WNDPROC);
-		::SetWindowLongPtr(m_hwnd, GWLP_WNDPROC, (LONG_PTR)CDXInput::InputWndProc);
-	}*/
 
 	gEnv->pLog->Log("Initializing DirectInput\n");
 
@@ -85,13 +78,6 @@ bool CDXInput::Init()
 	if (GetISystem()->GetICmdLine()->FindArg(eCLAT_Pre, "nomouse") == NULL)
 	{
 		if (!AddInputDevice(new CMouse(*this))) return false;
-	}
-
-	// Adding in here for now, as DX Input is Windows specific, as this device.
-	// This is not a direct input device, though.
-	if (!AddInputDevice(new CHeadMountedDevice(*this))) 
-	{
-		return false;
 	}
 
 	// add xinput controllers devices
@@ -148,85 +134,108 @@ void CDXInput::SetExclusiveMode( EInputDeviceType deviceType, bool exclusive, vo
 {
 	if (pUser && (m_hwnd != (HWND)pUser))
 	{
-		// unhook
-		if (m_prevWndProc && deviceType == eIDT_Keyboard)
-		{
-			//::SetWindowLongPtr(m_hwnd, GWLP_WNDPROC, (LONG_PTR)m_prevWndProc);
-			//m_prevWndProc = 0;
-		}
-
 		m_hwnd = (HWND)pUser;
-
-		if (deviceType == eIDT_Keyboard)
-		{
-			// hook ourself into the message loop
-			//m_prevWndProc = (WNDPROC)::GetWindowLongPtr(m_hwnd, GWLP_WNDPROC);
-			//::SetWindowLongPtr(m_hwnd, GWLP_WNDPROC, (LONG_PTR)CDXInput::InputWndProc);
-		}
 	}
 
 	CBaseInput::SetExclusiveMode(deviceType, exclusive, pUser);
 }
 
-// reroute to instance function
-LRESULT CALLBACK CDXInput::InputWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+bool CDXInput::HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT *pResult)
 {
-	return This->OnInputWndProc(hWnd, message, wParam, lParam);
-}
-
-LRESULT CDXInput::OnInputWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	if (message == WM_INPUT)
+	// Check for text input character
+	// Note: Text input is separate from "normal" input through CryInput
+	uint32 input = 0;
+	switch (message)
 	{
-		// process raw input
-		UINT dwSize = 0;
-
-		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
-/*
-		if (dwSize > m_rawBufferSize)
+	case WM_UNICHAR:
+		if (wParam == UNICODE_NOCHAR)
 		{
-			delete[] m_rawBuffer;
-			m_rawBuffer = new BYTE[dwSize];
-			m_rawBufferSize = dwSize;
+			// Indicate compatibility with 32-bit characters
+			*pResult = TRUE;
+			return true;
 		}
+		// Fall through intended
+	case WM_CHAR:
+		input = (uint32)wParam;
+		break;
 
-		if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, m_rawBuffer, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize )
+	case WM_KEYDOWN:
+		// CTRL+V for clipboard paste support
+		if (wParam == 'V')
 		{
-			gEnv->pLog->LogError("GetRawInputData doesn't return correct size !\n");
-		}
-		else
-		{
-			RAWINPUT* raw = (RAWINPUT*)m_rawBuffer;
-
-			if (raw->header.dwType == RIM_TYPEKEYBOARD) 
+			const bool bWasDown = (lParam & (1 << 30)) != 0;
+			const bool bControl = (GetKeyState(VK_CONTROL) & (1 << 15)) != 0;
+			if (!bWasDown && bControl)
 			{
-				if (m_rawKeyboard)
-					m_rawKeyboard->Process(raw->data.keyboard);
+				if (OpenClipboard(NULL) != 0)
+				{
+					wstring data;
+					const HANDLE wideData = GetClipboardData(CF_UNICODETEXT);
+					if (wideData)
+					{
+						const LPCWSTR pWideData = (LPCWSTR)GlobalLock(wideData);
+						if (pWideData)
+						{
+							// Note: This conversion is just to make sure we discard malicious or malformed data
+							Unicode::ConvertSafe<Unicode::eErrorRecovery_Discard>(data, pWideData);
+							GlobalUnlock(wideData);
+						}
+					}
+					CloseClipboard();
+
+					for (Unicode::CIterator<wstring::const_iterator> it(data.begin(), data.end()); it != data.end(); ++it)
+					{
+						const uint32 cp = *it;
+						if (cp != '\r')
+						{
+							SUnicodeEvent evt(cp);
+							PostUnicodeEvent(evt);
+						}
+					}
+
+					if (wideData)
+					{
+						*pResult = 0;
+						return true;
+					}
+				}
 			}
-			else if (raw->header.dwType == RIM_TYPEMOUSE) 
-			{
-				if (m_rawMouse)
-					m_rawMouse->Process(raw->data.mouse);
-			} 
 		}
-*/
+		// Fall through intended
+	default:
+		return false;
 	}
-	else if (message == WM_CHAR)
+
+	// Handle the character input
+	*pResult = 0;
+	if (input)
 	{
-		SInputEvent event;
-		event.modifiers = GetModifiers();
-		event.deviceType = eIDT_Keyboard;
-		event.state = eIS_UI;
-		event.value = 1.0f;
-		event.pSymbol = 0;//m_rawKeyboard->GetSymbol((lParam>>16)&0xff);
-		if (event.pSymbol)
-			event.keyId = event.pSymbol->keyId;
-
-		event.inputChar = (wchar_t)wParam;
-		PostInputEvent(event);
+		if (IS_HIGH_SURROGATE(input))
+		{
+			m_highSurrogate = input;
+			return true; // Note: This discards subsequent high surrogate's (an encoding error)
+		}
+		else if (IS_LOW_SURROGATE(input))
+		{
+			if (m_highSurrogate)
+			{
+				input &= 0x3FF;
+				input |= ((m_highSurrogate & 0x3FF) << 10) | 0x10000;
+			}
+			else
+			{
+				// Note: This discards low surrogate without preceding high-surrogate (an encoding error)
+				return true;
+			}
+		}
+		m_highSurrogate = 0;
+		if (input < 0x110000) // Note: This discards code-points outside the valid range (should never be posted)
+		{
+			SUnicodeEvent evt(input);
+			PostUnicodeEvent(evt);
+		}
 	}
-
-	return ::CallWindowProc(m_prevWndProc, hWnd, message, wParam, lParam);
+	return true;
 }
 
 

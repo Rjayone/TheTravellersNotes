@@ -40,14 +40,14 @@ public:
 	void GetMemoryUsage(ICrySizer * s) const;
 
 	// IVehicleComponent
-	VIRTUAL unsigned int GetPartCount() const;
-	VIRTUAL IVehiclePart* GetPart(unsigned int index) const;    
-  VIRTUAL const AABB& GetBounds(); // bounds are in vehicle space
-  VIRTUAL float GetDamageRatio() const;
-	VIRTUAL void SetDamageRatio(float ratio);
-	VIRTUAL float GetMaxDamage() const;
+	virtual unsigned int GetPartCount() const;
+	virtual IVehiclePart* GetPart(unsigned int index) const;    
+  virtual const AABB& GetBounds(); // bounds are in vehicle space
+  virtual float GetDamageRatio() const;
+	virtual void SetDamageRatio(float ratio);
+	virtual float GetMaxDamage() const;
 
-  VIRTUAL const char *GetComponentName() const
+  virtual const char *GetComponentName() const
 	{
 		return m_pSharedParams ? m_pSharedParams->name.c_str() : NULL;
 	}

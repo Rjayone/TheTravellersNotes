@@ -11,16 +11,12 @@ History:
 - Nov 22,2006:	Created by Craig Tiller
 
 *************************************************************************/
-#include DEVIRTUALIZE_HEADER_FIX(ITextmodeConsole.h)
-
-#ifndef __ITEXTMODECONSOLE_H__
-#define __ITEXTMODECONSOLE_H__
 
 #pragma once
 
-UNIQUE_IFACE struct ITextModeConsole
+struct ITextModeConsole
 {
-
+	// <interfuscator:shuffle>
 	virtual ~ITextModeConsole() {}
 	virtual Vec2_tpl<int> BeginDraw() = 0;
 	virtual void PutText( int x, int y, const char * msg ) = 0;
@@ -28,7 +24,5 @@ UNIQUE_IFACE struct ITextModeConsole
   virtual void OnShutdown() = 0;
 
 	virtual void SetTitle( const char* title ) {}
-
+	// </interfuscator:shuffle>
 };
-
-#endif

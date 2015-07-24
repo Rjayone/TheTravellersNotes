@@ -85,8 +85,12 @@ import mscv_helper
 HEADERS_GLOB = '**/(*.h|*.hpp|*.H|*.inl)'
 
 PROJECT_TEMPLATE = r'''<?xml version="1.0" encoding="UTF-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0"
-	xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Enable for all projects to avoid NVIDIA TEGRA auto updater dialog -->
+  <PropertyGroup Label="NsightTegraProject">
+    <NsightTegraProjectRevisionNumber>9</NsightTegraProjectRevisionNumber>
+  </PropertyGroup>
 
 	<ItemGroup Label="ProjectConfigurations">
 		${for b in project.build_properties}
@@ -99,14 +103,14 @@ PROJECT_TEMPLATE = r'''<?xml version="1.0" encoding="UTF-8"?>
 
 	<PropertyGroup Label="Globals">
 		<ProjectGuid>{${project.uuid}}</ProjectGuid>
-		<Keyword>MakefileProj</Keyword>
+		<Keyword>${project.get_project_keyword()}</Keyword>
 		<ProjectName>${project.name}</ProjectName>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 
 	${for b in project.build_properties}
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='${b.configuration}|${b.platform}'" Label="Configuration">
-		<ConfigurationType>Makefile</ConfigurationType>
+		<ConfigurationType>${project.get_project_type()}</ConfigurationType>
 		<OutDir>${b.outdir}</OutDir>		
 		<PlatformToolset>v110</PlatformToolset>		
 	</PropertyGroup>
@@ -143,21 +147,21 @@ PROJECT_TEMPLATE = r'''<?xml version="1.0" encoding="UTF-8"?>
 		<RemoteRoot>${xml:b.deploy_dir}</RemoteRoot>
 		${endif}		
 		${if b.platform == 'Durango'}
-		<OutDir>${xml:project.get_output_folder('durango')}</OutDir>
-		<LayoutDir>${xml:project.get_output_folder('durango')}</LayoutDir>
+		<OutDir>${xml:project.get_output_folder('durango', b.target_spec)}</OutDir>
+		<LayoutDir>${xml:project.get_output_folder('durango', b.target_spec)}</LayoutDir>
 		<LayoutExtensionFilter>*.ilk;*.exp;*.lib;*.winmd;*.appxrecipe;*.pri</LayoutExtensionFilter>
 		${if getattr(b, 'output_file_name', None)}
 		<TargetName>${b.output_file_name}</TargetName>
 		${endif}	
 		${endif}
 		${if b.platform == 'ORBIS'}
-		<OutDir>${xml:project.get_output_folder('orbis')}</OutDir>
+		<OutDir>${xml:project.get_output_folder('orbis', b.target_spec)}</OutDir>
 		${endif}
 		${if b.platform == 'CppCheck'}
-		<OutDir>${xml:project.get_output_folder('orbis')}</OutDir>
+		<OutDir>${xml:project.get_output_folder('orbis', b.target_spec)}</OutDir>
 		${endif}
 		${if b.platform == 'Linux X64 GCC'}
-		<OutDir>${xml:project.get_output_folder('linux_x64_gcc')}</OutDir>
+		<OutDir>${xml:project.get_output_folder('linux_x64_gcc', b.target_spec)}</OutDir>
 		${endif}
 	</PropertyGroup>
 	${endfor}
@@ -194,16 +198,29 @@ PROJECT_TEMPLATE = r'''<?xml version="1.0" encoding="UTF-8"?>
 '''
 
 PROJECT_USER_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<!-- Setup Debugger working dir for Orbis debugger -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">	
 	${for b in project.build_properties}
 	${if b.platform == 'ORBIS'}
 	${if b.game_project != ''}
+	<!-- Setup Debugger working dir for Orbis debugger -->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='${b.configuration}|${b.platform}'">
-	  <LocalDebuggerWorkingDirectory>${xml:project.get_output_folder('orbis')}</LocalDebuggerWorkingDirectory>
+	  <LocalDebuggerWorkingDirectory>${xml:project.get_output_folder('orbis', b.target_spec)}</LocalDebuggerWorkingDirectory>
 		<LocalDebuggerCommandArguments>-root=${xml:project.ctx.project_orbis_data_folder(b.game_project)}</LocalDebuggerCommandArguments>
 	</PropertyGroup>
 	${endif}
+	${endif}
+	${endfor}
+	
+	${if project.is_android_project()}
+	${for b in project.build_properties}
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='${b.configuration}|${b.platform}'">
+		<OverrideAPKPath>${b.bin_output_folder.abspath()}\\${project.name}.apk</OverrideAPKPath>
+		<AdditionalLibraryDirectories>${b.bin_output_folder.abspath()}\\lib_debug\\armeabi-v7a</AdditionalLibraryDirectories>
+		<BuildXmlPath>${b.bin_output_folder.abspath()}</BuildXmlPath>
+		<GdbSetupPath>${b.bin_output_folder.abspath()}</GdbSetupPath>
+		<DebuggerFlavor>AndroidDebugger</DebuggerFlavor>
+		<AndroidDebugMode>all</AndroidDebugMode>
+	</PropertyGroup>
 	${endif}
 	${endfor}
 </Project>
@@ -241,7 +258,7 @@ FILTER_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
 PROJECT_2008_TEMPLATE = r'''<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject ProjectType="Visual C++" Version="9,00"
 	Name="${xml: project.name}" ProjectGUID="{${project.uuid}}"
-	Keyword="MakeFileProj"
+	Keyword="${project.get_project_keyword()}"
 	TargetFrameworkVersion="196613">
 	<Platforms>
 		${if project.build_properties}
@@ -335,17 +352,6 @@ Global
 	${endfor}
 	EndGlobalSection
 EndGlobal
-'''
-
-RECODE_TEMPLATE = r'''<?xml version="1.0" encoding="UTF-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<PropertyGroup>
-		<RecodeBaseDir>${project.get_recode_base_dir()}</RecodeBaseDir>
-		<RecodeGlobalVarExclude>${project.get_recode_global_var_exclude_list()}</RecodeGlobalVarExclude>
-		<RecodeBaseDirExclusions>..\Code\SDKs;..\Code\Sandbox\SDKs</RecodeBaseDirExclusions>
-		<RecodeDemunch>true</RecodeDemunch>
-	</PropertyGroup>
-</Project>
 '''
 
 RECODE_LICENCE_TEMPLATE = r'''
@@ -482,6 +488,9 @@ def convert_waf_platform_to_vs_platform(self, platform):
 	
 	if platform == 'cppcheck':
 		return 'CppCheck'
+	
+	if platform == 'android_arm_gcc':
+		return 'Tegra-Android'
 		
 	print('to_vs error ' + platform)
 	return 'UNKNOWN'
@@ -506,6 +515,9 @@ def convert_vs_platform_to_waf_platform(self, platform):
 	
 	if platform == 'CppCheck':
 		return 'cppcheck'
+		
+	if platform == 'Tegra-Android':
+		return 'android_arm_gcc'
 		
 	print('to_waf error ' + platform)
 	return 'UNKNOWN'
@@ -599,6 +611,10 @@ def create_msbuild_platform_folder(self, platform_name):
 		# Microsoft is not really well documented, I tried to use the Registry to find the install path for MSBuild, but this yielded:
 		# $(MSBuildExtensionsPath32)\Microsoft.Cpp\v4.0\  ... where MSBuildExtensionPath32 is not defined in registry or as an env variable
 		msbuild_folder_path = 'C:/Program Files (x86)/MSBuild/Microsoft.Cpp/v4.0/Platforms/' + platform_name
+		
+		if os.path.isdir(msbuild_folder_path):
+			return
+			
 		try:			
 			os.makedirs(msbuild_folder_path)
 		except OSError as exception:
@@ -888,7 +904,7 @@ class vsnode_project(vsnode):
 		if name.endswith('.cpp') or name.endswith('.c'):
 			return 'ClCompile'
 		return 'ClInclude'
-		
+				
 	def collect_properties(self):
 		"""
 		Returns a list of triplet (configuration, platform, output_directory)
@@ -899,15 +915,19 @@ class vsnode_project(vsnode):
 				x = build_property()
 				x.outdir = ''
 
-				x.configuration = c
-				x.platform = p
+				waf_platform = self.ctx.convert_vs_platform_to_waf_platform(p)
 				waf_spec = self.ctx.convert_vs_spec_to_waf_spec(c)
+
 				active_projects = self.ctx.spec_game_projects( waf_spec )
 				if len(active_projects) != 1:
 					x.game_project = ''
 				else:
 					x.game_project = active_projects[0]
 
+				x.configuration = c
+				x.platform = p
+				x.bin_output_folder = self.ctx.get_output_folders(waf_platform, waf_spec)[0]				
+				
 				x.preprocessor_definitions = ''
 				x.includes_search_path = ''
 				
@@ -927,8 +947,8 @@ class vsnode_project(vsnode):
 		params = self.get_build_params(props)
 		return "%s clean_" % params[0] + self.ctx.convert_vs_platform_to_waf_platform(props.platform) + '_' + self.ctx.convert_vs_configuration_to_waf_configuration(props.configuration) + ' --project-spec ' + self.ctx.convert_vs_spec_to_waf_spec(props.configuration) + " %s" % params[1]		
 			
-	def get_output_folder(self,platform):
-		output_folders = self.ctx.get_output_folders(platform)
+	def get_output_folder(self,platform, target_spec):
+		output_folders = self.ctx.get_output_folders(platform, target_spec)
 		if len(output_folders) == 0:
 			return ''
 			
@@ -948,6 +968,15 @@ class vsnode_project(vsnode):
 
 	def get_filter_name(self, node):
 		return _get_filter_name(self.project_filter, node.abspath())
+		
+	def is_android_project(self):
+		return False
+		
+	def get_project_type(self):
+		return 'Makefile'
+	
+	def get_project_keyword(self):
+		return 'MakeFileProj'
 
 class vsnode_alias(vsnode_project):
 	def __init__(self, ctx, node, name):
@@ -1095,7 +1124,7 @@ waf3-1.7.*/**
 
 	def get_rebuild_command(self, props):
 		return self.get_build_command(props)
-
+		
 class vsnode_target(vsnode_project):
 	"""
 	Visual studio project representing a targets (programs, libraries, etc) and bound
@@ -1116,7 +1145,23 @@ class vsnode_target(vsnode_project):
 			else:
 				self.is_deploy = tg.need_deploy
 		self.project_filter = self.tg.project_filter
-
+		
+	def is_android_project(self):
+		for feature in self.tg.features:
+			if 'android' in feature:
+				return True
+		return False
+		
+	def get_project_type(self):			
+		if self.is_android_project():
+			return 'ExternalBuildSystem'
+		return 'Makefile'
+	
+	def get_project_keyword(self):
+		if self.is_android_project():
+			return 'ExternalBuildSystem'
+		return 'MakeFileProj'
+	
 	def get_build_params(self, props):
 		"""
 		Override the default to add the target name
@@ -1309,7 +1354,7 @@ class vsnode_target(vsnode_project):
 							output_file_name = self.ctx.get_dedicated_server_executable_name(project)
 					
 					# Save project info 
-					output_file = output_folder_node.make_node(output_file_name)
+					output_file = output_folder_node.make_node(output_file_name)					
 					x.output_file = pattern % output_file.abspath()					
 					x.output_file_name = output_file_name
 					x.output_path = os.path.dirname(x.output_file)
@@ -1333,13 +1378,8 @@ class vsnode_target(vsnode_project):
 				include_list = list(current_env['INCLUDES'])
 				include_list += self.GetPlatformSettings( waf_platform, waf_configuration, 'includes', self.tg )
 				
-				# Add Visual Studio Include path to allow working with .rc files (else some headers are not found)
-				include_list += [ self.ctx.CreateRootRelativePath('Code/SDKs/Microsoft Windows SDK/V8.0/Include') ]
-				include_list += [ self.ctx.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/include') ]
-				include_list += [ self.ctx.CreateRootRelativePath('Code/SDKs/Microsoft Visual Studio Compiler/atlmfc/include') ]
-				
 				# make sure we only have absolute path for intellisense
-				# If we don't have a absolute path, assume a relative one, hence prefix the path with the taskgen path and comvert it into an absolute one
+				# If we don't have a absolute path, assume a relative one, hence prefix the path with the taskgen path and convert it into an absolute one
 				for i in range(len(include_list)):
 					if not os.path.isabs( include_list[i] ):
 						include_list[i] = os.path.abspath( self.tg.path.abspath() + '/' + include_list[i] )
@@ -1393,11 +1433,22 @@ class msvs_generator(BuildContext):
 
 		self.numver = '12.00'
 		self.vsver  = '2012'
+		
+		# Create folders to make VS think we have the platform targets installed
+		required_folder_for_platform = { 		
+			'win_x86' : 'Win32',
+			'win_x64' : 'x64',
+			'durango' : 'Durango',
+			'orbis' 	: 'ORBIS',
+			'cppcheck': 'CppCheck',
+			'android_arm_gcc' : 'Tegra-Android'	
+			}
 
-		# Create folders to make VS think we have a linux/cpp check target
-		create_msbuild_platform_folder(self, 'Linux X64 GCC')
-		create_msbuild_platform_folder(self, 'Linux X64 CLANG')
-		create_msbuild_platform_folder(self, 'CppCheck')		
+		for platform in self.get_supported_platforms():			
+			if platform in required_folder_for_platform:
+				create_msbuild_platform_folder(self, required_folder_for_platform[platform])
+			else:
+				self.warning('Warning: Unsupported platform "%s" during MSVS generation encountered. VS solution might not work as expected.' % platform)
 	
 	def execute(self):
 		"""
@@ -1450,15 +1501,7 @@ class msvs_generator(BuildContext):
 		sln_str = template1(self)
 		sln_str = rm_blank_lines(sln_str)
 		node.stealth_write(sln_str)
-		
-		# Write recode file
-		recode_node = node.change_ext('.recode')
-		Logs.warn('Creating %r' % recode_node)
-		recode_template = compile_template(RECODE_TEMPLATE)				
-		recode_str = recode_template(self)
-		recode_str = rm_blank_lines(recode_str)
-		recode_node.stealth_write(recode_str)
-		
+				
 		# Write recode licence file
 		recode_lic_node = node.parent.make_node('recode.lic')
 		Logs.warn('Creating %r' % recode_lic_node)

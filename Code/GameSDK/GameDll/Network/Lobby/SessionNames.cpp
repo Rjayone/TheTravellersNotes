@@ -25,7 +25,7 @@ void SSessionNames::SSessionName::Set(CryUserID userId, const SCryMatchMakingCon
 	m_conId = conId;
 	m_userId = userId;
 	m_isDedicated = isDedicated;
-	cry_strncpy(m_name, name, sizeof(m_name));
+	cry_strcpy(m_name, name);
 
 	SetUserData(userData);
 }

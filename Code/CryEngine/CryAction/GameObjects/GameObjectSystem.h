@@ -33,21 +33,22 @@ public:
 	const char * GetName( IGameObjectSystem::ExtensionID id );
 	uint32 GetExtensionSerializationPriority( IGameObjectSystem::ExtensionID id );
 	IGameObjectExtensionPtr Instantiate( IGameObjectSystem::ExtensionID id, IGameObject * pObject );
-	VIRTUAL void RegisterExtension( const char * name, IGameObjectExtensionCreatorBase * pCreator, IEntityClassRegistry::SEntityClassDesc * pClsDesc );
-	VIRTUAL void DefineProtocol( bool server, IProtocolBuilder * pBuilder );
-	VIRTUAL void BroadcastEvent( const SGameObjectEvent& evt );
+	virtual void RegisterExtension( const char * name, IGameObjectExtensionCreatorBase * pCreator, IEntityClassRegistry::SEntityClassDesc * pClsDesc );
+	virtual void RegisterSchedulingProfile( const char* szEntityClassName, const char* szNormalPolicy, const char* szOwnedPolicy );
+	virtual void DefineProtocol( bool server, IProtocolBuilder * pBuilder );
+	virtual void BroadcastEvent( const SGameObjectEvent& evt );
 
-	VIRTUAL void RegisterEvent( uint32 id, const char* name );
-	VIRTUAL uint32 GetEventID( const char* name );
-	VIRTUAL const char* GetEventName( uint32 id );
+	virtual void RegisterEvent( uint32 id, const char* name );
+	virtual uint32 GetEventID( const char* name );
+	virtual const char* GetEventName( uint32 id );
 
-	VIRTUAL IGameObject *CreateGameObjectForEntity(EntityId entityId);
-	VIRTUAL IEntityProxyPtr CreateGameObjectEntityProxy(IEntity& entity, IGameObject** pGameObject = NULL) OVERRIDE;
+	virtual IGameObject *CreateGameObjectForEntity(EntityId entityId);
+	virtual IEntityProxyPtr CreateGameObjectEntityProxy(IEntity& entity, IGameObject** pGameObject = NULL) override;
 
-	VIRTUAL void PostUpdate( float frameTime );
-	VIRTUAL void SetPostUpdate( IGameObject * pGameObject, bool enable );
+	virtual void PostUpdate( float frameTime );
+	virtual void SetPostUpdate( IGameObject * pGameObject, bool enable );
 
-	VIRTUAL void Reset();
+	virtual void Reset();
 
 	const SEntitySchedulingProfiles * GetEntitySchedulerProfiles( IEntity * pEnt );
 
@@ -57,13 +58,13 @@ public:
 	ILINE IEntityClass * GetPlayerProximityTriggerClass() { return m_pClassPlayerProximityTrigger; }
 	ILINE std::vector<IGameObjectSystem::ExtensionID> *GetActivatedExtensionsTop() { return &m_activatedExtensions_top; }
 
-	VIRTUAL void SetSpawnSerializerForEntity( const EntityId entityId, TSerialize* pSerializer );
-	VIRTUAL void ClearSpawnSerializerForEntity( const EntityId entityId );
+	virtual void SetSpawnSerializerForEntity( const EntityId entityId, TSerialize* pSerializer );
+	virtual void ClearSpawnSerializerForEntity( const EntityId entityId );
 	
 	void GetMemoryUsage(ICrySizer * s) const;
 
-  VIRTUAL void AddSink( IGameObjectSystemSink *pSink );
-  VIRTUAL void RemoveSink( IGameObjectSystemSink *pSink );
+  virtual void AddSink( IGameObjectSystemSink *pSink );
+  virtual void RemoveSink( IGameObjectSystemSink *pSink );
 private:
 	void LoadSerializationOrderFile();
 	TSerialize* GetSpawnSerializerForEntity( const EntityId entityId ) const;
@@ -115,7 +116,8 @@ private:
 	typedef std::vector<SSpawnSerializer> TSpawnSerializers;
 	TSpawnSerializers m_spawnSerializers;
 
-	std::map<string, SEntitySchedulingProfiles> m_schedulingParams;
+	typedef std::map<string, SEntitySchedulingProfiles> TSchedulingProfiles;
+	TSchedulingProfiles m_schedulingParams;
 	SEntitySchedulingProfiles m_defaultProfiles;
 
 	// event ID management

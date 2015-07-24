@@ -253,7 +253,7 @@ struct STagState
 	STagState(const STagStateBase &copyFrom)
 	{
 		CRY_ASSERT(copyFrom.length <= NUM_BYTES);
-		memcpy(state, copyFrom.state, min(copyFrom.length, NUM_BYTES));
+		memcpy(state, copyFrom.state, (std::min)(copyFrom.length, NUM_BYTES));
 		memset(state+copyFrom.length, TAG_STATE_EMPTY, NUM_BYTES-copyFrom.length);
 	}
 
@@ -411,6 +411,14 @@ struct STagState
 		CRY_ASSERT(groupMask.byte == tagMask.byte);
 
 		return (state[groupMask.byte] & groupMask.mask) == tagMask.mask;
+	}
+
+	void Serialize(TSerialize serialize)
+	{
+		for (int i=0; i<NUM_BYTES; ++i)
+		{
+			serialize.Value("stateBytes", state[i], 'ui8');
+		}
 	}
 
 private:
@@ -1086,8 +1094,7 @@ public:
 			char tagBuffer[128];
 			while (nxt)
 			{
-				strncpy(tagBuffer, cur, nxt-cur);
-				tagBuffer[nxt-cur] = '\0';
+				cry_strcpy(tagBuffer, cur, (size_t)(nxt - cur));
 				int tag = Find(tagBuffer);
 				if (tag < 0)
 				{

@@ -5,6 +5,7 @@
 #include "Cry_Matrix33.h"
 #include "Cry_Color.h"
 #include "smartptr.h"
+#include "StringUtils.h"
 
 class ITexture;
 
@@ -18,7 +19,7 @@ enum FuncParamType
 class IFuncVariable : public _reference_target_t
 {
 public:
-
+	// <interfuscator:shuffle>
 	virtual ~IFuncVariable(){};
 
 	virtual float GetMin() const = 0;
@@ -35,7 +36,7 @@ public:
 	virtual ColorF GetColorF() const=0;
 	virtual Matrix33 GetMatrix33() const=0;
 	virtual ITexture* GetTexture() const=0;
-
+	// </interfuscator:shuffle>
 
 	enum FuncParamType paramType; // float, string, int, vec3 etc
 	string name;
@@ -76,7 +77,7 @@ public:
 		paramType = type;
 
 		char _nameNoSpace[50];
-		strcpy_s( _nameNoSpace, 50, _humanname );
+		cry_strcpy( _nameNoSpace, _humanname );
 		char *p1 = _nameNoSpace;
 		char *p2 = p1;
 		while(*p1 != 0) {

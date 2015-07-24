@@ -801,9 +801,9 @@ namespace CornerSmoothing
 	public:
 		CStopPlan() {}
 
-		bool IsValidFor(const SState& state) const OVERRIDE { return true; }
+		bool IsValidFor(const SState& state) const override { return true; }
 	
-		EPlanExecutionResult Execute(const SState& state, SOutput& output) OVERRIDE
+		EPlanExecutionResult Execute(const SState& state, SOutput& output) override
 		{
 			output.desiredMovementDirection2D = state.desiredMovementDirection2D;
 			output.desiredSpeed = 0.0f;
@@ -812,7 +812,7 @@ namespace CornerSmoothing
 		}
 
 #if INCLUDE_CORNERSMOOTHER_DEBUGGING()
-		void DebugDraw() const OVERRIDE
+		void DebugDraw() const override
 		{
 		}
 #endif
@@ -886,7 +886,7 @@ namespace CornerSmoothing
 		}
 
 
-		bool IsValidFor(const SState& state) const OVERRIDE
+		bool IsValidFor(const SState& state) const override
 		{
 			CRY_ASSERT(state.hasMoveTarget);
 
@@ -942,7 +942,7 @@ namespace CornerSmoothing
 		}
 
 
-		EPlanExecutionResult Execute(const SState& state, SOutput& output) OVERRIDE
+		EPlanExecutionResult Execute(const SState& state, SOutput& output) override
 		{
 #if INCLUDE_CORNERSMOOTHER_DEBUGGING()
 			//Debug::DrawSpline(m_data.spline, ColorF(0.0f,0.0f,1.0f, 1.0f), ColorF(0.0f,0.8f,1.0f, 1.0f), m_lastPositionOnSpline2D, m_lastPositionOnSpline2D, 0.002f, ColorF(0.9f,0.9f,0.2f, 1.0f));
@@ -1060,7 +1060,7 @@ namespace CornerSmoothing
 
 
 #if INCLUDE_CORNERSMOOTHER_DEBUGGING()
-		void DebugDraw() const OVERRIDE
+		void DebugDraw() const override
 		{
 			Debug::DrawPrediction(m_startPosition, m_data.prediction, ColorF(0.6f,0.6f,1,1));
 			Debug::DrawPrediction(m_startPosition, m_data.simplifiedPrediction, ColorF(0.9f,0.9f,1,1), 0.15f, ColorF(0.9f, 0.0f, 0.0f, 1));

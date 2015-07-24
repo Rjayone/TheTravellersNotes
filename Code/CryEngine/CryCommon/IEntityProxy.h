@@ -55,6 +55,7 @@ enum EEntityProxy
 	ENTITY_PROXY_ENTITYNODE,
 	ENTITY_PROXY_ATTRIBUTES,
 	ENTITY_PROXY_CLIPVOLUME,
+	ENTITY_PROXY_DYNAMICRESPONSE,
 
 	ENTITY_PROXY_USER,
 
@@ -68,7 +69,7 @@ enum EEntityProxy
 //////////////////////////////////////////////////////////////////////////
 struct IEntityProxy : public IComponent
 {
-
+	// <interfuscator:shuffle>
 	virtual ~IEntityProxy(){}
 
 	virtual ComponentEventPriority GetEventPriority( const int eventID ) const { return ENTITY_PROXY_LAST - const_cast<IEntityProxy*> (this)->GetType(); }
@@ -128,7 +129,7 @@ struct IEntityProxy : public IComponent
 	//    It's the responsibility of the proxy to identify its internal state which may complicate the hierarchy 
 	//    of the parent Entity i.e., sub-proxies and which actually exist for this instantiation.
 	virtual bool GetSignature( TSerialize signature ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityProxy );
@@ -138,9 +139,9 @@ struct IEntityScript;
 //////////////////////////////////////////////////////////////////////////
 // Script proxy interface.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityScriptProxy : public IEntityProxy
+struct IEntityScriptProxy : public IEntityProxy
 {
-
+	// <interfuscator:shuffle>
 	virtual void SetScriptUpdateRate( float fUpdateEveryNSeconds ) = 0;
 	virtual IScriptTable* GetScriptTable() = 0;
 	virtual void CallEvent( const char *sEvent ) = 0;
@@ -198,7 +199,7 @@ UNIQUE_IFACE struct IEntityScriptProxy : public IEntityProxy
 	//    pScript - an entity script object that has already been loaded with the new script
 	//    params - parameters used to set the properties table if required
 	virtual void ChangeScript( IEntityScript* pScript, SEntitySpawnParams *params ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityScriptProxy );
@@ -283,9 +284,9 @@ struct SEntityPhysicalizeParams
 //////////////////////////////////////////////////////////////////////////
 // Physical proxy interface.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityPhysicalProxy : public IEntityProxy
+struct IEntityPhysicalProxy : public IEntityProxy
 {
-
+	// <interfuscator:shuffle>
 	// Description:
 	//    Assign a pre-created physical entity to this proxy.
 	// Arguments:
@@ -356,7 +357,7 @@ UNIQUE_IFACE struct IEntityPhysicalProxy : public IEntityProxy
   // Description:
   //    Have the physics ignore the XForm event
   virtual void IgnoreXFormEvent(bool ignore) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityPhysicalProxy );
@@ -364,9 +365,9 @@ DECLARE_COMPONENT_POINTERS( IEntityPhysicalProxy );
 //////////////////////////////////////////////////////////////////////////
 // Proximity trigger proxy interface.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityTriggerProxy : public IEntityProxy
+struct IEntityTriggerProxy : public IEntityProxy
 {
-
+	// <interfuscator:shuffle>
 	// Description:
 	//    Creates a trigger bounding box.
 	//    When physics will detect collision with this bounding box it will send an events to the entity.
@@ -390,7 +391,7 @@ UNIQUE_IFACE struct IEntityTriggerProxy : public IEntityProxy
 	//    Invalidate the trigger, so it gets recalculated and catches things which are already inside
 	//		when it gets enabled.
 	virtual void InvalidateTrigger( ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityTriggerProxy );
@@ -400,7 +401,7 @@ DECLARE_COMPONENT_POINTERS( IEntityTriggerProxy );
 //////////////////////////////////////////////////////////////////////////
 struct IEntityAudioProxy : public IEntityProxy
 {
-
+	// <interfuscator:shuffle>
 	virtual void											SetFadeDistance(float const fFadeDistance) = 0;
 	virtual float											GetFadeDistance() const = 0;
 	virtual void											SetEnvironmentFadeDistance(float const fEnvironmentFadeDistance) = 0;
@@ -411,15 +412,17 @@ struct IEntityAudioProxy : public IEntityProxy
 	virtual bool											RemoveAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID) = 0;
 	virtual void											SetAuxAudioProxyOffset(SATLWorldPosition const& rOffset, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
 	virtual SATLWorldPosition const&	GetAuxAudioProxyOffset(TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
-	virtual void											ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
-	virtual void											ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TTriggerFinishedCallback const pCallback, void* const pCallbackCookie, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
+	virtual bool											ExecuteTrigger(TAudioControlID const nTriggerID, ELipSyncMethod const eLipSyncMethod, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID, SAudioCallBackInfos const& rCallBackInfos = SAudioCallBackInfos::GetEmptyObject()) = 0;
 	virtual void											StopTrigger(TAudioControlID const nTriggerID, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
 	virtual void											SetSwitchState(TAudioControlID const nSwitchID, TAudioSwitchStateID const nStateID, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
 	virtual void											SetRtpcValue(TAudioControlID const nRtpcID, float const fValue, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
 	virtual void											SetObstructionCalcType(EAudioObjectObstructionCalcType const eObstructionType, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
 	virtual void											SetEnvironmentAmount(TAudioEnvironmentID const nEnvironmentID, float const fAmount, TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
 	virtual void											SetCurrentEnvironments(TAudioProxyID const nAudioProxyLocalID = DEFAULT_AUDIO_PROXY_ID) = 0;
-
+	virtual void											AuxAudioProxiesMoveWithEntity(bool const bCanMoveWithEntity) = 0;
+	virtual void											AddAsListenerToAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID, void (*func)(SAudioRequestInfo const* const), EAudioRequestType requestType = eART_AUDIO_ALL_REQUESTS, TATLEnumFlagsType specificRequestMask = ALL_AUDIO_REQUEST_SPECIFIC_TYPE_FLAGS) = 0;
+	virtual void											RemoveAsListenerFromAuxAudioProxy(TAudioProxyID const nAudioProxyLocalID, void (*func)(SAudioRequestInfo const* const)) = 0;
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityAudioProxy );
@@ -478,7 +481,7 @@ DECLARE_BOOST_POINTERS(IShaderParamCallback);
 //////////////////////////////////////////////////////////////////////////
 struct IEntityRenderProxy : public IEntityProxy
 {
-
+	// <interfuscator:shuffle>
 	// Description:
 	//    Get world bounds of render proxy.
 	// Arguments:
@@ -677,6 +680,7 @@ struct IEntityRenderProxy : public IEntityProxy
 	//    Sets the LodRatio on the render node.
 	virtual void SetLodRatio(int nLodRatio) = 0;
 
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityRenderProxy );
@@ -698,7 +702,7 @@ enum EEntityAreaType
 //     Area can be shape, box or sphere, when marked entities cross this area border,
 //     it will send ENTITY_EVENT_ENTERAREA,ENTITY_EVENT_LEAVEAREA,ENTITY_EVENT_AREAFADE, 
 //     events to the target entities.
-UNIQUE_IFACE struct IEntityAreaProxy : public IEntityProxy
+struct IEntityAreaProxy : public IEntityProxy
 {
 	enum EAreaProxyFlags
 	{
@@ -706,6 +710,7 @@ UNIQUE_IFACE struct IEntityAreaProxy : public IEntityProxy
 		FLAG_NOT_SERIALIZE   = BIT(2)  // Areas with this flag will not be serialized
 	};
 
+	// <interfuscator:shuffle>
 	// Area flags.
 	virtual void SetFlags( int nAreaProxyFlags ) = 0;
 	// Area flags.
@@ -871,6 +876,7 @@ UNIQUE_IFACE struct IEntityAreaProxy : public IEntityProxy
 	//    get entity in area by index
 	virtual EntityId GetEntityInAreaByIdx(size_t index) const = 0;
 
+  // </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityAreaProxy );
@@ -879,7 +885,7 @@ DECLARE_COMPONENT_POINTERS( IEntityAreaProxy );
 // Description:
 //     Boids proxy allow entity to host flocks of birds or fishes.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityBoidsProxy : public IEntityProxy
+struct IEntityBoidsProxy : public IEntityProxy
 {
 
 };
@@ -891,7 +897,7 @@ DECLARE_COMPONENT_POINTERS( IEntityBoidsProxy );
 //     
 //////////////////////////////////////////////////////////////////////////
 
-UNIQUE_IFACE struct IClipVolumeProxy : public IEntityProxy
+struct IClipVolumeProxy : public IEntityProxy
 {
 	virtual void UpdateRenderMesh(IRenderMesh* pRenderMesh, const DynArray<Vec3>& meshFaces) = 0;
 	virtual IClipVolume* GetClipVolume() const = 0;
@@ -904,15 +910,15 @@ DECLARE_COMPONENT_POINTERS( IClipVolumeProxy );
 // Description:
 //     Flow Graph proxy allows entity to host reference to the flow graph.
 //////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityFlowGraphProxy : public IEntityProxy
+struct IEntityFlowGraphProxy : public IEntityProxy
 {
-
+	// <interfuscator:shuffle>
 	virtual void SetFlowGraph( IFlowGraph *pFlowGraph ) = 0;
 	virtual IFlowGraph* GetFlowGraph() = 0;
 
 	virtual void AddEventListener( IEntityEventListener *pListener ) = 0;
 	virtual void RemoveEventListener( IEntityEventListener *pListener ) = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityFlowGraphProxy );
@@ -921,12 +927,12 @@ DECLARE_COMPONENT_POINTERS( IEntityFlowGraphProxy );
 // Description:
 //     Substitution proxy remembers IRenderNode this entity substitutes and unhides it upon deletion
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntitySubstitutionProxy : public IEntityProxy
+struct IEntitySubstitutionProxy : public IEntityProxy
 {
-
+	// <interfuscator:shuffle>
 	virtual void SetSubstitute(IRenderNode *pSubstitute) = 0;
 	virtual IRenderNode *GetSubstitute() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntitySubstitutionProxy );
@@ -935,12 +941,12 @@ DECLARE_COMPONENT_POINTERS( IEntitySubstitutionProxy );
 // Description:
 //     Represents entity camera.
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityCameraProxy : public IEntityProxy
+struct IEntityCameraProxy : public IEntityProxy
 {
-
+	// <interfuscator:shuffle>
 	virtual void SetCamera( CCamera &cam ) = 0;
 	virtual CCamera& GetCamera() = 0;
-
+	// </interfuscator:shuffle>
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityCameraProxy );
@@ -949,12 +955,33 @@ DECLARE_COMPONENT_POINTERS( IEntityCameraProxy );
 // Description:
 //     Proxy for the entity rope.
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE struct IEntityRopeProxy : public IEntityProxy
+struct IEntityRopeProxy : public IEntityProxy
 {
 	virtual struct IRopeRenderNode* GetRopeRenderNode() = 0;
 };
 
 DECLARE_COMPONENT_POINTERS( IEntityRopeProxy );
+
+
+namespace DRS
+{
+	struct IResponseActor;
+	struct IVariableCollection;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// Description:
+//     Proxy for dynamic response system actors
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+struct IEntityDynamicResponseProxy : public IEntityProxy
+{
+	virtual void QueueSignal(const char* pSignalName, DRS::IVariableCollection* pSignalContext /* = 0 */, float delayBeforeFiring /* = 0.0f */, bool autoReleaseCollection = true) = 0;
+	virtual DRS::IResponseActor* GetResponseActor() const = 0;
+	virtual DRS::IVariableCollection* GetLocalVariableCollection() const = 0;
+};
+
+DECLARE_COMPONENT_POINTERS( IEntityDynamicResponseProxy );
+
 
 #endif // __IEntityProxy_h__
 

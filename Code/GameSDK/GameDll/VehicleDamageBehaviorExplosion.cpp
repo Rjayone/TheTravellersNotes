@@ -85,7 +85,7 @@ void CVehicleDamageBehaviorExplosion::OnDamageEvent(EVehicleDamageBehaviorEvent 
 		{
 			ExplosionInfo explosionInfo;
 			explosionInfo.damage = m_damage;
-			explosionInfo.damage += (behaviorParams.randomness) * Random(-0.25f, 0.25f) * m_damage;
+			explosionInfo.damage += (behaviorParams.randomness) * cry_random(-0.25f, 0.25f) * m_damage;
 
 			if (m_pHelper)
 				explosionInfo.pos = m_pHelper->GetWorldSpaceTranslation();

@@ -30,7 +30,7 @@ tMemoryPoolReferenced g_AudioImplMemoryPoolSoundSecondary;
 class CEngineModule_CryAudioImplWwise : public IEngineModule
 {
 	CRYINTERFACE_SIMPLE(IEngineModule)
-	CRYGENERATE_SINGLETONCLASS(CEngineModule_CryAudioImplWwise, "AudioModule_CryAudioImpl", 0xb4971e5dd02442c5, 0xb34a9ac0b4abfffd)
+	CRYGENERATE_SINGLETONCLASS(CEngineModule_CryAudioImplWwise, "CryAudioImplWwise", 0xb4971e5dd02442c5, 0xb34a9ac0b4abfffd)
 
 	//////////////////////////////////////////////////////////////////////////
 	virtual const char *GetName() {return "CryAudioImplWwise";}
@@ -44,10 +44,9 @@ class CEngineModule_CryAudioImplWwise : public IEngineModule
 		// initialize memory pools
 
 		MEMSTAT_CONTEXT(EMemStatContextTypes::MSC_Other, 0, "Wwise Audio Implementation Memory Pool Primary");
-		size_t const nPoolSize		= g_AudioWwiseImplCVars.m_nPrimaryPoolSize << 10;
+		size_t const nPoolSize		= g_AudioWwiseImplCVars.m_nPrimaryMemoryPoolSize << 10;
 		uint8* const pPoolMemory	= new uint8[nPoolSize];
 		g_AudioImplMemoryPool.InitMem(nPoolSize, pPoolMemory, "Wwise Implementation Audio Pool");
-
 
 #if defined(PROVIDE_WWISE_IMPL_SECONDARY_POOL)
 		size_t nSecondarySize = 0;
@@ -55,7 +54,7 @@ class CEngineModule_CryAudioImplWwise : public IEngineModule
 
 #if defined(DURANGO)
 		MEMSTAT_CONTEXT(EMemStatContextTypes::MSC_Other, 0, "Wwise Implementation Audio Pool Secondary");
-		nSecondarySize = g_AudioWwiseImplCVars.m_nSecondaryPoolSize << 10;
+		nSecondarySize = g_AudioWwiseImplCVars.m_nSecondaryMemoryPoolSize << 10;
 
 		APU_ADDRESS nTemp;
 		HRESULT const eResult = ApuAlloc(&pSecondaryMemory, &nTemp, nSecondarySize, SHAPE_XMA_INPUT_BUFFER_ALIGNMENT);
@@ -69,15 +68,20 @@ class CEngineModule_CryAudioImplWwise : public IEngineModule
 
 		if (pImpl	!= NPTR)
 		{
-			g_AudioImplLogger.Log(eALT_ALWAYS, "<Audio> CryAudioImplWwise loaded");
+			g_AudioImplLogger.Log(eALT_ALWAYS, "CryAudioImplWwise loaded");
 
-			env.pAudioSystem->Initialize(pImpl);
+			SAudioRequest oAudioRequestData;
+			oAudioRequestData.nFlags = eARF_PRIORITY_HIGH | eARF_EXECUTE_BLOCKING;
+
+			SAudioManagerRequestData<eAMRT_SET_AUDIO_IMPL> oAMData(pImpl);
+			oAudioRequestData.pData = &oAMData;
+			env.pAudioSystem->PushRequest(oAudioRequestData);
 
 			bSuccess = true;
 		}
 		else
 		{
-			g_AudioImplLogger.Log(eALT_ALWAYS, "<Audio> CryAudioImplWwise failed to load");
+			g_AudioImplLogger.Log(eALT_ALWAYS, "CryAudioImplWwise failed to load");
 		}
 
 		return bSuccess;

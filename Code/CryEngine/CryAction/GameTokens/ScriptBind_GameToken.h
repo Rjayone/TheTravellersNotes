@@ -30,12 +30,15 @@ public:
 	void Release();
 
 	//! <code>GameToken.SetToken( TokenName, TokenValue )</code>
+	//! <description>Set the value of a game token.</description>
 	int SetToken( IFunctionHandler *pH);
 
 	//! <code>GameToken.GetToken( TokenName )</code>
+	//! <description>Get the value of a game token.</description>
 	int GetToken( IFunctionHandler *pH, const char *sTokenName );
 
 	//! <code>GameToken.DumpAllTokens()</code>
+	//! <description>Dump all game tokens with their values to the log.</description>
 	int DumpAllTokens( IFunctionHandler* pH);
 
 	virtual void GetMemoryUsage(ICrySizer *pSizer) const;

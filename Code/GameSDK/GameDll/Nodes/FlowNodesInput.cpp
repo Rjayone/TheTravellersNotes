@@ -13,6 +13,7 @@ History:
 #include "StdAfx.h"
 #include "Nodes/G2FlowBaseNode.h"
 #include "UI/UIManager.h"
+#include "Player.h"
 
 // 360 keys enum
 enum EXBoxKey
@@ -53,25 +54,25 @@ enum EXBoxKey
 	eXBK_TriggerRBtn,
 };
 
-#if defined(ORBIS)	// FIXME: Using PS3 inputs for ORBIS
-static int PS3KeyTable[]=
+#if defined(ORBIS)
+static int OrbisKeyTable[]=
 {
-	eKI_PS3_Up,			// 0:DPadUp
-	eKI_PS3_Down,		// 1:DPadDown
-	eKI_PS3_Left,		// 2:DPadLeft
-	eKI_PS3_Right,		// 3:DPadRight
-	eKI_PS3_Start,		// 4:Start
-	eKI_PS3_Select,		// 5:Back
-	eKI_PS3_StickLX,	// 6:ThumbL
-	eKI_PS3_StickRY,	// 7:ThumbR
-	eKI_PS3_L1,			// 8:ShoulderL
-	eKI_PS3_R1,			// 9:ShoulderR
-	eKI_PS3_Cross,		// 10:A
-	eKI_PS3_Circle,		// 11:B
-	eKI_PS3_Square,		// 12:X
-	eKI_PS3_Triangle,	// 13:Y
-	eKI_PS3_L2,			// 14
-	eKI_PS3_R2,			// 15
+	eKI_Orbis_Up,			// 0:DPadUp
+	eKI_Orbis_Down,		// 1:DPadDown
+	eKI_Orbis_Left,		// 2:DPadLeft
+	eKI_Orbis_Right,		// 3:DPadRight
+	eKI_Orbis_Start,		// 4:Start
+	eKI_Orbis_Select,		// 5:Back
+	eKI_Orbis_StickLX,	// 6:ThumbL
+	eKI_Orbis_StickRY,	// 7:ThumbR
+	eKI_Orbis_L1,			// 8:ShoulderL
+	eKI_Orbis_R1,			// 9:ShoulderR
+	eKI_Orbis_Cross,		// 10:A
+	eKI_Orbis_Circle,		// 11:B
+	eKI_Orbis_Square,		// 12:X
+	eKI_Orbis_Triangle,	// 13:Y
+	eKI_Orbis_L2,			// 14
+	eKI_Orbis_R2,			// 15
 	-1,					// 16
 	-1,					// 17
 	-1,					// 18
@@ -82,8 +83,8 @@ static int PS3KeyTable[]=
 	-1,					// 23
 	-1,					// 26
 	-1,					// 27
-	eKI_PS3_L3,			// 28:TriggerL
-	eKI_PS3_R3,			// 29:TriggerR
+	eKI_Orbis_L3,			// 28:TriggerL
+	eKI_Orbis_R3,			// 29:TriggerR
 };
 
 #endif
@@ -220,13 +221,13 @@ public:
 	{
 		if (true == m_bActive)
 		{
-#if defined(ORBIS)	// FIXME: Using PS3 inputs for ORBIS
+#if defined(ORBIS)
 			int nThisKey = event.keyId;
 			int nKey = -1;
 			int nInput = GetPortInt(&m_actInfo, EIP_Key);
-			int tableSize = sizeof(PS3KeyTable)/sizeof(PS3KeyTable[0]);
+			int tableSize = sizeof(OrbisKeyTable)/sizeof(OrbisKeyTable[0]);
 			if ( nInput>=0 && nInput<tableSize )
-				nKey = PS3KeyTable[nInput];
+				nKey = OrbisKeyTable[nInput];
 #else
 			// Translate key, check value
 			const int nThisKey = TranslateKey(event.keyId);
@@ -374,25 +375,25 @@ public:
 		switch (nKeyId)
 		{
 
-#if defined(ORBIS)	// FIXME: Using PS3 inputs for ORBIS
+#if defined(ORBIS)
 			// the values in the Input port are shared between all versions, that is why we translate here into xbox constants
-		case eKI_PS3_StickLY:
+		case eKI_Orbis_StickLY:
 			isXAxis = false;
-		case eKI_PS3_StickLX:
+		case eKI_Orbis_StickLX:
 			return eXBK_ThumbL;
 			break;
 
-		case eKI_PS3_StickRY:
+		case eKI_Orbis_StickRY:
 			isXAxis = false;
-		case eKI_PS3_StickRX:
+		case eKI_Orbis_StickRX:
 			return eXBK_ThumbR;
 			break;
 
-		case eKI_PS3_L2:
+		case eKI_Orbis_L2:
 			return eXBK_TriggerL;
 			break;
 
-		case eKI_PS3_R2:
+		case eKI_Orbis_R2:
 			return eXBK_TriggerR;
 			break;
 #else
@@ -642,11 +643,125 @@ public:
 	SActivationInfo m_actInfo;
 };
 
+//////////////////////////////////////////////////////////////////////////
+class CFlowNode_MoveOverlay : public CFlowBaseNode<eNCT_Singleton>
+{
+	enum EInputs 
+	{
+		eIP_ENABLE = 0,
+		eIP_DISABLE,
+		eIP_MOVE_X,
+		eIP_MOVE_Y,
+		eIP_WEIGHT
+	};
+
+public:
+	CFlowNode_MoveOverlay( SActivationInfo * pActInfo ){}
+
+	void GetConfiguration( SFlowNodeConfig& config )
+	{
+		static const SInputPortConfig inputs[] = 
+		{
+			InputPortConfig_Void("Enable", _HELP("Enables Overlay and Sets the parameters" )),
+			InputPortConfig_Void("Disable", _HELP("Disables the overlay" )),
+			InputPortConfig<float>("MoveX", 0.f, _HELP("Input Left/Right (positive is left)"), 0, _UICONFIG("v_min=-1,v_max=1") ),
+			InputPortConfig<float>("MoveY", 0.5f, _HELP("Input Forward/Backward (positive is forward)"), 0, _UICONFIG("v_min=-1,v_max=1") ),
+			InputPortConfig<float>("Weight", 0.5f, _HELP("Tells how strong the overlay is. (0 = no Overlay, 1 = Full Overlay)"), 0, _UICONFIG("v_min=0,v_max=1") ),
+			{0}
+		};
+		static const SOutputPortConfig outputs[] = 
+		{
+			{0}
+		};
+
+		config.nFlags &= ~EFLN_TARGET_ENTITY;
+		config.pInputPorts = inputs;
+		config.pOutputPorts = outputs;
+		config.sDescription = _HELP("Inputs movement that overlays with the players input and mixes the movements.");
+		config.SetCategory(EFLN_APPROVED);
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	void ProcessEvent( EFlowEvent event, SActivationInfo *pActInfo )
+	{
+		switch (event)
+		{	
+		case eFE_Initialize:
+			DisableOverlay();
+			break;
+
+		case eFE_Activate:
+			{
+				if (IsPortActive(pActInfo, eIP_ENABLE))
+				{
+					SendOverlayData(pActInfo);
+				}
+				else if (IsPortActive(pActInfo, eIP_DISABLE))
+				{
+					DisableOverlay();
+				}
+			}
+			break;
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	void DisableOverlay()
+	{
+		CActor* pClientActor = static_cast<CActor*>(g_pGame->GetIGameFramework()->GetClientActor());
+		if (pClientActor)
+		{
+			if (pClientActor->GetActorClass() == CPlayer::GetActorClassType())
+			{
+				CPlayer* pClientPlayer = static_cast<CPlayer*>(pClientActor);
+				IPlayerInput* pPlayerInput = pClientPlayer->GetPlayerInput();
+
+				if (pPlayerInput)
+				{
+					pPlayerInput->OnAction(CCryName("move_overlay_disable"), eAAM_OnPress, 0.f);
+				}
+			}
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	void SendOverlayData(SActivationInfo *pActInfo)
+	{
+		CActor* pClientActor = static_cast<CActor*>(g_pGame->GetIGameFramework()->GetClientActor());
+		if (pClientActor)
+		{
+			if (pClientActor->GetActorClass() == CPlayer::GetActorClassType())
+			{
+				CPlayer* pClientPlayer = static_cast<CPlayer*>(pClientActor);
+				IPlayerInput* pPlayerInput = pClientPlayer->GetPlayerInput();
+
+				if (pPlayerInput)
+				{
+					const float moveX  = GetPortFloat(pActInfo, eIP_MOVE_X);
+					const float moveY  = GetPortFloat(pActInfo, eIP_MOVE_Y);
+					const float weight = GetPortFloat(pActInfo, eIP_WEIGHT);
+
+					pPlayerInput->OnAction(CCryName("move_overlay_enable"), eAAM_OnHold, 0.f);
+					pPlayerInput->OnAction(CCryName("move_overlay_x"), eAAM_OnHold, moveX);
+					pPlayerInput->OnAction(CCryName("move_overlay_y"), eAAM_OnHold, moveY);
+					pPlayerInput->OnAction(CCryName("move_overlay_weight"), eAAM_OnHold, weight);
+				}
+			}
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	virtual void GetMemoryUsage(ICrySizer * s) const
+	{
+		s->Add(*this);
+	}
+};
 
 //////////////////////////////////////////////////////////////////////////
 // Register nodes
 
 REGISTER_FLOW_NODE("Input:XBoxKey", CG4FlowNode_XBoxKey);
 REGISTER_FLOW_NODE("Input:XBoxAnalog", CG4FlowNode_XBoxAnalog);
+REGISTER_FLOW_NODE("Input:MoveOverlay", CFlowNode_MoveOverlay);
 REGISTER_FLOW_NODE("Input:ControlScheme", CG4FlowNode_InputControlScheme);
 REGISTER_FLOW_NODE("Input:ControlSchemeListener", CG4FlowNode_InputControlSchemeListener);

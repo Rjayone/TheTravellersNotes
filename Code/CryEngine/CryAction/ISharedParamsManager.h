@@ -12,8 +12,6 @@ History:
 
 *************************************************************************/
 
-#include DEVIRTUALIZE_HEADER_FIX(ISharedParamsManager.h)
-
 #ifndef __ISHAREDPARAMSMANAGER_H__
 #define __ISHAREDPARAMSMANAGER_H__
 
@@ -41,7 +39,7 @@ DECLARE_BOOST_POINTERS(ISharedParams);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Shared parameters manager interface class.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-UNIQUE_IFACE class ISharedParamsManager
+class ISharedParamsManager
 {
 	public:
 		virtual	~ISharedParamsManager(){}

@@ -94,42 +94,42 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// IEntity interface implementation.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL EntityId GetId() const { return m_nID; };
-	VIRTUAL EntityGUID GetGuid() const { return m_guid; };
+	virtual EntityId GetId() const { return m_nID; }
+	virtual EntityGUID GetGuid() const { return m_guid; }
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL IEntityClass* GetClass() const { return m_pClass; }
-	VIRTUAL IEntityArchetype* GetArchetype() { return m_pArchetype; };
+	virtual IEntityClass* GetClass() const { return m_pClass; }
+	virtual IEntityArchetype* GetArchetype() { return m_pArchetype; }
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetFlags( uint32 flags );
-	VIRTUAL uint32 GetFlags() const { return m_flags; };
-	VIRTUAL void AddFlags( uint32 flagsToAdd ) { SetFlags( m_flags|flagsToAdd); };
-	VIRTUAL void ClearFlags( uint32 flagsToClear ) { SetFlags(m_flags&(~flagsToClear)); };
-	VIRTUAL bool CheckFlags( uint32 flagsToCheck ) const { return (m_flags&flagsToCheck) == flagsToCheck; };
+	virtual void SetFlags( uint32 flags );
+	virtual uint32 GetFlags() const { return m_flags; }
+	virtual void AddFlags( uint32 flagsToAdd ) { SetFlags( m_flags|flagsToAdd); }
+	virtual void ClearFlags( uint32 flagsToClear ) { SetFlags(m_flags&(~flagsToClear)); }
+	virtual bool CheckFlags( uint32 flagsToCheck ) const { return (m_flags&flagsToCheck) == flagsToCheck; }
 
-  VIRTUAL void SetFlagsExtended( uint32 flags ) { m_flagsExtended = flags; }
-  VIRTUAL uint32 GetFlagsExtended() const { return m_flagsExtended; };
+  virtual void SetFlagsExtended( uint32 flags ) { m_flagsExtended = flags; }
+  virtual uint32 GetFlagsExtended() const { return m_flagsExtended; }
 
-	VIRTUAL bool IsGarbage() const { return m_bGarbage; };
-	VIRTUAL bool IsLoadedFromLevelFile() const { return m_bLoadedFromLevelFile; }
+	virtual bool IsGarbage() const { return m_bGarbage; }
+	virtual bool IsLoadedFromLevelFile() const { return m_bLoadedFromLevelFile; }
 	ILINE void SetLoadedFromLevelFile(const bool bIsLoadedFromLevelFile) { m_bLoadedFromLevelFile = bIsLoadedFromLevelFile; }
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetName( const char *sName );
-	VIRTUAL const char* GetName() const { return m_szName.c_str(); };
-	VIRTUAL const char* GetEntityTextDescription() const;
+	virtual void SetName( const char *sName );
+	virtual const char* GetName() const { return m_szName.c_str(); }
+	virtual const char* GetEntityTextDescription() const;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void AttachChild( IEntity *pChildEntity, const SChildAttachParams &attachParams );
-	VIRTUAL void DetachAll( int nDetachFlags=0  );
-	VIRTUAL void DetachThis( int nDetachFlags=0,int nWhyFlags=0 );
-	VIRTUAL int  GetChildCount() const;
-	VIRTUAL IEntity* GetChild( int nIndex ) const;
+	virtual void AttachChild( IEntity *pChildEntity, const SChildAttachParams &attachParams );
+	virtual void DetachAll( int nDetachFlags=0  );
+	virtual void DetachThis( int nDetachFlags=0,int nWhyFlags=0 );
+	virtual int  GetChildCount() const;
+	virtual IEntity* GetChild( int nIndex ) const;
 	virtual void EnableInheritXForm( bool bEnable );
-	VIRTUAL IEntity* GetParent() const { return (m_pBinds) ? m_pBinds->pParent : NULL; };
-	VIRTUAL Matrix34 GetParentAttachPointWorldTM() const;
-	VIRTUAL bool IsParentAttachmentValid() const;
+	virtual IEntity* GetParent() const { return (m_pBinds) ? m_pBinds->pParent : NULL; }
+	virtual Matrix34 GetParentAttachPointWorldTM() const;
+	virtual bool IsParentAttachmentValid() const;
 	virtual IEntity* GetAdam()  
 	{ 
 		IEntity *pParent,*pAdam=this; 
@@ -138,178 +138,174 @@ public:
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetWorldTM( const Matrix34 &tm,int nWhyFlags=0 );
-	VIRTUAL void SetLocalTM( const Matrix34 &tm,int nWhyFlags=0 );
+	virtual void SetWorldTM( const Matrix34 &tm,int nWhyFlags=0 );
+	virtual void SetLocalTM( const Matrix34 &tm,int nWhyFlags=0 );
 
 	// Set position rotation and scale at once.
-	VIRTUAL void SetPosRotScale( const Vec3 &vPos,const Quat &qRotation,const Vec3 &vScale,int nWhyFlags=0 );
+	virtual void SetPosRotScale( const Vec3 &vPos,const Quat &qRotation,const Vec3 &vScale,int nWhyFlags=0 );
 
-	VIRTUAL Matrix34 GetLocalTM() const;
-	VIRTUAL const Matrix34& GetWorldTM() const;
+	virtual Matrix34 GetLocalTM() const;
+	virtual const Matrix34& GetWorldTM() const { return m_worldTM; }
 
-	VIRTUAL void GetWorldBounds( AABB &bbox ) const;
-	VIRTUAL void GetLocalBounds( AABB &bbox ) const;
-
-	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetPos( const Vec3 &vPos,int nWhyFlags=0, bool bRecalcPhyBounds=false, bool bForce=false );
-	VIRTUAL const Vec3& GetPos() const { return m_vPos; }
-
-	VIRTUAL void SetRotation( const Quat &qRotation,int nWhyFlags=0 );
-	VIRTUAL const Quat& GetRotation() const { return m_qRotation; };
-
-	VIRTUAL void SetScale( const Vec3 &vScale,int nWhyFlags=0 );
-	VIRTUAL const Vec3& GetScale() const { return m_vScale; };
-
-	VIRTUAL Vec3 GetWorldPos() const { return GetWorldTM_Fast().GetTranslation(); };
-	VIRTUAL Ang3 GetWorldAngles() const;
-	VIRTUAL Quat GetWorldRotation() const;
-	VIRTUAL const Vec3& GetForwardDir() const { ComputeForwardDir(); return m_vForwardDir; }
-	//////////////////////////////////////////////////////////////////////////
+	virtual void GetWorldBounds( AABB &bbox ) const;
+	virtual void GetLocalBounds( AABB &bbox ) const;
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void Activate( bool bActive );
-	VIRTUAL bool IsActive() const { return m_bActive; };
+	virtual void SetPos( const Vec3 &vPos,int nWhyFlags=0, bool bRecalcPhyBounds=false, bool bForce=false );
+	virtual const Vec3& GetPos() const { return m_vPos; }
 
-	VIRTUAL bool IsFromPool() const { return IsPoolControlled(); }
+	virtual void SetRotation( const Quat &qRotation,int nWhyFlags=0 );
+	virtual const Quat& GetRotation() const { return m_qRotation; }
 
-	VIRTUAL void PrePhysicsActivate( bool bActive );
-	VIRTUAL bool IsPrePhysicsActive();
+	virtual void SetScale( const Vec3 &vScale,int nWhyFlags=0 );
+	virtual const Vec3& GetScale() const { return m_vScale; }
+
+	virtual Vec3 GetWorldPos() const { return m_worldTM.GetTranslation(); }
+	virtual Ang3 GetWorldAngles() const;
+	virtual Quat GetWorldRotation() const;
+	virtual const Vec3& GetForwardDir() const { ComputeForwardDir(); return m_vForwardDir; }
+	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void Serialize( TSerialize ser, int nFlags );
+	virtual void Activate( bool bActive );
+	virtual bool IsActive() const { return m_bActive; }
 
-	VIRTUAL bool SendEvent( SEntityEvent &event );
+	virtual bool IsFromPool() const { return IsPoolControlled(); }
+
+	virtual void PrePhysicsActivate( bool bActive );
+	virtual bool IsPrePhysicsActive();
+
+	//////////////////////////////////////////////////////////////////////////
+	virtual void Serialize( TSerialize ser, int nFlags );
+
+	virtual bool SendEvent( SEntityEvent &event );
 	//////////////////////////////////////////////////////////////////////////
 	
-	VIRTUAL void SetTimer( int nTimerId,int nMilliSeconds );
-	VIRTUAL void KillTimer( int nTimerId );
+	virtual void SetTimer( int nTimerId,int nMilliSeconds );
+	virtual void KillTimer( int nTimerId );
 
-	VIRTUAL void Hide( bool bHide );
-  VIRTUAL bool IsHidden() const { return m_bHidden; }
+	virtual void Hide( bool bHide );
+  virtual bool IsHidden() const { return m_bHidden; }
 
-	VIRTUAL void Invisible( bool bInvisible );
-  VIRTUAL bool IsInvisible() const { return m_bInvisible; }
+	virtual void Invisible( bool bInvisible );
+  virtual bool IsInvisible() const { return m_bInvisible; }
 
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL IAIObject* GetAI() { return (m_aiObjectID ? GetAIObject() : NULL); };
-	VIRTUAL bool HasAI() const { return m_aiObjectID != 0; };
-	VIRTUAL tAIObjectID GetAIObjectID() const { return m_aiObjectID; };
-	VIRTUAL void SetAIObjectID(tAIObjectID id) { m_aiObjectID = id; }
+	virtual IAIObject* GetAI() { return (m_aiObjectID ? GetAIObject() : NULL); }
+	virtual bool HasAI() const { return m_aiObjectID != 0; }
+	virtual tAIObjectID GetAIObjectID() const { return m_aiObjectID; }
+	virtual void SetAIObjectID(tAIObjectID id) { m_aiObjectID = id; }
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL bool RegisterInAISystem(const AIObjectParams &params);
+	virtual bool RegisterInAISystem(const AIObjectParams &params);
 	//////////////////////////////////////////////////////////////////////////
 	// reflect changes in position or orientation to the AI object
 	void UpdateAIObject( );
 	//////////////////////////////////////////////////////////////////////////
 
-	VIRTUAL void SetUpdatePolicy( EEntityUpdatePolicy eUpdatePolicy );
-	VIRTUAL EEntityUpdatePolicy GetUpdatePolicy() const { return (EEntityUpdatePolicy)m_eUpdatePolicy; }
+	virtual void SetUpdatePolicy( EEntityUpdatePolicy eUpdatePolicy );
+	virtual EEntityUpdatePolicy GetUpdatePolicy() const { return (EEntityUpdatePolicy)m_eUpdatePolicy; }
 
 	//////////////////////////////////////////////////////////////////////////
 	// Entity Proxies Interfaces access functions.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL IEntityProxy* GetProxy( EEntityProxy proxy ) const;
-	VIRTUAL void SetProxy(EEntityProxy proxy, IEntityProxyPtr pProxy);
-	VIRTUAL IEntityProxyPtr CreateProxy( EEntityProxy proxy );
+	virtual IEntityProxy* GetProxy( EEntityProxy proxy ) const;
+	virtual void SetProxy(EEntityProxy proxy, IEntityProxyPtr pProxy);
+	virtual IEntityProxyPtr CreateProxy( EEntityProxy proxy );
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void RegisterComponent( IComponentPtr pComponentPtr, const int flags );
+	virtual void RegisterComponent( IComponentPtr pComponentPtr, const int flags );
 
 	//////////////////////////////////////////////////////////////////////////
 	// Physics.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void Physicalize( SEntityPhysicalizeParams &params );
-	VIRTUAL void EnablePhysics( bool enable );
-	VIRTUAL IPhysicalEntity* GetPhysics() const;
+	virtual void Physicalize( SEntityPhysicalizeParams &params );
+	virtual void EnablePhysics( bool enable );
+	virtual IPhysicalEntity* GetPhysics() const;
 
-	VIRTUAL int PhysicalizeSlot(int slot, SEntityPhysicalizeParams &params);
-	VIRTUAL void UnphysicalizeSlot(int slot);
-	VIRTUAL void UpdateSlotPhysics(int slot);
+	virtual int PhysicalizeSlot(int slot, SEntityPhysicalizeParams &params);
+	virtual void UnphysicalizeSlot(int slot);
+	virtual void UpdateSlotPhysics(int slot);
 
-	VIRTUAL void SetPhysicsState( XmlNodeRef & physicsState );
+	virtual void SetPhysicsState( XmlNodeRef & physicsState );
 
 	//////////////////////////////////////////////////////////////////////////
 	// Custom entity material.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL void SetMaterial( IMaterial *pMaterial );
-	VIRTUAL IMaterial* GetMaterial();
+	virtual void SetMaterial( IMaterial *pMaterial );
+	virtual IMaterial* GetMaterial();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Entity Slots interface.
 	//////////////////////////////////////////////////////////////////////////
-	VIRTUAL bool IsSlotValid( int nSlot ) const;
-	VIRTUAL void FreeSlot( int nSlot );
-	VIRTUAL int  GetSlotCount() const;
-	VIRTUAL bool GetSlotInfo( int nSlot,SEntitySlotInfo &slotInfo ) const;
-	VIRTUAL const Matrix34& GetSlotWorldTM( int nIndex ) const;
-	VIRTUAL const Matrix34& GetSlotLocalTM( int nIndex, bool bRelativeToParent) const;
-	VIRTUAL void SetSlotLocalTM( int nIndex,const Matrix34 &localTM,int nWhyFlags=0  );
-	VIRTUAL void SetSlotCameraSpacePos( int nIndex, const Vec3 &cameraSpacePos );
-	VIRTUAL void GetSlotCameraSpacePos( int nSlot, Vec3 &cameraSpacePos ) const;
-	VIRTUAL bool SetParentSlot( int nParentSlot,int nChildSlot );
-	VIRTUAL void SetSlotMaterial( int nSlot,IMaterial *pMaterial );
-	VIRTUAL void SetSlotFlags( int nSlot,uint32 nFlags );
-	VIRTUAL uint32 GetSlotFlags( int nSlot ) const;
-	VIRTUAL bool ShouldUpdateCharacter( int nSlot) const;
-	VIRTUAL ICharacterInstance* GetCharacter( int nSlot );
-	VIRTUAL int SetCharacter( ICharacterInstance *pCharacter, int nSlot );
-	VIRTUAL IStatObj* GetStatObj( int nSlot );
-	VIRTUAL int SetStatObj( IStatObj *pStatObj, int nSlot, bool bUpdatePhysics, float mass=-1.0f );
-	VIRTUAL IParticleEmitter* GetParticleEmitter( int nSlot );
-	VIRTUAL IGeomCacheRenderNode* GetGeomCacheRenderNode( int nSlot );
+	virtual bool IsSlotValid( int nSlot ) const;
+	virtual void FreeSlot( int nSlot );
+	virtual int  GetSlotCount() const;
+	virtual bool GetSlotInfo( int nSlot,SEntitySlotInfo &slotInfo ) const;
+	virtual const Matrix34& GetSlotWorldTM( int nIndex ) const;
+	virtual const Matrix34& GetSlotLocalTM( int nIndex, bool bRelativeToParent) const;
+	virtual void SetSlotLocalTM( int nIndex,const Matrix34 &localTM,int nWhyFlags=0  );
+	virtual void SetSlotCameraSpacePos( int nIndex, const Vec3 &cameraSpacePos );
+	virtual void GetSlotCameraSpacePos( int nSlot, Vec3 &cameraSpacePos ) const;
+	virtual bool SetParentSlot( int nParentSlot,int nChildSlot );
+	virtual void SetSlotMaterial( int nSlot,IMaterial *pMaterial );
+	virtual void SetSlotFlags( int nSlot,uint32 nFlags );
+	virtual uint32 GetSlotFlags( int nSlot ) const;
+	virtual bool ShouldUpdateCharacter( int nSlot) const;
+	virtual ICharacterInstance* GetCharacter( int nSlot );
+	virtual int SetCharacter( ICharacterInstance *pCharacter, int nSlot );
+	virtual IStatObj* GetStatObj( int nSlot );
+	virtual int SetStatObj( IStatObj *pStatObj, int nSlot, bool bUpdatePhysics, float mass=-1.0f );
+	virtual IParticleEmitter* GetParticleEmitter( int nSlot );
+	virtual IGeomCacheRenderNode* GetGeomCacheRenderNode( int nSlot );
 
-	VIRTUAL void MoveSlot(IEntity *targetIEnt, int nSlot);
+	virtual void MoveSlot(IEntity *targetIEnt, int nSlot);
 
-	VIRTUAL int LoadGeometry( int nSlot,const char *sFilename,const char *sGeomName=NULL,int nLoadFlags=0 );
-	VIRTUAL int LoadCharacter( int nSlot,const char *sFilename,int nLoadFlags=0 );
+	virtual int LoadGeometry( int nSlot,const char *sFilename,const char *sGeomName=NULL,int nLoadFlags=0 );
+	virtual int LoadCharacter( int nSlot,const char *sFilename,int nLoadFlags=0 );
 #if defined(USE_GEOM_CACHES)
-	VIRTUAL int LoadGeomCache( int nSlot,const char *sFilename);
+	virtual int LoadGeomCache( int nSlot,const char *sFilename);
 #endif
-	VIRTUAL int SetParticleEmitter( int nSlot, IParticleEmitter* pEmitter, bool bSerialize = false );
-	VIRTUAL int	LoadParticleEmitter( int nSlot, IParticleEffect *pEffect, SpawnParams const* params=NULL, bool bPrime = false, bool bSerialize = false );
-	VIRTUAL int LoadLight( int nSlot,CDLight *pLight );
+	virtual int SetParticleEmitter( int nSlot, IParticleEmitter* pEmitter, bool bSerialize = false );
+	virtual int	LoadParticleEmitter( int nSlot, IParticleEffect *pEffect, SpawnParams const* params=NULL, bool bPrime = false, bool bSerialize = false );
+	virtual int LoadLight( int nSlot,CDLight *pLight );
 	int LoadLightImpl( int nSlot,CDLight *pLight);
 
-	VIRTUAL bool UpdateLightClipBounds(CDLight &light);
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
+	virtual bool UpdateLightClipBounds(CDLight &light);
 	int LoadCloud( int nSlot,const char *sFilename );
 	int SetCloudMovementProperties(int nSlot, const SCloudMovementProperties& properties);
-#endif
 	int LoadFogVolume( int nSlot, const SFogVolumeProperties& properties );
 
 	int FadeGlobalDensity( int nSlot, float fadeTime, float newGlobalDensity );
-#if !defined(RENDERNODES_LEAN_AND_MEAN)
 	int LoadVolumeObject(int nSlot, const char* sFilename);
 	int SetVolumeObjectMovementProperties(int nSlot, const SVolumeObjectMovementProperties& properties);
-#endif
 
 #if !defined(EXCLUDE_DOCUMENTATION_PURPOSE)
 	virtual int LoadPrismObject(int nSlot);
 #endif // EXCLUDE_DOCUMENTATION_PURPOSE
 
-	VIRTUAL void InvalidateTM( int nWhyFlags=0, bool bRecalcPhyBounds=false );
+	virtual void InvalidateTM( int nWhyFlags=0, bool bRecalcPhyBounds=false );
 
 	// Load/Save entity parameters in XML node.
-	VIRTUAL void SerializeXML( XmlNodeRef &node,bool bLoading );
+	virtual void SerializeXML( XmlNodeRef &node,bool bLoading );
 
-	VIRTUAL IEntityLink* GetEntityLinks();
-	VIRTUAL IEntityLink* AddEntityLink( const char *sLinkName,EntityId entityId, EntityGUID entityGuid=0 );
-	VIRTUAL void RemoveEntityLink( IEntityLink* pLink );
-	VIRTUAL void RemoveAllEntityLinks();
+	virtual IEntityLink* GetEntityLinks();
+	virtual IEntityLink* AddEntityLink( const char *sLinkName,EntityId entityId, EntityGUID entityGuid=0 );
+	virtual void RemoveEntityLink( IEntityLink* pLink );
+	virtual void RemoveAllEntityLinks();
 	//////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////
 
-	VIRTUAL IEntity *UnmapAttachedChild(int &partId);
+	virtual IEntity *UnmapAttachedChild(int &partId);
 
-	VIRTUAL void GetMemoryUsage( ICrySizer *pSizer ) const;
+	virtual void GetMemoryUsage( ICrySizer *pSizer ) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Local methods.
 	//////////////////////////////////////////////////////////////////////////
 
 	// Returns true if entity was already fully initialized by this point.
-	VIRTUAL bool IsInitialized() const { return m_bInitialized; }
+	virtual bool IsInitialized() const { return m_bInitialized; }
 
-	VIRTUAL void DebugDraw( const SGeometryDebugDrawInfo &info );
+	virtual void DebugDraw( const SGeometryDebugDrawInfo &info );
 	//////////////////////////////////////////////////////////////////////////
 	
 	// Get fast access to the slot, only used internally by entity components.
@@ -319,15 +315,15 @@ public:
 	bool GetSignature( TSerialize& signature );
 	void SerializeXML_ExceptScriptProxy( XmlNodeRef &node,bool bLoading );
 	// Get render proxy object.
-	ILINE CRenderProxy* GetRenderProxy() const { return (CRenderProxy*)CEntity::GetProxy(ENTITY_PROXY_RENDER) ; };
+	ILINE CRenderProxy* GetRenderProxy() const { return (CRenderProxy*)CEntity::GetProxy(ENTITY_PROXY_RENDER) ; }
 	// Get physics proxy object.
-	ILINE CPhysicalProxy* GetPhysicalProxy() const { return (CPhysicalProxy*)CEntity::GetProxy(ENTITY_PROXY_PHYSICS); };
+	ILINE CPhysicalProxy* GetPhysicalProxy() const { return (CPhysicalProxy*)CEntity::GetProxy(ENTITY_PROXY_PHYSICS); }
 	// Get script proxy object.
-	ILINE CScriptProxy* GetScriptProxy() const { return (CScriptProxy*)CEntity::GetProxy(ENTITY_PROXY_SCRIPT); };
+	ILINE CScriptProxy* GetScriptProxy() const { return (CScriptProxy*)CEntity::GetProxy(ENTITY_PROXY_SCRIPT); }
 	//////////////////////////////////////////////////////////////////////////
 
 	// For internal use.
-	CEntitySystem* GetCEntitySystem() const { return g_pIEntitySystem; };
+	CEntitySystem* GetCEntitySystem() const { return g_pIEntitySystem; }
 
 	//////////////////////////////////////////////////////////////////////////
 	bool ReloadEntity(SEntityLoadParams &loadParams);
@@ -341,34 +337,32 @@ public:
 	void ActivateForNumUpdates( int numUpdates );
 	void SetUpdateStatus();
 	// Get status if entity need to be update every frame or not.
-	bool GetUpdateStatus() const { return (m_bActive || m_nUpdateCounter) && (!m_bHidden || CheckFlags(ENTITY_FLAG_UPDATE_HIDDEN)); };
+	bool GetUpdateStatus() const { return (m_bActive || m_nUpdateCounter) && (!m_bHidden || CheckFlags(ENTITY_FLAG_UPDATE_HIDDEN)); }
 
 	//////////////////////////////////////////////////////////////////////////
 	// Description:
 	//   Invalidates entity and childs cached world transformation.
 	void CalcLocalTM( Matrix34 &tm ) const;
-
-	const Matrix34& GetWorldTM_Fast() const { return m_worldTM; };
-
+	
 	void	Hide(bool bHide, EEntityEvent eEvent1, EEntityEvent eEvent2);
 
 	// for ProximityTriggerSystem
 	SProximityElement * GetProximityElement() { return m_pProximityEntity; }
 
-	VIRTUAL void IncKeepAliveCounter()	{ m_nKeepAliveCounter++; }
-	VIRTUAL void DecKeepAliveCounter()	{ assert(m_nKeepAliveCounter >0); m_nKeepAliveCounter--; }
-	VIRTUAL void ResetKeepAliveCounter() {m_nKeepAliveCounter = 0; }
-	VIRTUAL bool IsKeptAlive() const { return m_nKeepAliveCounter > 0; }
+	virtual void IncKeepAliveCounter()	{ m_nKeepAliveCounter++; }
+	virtual void DecKeepAliveCounter()	{ assert(m_nKeepAliveCounter >0); m_nKeepAliveCounter--; }
+	virtual void ResetKeepAliveCounter() {m_nKeepAliveCounter = 0; }
+	virtual bool IsKeptAlive() const { return m_nKeepAliveCounter > 0; }
 
 	// LiveCreate entity interface
-	VIRTUAL bool HandleVariableChange(const char* szVarName, const void* pVarData);
+	virtual bool HandleVariableChange(const char* szVarName, const void* pVarData);
 
 #ifdef SEG_WORLD
-	VIRTUAL unsigned int GetSwObjDebugFlag() const { return m_eSwObjDebugFlag; };
-	VIRTUAL void SetSwObjDebugFlag(unsigned int uiVal) { m_eSwObjDebugFlag = uiVal; };
+	virtual unsigned int GetSwObjDebugFlag() const { return m_eSwObjDebugFlag; };
+	virtual void SetSwObjDebugFlag(unsigned int uiVal) { m_eSwObjDebugFlag = uiVal; };
 
-	VIRTUAL void SetLocalSeg(bool bLocalSeg){ m_bLocalSeg = bLocalSeg; }
-	VIRTUAL bool IsLocalSeg() const { return m_bLocalSeg; }
+	virtual void SetLocalSeg(bool bLocalSeg){ m_bLocalSeg = bLocalSeg; }
+	virtual bool IsLocalSeg() const { return m_bLocalSeg; }
 #endif //SEG_WORLD
 
 	static void ClearStaticData() { stl::free_container(m_szDescription); }

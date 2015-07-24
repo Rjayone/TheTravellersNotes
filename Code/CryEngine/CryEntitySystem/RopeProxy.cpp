@@ -245,7 +245,7 @@ inline void RopeParamsToXml( IRopeRenderNode::SRopeParams &rp,XmlNodeRef &node,b
 		node->getAttr( "stiffness",rp.stiffness );
 		node->getAttr( "hardness",rp.hardness );
 		node->getAttr( "damping",rp.damping );
-		node->getAttr( "sleep_speed",rp.sleepSpeed );
+		node->getAttr( "sleepSpeed",rp.sleepSpeed );
 	}
 	else
 	{
@@ -335,4 +335,4 @@ void CRopeProxy::SerializeXML( XmlNodeRef &entityNode,bool bLoading )
 	}
 }
 
-#include UNIQUE_VIRTUAL_WRAPPER(IEntityRopeProxy)
+
