@@ -3,6 +3,7 @@
 
 #include "IGameObject.h"
 #include "IGameFramework.h"
+#include "Player.h"
 
 class CBackpack : public CGameObjectExtensionHelper<CBackpack, IGameObjectExtension>,
 	public IActionListener
@@ -26,7 +27,7 @@ public:
 	void PostSerialize(){}
 	void SerializeSpawnInfo(TSerialize ser) {}
 	ISerializableInfoPtr GetSpawnInfo() { return 0; }
-	void Update(SEntityUpdateContext& ctx, int slot) {}
+	void Update(SEntityUpdateContext& ctx, int slot);
 	void HandleEvent(const SGameObjectEvent& gameObjectEvent){}
 	void ProcessEvent(SEntityEvent& entityEvent);
 	void SetChannelId(uint16 id) {}

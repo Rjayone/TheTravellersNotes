@@ -3,6 +3,7 @@
 #include "Actor.h"
 #include "InventoryItems.h"
 #include "RPGInventory.h"
+#include "PlayerStatsManager.h"
 
 #define LOOTLIST_FOLDER "/Libs/Items/Library/GeneralItemsLootList.xml"
 #define ITEMS_FOLDER "/Libs/Items/Library/ItemsDescription.xml"
@@ -41,6 +42,8 @@ void CLootSystem::InitLootSystem(CActor* pActor)
 
 void CLootSystem::OnAction(const ActionId& action, int activationMode, float value)
 {
+	if (g_pGame->GetPlayerStatsManager()->GetBackpackStatus()) return; // если рюкзак потерян то другие действия с инвентарем невозможны
+
 	const auto& actions = g_pGame->Actions();
 	if (actions.Loot == action)
 	{

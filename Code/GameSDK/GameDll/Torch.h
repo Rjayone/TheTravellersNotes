@@ -35,4 +35,14 @@ private:
 	bool m_bIsFired; // Указывает горит факел или нет
 	float m_fFireDuration; // Длительность горения
 	float m_fDiffuseMult; //Коэф яркости свечения
+
+	IEntity* m_pBasicEntity; // Хэлпер на который цепляется свет и партикл, а он прикрепляется к персу 
+	IEntity* m_pPlayer; // Сущность игрока
+
+	IAttachmentManager *pAttachmentManager; 
+
+	void CreateLight();
+	void CreateAttachment();
+	void SpawnEntityHelper();
+	void RemoveEntityHelper();
 };

@@ -110,4 +110,6 @@ Bin64/lib/
 Bin64/Microsoft.VC90*
 bin64/rc/
 *.bnk
+*.iml
+.idea/
 

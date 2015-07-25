@@ -2,6 +2,8 @@
 #include "Backpack.h"
 #include "RPGInventory.h"
 
+#include "PlayerStatsManager.h"
+
 #define FILE_PATH "GameSDK/Objects/box.cgf"
 #define UI_NAME "Inventory"
 
@@ -77,6 +79,11 @@ void CBackpack::Physicalize(int type)
 }
 
 void CBackpack::OnAction(const ActionId& action, int activationMode, float value)
+{
+	
+}
+
+void CBackpack::Update(SEntityUpdateContext& ctx, int slot)
 {
 	
 }
