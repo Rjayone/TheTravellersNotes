@@ -71,6 +71,7 @@ History:
 	x(release)\
 	x(holding)\
 	x(cancel)\
+	x(dodge)\
 	x(hit)\
 	x(stance)
 

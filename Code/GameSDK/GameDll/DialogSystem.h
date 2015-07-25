@@ -21,6 +21,7 @@
 #include "Timer.h"
 #include "Events.h"
 #include "Dot.h"
+#include "DialogEvents.h"
 
 class CUIVisibleManager;
 
@@ -162,6 +163,9 @@ public:
 	//Метод включает/выключает глубину резкости фона
 	void SetRenderStatus(bool bOn);
 
+	void AddEventListener(IDialogEvents* pListener);
+	void RemoveEventListener(IDialogEvents* pListener);
+
 private:
 	CTimer* m_pDialogTimer;
 	CDialogDispatcher* m_pDialogDispathcer;
@@ -180,4 +184,7 @@ private:
 
 	bool m_bQuestCameraIsEnabled;
 	const char* m_pFilePath;
+
+	//Listeners
+	std::vector<IDialogEvents*> m_pListeners;
 };

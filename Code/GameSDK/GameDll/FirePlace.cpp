@@ -133,8 +133,17 @@ void CFirePlace::ProcessEvent(SEntityEvent& event)
 //-----------------------------------------
 void CFirePlace::FullSerialize(TSerialize serializer) {
 	assert(serializer.GetSerializationTarget() != eST_Network);
-	serializer.Value("state", state);
-	serializer.Value("pos", m_worldPos);
+	if (serializer.IsWriting()){
+		serializer.BeginGroup("FirePlace");
+		//serializer.Value("state", state);
+		serializer.Value("pos", m_worldPos);
+		serializer.EndGroup();
+	}
+	else if (serializer.IsReading())
+	{
+		//serializer.Value("state", state);
+		serializer.Value("pos", m_worldPos);
+	}
 }
 
 //-----------------------------------------

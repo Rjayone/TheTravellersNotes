@@ -10,11 +10,11 @@
   <Sequence class="TreeNode">
    <ExecuteLua code="entity:SelectPrimaryWeapon()"/>
    <SetAlertness value="2"/>
-   <Move class="TreeNode" to="Target" speed="Run" stance="Alerted" stopWithinDistance="2" stopDistanceVariation="1" avoidDangers="0" avoidGroupMates="0"/>
+   <Move class="TreeNode" to="Target" speed="Run" stance="Alerted" stopWithinDistance="2" stopDistanceVariation="0" avoidDangers="0" avoidGroupMates="0"/>
    <Log class="TreeNode" Message="Shoot"/>
    <Loop class="TreeNode" count="-1" _startlog="start combar loop">
     <Sequence class="TreeNode">
-     <Move class="TreeNode" to="Target" speed="Run" stance="Alerted" stopWithinDistance="2" stopDistanceVariation="1" avoidDangers="0" avoidGroupMates="0"/>
+     <Move class="TreeNode" to="Target" speed="Run" stance="Alerted" stopWithinDistance="2" stopDistanceVariation="0" avoidDangers="0" avoidGroupMates="0"/>
      <Shoot class="TreeNode" at="Target" stance="Alerted" duration="0.1" fireMode="Melee"/>
     </Sequence>
    </Loop>

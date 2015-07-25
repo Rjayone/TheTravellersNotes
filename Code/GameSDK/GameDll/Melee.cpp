@@ -803,6 +803,7 @@ int CMelee::Hit(const Vec3 &pt, const Vec3 &dir, const Vec3 &normal, IPhysicalEn
 								{
 									//TODO: Реализовать рассчет демага в отдельном классе на основе защиты
 									damage /= damage - 10;
+									pItem->PlayAction(pItem->GetFragmentIds().dodge, 1);
 								}
 							}
 						}
