@@ -1723,6 +1723,13 @@ public:
 	int8 m_lastCachedInteractionIndex;
 
 	std::auto_ptr<CAIAnimationComponent> m_pAIAnimationComponent;
+
+	// **************************************************
+	// Traveller Notes
+	// **************************************************
+
+	double distanceToFireplace = 0;
+	int warmthLevel = 0;
 };
 
 void SetupPlayerCharacterVisibility(IEntity* playerEntity, bool isThirdPerson, int shadowCharacterSlot = -1, bool forceDontRenderNearest = false);

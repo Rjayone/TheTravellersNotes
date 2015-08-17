@@ -13,6 +13,7 @@
 #include "IParticles.h"
 #include "RPGInventory.h"
 #include "SimpleSearchStruct.h"
+#include "SaveLoad.h"
 
 #define DEFAULT_PARTICLE "smoke_and_fire.VS2_Fire.smallfire_nobase_noglow"
 #define FIRE_PARTICLE_SLOT 0
@@ -237,6 +238,8 @@ void CFirePlace::StopPlacing()
 		pInv->DeleteItem(GetEntity()->GetId());
 		CryLogAlways("Fireplace deleted");
 	}
+
+	SaveLoad::QuickSave();
 }
 
 //--------------------------------------
@@ -324,8 +327,7 @@ void CFirePlace::StartFire()
 	SetState(FLAME_FADE_IN);
 
 	// Adding our fireplace to the search pool
-	SearchItem searchable(GetEntityId(), GetEntity()->GetPos());
-	searchStruct->AddItem(searchable);
+	searchStruct->AddItem(SearchItem(GetEntityId(), GetEntity()->GetPos()));
 
 	// Reseting time accumulator
 	m_fFadeTimeAcc = 0.0;
@@ -375,8 +377,7 @@ void CFirePlace::StopFire()
 	SetState(FLAME_FADE_OUT);
 
 	// Removing fireplace the search pool
-	SearchItem searchableItem(GetEntityId(), GetEntity()->GetPos());
-	searchStruct->RemoveItem(searchableItem);
+	searchStruct->RemoveItem(SearchItem(GetEntityId(), GetEntity()->GetPos()));
 
 	// Reseting time accumulator
 	m_fFadeTimeAcc = 0.0;

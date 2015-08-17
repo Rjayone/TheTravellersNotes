@@ -27,6 +27,7 @@ enum EPlayerStats
 	EPS_Agila,
 	EPS_Eloquence,
 	EPS_Stamina,
+	EPS_Warmth,
 
 	//Resources
 	EPS_Money,
@@ -85,12 +86,12 @@ public:
 	void OnStatChanged(CPlayerStat* stat);
 
 	//Функции на получение статуса рюкзака (вне радиуса/в поле радиуса)
-	void SetBackpackStatus(bool isBackpackLost);
-	bool GetBackpackStatus();
+	void SetBackpackLost(bool isBackpackLost);
+	bool IsBackpackLost();
 private:
 	std::vector<CPlayerStat*> m_pPlayerStats;	
 	std::vector<IPlayerStatsListener*> m_pListeners;
-	bool m_bBackpackLost = false;// статус рюкзака(вне радиуса/в поле радиуса)
+	bool m_bBackpackLost;// статус рюкзака(вне радиуса/в поле радиуса)
 };
 
 #endif

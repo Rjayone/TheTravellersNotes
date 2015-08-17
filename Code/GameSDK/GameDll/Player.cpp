@@ -146,10 +146,12 @@ History:
 #include "ProceduralContextRagdoll.h"
 
 #include "UI/UIManager.h"
+#include <sstream>
 
 
 #include "PlayerStatsManager.h"
 #include "RPGInventory.h"
+#include "FirePlace.h"
 
 DEFINE_STATE_MACHINE( CPlayer, Movement ); 
 
@@ -1761,32 +1763,64 @@ void CPlayer::Update(SEntityUpdateContext& ctx, int updateSlot)
 #endif  // !_RELEASE
 
 //*********Блок чекинг расстояния игрока от рюкзака******************
-	if (g_pGame->GetPlayerStatsManager()->GetBackpackStatus()) return;
-
-	if (!this) return;
-
-	IEntity* pBAckpack = gEnv->pEntitySystem->FindEntityByName("Backpack1");
-
-	if (!pBAckpack) return;
-
-	float len = (this->GetEntity()->GetPos() - pBAckpack->GetPos()).len();
-
-	//Чекаем расстояние на котором игрок от рюкзака
-	if (len >= 90 && len <= 91)
+	if (!g_pGame->GetPlayerStatsManager()->IsBackpackLost())
 	{
-		//Если вышли за пределы то выскакивает предупрждение 
-		CryLogAlways("Warning you can lost your Backpack");		
-	}	
+		IEntity* pBackpack = gEnv->pEntitySystem->FindEntityByName("Backpack1");
 
-	if (len >= 100 && len <= 101)
-	{
-		//Если вышли за пределы то рюкзак теряется и задается статус о том что рюкзак потерян
-		CryLogAlways("You lost your Backpack");
-		gEnv->pEntitySystem->RemoveEntity(pBAckpack->GetId(), true);
-		g_pGame->GetPlayerStatsManager()->SetBackpackStatus(true);
-		g_pGame->GetRPGInventory()->ClearInventory();
+		if (pBackpack)
+		{
+			float len = (this->GetEntity()->GetPos() - pBackpack->GetPos()).len();
+
+			//Чекаем расстояние на котором игрок от рюкзака
+			if (len >= 90 && len <= 91)
+			{
+				//Если вышли за пределы то выскакивает предупрждение 
+				CryLogAlways("Warning you can lost your Backpack");
+			}
+
+			if (len >= 100 && len <= 101)
+			{
+				//Если вышли за пределы то рюкзак теряется и задается статус о том что рюкзак потерян
+				CryLogAlways("You lost your Backpack");
+				gEnv->pEntitySystem->RemoveEntity(pBackpack->GetId(), true);
+				g_pGame->GetPlayerStatsManager()->SetBackpackLost(true);
+				g_pGame->GetRPGInventory()->ClearInventory();
+			}
+		}
 	}
 //*********************************************************************
+
+	// ****************************************************************
+	// Fireplace logic
+	// Check distance and calculate warmth
+	// ****************************************************************
+	if (IsPlayer())
+	{
+		const SearchItem* fireplace = CFirePlace::GetSearchStruct().GetNearest(SearchItem(GetEntity()->GetId(), GetEntity()->GetPos()));
+
+		if (fireplace)
+		{
+			// Применяются квадратичные расстояния (*Sq) для экономии вычислений
+			float areaRadiusSq = 25;
+			float distanceToFireSq = (GetEntity()->GetPos() - fireplace->getPosition()).len2();
+			float currentWarmth = g_pGame->GetPlayerStatsManager()->GetStat(EPS_Warmth)->GetStatValue();
+
+			if (distanceToFireSq < areaRadiusSq)
+			{
+				// When approacing the fire warmth is non-lineary increased
+				double newValue = pow(areaRadiusSq - distanceToFireSq, 2);
+
+				if (newValue != currentWarmth) {
+					g_pGame->GetPlayerStatsManager()->GetStat(EPS_Warmth)->SetValue(newValue);
+				}
+			}
+			else
+			{
+				if (currentWarmth > 0)
+					g_pGame->GetPlayerStatsManager()->GetStat(EPS_Warmth)->SetValue(0);
+			}
+		}
+	}
 }
 
 void CPlayer::CreateInputClass(bool client)

@@ -15,7 +15,7 @@ public:
 
 	void RemoveItem(SearchItem& searchItem);
 
-	const SearchItem* GetNearest(SearchItem& queryPoint);
+	const SearchItem* GetNearest(SearchItem& queryPoint) const;
 
 	std::vector<SearchItem*> GetItemsInRange(SearchItem& queryPoint, double range);
 
