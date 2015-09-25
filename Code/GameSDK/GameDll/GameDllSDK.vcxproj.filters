@@ -442,6 +442,9 @@
     <Filter Include="TravellerNotes\Utils\Hash">
       <UniqueIdentifier>{398e5e93-3b6e-409d-a81c-2917feb5d7b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TravellerNotes\RPG System\Dialog System\DialogEvents">
+      <UniqueIdentifier>{01d5dddf-626d-455d-854e-b5c475297c25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BasicEventListener.cpp">
@@ -2324,6 +2327,9 @@
     </ClCompile>
     <ClCompile Include="SaveLoad.cpp">
       <Filter>TravellerNotes\Utils\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogEventsNode.cpp">
+      <Filter>TravellerNotes\Other\Nodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4336,6 +4342,9 @@
     </ClInclude>
     <ClInclude Include="SaveLoad.h">
       <Filter>TravellerNotes\Utils\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogEvents.h">
+      <Filter>TravellerNotes\RPG System\Dialog System\DialogEvents</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

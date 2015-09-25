@@ -233,6 +233,11 @@ void CUIDialogMenu::StartDialog()
 	//С помощью этого мы можем в дальнейшем устанавливать фразы игрока
 	m_nLastParentDialogId = m_pNPCAnswer[0]->currentPhraseId;
 
+	//Call Listeners
+	for (int i = 0; i < m_pListeners.size(); i++)
+	if (m_pListeners[i] != NULL && m_pTarget)
+		m_pListeners[i]->OnDialogStarted(m_pTarget->GetId());
+
 	//Если фраза без текста, и сразу ответ игрока, то сразу отображаем ответы игрока и проигрываем фразу нпс
 	if (m_pNPCAnswer[0]->withoutMessage == true)
 	{
@@ -330,6 +335,11 @@ void CUIDialogMenu::StopDialog()
 	m_pPlayerAnswer.clear();
 	SetRenderStatus(false);
 	m_pUIDialogMenu->CallFunction("Clear");
+
+	//Call Listeners
+	for (int i = 0; i < m_pListeners.size(); i++)
+	if (m_pListeners[i] != NULL && m_pTarget)
+		m_pListeners[i]->OnDialogFinished(m_pTarget->GetId());
 
 	//SAFE_DELETE(m_pDialogTimer);
 }
@@ -637,28 +647,28 @@ void CUIDialogMenu::SetQuestCam(string camname)
 //-------------------------------------------------------------------
 void CUIDialogMenu::SetAudio(const char * AudioName, bool bEnabled)
 {
-	if (m_pAudioTrigger == NULL)
-	{
-		SEntitySpawnParams spawnParams;
-		spawnParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("AudioTriggerSpot");
-		m_pAudioTrigger = gEnv->pEntitySystem->SpawnEntity(spawnParams);
-	}
-	
-	if (strcmp(AudioName, "") && m_pAudioTrigger != NULL)
-	{
-		SmartScriptTable propertiesTable;
-		m_pAudioTrigger->SetPos(m_pTarget->GetPos() + Vec3(0, 0, 3));
-		IScriptTable *pStriptTable = m_pAudioTrigger->GetScriptTable();
+	//if (m_pAudioTrigger == NULL)
+	//{
+	//	SEntitySpawnParams spawnParams;
+	//	spawnParams.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("AudioTriggerSpot");
+	//	m_pAudioTrigger = gEnv->pEntitySystem->SpawnEntity(spawnParams);
+	//}
+	//
+	//if (strcmp(AudioName, "") && m_pAudioTrigger != NULL)
+	//{
+	//	SmartScriptTable propertiesTable;
+	//	m_pAudioTrigger->SetPos(m_pTarget->GetPos() + Vec3(0, 0, 3));
+	//	IScriptTable *pStriptTable = m_pAudioTrigger->GetScriptTable();
 
-		bool hasProperties = pStriptTable->GetValue("Properties", propertiesTable);
-		if (hasProperties)
-		{
-			propertiesTable->SetValue("audioTriggerPlayTriggerName", AudioName);
-			propertiesTable->SetValue("bEnabled", bEnabled);
+	//	bool hasProperties = pStriptTable->GetValue("Properties", propertiesTable);
+	//	if (hasProperties)
+	//	{
+	//		propertiesTable->SetValue("audioTriggerPlayTriggerName", AudioName);
+	//		propertiesTable->SetValue("bEnabled", bEnabled);
 
-			Script::CallMethod(pStriptTable, "OnPropertyChange");
-		}
-	}
+	//		Script::CallMethod(pStriptTable, "OnPropertyChange");
+	//	}
+	//}
 }
 
 //-------------------------------------------------------------------
@@ -678,4 +688,22 @@ void CUIDialogMenu::SetRenderStatus(bool bOn)
 	{
 
 	}
+}
+
+//-------------------------------------------------------------------
+void CUIDialogMenu::AddEventListener(IDialogEvents* pListener)
+{
+	for (int i = 0; i < m_pListeners.size(); i++)
+	if (m_pListeners[i] == pListener)
+		return;
+
+	m_pListeners.push_back(pListener);	
+}
+
+//-------------------------------------------------------------------
+void CUIDialogMenu::RemoveEventListener(IDialogEvents* pListener)
+{
+	for (int i = 0; i < m_pListeners.size(); i++)
+	if (m_pListeners[i] == pListener)
+		m_pListeners.erase(m_pListeners.begin() + i);
 }

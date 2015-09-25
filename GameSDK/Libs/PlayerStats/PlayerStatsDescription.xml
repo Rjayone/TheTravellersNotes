@@ -26,8 +26,9 @@ enum EPlayerStats
 	<stat type="4" name="Agila" descr="Player Agila" baseValue="5" maxValue="5000"/>
 	<stat type="5" name="Eloquence" descr="Player Eloquence" baseValue="1" maxValue="5000"/>
 	<stat type="6" name="Stamina" descr="Player Stamina" baseValue="100" maxValue="5000"/>
-	<stat type="7" name="Money" descr="Player Money" baseValue="300" maxValue="5000"/>
-	<stat type="8" name="Wood" descr="Wood - important resource needed to building"   baseValue="100" maxValue="5000"/>
-	<stat type="9" name="Stone" descr="Stone - important resource needed to building" baseValue="100" maxValue="5000"/>
-	<stat type="10" name="Iron" descr="Iron - important resource needed to building"  baseValue="100" maxValue="5000"/>
+	<stat type="7" name="Warmth" descr="Player Warmth" baseValue="0" maxValue="1000"/>
+	<stat type="8" name="Money" descr="Player Money" baseValue="300" maxValue="5000"/>
+	<stat type="9" name="Wood" descr="Wood - important resource needed to building"   baseValue="100" maxValue="5000"/>
+	<stat type="10" name="Stone" descr="Stone - important resource needed to building" baseValue="100" maxValue="5000"/>
+	<stat type="11" name="Iron" descr="Iron - important resource needed to building"  baseValue="100" maxValue="5000"/>
 </Stats>

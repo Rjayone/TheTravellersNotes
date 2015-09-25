@@ -1,0 +1,26 @@
+<Graph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="1" Class="DialogSystem:DialogEvents" pos="-197,-157,0" flags="0"/>
+  <Node Id="2" Class="Entity:EntityPos" pos="-200,-60,0" flags="0">
+   <Inputs entityId="0" pos="0,0,0" rotate="0,0,0" scale="0,0,0" CoordSys="1"/>
+  </Node>
+  <Node Id="3" Class="Actor:LocalPlayer" pos="-380,-60,0" flags="0">
+   <Inputs />
+  </Node>
+  <Node Id="4" Class="AI:LookAt" pos="210,-170,0" flags="0">
+   <Inputs entityId="0" pos="0,0,0" Direction="0,0,0" objectId="0" Duration="60" Force="1"/>
+  </Node>
+  <Node Id="5" Class="Vec3:AddVec3" pos="30,-40,0" flags="1">
+   <Inputs A="0,0,0" B="0,0,1.7"/>
+  </Node>
+ </Nodes>
+ <Edges>
+  <Edge nodeIn="4" nodeOut="1" portIn="cancel" portOut="OnDialogFinished" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="1" portIn="entityId" portOut="OnDialogStarted" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="1" portIn="sink" portOut="OnDialogStarted" enabled="1"/>
+  <Edge nodeIn="5" nodeOut="2" portIn="A" portOut="pos" enabled="1"/>
+  <Edge nodeIn="2" nodeOut="3" portIn="entityId" portOut="entityId" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="5" portIn="pos" portOut="out" enabled="1"/>
+ </Edges>
+ <GraphTokens />
+</Graph>

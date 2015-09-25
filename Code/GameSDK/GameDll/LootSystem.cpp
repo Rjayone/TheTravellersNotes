@@ -42,7 +42,7 @@ void CLootSystem::InitLootSystem(CActor* pActor)
 
 void CLootSystem::OnAction(const ActionId& action, int activationMode, float value)
 {
-	if (g_pGame->GetPlayerStatsManager()->GetBackpackStatus()) return; // если рюкзак потерян то другие действия с инвентарем невозможны
+	if (g_pGame->GetPlayerStatsManager()->IsBackpackLost()) return; // если рюкзак потерян то другие действия с инвентарем невозможны
 
 	const auto& actions = g_pGame->Actions();
 	if (actions.Loot == action)

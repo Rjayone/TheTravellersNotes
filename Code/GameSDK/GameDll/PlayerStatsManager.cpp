@@ -10,7 +10,7 @@
 	AddStat(stat);\
 }
 
-CPlayerStatsManager::CPlayerStatsManager()
+CPlayerStatsManager::CPlayerStatsManager() : m_bBackpackLost(false)
 {
 	CREATE_STAT(StatHealth, EPS_Health);
 	CREATE_STAT(StatStamina,EPS_Stamina);
@@ -18,6 +18,7 @@ CPlayerStatsManager::CPlayerStatsManager()
 	CREATE_STAT(PlayerStat, EPS_Strength);
 	CREATE_STAT(PlayerStat, EPS_Agila);
 	CREATE_STAT(PlayerStat, EPS_Eloquence);
+	CREATE_STAT(PlayerStat, EPS_Warmth);
 
 	//Resources
 	CREATE_STAT(PlayerStat, EPS_Money);
@@ -91,18 +92,18 @@ bool CPlayerStatsManager::DeleteListener(IPlayerStatsListener *listener)
 void CPlayerStatsManager::OnStatChanged(CPlayerStat* stat)
 {
 #ifdef __TDEBUG__
-	CryLogAlways("[PlayerStatsManager]: Stat %s was chenged", stat->GetStatName());
+	CryLogAlways("[PlayerStatsManager]: Stat %s was changed", stat->GetStatName());
 #endif
 	for (int i = 0; i < m_pListeners.size(); i++)
 		m_pListeners[i]->OnStatChanged(stat);
 }
 
-bool CPlayerStatsManager::GetBackpackStatus()
+bool CPlayerStatsManager::IsBackpackLost()
 {
 	return m_bBackpackLost;
 }
 
-void CPlayerStatsManager::SetBackpackStatus(bool isBackpackLost)
+void CPlayerStatsManager::SetBackpackLost(bool isBackpackLost)
 {
 	m_bBackpackLost = isBackpackLost;
 }

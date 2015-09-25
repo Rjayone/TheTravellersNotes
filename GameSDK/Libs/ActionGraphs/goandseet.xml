@@ -1,0 +1,26 @@
+<Graph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
+ <Nodes>
+  <Node Id="1" Class="AI:ActionStart" pos="-110,80,0" flags="0"/>
+  <Node Id="2" Class="AI:ActionEnd" pos="1120,120,0" flags="0">
+   <Inputs />
+  </Node>
+  <Node Id="3" Class="Entity:EntityPos" pos="50,170,0" flags="0">
+   <Inputs entityId="0" pos="0,0,0" rotate="0,0,0" scale="0,0,0" CoordSys="1"/>
+  </Node>
+  <Node Id="4" Class="AI:GoToEx" pos="290,80,0" flags="0">
+   <Inputs entityId="0" Position="0,0,0" StopDistance="0" Stance="3" Speed="0" Strafe="0" AllowFire="1" BreakOnTarget="1" BreakOnBulletRain="0" Prepare="1"/>
+  </Node>
+  <Node Id="6" Class="AISequence:Animation" pos="765.60614,52.800415,0" flags="1" GraphEntity="0">
+   <Inputs entityId="0" animstateEx_Animation="IA_talkIntense" DestinationEntity="0" Position="0,0,0" Direction="0,0,0" Speed="0" Stance="0" OneShot="1" StartRadius="0.1" DirectionTolerance="180" LoopDuration="-1"/>
+  </Node>
+ </Nodes>
+ <Edges>
+  <Edge nodeIn="3" nodeOut="1" portIn="entityId" portOut="ObjectId" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="1" portIn="Sync" portOut="UserId" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="1" portIn="entityId" portOut="UserId" enabled="1"/>
+  <Edge nodeIn="6" nodeOut="1" portIn="Start" portOut="UserId" enabled="1"/>
+  <Edge nodeIn="4" nodeOut="3" portIn="Position" portOut="pos" enabled="1"/>
+  <Edge nodeIn="2" nodeOut="4" portIn="cancel" portOut="Failed" enabled="1"/>
+ </Edges>
+ <GraphTokens />
+</Graph>

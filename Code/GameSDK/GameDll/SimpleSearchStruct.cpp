@@ -18,11 +18,11 @@ void SimpleSearchStruct::RemoveItem(SearchItem& searchItem) {
 	}
 }
 
-const SearchItem* SimpleSearchStruct::GetNearest(SearchItem& queryPoint) {
+const SearchItem* SimpleSearchStruct::GetNearest(SearchItem& queryPoint) const {
 
 	if (data.size() == 0)
 	{
-		CryLog("No entries in the search pool");
+		//CryLog("No entries in the search pool");
 		return nullptr;
 	}
 
