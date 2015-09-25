@@ -37,7 +37,7 @@ void CTorch::Release()
 void CTorch::Update(SEntityUpdateContext& ctx, int slot)
 {
 	DebugDraw();
-	Vec3 firePosition = CSpecialFunctions::GetBonePos("fire", false, GetEntity());
+	Vec3 firePosition = CSpecialFunctions::GetBonePos("weapon_bone", false, GetEntity());
 	/*if (m_pParticalEntity != NULL && m_pLight != NULL)
 	{
 		m_pParticalEntity->SetPos(firePosition);
@@ -104,10 +104,10 @@ void CTorch::DebugDraw()
 	//Отрисовка хэлпера факела, с которого идет огонь
 	if (g_pGameCVars->td_draw == 1)
 	{
-		Vec3 helperPos = CSpecialFunctions::GetBonePos("fire", false, GetEntity());
+		Vec3 helperPos = CSpecialFunctions::GetBonePos("weapon_bone", false, GetEntity());
 		gEnv->pRenderer->GetIRenderAuxGeom()->DrawSphere(helperPos, 0.08f, ColorB(128, 128, 0));
 
-		Vec3 helperPos2 = CSpecialFunctions::GetBonePos("fire", false, GetOwner());
+		Vec3 helperPos2 = CSpecialFunctions::GetBonePos("weapon_bone", false, GetOwner());
 		gEnv->pRenderer->GetIRenderAuxGeom()->DrawSphere(helperPos2, 0.08f, ColorB(0, 128, 0));
 	}
 }
@@ -181,7 +181,7 @@ void CTorch::CreateAttachment()
 	auto relProjPos = relProj.t;
 	auto relProjRot = relProj.q;
 
-	attachment->SetAttRelativeDefault(QuatT(relProjRot, relProjPos));
+	attachment->SetAttRelativeDefault(QuatT(relProjRot, relProjPos + Vec3(0, 0, 0.4)));
 
 	CEntityAttachment* pEntityAttachment = new CEntityAttachment();
 	pEntityAttachment->SetEntityId(m_pBasicEntity->GetId());
